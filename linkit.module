@@ -1,0 +1,210 @@
+<?php 
+// $Id$
+
+/**
+ * @file
+ * 
+ */
+
+/**
+ * Implementation of hook_wysiwyg_include_directory().
+ *
+ * @param string $type
+ *   Contains either "plugins" or "editors"?
+ * @return string
+ *   The function returns the include directory "plugins". This directory must only
+ *   contain wysiwyg api integration files.
+ */
+function linkit_wysiwyg_include_directory($type) {
+	switch ($type) {
+		case 'plugins':
+			return 'editors';
+	}
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function linkit_menu() {
+  $items = array();
+
+  $items['admin/linkit/dashboard/%'] = array(
+    'title' => 'Linkit',
+    'description' => 'Dashboard',
+    'page callback' => 'linkit_dashboard',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/linkit/autocomplete'] = array(
+    'title' => 'Link to node',
+    'description' => 'description',
+    'page callback' => 'linkit_autocomplete',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'page arguments' => array(3,4),
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function linkit_theme($existing, $type, $theme, $path) {
+  return array(
+    'linkit_dashboard' => array(
+      'arguments' => array('content' => NULL),
+      'template' => 'linkit-dashboard',
+    ),
+  );
+}
+
+/**
+ * Template preprocess function for theme_linkit_dashboard().
+ */
+function template_preprocess_linkit_dashboard(&$variables) {
+  // Construct page title
+  $head_title = array(strip_tags(drupal_get_title()), variable_get('site_name', 'Drupal'));
+  $variables['head_title']  = implode(' | ', $head_title);
+  $variables['base_path'] = base_path();
+  $variables['front_page'] = url();
+  $variables['head'] = drupal_get_html_head();
+  $variables['help'] = theme('help');
+  $variables['language'] = $GLOBALS['language'];
+  $variables['language']->dir = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
+  $variables['messages'] = $variables['show_messages'] ? theme('status_messages') : '';
+  $variables['css'] = drupal_add_css();
+  $variables['styles'] = drupal_get_css();
+  $variables['scripts'] = drupal_get_js();
+  $variables['title'] = drupal_get_title();
+  $variables['closure'] = theme('closure');
+}
+
+/**
+ * 
+ */
+function linkit_dashboard() {
+	module_invoke('admin_menu', 'suppress');
+  // Add CSS.
+ 	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
+  // Add JavaScript.
+  drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/linkit_tinymce/linkit_tinymce_dialog.js');
+
+  $plugins = module_invoke_all('linkit_info_plugins');
+  foreach ($plugins as $name => $properties) {
+    $plugin = &$plugins[$name];
+    // Fill in required/default properties.
+    $plugin += array(
+      'type' => $name,
+      'js file' => $name . '.js',
+    );
+    $fileurl = drupal_get_path('module', $name).'/'.$plugin['js file'];
+
+    // Check whether the js-file is present.
+    if (file_exists($fileurl)) {
+      drupal_add_js($fileurl);
+    }
+  }
+
+	echo theme('linkit_dashboard', drupal_get_form('_linkit_form'));
+  exit();
+}
+
+/**
+ * Autocomplete callback function
+ */
+function linkit_autocomplete($string = NULL) {
+  $matches = array();
+  if($string) {
+    $hook_matches = module_invoke_all('linkit_load_plugins', $string);
+    if(count($hook_matches) > 0) {
+      $matches = $hook_matches;
+    }
+  }
+  drupal_json($matches);
+}
+
+/**
+ * Creates the 
+ */
+function _linkit_autolist_list($title = NULL, $type = NULL) {
+  $output = '<div class="auto-item-title">'.check_plain($title).'</div>';
+  $output .= '<div class="auto-item-type">[type:'.check_plain($type).']</div>';
+  return '<div class="clear-block">'.$output.'</div>';
+}
+
+/**
+ * Autocomplete callback function
+ */
+function _linkit_autolist_val($title = NULL, $type = NULL, $info = NULL) {
+  return check_plain($title.' [type:'.$type.'] ['.$info.']');
+}
+
+/**
+ * 
+ */
+function _linkit_form() {
+  $form['internal'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Internal'),
+    '#description' => t('Search for the title/path'),
+    '#maxlength' => 255,
+    '#size' => 80,
+    '#autocomplete_path' => 'admin/linkit/autocomplete',
+    '#default_value' => '',
+    '#weight' => 1,
+  );
+  $form['insert-internal'] = array(
+    '#type' => 'button',
+    '#value' => t('Insert'),
+    '#weight' => 2,
+  );
+  $form['external'] = array(
+    '#type' => 'textfield',
+    '#title' => t('External'),
+    '#description' => t('Type the URL (http://www.example.com)'),
+    '#maxlength' => 255,  
+    '#size' => 80,
+    '#default_value' => '',
+    '#weight' => 3,
+  );
+  $form['insert-external'] = array(
+    '#type' => 'button',
+    '#value' => t('Insert'),
+    '#weight' => 4,
+  );
+  return $form;
+}
+
+/**
+ * Implementation of hook_linkit_load_plugins().
+ */
+function linkit_linkit_load_plugins($string) {
+  $matches = array();
+  
+  // Get nodes
+  $result = db_query_range("SELECT title, nid FROM {node} WHERE LOWER(title) LIKE LOWER('%s%%')", $string, 0, 10);
+  while ($node = db_fetch_object($result)) {
+    $matches[_linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = _linkit_autolist_list($node->title, 'Node');
+  }
+ 
+  // Get all page displays in view
+  // Create temporary table
+  $temp_table = 'CREATE TEMPORARY TABLE {linkit_tmp_view_table} (title VARCHAR(128) NOT NULL, path VARCHAR(128) NOT NULL)';
+  db_query($temp_table);
+
+  // Get all displays that are "page" and their path
+  $result = db_query("SELECT w.name, wd.display_options FROM {views_view} AS w INNER JOIN {views_display} AS wd ON w.vid = wd.vid WHERE wd.display_plugin = '%s'", 'page');
+  while ($node = db_fetch_object($result)) {
+    $optinos = unserialize($node->display_options);
+    db_query("INSERT INTO {linkit_tmp_view_table} (title, path) VALUES ('%s', '%s')", $node->name, $optinos['path']);
+  }  
+  
+  $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%s%%')", $string, 0, 10);
+  while ($node = db_fetch_object($result)) {
+    $matches[_linkit_autolist_val($node->path, 'View', 'path:'.$node->path)] = _linkit_autolist_list($node->path, 'View');
+  }  
+  
+  return  $matches;
+}
