@@ -3,7 +3,7 @@
 
 /**
  * @file
- * 
+ * Main file for linkit module.
  */
 
 /**
@@ -65,24 +65,24 @@ function linkit_theme($existing, $type, $theme, $path) {
  */
 function template_preprocess_linkit_dashboard(&$variables) {
   // Construct page title
-  $head_title = array(strip_tags(drupal_get_title()), variable_get('site_name', 'Drupal'));
-  $variables['head_title']  = implode(' | ', $head_title);
-  $variables['base_path'] = base_path();
-  $variables['front_page'] = url();
-  $variables['head'] = drupal_get_html_head();
-  $variables['help'] = theme('help');
-  $variables['language'] = $GLOBALS['language'];
+  $head_title                 = array(strip_tags(drupal_get_title()), variable_get('site_name', 'Drupal'));
+  $variables['head_title']    = implode(' | ', $head_title);
+  $variables['base_path']     = base_path();
+  $variables['front_page']    = url();
+  $variables['head']          = drupal_get_html_head();
+  $variables['help']          = theme('help');
+  $variables['language']      = $GLOBALS['language'];
   $variables['language']->dir = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
-  $variables['messages'] = $variables['show_messages'] ? theme('status_messages') : '';
-  $variables['css'] = drupal_add_css();
-  $variables['styles'] = drupal_get_css();
-  $variables['scripts'] = drupal_get_js();
-  $variables['title'] = drupal_get_title();
-  $variables['closure'] = theme('closure');
+  $variables['messages']      = $variables['show_messages'] ? theme('status_messages') : '';
+  $variables['css']           = drupal_add_css();
+  $variables['styles']        = drupal_get_css();
+  $variables['scripts']       = drupal_get_js();
+  $variables['title']         = drupal_get_title();
+  $variables['closure']       = theme('closure');
 }
 
 /**
- * 
+ * Creates the dashboard
  */
 function linkit_dashboard() {
 	module_invoke('admin_menu', 'suppress');
@@ -90,7 +90,7 @@ function linkit_dashboard() {
  	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   // Add JavaScript.
   drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/linkit_tinymce/linkit_tinymce_dialog.js');
-
+  
   $plugins = module_invoke_all('linkit_info_plugins');
   foreach ($plugins as $name => $properties) {
     $plugin = &$plugins[$name];
@@ -99,7 +99,7 @@ function linkit_dashboard() {
       'type' => $name,
       'js file' => $name . '.js',
     );
-    $fileurl = drupal_get_path('module', $name).'/'.$plugin['js file'];
+    $fileurl = drupal_get_path('module', $name) . '/' . $plugin['js file'];
 
     // Check whether the js-file is present.
     if (file_exists($fileurl)) {
@@ -107,7 +107,7 @@ function linkit_dashboard() {
     }
   }
 
-	echo theme('linkit_dashboard', drupal_get_form('_linkit_form'));
+	print theme('linkit_dashboard', drupal_get_form('linkit_form'));
   exit();
 }
 
@@ -128,23 +128,23 @@ function linkit_autocomplete($string = NULL) {
 /**
  * Creates the 
  */
-function _linkit_autolist_list($title = NULL, $type = NULL) {
-  $output = '<div class="auto-item-title">'.check_plain($title).'</div>';
-  $output .= '<div class="auto-item-type">[type:'.check_plain($type).']</div>';
-  return '<div class="clear-block">'.$output.'</div>';
+function linkit_autolist_list($title = NULL, $type = NULL) {
+  $output = '<div class="auto-item-title">' . check_plain($title) . '</div>';
+  $output .= '<div class="auto-item-type">[type:' . check_plain($type) . ']</div>';
+  return '<div class="clear-block">' . $output . '</div>';
 }
 
 /**
  * Autocomplete callback function
  */
-function _linkit_autolist_val($title = NULL, $type = NULL, $info = NULL) {
-  return check_plain($title.' [type:'.$type.'] ['.$info.']');
+function linkit_autolist_val($title = NULL, $type = NULL, $info = NULL) {
+  return check_plain($title . ' [type:' . $type . '] [' . $info . ']');
 }
 
 /**
  * 
  */
-function _linkit_form() {
+function linkit_form() {
   $form['internal'] = array(
     '#type' => 'textfield',
     '#title' => t('Internal'),
@@ -186,7 +186,7 @@ function linkit_linkit_load_plugins($string) {
   // Get nodes
   $result = db_query_range("SELECT title, nid FROM {node} WHERE LOWER(title) LIKE LOWER('%s%%')", $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches[_linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = _linkit_autolist_list($node->title, 'Node');
+    $matches[linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = linkit_autolist_list($node->title, 'Node');
   }
  
   // Get all page displays in view
@@ -203,7 +203,7 @@ function linkit_linkit_load_plugins($string) {
   
   $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%s%%')", $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches[_linkit_autolist_val($node->path, 'View', 'path:'.$node->path)] = _linkit_autolist_list($node->path, 'View');
+    $matches[linkit_autolist_val($node->path, 'View', 'path:'.$node->path)] = linkit_autolist_list($node->path, 'View');
   }  
   
   return  $matches;
