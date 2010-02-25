@@ -23,6 +23,17 @@ function linkit_wysiwyg_include_directory($type) {
 }
 
 /**
+ * Implementation of hook_perm().
+ */
+function linkit_perm() {
+  $perms = array('create all links');
+  foreach (module_invoke_all('linkit_info_plugins') as $plugin) {
+    $perms[] = 'create '.check_plain($plugin['type']).' links';
+  }
+  return $perms;
+}
+
+/**
  * Implementation of hook_menu().
  */
 function linkit_menu() {
@@ -107,7 +118,7 @@ function linkit_dashboard() {
     }
   }
 
-	print theme('linkit_dashboard', drupal_get_form('linkit_form'));
+	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
 }
 
@@ -116,10 +127,13 @@ function linkit_dashboard() {
  */
 function linkit_autocomplete($string = NULL) {
   $matches = array();
+  $hook_matches = array();
   if($string) {
     $hook_matches = module_invoke_all('linkit_load_plugins', $string);
-    if(count($hook_matches) > 0) {
-      $matches = $hook_matches;
+    foreach($hook_matches AS $module => $values) {
+      if(user_access('create '.$module.' links')) {
+        $matches = array_merge($matches, $hook_matches[$module]);
+      }
     }
   }
   drupal_json($matches);
@@ -144,7 +158,7 @@ function linkit_autolist_val($title = NULL, $type = NULL, $info = NULL) {
 /**
  * 
  */
-function linkit_form() {
+function _linkit_form() {
   $form['internal'] = array(
     '#type' => 'textfield',
     '#title' => t('Internal'),
@@ -178,33 +192,49 @@ function linkit_form() {
 }
 
 /**
+ * Implementation of hook_linkit_info_plugins().
+ */
+function linkit_linkit_info_plugins() {
+  $return['linkit_node'] = array(
+    'type' => 'node',
+  );
+  $return['linkit_view'] = array(
+    'type' => 'view',
+  );
+  return $return;
+}
+
+/**
  * Implementation of hook_linkit_load_plugins().
  */
 function linkit_linkit_load_plugins($string) {
   $matches = array();
   
   // Get nodes
-  $result = db_query_range("SELECT title, nid FROM {node} WHERE LOWER(title) LIKE LOWER('%s%%')", $string, 0, 10);
+  $result = db_query_range("SELECT title, nid FROM {node} WHERE LOWER(title) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches[linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = linkit_autolist_list($node->title, 'Node');
+    $matches['node'][linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = linkit_autolist_list($node->title, 'Node');
   }
- 
-  // Get all page displays in view
-  // Create temporary table
-  $temp_table = 'CREATE TEMPORARY TABLE {linkit_tmp_view_table} (title VARCHAR(128) NOT NULL, path VARCHAR(128) NOT NULL)';
-  db_query($temp_table);
+  
+  // If we have views module installed, get all views paths
+  if(module_exists('views')) {
+    // Get all page displays in view
+    // Create temporary table
+    $temp_table = 'CREATE TEMPORARY TABLE {linkit_tmp_view_table} (title VARCHAR(128) NOT NULL, path VARCHAR(128) NOT NULL)';
+    db_query($temp_table);
 
-  // Get all displays that are "page" and their path
-  $result = db_query("SELECT w.name, wd.display_options FROM {views_view} AS w INNER JOIN {views_display} AS wd ON w.vid = wd.vid WHERE wd.display_plugin = '%s'", 'page');
-  while ($node = db_fetch_object($result)) {
-    $optinos = unserialize($node->display_options);
-    db_query("INSERT INTO {linkit_tmp_view_table} (title, path) VALUES ('%s', '%s')", $node->name, $optinos['path']);
-  }  
+    // Get all displays that are "page" and their path
+    $result = db_query("SELECT w.name, wd.display_options FROM {views_view} AS w INNER JOIN {views_display} AS wd ON w.vid = wd.vid WHERE wd.display_plugin = '%s'", 'page');
+    while ($node = db_fetch_object($result)) {
+      $optinos = unserialize($node->display_options);
+      db_query("INSERT INTO {linkit_tmp_view_table} (title, path) VALUES ('%s', '%s')", $node->name, $optinos['path']);
+    }  
+    
+    $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%%%s%%')", $string, 0, 10);
+    while ($node = db_fetch_object($result)) {
+      $matches['view'][linkit_autolist_val($node->path, 'View', 'path:'.$node->path)] = linkit_autolist_list($node->path, 'View');
+    }  
+  }
   
-  $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%s%%')", $string, 0, 10);
-  while ($node = db_fetch_object($result)) {
-    $matches[linkit_autolist_val($node->path, 'View', 'path:'.$node->path)] = linkit_autolist_list($node->path, 'View');
-  }  
-  
-  return  $matches;
+  return $matches;
 }
