@@ -55,22 +55,3 @@ Drupal.behaviors.linkit_tinymce_dialog = function (context) {
     parentWindow.Drupal.wysiwyg.instances[instanceId].closeDialog(window);
   }
 };
-
-
-/**
- * Default plugins
- */
-
-Drupal.linkit.plugins['node'] = {
-  invoke: function(str) {
-    var matches = str.match(/\[nid:(\d+)\]/i);
-    return 'internal:node/'+matches[1];
-  }
-};
-
-Drupal.linkit.plugins['view'] = {
-  invoke: function(str, basePath) {
-    var matches = str.match(/\[path:(.*)\]/i);
-    return basePath + matches[1];
-  }
-};
