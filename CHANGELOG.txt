@@ -1,0 +1,13 @@
+// $Id$
+
+Linkit 6.x-1.0-beta1, 2010-02-27
+------------------------------
+#727706 by anon: Add taxonomy support
+#727704 by anon: Separate node- and views matches from linkit core
+#722998 by anon: Added permission for all plugins.
+- Fixed: Some coding standards issues.
+- Added: a README.txt file.
+
+Linkit 6.x-1.0-alpha1, 2010-02-20
+------------------------------
+Initial Release for Drupal 6
