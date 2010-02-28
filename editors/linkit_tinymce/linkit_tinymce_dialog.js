@@ -18,15 +18,20 @@ Drupal.behaviors.linkit_tinymce_dialog = function (context) {
       // What type is the link?
       var type = $('#edit-internal', context).val().match(/\[type:([a-z0-9 \_\/]*)\]/i);
       type = type[1].toLowerCase();
-
+      
       // Do we have the plugin?
-      if(typeof Drupal.linkit.plugins[type] == 'undefined') {
+      if (typeof Drupal.linkit.plugins[type] != 'object') {
+        alert('Cant find the "Drupal.linkit.plugins['+type+']" object');
+        return false;
+      }
+
+      // Do we have invoke function?
+      if(typeof Drupal.linkit.plugins[type].invoke == 'function') {
+        var href = Drupal.linkit.plugins[type].invoke($('#edit-internal', context).val(), basePath);
+      } 
+      else {
         alert('Cant find the "Drupal.linkit.plugins['+type+'].invoke" function');
         return false;
-      } 
-      // Okey, we have it
-      else {
-        var href = Drupal.linkit.plugins[type].invoke($('#edit-internal', context).val(), basePath);
       }
 
       link = "<a href=\""+ href +"\">"+ content +"</a>";     
