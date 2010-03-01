@@ -21,6 +21,7 @@ function linkit_linkit_plugin() {
 				'url' => url('admin/linkit/dashboard'),
 				'width' => 640,
 				'height' => 480,
+        'scrollbars' => TRUE,
 			),
     ),
   );

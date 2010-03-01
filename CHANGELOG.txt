@@ -2,6 +2,7 @@
 
 Linkit x.x-x.x, xxxx-xx-xx
 ------------------------------
+Added by anon: Added scrollbars to the popup
 Changed by anon: Better JS error-handling in linkit_tinymce_dialog.js
 
 Linkit 6.x-1.0-beta1, 2010-02-27
