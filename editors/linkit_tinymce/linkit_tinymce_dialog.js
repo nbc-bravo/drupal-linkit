@@ -29,7 +29,7 @@ Drupal.behaviors.linkit_tinymce_dialog = function (context) {
     $('#edit-insert').click(function() {
 
       if($('#edit-link', context).val() == "") {
-        alert('Link to: is empty');
+        alert(Drupal.t('Link to: is empty'));
         return false;
       }
     

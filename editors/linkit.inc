@@ -17,7 +17,7 @@ function linkit_linkit_plugin() {
     'icon title' => t('Insert a link with the linkitmodule.'),
     'settings' => array(
     	'dialog' => array(
-    		'title' => t('Test'),
+    		'title' => '',
 				'url' => url('admin/linkit/dashboard'),
 				'width' => 640,
 				'height' => 480,

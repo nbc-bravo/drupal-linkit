@@ -160,7 +160,7 @@ function _linkit_form() {
   $form['link']['link'] = array(
     '#type' => 'textfield',
     '#title' => t('Link to'),
-    '#description' => t('Search for the your internal content <b>OR</b> type the URL (http://www.example.com)'),
+    '#description' => t('Search for your internal content <b>OR</b> type the URL (http://www.example.com)'),
     '#maxlength' => 255,
     '#size' => 80,
     '#autocomplete_path' => 'admin/linkit/autocomplete',
@@ -226,8 +226,6 @@ function _linkit_form() {
     '#value' => t('Insert'),
     '#weight' => 11,
   );
-  
- 
-  
+
   return $form;
 }
