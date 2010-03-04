@@ -23,36 +23,9 @@ Drupal.wysiwyg.plugins["linkit_tinymce"] = {
     // Open dialogue.
     Linkit.openDialog(settings.dialog, options);
   },
-
-  attach: function(content, settings, instanceId) {
-    /*
-    $('#edit-body_linkit_tinymce').removeClass('mceButtonEnabled').addClass('mceButtonDisabled');
-    function addEvents(win) {
-      if (win.contentWindow) {
-        win = win.contentWindow;
-      }
-      $(win.document).bind("mouseup", function() {
-      var selection = this.getSelection();
-        if(selection == "") {
-          $('#edit-body_linkit_tinymce').removeClass('mceButtonEnabled').addClass('mceButtonDisabled');
-        } else {
-          $('#edit-body_linkit_tinymce').removeClass('mceButtonDisabled').addClass('mceButtonEnabled');
-        }
-      });
-      
-    }
-
-    var frames = document.getElementsByTagName("iframe");
-    for (var i=0; i < frames.length; i++) {
-      addEvents(frames[i]);
-    }
-*/
-    return content;
+  
+  isNode: function(node) {
+    return ($(node).is('a'));
   }
-
-  
-
-  
-
 };
 
