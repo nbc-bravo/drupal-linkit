@@ -11,7 +11,6 @@
  * Implementation of hook_linkit_load_plugins().
  */
 function linkit_node_linkit_load_plugins($string) {
-  drupal_add_js(drupal_get_path('modules', 'linkit_node') . '/linkit_node.js');
   $matches = array();
   
   // Get nodes
@@ -21,4 +20,14 @@ function linkit_node_linkit_load_plugins($string) {
   }
 
   return $matches;
+}
+
+/**
+ * Implementation of hook_linkit_info_plugins().
+ */
+function linkit_node_linkit_info_plugins() {
+  $return['linkit_node'] = array(
+    'type' => 'node',
+  );
+  return $return;
 }

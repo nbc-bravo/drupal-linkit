@@ -4,6 +4,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.0, xxxx-xx-xx
 ------------------------------
+by anon: "hook_linkit_info_plugins" IS needed again, sry. (For permissions)
 Changed by anon: "hook_linkit_info_plugins" not needed anymore
 Changed by anon: One field for both internal and external links
 Changed by anon: No JS files needed for plugins anymore
