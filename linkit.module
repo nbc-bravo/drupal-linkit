@@ -216,10 +216,18 @@ function _linkit_form() {
     '#default_value' => '',
     '#weight' => 4,
   );
+  $form['link']['cancel'] = array(
+    '#type' => 'button',
+    '#value' => t('Cancel'),
+    '#weight' => 10,
+  );
   $form['link']['insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert'),
-    '#weight' => 10,
+    '#weight' => 11,
   );
+  
+ 
+  
   return $form;
 }

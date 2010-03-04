@@ -39,8 +39,7 @@ There is two hooks that MUST be defined if you want to extend the autocomplete f
 - hook_linkit_load_plugins()
 - hook_linkit_info_plugins()
 
-
-HOOK EXAMPLES
+HOOK EXAMPLE
 -------------
 
 /**
@@ -50,24 +49,25 @@ HOOK EXAMPLES
  * matches.
  */
 function MYMODULENAME_linkit_load_plugins($string) {
-  // Add my JS file that will handle the TinyMCE insert/update
-  drupal_add_js(drupal_get_path('modules', 'MYMODULENAME').'/MYMODULE_JSFILE.js');
   $matches = array();
   
   // Get foo´s
   $result = db_query_range("SELECT foo, bar FROM {foo_table} WHERE LOWER(foo) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($foo = db_fetch_object($result)) {
-    $matches['MYMODULENAME'][_linkit_autolist_val($foo->foo, 'Foos', 'path:'.$node->filepath)] = _linkit_autolist_list($foo->foo, 'Foos');
+    $matches['MYMODULETYPE'][linkit_autolist_val($foo->foo, 'internal:' . $foo->path)] = linkit_autolist_list($foo->foo, 'Foos');
   }
   return $matches;
 }
+
+For alias link, use "base_path().$foo->path" instead of "'internal:' . $foo->path"
+
 
 /**
  * Implementation of hook_linkit_info_plugins().
  */
 function MYMODULENAME_linkit_info_plugins() {
   $return['MYMODULENAME'] = array(
-    'type' => 'foo',
+    'type' => 'MYMODULETYPE',
   );
   return $return;
 }

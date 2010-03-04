@@ -28,18 +28,20 @@ Drupal.behaviors.linkit_tinymce_dialog = function (context) {
 
     $('#edit-insert').click(function() {
 
-      var matches = $('#edit-link', context).val().match(/\[path:(.*)\]/i);
-      
-      if(matches == null) {
-        href = $('#edit-link', context).val();
-      } else {
-        href = matches[1];
+      if($('#edit-link', context).val() == "") {
+        alert('Link to: is empty');
+        return false;
       }
-      
-      // @TODO: Kolla om det är en internal eller inte, sätt på basepath isf!!!
-      //        Ta bort alla plugin js filer.
+    
+      var matches = $('#edit-link', context).val().match(/\[path:(.*)\]/i);
+      href = (matches == null) ? $('#edit-link', context).val() : matches[1];
 
       setLink();
+      return false;
+    });
+
+    $('#edit-cancel').click(function() {
+      parentWindow.Drupal.wysiwyg.instances[parentWindow.Drupal.wysiwyg.activeId].closeDialog(window);
       return false;
     });
   }
