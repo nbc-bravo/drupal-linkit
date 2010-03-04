@@ -17,17 +17,7 @@ function linkit_taxonomy_linkit_load_plugins($string) {
   // Get terms
   $result = db_query_range("SELECT name, tid FROM {term_data} WHERE LOWER(name) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($term = db_fetch_object($result)) {
-    $matches['taxonomy'][linkit_autolist_val($term->name, 'Taxonomy', 'tid:'.$term->tid)] = linkit_autolist_list($term->name, 'Taxonomy');
+    $matches['taxonomy'][linkit_autolist_val($term->name, 'internal:taxonomy/term/' . $term->tid)] = linkit_autolist_list($term->name, 'Taxonomy');
   }
   return  $matches;
-}
-
-/**
- * Implementation of hook_linkit_info_plugins().
- */
-function linkit_taxonomy_linkit_info_plugins() {
-  $return['linkit_taxonomy'] = array(
-    'type' => 'taxonomy',
-  );
-  return $return;
 }

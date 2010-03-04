@@ -17,18 +17,8 @@ function linkit_node_linkit_load_plugins($string) {
   // Get nodes
   $result = db_query_range("SELECT title, nid FROM {node} WHERE LOWER(title) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches['node'][linkit_autolist_val($node->title, 'Node', 'nid:'.$node->nid)] = linkit_autolist_list($node->title, 'Node');
+    $matches['node'][linkit_autolist_val($node->title, 'internal:node/' . $node->nid)] = linkit_autolist_list($node->title, 'Node');
   }
 
   return $matches;
-}
-
-/**
- * Implementation of hook_linkit_info_plugins().
- */
-function linkit_node_linkit_info_plugins() {
-  $return['linkit_node'] = array(
-    'type' => 'node',
-  );
-  return $return;
 }

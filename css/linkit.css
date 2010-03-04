@@ -1,24 +1,11 @@
 body#linkit {
   padding:1em;
-  background-image:none;
-  background-color:#f0f0ee;
-}
-
-#linkit .form-item {
-  float:left;
-  margin-right:1em;
 }
 
 #linkit .form-text {
   border:1px solid #ccc;
   padding:5px;
   -moz-border-radius:5px;
-}
-
-#linkit .form-submit { 
-  margin: 2.8em 0 1em 0; 
-  float:left;
-  clear:right;
 }
 
 #linkit input.form-autocomplete {
@@ -42,3 +29,12 @@ body#linkit {
   margin-right:1.5em;
   float:left;
 }
+
+#edit-title-wrapper,
+#edit-id-wrapper,
+#edit-class-wrapper,
+#edit-rel-wrapper,
+#edit-accesskey-wrapper { float:left; }
+
+#edit-id-wrapper,
+#edit-rel-wrapper { margin-left:2em; }

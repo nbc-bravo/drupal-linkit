@@ -53,7 +53,7 @@ function linkit_menu() {
     'page callback' => 'linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
-    'page arguments' => array(3,4),
+    'page arguments' => array(3),
   );
 
   return $items;
@@ -101,22 +101,6 @@ function linkit_dashboard() {
  	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   // Add JavaScript.
   drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/linkit_tinymce/linkit_tinymce_dialog.js');
-  
-  $plugins = module_invoke_all('linkit_info_plugins');
-  foreach ($plugins as $name => $properties) {
-    $plugin = &$plugins[$name];
-    // Fill in required/default properties.
-    $plugin += array(
-      'type' => $name,
-      'js file' => $name . '.js',
-    );
-    $fileurl = drupal_get_path('module', $name) . '/' . $plugin['js file'];
-
-    // Check whether the js-file is present.
-    if (file_exists($fileurl)) {
-      drupal_add_js($fileurl);
-    }
-  }
 
 	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
@@ -157,42 +141,85 @@ function linkit_autolist_list($title = NULL, $type = NULL) {
 /**
  * Autocomplete callback function
  */
-function linkit_autolist_val($title = NULL, $type = NULL, $info = NULL) {
-  return check_plain($title . ' [type:' . $type . '] [' . $info . ']');
+function linkit_autolist_val($title = NULL, $path = NULL) {
+  return check_plain($title . ' [path:' . $path . ']');
 }
 
 /**
  * 
  */
 function _linkit_form() {
-  $form['internal'] = array(
+  $form['link'] = array(
+    '#type' => 'fieldset',
+    '#title' => '',
+    '#weight' => 0,
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#attributes' => array('class' => 'clear-block'),
+  );
+  $form['link']['link'] = array(
     '#type' => 'textfield',
-    '#title' => t('Internal'),
-    '#description' => t('Search for the title/path'),
+    '#title' => t('Link to'),
+    '#description' => t('Search for the your internal content <b>OR</b> type the URL (http://www.example.com)'),
     '#maxlength' => 255,
     '#size' => 80,
     '#autocomplete_path' => 'admin/linkit/autocomplete',
     '#default_value' => '',
     '#weight' => 1,
   );
-  $form['insert-internal'] = array(
-    '#type' => 'button',
-    '#value' => t('Insert'),
+  $form['link']['attributes'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Attributes'),
+    '#weight' => 1,
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#attributes' => array('class' => 'clear-block'),
     '#weight' => 2,
   );
-  $form['external'] = array(
+  $form['link']['attributes']['title'] = array(
     '#type' => 'textfield',
-    '#title' => t('External'),
-    '#description' => t('Type the URL (http://www.example.com)'),
+    '#title' => t('Title'),
     '#maxlength' => 255,  
-    '#size' => 80,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => 0,
+  );
+  $form['link']['attributes']['id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('ID'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => 1,
+  );
+  $form['link']['attributes']['class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Class'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => 2,
+  );
+  $form['link']['attributes']['rel'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Rel'),
+    '#maxlength' => 255,  
+    '#size' => 40,
     '#default_value' => '',
     '#weight' => 3,
   );
-  $form['insert-external'] = array(
+  $form['link']['attributes']['accesskey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Accesskey'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => 4,
+  );
+  $form['link']['insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert'),
-    '#weight' => 4,
+    '#weight' => 10,
   );
   return $form;
 }

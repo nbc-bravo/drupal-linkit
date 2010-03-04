@@ -1,7 +1,13 @@
 // $Id$
-
 Linkit x.x-x.x, xxxx-xx-xx
 ------------------------------
+
+Linkit 6.x-1.0, xxxx-xx-xx
+------------------------------
+Changed by anon: "hook_linkit_info_plugins" not needed anymore
+Changed by anon: One field for both internal and external links
+Changed by anon: No JS files needed for plugins anymore
+#728570 by anon: Add support for attributes
 Added by anon: Added scrollbars to the popup
 Changed by anon: Better JS error-handling in linkit_tinymce_dialog.js
 
