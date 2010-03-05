@@ -4,6 +4,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.1, xxxx-xx-xx
 ------------------------------
+by anon: Removed "linkit_tinymce.css" (it wasnt used anymore)
 by anon: Fixed permissions bug 
   - (create all links) didnt work
 by anon: Permissions is now a plugin
