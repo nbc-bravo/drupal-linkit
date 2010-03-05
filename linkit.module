@@ -23,17 +23,6 @@ function linkit_wysiwyg_include_directory($type) {
 }
 
 /**
- * Implementation of hook_perm().
- */
-function linkit_perm() {
-  $perms = array('create all links');
-  foreach (module_invoke_all('linkit_info_plugins') as $plugin) {
-    $perms[] = 'create '.check_plain($plugin['type']).' links';
-  }
-  return $perms;
-}
-
-/**
  * Implementation of hook_menu().
  */
 function linkit_menu() {
@@ -115,7 +104,11 @@ function linkit_autocomplete($string = NULL) {
   if($string) {
     $hook_matches = module_invoke_all('linkit_load_plugins', $string);
     foreach($hook_matches AS $module => $values) {
-      if(user_access('create '.$module.' links')) {
+      if(module_exists('linkit_permissions')) {
+        if(user_access('create '.$module.' links') || user_access('create all links')){
+          $matches = array_merge($matches, $hook_matches[$module]);
+        }
+      } else {
         $matches = array_merge($matches, $hook_matches[$module]);
       }
     }

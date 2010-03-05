@@ -2,7 +2,14 @@
 Linkit x.x-x.x, xxxx-xx-xx
 ------------------------------
 
-Linkit 6.x-1.0, xxxx-xx-xx
+Linkit 6.x-1.1, xxxx-xx-xx
+------------------------------
+by anon: Fixed permissions bug 
+  - (create all links) didnt work
+by anon: Permissions is now a plugin
+  - Permission plugin lets the user decide if to use permissions
+
+Linkit 6.x-1.0, 2010-03-04
 ------------------------------
 Added by anon: cancel button
 by anon: "hook_linkit_info_plugins" IS needed again, sry. (For permissions)
