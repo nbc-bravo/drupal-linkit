@@ -1,6 +1,4 @@
-body#linkit {
-  padding:1em;
-}
+body#linkit { padding:1em; }
 
 #linkit .form-text {
   border:1px solid #ccc;
@@ -14,27 +12,22 @@ body#linkit {
   background-position:100% 5px;
   -moz-border-radius:5px;
 }
+#linkit input.throbbing { background-position:100% -15px; }
 
-#linkit input.throbbing {
-  background-position:100% -15px;
-}
-
-.auto-item-type {
+#linkit .auto-item-type {
   float:right;
   font-weight:bold; 
   font-size:10px;
 }
 
-.auto-item-title {
+#linkit .auto-item-title {
   margin-right:1.5em;
   float:left;
 }
 
-#edit-title-wrapper,
-#edit-id-wrapper,
-#edit-class-wrapper,
-#edit-rel-wrapper,
-#edit-accesskey-wrapper { float:left; }
+#linkit fieldset.collapsible .form-item { width:45%; }
+#linkit fieldset.collapsible .form-item .form-text { width:100%; }
+#linkit fieldset.collapsible .form-item  { float:left; }
 
-#edit-id-wrapper,
-#edit-rel-wrapper { margin-left:2em; }
+#linkit #edit-id-wrapper,
+#linkit #edit-rel-wrapper { margin-left:2em; }

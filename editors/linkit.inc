@@ -19,7 +19,7 @@ function linkit_linkit_plugin() {
     	'dialog' => array(
     		'title' => '',
 				'url' => url('admin/linkit/dashboard'),
-				'width' => 640,
+				'width' => 580,
 				'height' => 480,
         'scrollbars' => TRUE,
 			),
