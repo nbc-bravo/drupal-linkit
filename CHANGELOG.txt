@@ -2,8 +2,9 @@
 Linkit x.x-x.x, xxxx-xx-xx
 ------------------------------
 
-Linkit 6.x-1.1, xxxx-xx-xx
+Linkit 6.x-1.1, 2010-03-05
 ------------------------------
+by anon: Added "db_rewrite_sql" to node and taxonomy plugin
 by anon: Removed "linkit_tinymce.css" (it wasnt used anymore)
 by anon: Fixed permissions bug 
   - (create all links) didnt work
