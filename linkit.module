@@ -7,28 +7,12 @@
  */
 
 /**
- * Implementation of hook_wysiwyg_include_directory().
- *
- * @param string $type
- *   Contains either "plugins" or "editors"?
- * @return string
- *   The function returns the include directory "plugins". This directory must only
- *   contain wysiwyg api integration files.
- */
-function linkit_wysiwyg_include_directory($type) {
-	switch ($type) {
-		case 'plugins':
-			return 'editors';
-	}
-}
-
-/**
  * Implementation of hook_menu().
  */
 function linkit_menu() {
   $items = array();
 
-  $items['admin/linkit/dashboard/%'] = array(
+  $items['admin/linkit/dashboard'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
     'page callback' => 'linkit_dashboard',
@@ -89,8 +73,9 @@ function linkit_dashboard() {
   // Add CSS.
  	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   // Add JavaScript.
-  drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/linkit_tinymce/linkit_tinymce_dialog.js');
-
+  drupal_add_js('sites/all/libraries/tinymce/jscripts/tiny_mce/tiny_mce_popup.js');
+  drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
+  
 	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
 }
@@ -221,4 +206,31 @@ function _linkit_form() {
   );
 
   return $form;
+}
+
+
+function linkit_wysiwyg_plugin($editor, $version) {
+  static $url_added = FALSE;
+  
+  if (!$url_added) {
+    $url_added = TRUE;
+    // Add popup url
+    $settings = array(
+      'linkit' => array('url' => url('admin/linkit/dashboard/')),
+    );
+    drupal_add_js($settings, 'setting');
+  }
+  
+  switch ($editor) {
+    case 'tinymce':      
+      $plugins['linkit'] = array(
+        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
+        'buttons' => array('linkit' => t('Linkit')),
+        'url' => 'http://drupal.org/project/linkit',
+        'load' => TRUE,
+      );
+      break;
+  }
+
+  return $plugins;
 }

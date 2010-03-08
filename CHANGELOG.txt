@@ -1,6 +1,7 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 ------------------------------
+by anon, TwoD: Rewrote the Wysiwyg integration as a 'native' TinyMCE plugin
 
 Linkit 6.x-1.1, 2010-03-05
 ------------------------------
