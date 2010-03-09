@@ -1,0 +1,6 @@
+; $Id$
+name = Linkit User
+description = Extend Linkit with user links
+core = 6.x
+package = Linkit
+dependencies[] = "linkit"

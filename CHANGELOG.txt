@@ -1,6 +1,7 @@
 // $Id$
-Linkit x.x-x.x, xxxx-xx-xx
+Linkit 6.x-1.2, xxxx-xx-xx
 ------------------------------
+Added by anon: Added user links support
 Changed by anon: linkit_node dependencies changed. Dependency on node isnt needed, node is always enabled
 Changed by anon, TwoD: Rewrote the Wysiwyg integration as a 'native' TinyMCE plugin
 
