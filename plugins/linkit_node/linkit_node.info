@@ -4,4 +4,3 @@ description = Extend Linkit with node links
 core = 6.x
 package = Linkit
 dependencies[] = "linkit"
-dependencies[] = "node"
