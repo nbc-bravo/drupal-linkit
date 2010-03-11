@@ -1,5 +1,7 @@
 // $Id$
-Linkit 6.x-1.2, xxxx-xx-xx
+Linkit x.x-x.x, xxxx-xx-xx
+
+Linkit 6.x-1.2, 2010-03-11
 ------------------------------
 Added by anon: Added user links support
 Changed by anon: linkit_node dependencies changed. Dependency on node isnt needed, node is always enabled
