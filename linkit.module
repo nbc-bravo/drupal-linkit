@@ -73,7 +73,7 @@ function linkit_dashboard() {
   // Add CSS.
  	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   // Add JavaScript.
-  drupal_add_js('sites/all/libraries/tinymce/jscripts/tiny_mce/tiny_mce_popup.js');
+  drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js')
   drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
   
 	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
