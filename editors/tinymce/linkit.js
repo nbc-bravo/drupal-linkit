@@ -81,6 +81,13 @@ tinyMCEPopup.onInit.add(LinkitDialog.init, LinkitDialog);
 
 
 $(document).ready(function() {
+  $('#edit-link').keydown(function(ev) {
+    if (ev.keyCode == 13) {
+      // Prevent browsers from firing the click event on the first submit
+      // button when enter is used to select from the autocomplete list.
+      return false;
+    }
+  });
   $('#edit-insert').click(function() {
     LinkitDialog.insertLink();
   });
