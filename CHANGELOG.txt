@@ -2,6 +2,7 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.3, xxxx-xx-xx
+by anon: Removed some unnecessary variables in "template_preprocess_linkit_dashboard"
 #753448 by anon: Added support for CKEditor
 #748208 by anon, TwoD: Fixed Hardcoded path to TinyMCE library
 #748212 by anon, TwoD: Fixed Enter in autocomplete list cancels dialog
