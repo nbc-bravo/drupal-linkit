@@ -12,12 +12,13 @@
 function linkit_menu() {
   $items = array();
 
-  $items['admin/linkit/dashboard'] = array(
+  $items['admin/linkit/dashboard/%'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
     'page callback' => 'linkit_dashboard',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
+    'page arguments' => array(3),
   );
 
   $items['admin/linkit/autocomplete'] = array(
@@ -45,6 +46,19 @@ function linkit_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Implementation of hook_form_alter().
+ */
+function linkit_form_alter(&$form, &$form_state, $form_id) {
+  if(count($form['#after_build'])) {
+    foreach($form['#after_build'] AS $after_build) {
+      if($after_build == "ckeditor_process_form") {
+        _linkit_add_settings('ckeditor');
+      }
+    }
+  }
+}
+
+/**
  * Template preprocess function for theme_linkit_dashboard().
  */
 function template_preprocess_linkit_dashboard(&$variables) {
@@ -68,13 +82,23 @@ function template_preprocess_linkit_dashboard(&$variables) {
 /**
  * Creates the dashboard
  */
-function linkit_dashboard() {
+function linkit_dashboard($editor) {
 	module_invoke('admin_menu', 'suppress');
   // Add CSS.
  	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
-  // Add JavaScript.
-  drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
-  drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
+  
+  switch($editor) {
+    case 'wysiwyg_tinymce':
+      // Add JavaScript.
+      drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
+      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
+      break;
+
+    case 'ckeditor':
+      // Add JavaScript.
+      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
+      break;
+  }
   
 	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
@@ -210,17 +234,9 @@ function _linkit_form() {
 
 
 function linkit_wysiwyg_plugin($editor, $version) {
-  static $url_added = FALSE;
-  
-  if (!$url_added) {
-    $url_added = TRUE;
-    // Add popup url
-    $settings = array(
-      'linkit' => array('url' => url('admin/linkit/dashboard/')),
-    );
-    drupal_add_js($settings, 'setting');
-  }
-  
+
+  _linkit_add_settings('wysiwyg_' . $editor);
+
   switch ($editor) {
     case 'tinymce':      
       $plugins['linkit'] = array(
@@ -233,4 +249,18 @@ function linkit_wysiwyg_plugin($editor, $version) {
   }
 
   return $plugins;
+}
+
+function _linkit_add_settings($editor) {
+  static $settings_added = FALSE;
+  
+  if (!$settings_added) {
+    $settings_added = TRUE;
+    
+    // Add popup url
+    $settings = array(
+      'linkit' => array('url' => url('admin/linkit/dashboard/' . $editor)),
+    );
+    drupal_add_js($settings, 'setting');
+  }
 }
