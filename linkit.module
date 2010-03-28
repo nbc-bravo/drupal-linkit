@@ -93,6 +93,7 @@ function linkit_dashboard($editor) {
       break;
 
     case 'ckeditor':
+    case 'wysiwyg_ckeditor':
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
       break;
@@ -236,14 +237,23 @@ function linkit_wysiwyg_plugin($editor, $version) {
   _linkit_add_settings('wysiwyg_' . $editor);
 
   switch ($editor) {
-    case 'tinymce':      
-      $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
-        'buttons' => array('linkit' => t('Linkit')),
-        'url' => 'http://drupal.org/project/linkit',
-        'load' => TRUE,
-      );
-      break;
+  case 'tinymce':      
+    $plugins['linkit'] = array(
+      'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
+      'buttons' => array('linkit' => t('Linkit')),
+      'url' => 'http://drupal.org/project/linkit',
+      'load' => TRUE,
+    );
+    break;
+  case 'ckeditor':      
+    // notice: Big "L" in the name here! important
+    $plugins['Linkit'] = array(
+      'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
+      'buttons' => array('Linkit' => t('Linkit')),
+      'url' => 'http://drupal.org/project/linkit',
+      'load' => TRUE,
+    );
+    break;
   }
 
   return $plugins;
@@ -252,12 +262,12 @@ function linkit_wysiwyg_plugin($editor, $version) {
 function _linkit_add_settings($editor) {
   static $settings_added = FALSE;
   
-  if (!$settings_added) {
-    $settings_added = TRUE;
+  if (!$settings_added[$editor]) {
+    $settings_added[$editor] = TRUE;
     
     // Add popup url
     $settings = array(
-      'linkit' => array('url' => url('admin/linkit/dashboard/' . $editor)),
+      'linkit' => array('url' => array($editor => url('admin/linkit/dashboard/' . $editor))),
     );
     drupal_add_js($settings, 'setting');
   }

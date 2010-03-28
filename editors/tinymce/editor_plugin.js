@@ -5,8 +5,8 @@
 		init : function(ed, url) {
 			// Register commands
 			ed.addCommand('mceLink', function() {
-				ed.windowManager.open({
-					file : Drupal.settings.linkit.url,
+        ed.windowManager.open({
+					file : Drupal.settings.linkit.url.wysiwyg_tinymce,
 					width : 580,
 					height : 480,
 					inline : true,

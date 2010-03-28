@@ -6,6 +6,7 @@ CONTENTS OF THIS FILE
  * Introduction
  * Installation
  * Configuration
+ * Editor support
  * Hooks
  * Hooks example
 
@@ -29,6 +30,14 @@ Install as usual, see http://drupal.org/node/70151 for further information.
 CONFIGURATION
 -------------
 
+EDITOR SUPPORT
+-------------
+With WYSIWYG module
+  - TinyMCE
+  - CKEditor
+
+"Pure" editors (not using WYSIWYG module)
+  - CKEditor
 
 HOOKS
 -------------

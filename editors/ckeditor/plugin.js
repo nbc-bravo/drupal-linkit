@@ -19,7 +19,8 @@
       // Add Command
       editor.addCommand( 'Linkit', {
         exec : function () {
-          var media = window.showModalDialog(Drupal.settings.linkit.url, { 'opener' : window, 'editorname' : editor.name }, "dialogWidth:750px; dialogHeight:320px; center:yes; resizable:yes; help:no;");
+          var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor
+          var media = window.showModalDialog(path, { 'opener' : window, 'editorname' : editor.name }, "dialogWidth:750px; dialogHeight:320px; center:yes; resizable:yes; help:no;");
         }
       });
       
