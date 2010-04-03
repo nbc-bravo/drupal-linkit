@@ -1,5 +1,9 @@
 ; $Id$
 
+##############################################
+## ONLY if you use ckeditor WITHOUT wysiwyg ##
+##############################################
+
 Installation:
 
 Do the following steps to add Linkit button to the CKEditor toolbar:

@@ -1,7 +1,7 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.3, xxxx-xx-xx
+Linkit 6.x-1.3, 2010-04-03
 by anon: Changed linkit.info, WYSIWYG dependency isnt necessary anymore
 by anon: Added editor support info in README.txt
 #753448 by anon: Added support for CKEditor (with wysiwyg, the other is for "pure" CKEditor) 
