@@ -1,55 +1,43 @@
 ; $Id$
 
-CONTENTS OF THIS FILE
----------------------
+-- INTRODUCTION --
 
- * Introduction
- * Installation
- * Configuration
- * Editor support
- * Hooks
- * Hooks example
+Linkit provides an easy interface for internal linking. Linkit links to
+nodes, users, views and terms by default, using an autocomplete field.
+Linkit has two major advantages over traditional linking
 
+ 1. The user does not have to copy or remember a URL
+ 2. If the target node changes it's alias (e.g. if the node's menu item
+    title is changed) the link will remain functional
 
-INTRODUCTION
-------------
+See http://drupal.org/project/linkit for more information
 
-Current Maintainers: 
-anon <http://drupal.org/user/464598>
-blackdog <http://drupal.org/user/110169>
-freakalis <http://drupal.org/user/204187>
+-- INSTALLATION & CONFIGURATION --
 
-Linkit module provides an easy way for users to link to internal nodes, views and files by search with an autocomplete field.
+ 1. Install and enable Linkit's dependencies (see below). Make sure
+    Path Filter is enabled on the input formats you intend to use with linkit
+ 2. Install and enable linkit (required) and at least one of linkit_node,
+    linkit_views and linkit_taxonomy
+ 3. Enable the Linkit button in your WYSIWYG editor's settings
 
+-- DEPENDENCIES --
 
-INSTALLATION
-------------
+Path Filter <http://drupal.org/project/pathfilter>
+One of these editors:
+ * WYSIWYG <http://drupal.org/project/wysiwyg> with TinyMCE or CKEditor (recommended)
+ * CKEditor <http://drupal.org/project/ckeditor>
 
-Install as usual, see http://drupal.org/node/70151 for further information.
-
-CONFIGURATION
--------------
-
-EDITOR SUPPORT
--------------
-With WYSIWYG module
-  - TinyMCE
-  - CKEditor
-
-"Pure" editors (not using WYSIWYG module)
-  - CKEditor
-
-HOOKS
--------------
+-- HOOKS --
 
 The autocomplete field is extendeble, so you can easy extend it with your own plugins.
-There is two hooks that MUST be defined if you want to extend the autocomplete field.
+For example you may wan't to integrate a third party web service.
+
+There are two hooks that MUST be defined if you want to extend the autocomplete field.
 
 - hook_linkit_load_plugins()
 - hook_linkit_info_plugins()
 
-HOOK EXAMPLE
--------------
+-- HOOK EXAMPLE --
 
 /**
  * hook_linkit_load_plugins()
@@ -80,3 +68,10 @@ function MYMODULENAME_linkit_info_plugins() {
   );
   return $return;
 }
+
+-- MAINTAINERS --
+
+ * anon <http://drupal.org/user/464598>
+ * betamos <http://drupal.org/user/442208>
+ * blackdog <http://drupal.org/user/110169>
+ * freakalis <http://drupal.org/user/204187>
