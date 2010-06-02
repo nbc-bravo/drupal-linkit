@@ -1,19 +1,5 @@
 body#linkit { padding:1em; }
 
-#linkit .form-text {
-  border:1px solid #ccc;
-  padding:5px;
-  -moz-border-radius:5px;
-}
-
-#linkit input.form-autocomplete {
-  border:1px solid #ccc;
-  padding:5px;
-  background-position:100% 5px;
-  -moz-border-radius:5px;
-}
-#linkit input.throbbing { background-position:100% -15px; }
-
 #linkit .auto-item-type {
   float:right;
   font-weight:bold; 
