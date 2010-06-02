@@ -4,7 +4,7 @@
 	tinymce.create('tinymce.plugins.linkit', {
 		init : function(ed, url) {
 			// Register commands
-			ed.addCommand('mceLink', function() {
+			ed.addCommand('mceLinkit', function() {
         ed.windowManager.open({
 					file : Drupal.settings.linkit.url.wysiwyg_tinymce,
 					width : 580,
@@ -20,7 +20,7 @@
 			// Register buttons
 			ed.addButton('linkit', {
 				title : 'Linkit',
-				cmd : 'mceLink',
+				cmd : 'mceLinkit',
         image : url + '/images/linkit.png'
 			});
 
