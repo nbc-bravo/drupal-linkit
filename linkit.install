@@ -1,0 +1,14 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation file for linkit.
+ */
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function linkit_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'linkit%'");
+}
