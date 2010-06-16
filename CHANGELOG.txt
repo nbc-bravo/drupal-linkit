@@ -3,6 +3,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.4, xxxx-xx-xx
 ------------------------------
+by anon: Fixed separated settings for node status and show unpublished nodes, now its possible to see status but not unpublished nodes. 
 by anon: Added uninstall hook
 #824500, #822236 by anon: Added settings to allow users to configurate the search results for nodes with nid, content type, language, status.
 by anon: Changed how the hooks works to make them more configurable.

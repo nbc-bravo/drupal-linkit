@@ -15,20 +15,23 @@ function linkit_node_linkit_load_plugins($string) {
   
   $settings = variable_get('linkit_node', array());
   $fields = array('n.nid', 'n.title'); // default fields
+  $where_status = "AND n.status = 1"; 
   
   if($settings['content_type']) {
     $fields[] = 'n.type';
   }
-
   if($settings['language']) {
     $fields[] = 'n.language';
   } 
   if($settings['status']) {
     $fields[] = 'n.status';
   }
+  if($settings['show_unpublished']) {
+    $where_status = '';
+  }
 
   // Get nodes
-  $result = db_query_range(db_rewrite_sql("SELECT %s FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') AND n.status = 1"), implode(",", $fields), $string, 0, 10);
+  $result = db_query_range(db_rewrite_sql("SELECT %s FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') %s"), implode(",", $fields), $string, $where_status, 0, 10);
   $i = 0;
   while ($node = db_fetch_object($result)) {
     $matches['node'][$i] = array(

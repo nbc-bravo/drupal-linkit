@@ -45,6 +45,12 @@ function linkit_admin_settings() {
     '#default_value' => $settings['status'] ? $settings['status'] : 0,
   );
 
+   $form['node']['show_unpublished'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show unpublished nodes in the result'),
+    '#default_value' => $settings['show_unpublished'] ? $settings['show_unpublished'] : 0,
+  );
+
   $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
 
   return $form;
@@ -57,6 +63,7 @@ function linkit_admin_settings_submit($form, &$form_state) {
   $settings_array['content_type'] = $form_state['values']['content_type'];
   $settings_array['language'] = $form_state['values']['language'];
   $settings_array['status'] = $form_state['values']['status'];
+  $settings_array['show_unpublished'] = $form_state['values']['show_unpublished'];
   variable_set('linkit_node', $settings_array);
   drupal_set_message(t('Settings has been saved.'));
 }
