@@ -30,7 +30,23 @@ function linkit_menu() {
     'page arguments' => array(3),
   );
 
+  $items['admin/settings/linkit'] = array(
+    'title' => 'Linkit settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('linkit_admin_settings'),
+    'access arguments' => array('administer linkit'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'linkit.admin.inc',
+  );
+
   return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function linkit_perm() {
+  return array('administer linkit');
 }
 
 /**

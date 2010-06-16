@@ -1,11 +1,13 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.3, xxxx-xx-xx
+Linkit 6.x-1.4, xxxx-xx-xx
 ------------------------------
+by anon: Added uninstall hook
+#824500, #822236 by anon: Added settings to allow users to configurate the search results for nodes with nid, content type, language, status.
 by anon: Changed how the hooks works to make them more configurable.
-by anon: Fixed the commands for tinymce button so that it dont override the orignial link button
-#807974 by anon, grendzy: linkit should not override theme's form styles
+by anon: Fixed the commands for tinymce button so that it dont override the orignial link button.
+#807974 by anon, grendzy: linkit should not override theme's form styles.
 
 Linkit 6.x-1.3, 2010-04-03
 ------------------------------

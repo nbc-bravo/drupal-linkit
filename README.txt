@@ -12,13 +12,20 @@ Linkit has two major advantages over traditional linking
 
 See http://drupal.org/project/linkit for more information
 
--- INSTALLATION & CONFIGURATION --
+-- INSTALLATION --
 
  1. Install and enable Linkit's dependencies (see below). Make sure
     Path Filter is enabled on the input formats you intend to use with linkit
  2. Install and enable linkit (required) and at least one of linkit_node,
-    linkit_views and linkit_taxonomy
+    linkit_views, linkit_taxonomy or linkit_user
  3. Enable the Linkit button in your WYSIWYG editor's settings
+
+-- CONFIGURATION --
+
+No additional configuration is necessary though you may fine-tune settings at
+Administer -> Site configuration -> Linkit settings (/admin/settings/linkit).
+
+To administrate this settings, you need "administer linkit" premission (/admin/user/permissions) or be user 1.
 
 -- DEPENDENCIES --
 
