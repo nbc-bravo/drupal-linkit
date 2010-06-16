@@ -14,9 +14,15 @@ function linkit_node_linkit_load_plugins($string) {
   $matches = array();
   
   // Get nodes
-  $result = db_query_range(db_rewrite_sql("SELECT n.title, n.nid FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') AND n.status = 1"), $string, 0, 10);
+  $result = db_query_range(db_rewrite_sql("SELECT n.nid, n.title FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') AND n.status = 1"), $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches['node'][linkit_autolist_val($node->title, 'internal:node/' . $node->nid)] = linkit_autolist_list($node->title, 'Node');
+    $matches['node'][] = array(
+      'title' => $node->title,
+      'path' => 'internal:node/' . $node->nid,
+      'information' => array(
+        'type' => 'Node',
+      ),
+    );
   }
 
   return $matches;

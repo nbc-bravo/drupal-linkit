@@ -26,7 +26,13 @@ function linkit_views_linkit_load_plugins($string) {
   
   $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($node = db_fetch_object($result)) {
-    $matches['view'][linkit_autolist_val($node->path, base_path().$node->path)] = linkit_autolist_list($node->path, 'Views');
+    $matches['view'][] = array(
+      'title' => $node->path,
+      'path' => base_path() . $node->path,
+      'information' => array(
+        'type' => 'Views',
+      ),
+    );
   }  
 
   return  $matches;

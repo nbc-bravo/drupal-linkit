@@ -1,10 +1,11 @@
 body#linkit { padding:1em; }
 
-#linkit .auto-item-type {
+#linkit .auto-item-info {
   float:right;
-  font-weight:bold; 
   font-size:10px;
 }
+
+#linkit .auto-item-info span { font-weight:bold; }
 
 #linkit .auto-item-title {
   margin-right:1.5em;

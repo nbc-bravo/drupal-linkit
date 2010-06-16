@@ -16,7 +16,14 @@ function linkit_user_linkit_load_plugins($string) {
   // Get users
   $result = db_query_range("SELECT u.uid, u.name FROM {users} u WHERE LOWER(u.name) LIKE LOWER('%%%s%%') AND u.status = 1", $string, 0, 10);
   while ($user = db_fetch_object($result)) {
-    $matches['user'][linkit_autolist_val($user->name, 'internal:user/' . $user->uid)] = linkit_autolist_list($user->name, 'User');
+    $matches['user'][] = array(
+      'title' => $user->name,
+      'path' => 'internal:user/' . $user->uid,
+      'information' => array(
+        'type' => 'User',
+      ),
+    );
+
   }
 
   return $matches;

@@ -51,7 +51,13 @@ function MYMODULENAME_linkit_load_plugins($string) {
   // Get foo´s
   $result = db_query_range("SELECT foo, bar FROM {foo_table} WHERE LOWER(foo) LIKE LOWER('%%%s%%')", $string, 0, 10);
   while ($foo = db_fetch_object($result)) {
-    $matches['MYMODULETYPE'][linkit_autolist_val($foo->foo, 'internal:' . $foo->path)] = linkit_autolist_list($foo->foo, 'Foos');
+    $matches['MYMODULETYPE'][] = array(
+      'title' => $foo->foo,
+      'path' => 'internal:' . $foo->path,
+      'information' => array(
+        'type' => 'Foos',
+      ),
+    );
   }
   return $matches;
 }

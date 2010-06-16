@@ -3,6 +3,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.3, xxxx-xx-xx
 ------------------------------
+by anon: Changed how the hooks works to make them more configurable.
 by anon: Fixed the commands for tinymce button so that it dont override the orignial link button
 #807974 by anon, grendzy: linkit should not override theme's form styles
 

@@ -122,28 +122,47 @@ function linkit_autocomplete($string = NULL) {
     }
   }
   
+  $results = array();
+  foreach($matches AS $match) {
+    // Check for errors and missing required values.
+    if(!linkit_check_match_structure($match)) {
+      continue;
+    }
+    
+    // Build the val
+    $val = check_plain($match['title'] . ' [path:' . $match['path'] . ']');
+    
+    // Get the extra information text
+    $information = array();
+    foreach($match['information'] AS $extra_info_key => $extra_info_val) {
+      $information[] = $extra_info_key . ':<span>' . $extra_info_val . '</span>';
+    }
+    
+    // Build the text
+    $text = '<div class="clear-block">';
+    $text .= '<div class="auto-item-title">' . check_plain($match['title']) . '</div>';
+    if(count($information)) {
+      $text .= '<div class="auto-item-info">[' . implode(", ", $information) . ']</div>';
+    }
+    $text .= '</div>';
+    $results[$val] = $text;
+  }
+  
   // Show MAX 10 matches
-  if(count($matches) > 10) {
-    $matches = array_slice($matches, 0, 10);
+  if(count($results) > 10) {
+    $results = array_slice($results, 0, 10);
   }
 
-  drupal_json($matches);
+  drupal_json($results);
 }
 
-/**
- * Creates the 
- */
-function linkit_autolist_list($title = NULL, $type = NULL) {
-  $output = '<div class="auto-item-title">' . check_plain($title) . '</div>';
-  $output .= '<div class="auto-item-type">[type:' . check_plain($type) . ']</div>';
-  return '<div class="clear-block">' . $output . '</div>';
-}
 
-/**
- * Autocomplete callback function
- */
-function linkit_autolist_val($title = NULL, $path = NULL) {
-  return check_plain($title . ' [path:' . $path . ']');
+function linkit_check_match_structure($match) {
+  if($match['value_data']) {
+    //form_set_error(NULL, 'test');
+  }
+
+  return TRUE;
 }
 
 /**
