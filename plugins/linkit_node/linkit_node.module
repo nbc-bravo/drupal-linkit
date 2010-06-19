@@ -15,8 +15,7 @@ function linkit_node_linkit_load_plugins($string) {
   
   $settings = variable_get('linkit_node', array());
   $fields = array('n.nid', 'n.title'); // default fields
-  $where_status = "AND n.status = 1"; 
-  
+
   if($settings['content_type']) {
     $fields[] = 'n.type';
   }
@@ -26,10 +25,9 @@ function linkit_node_linkit_load_plugins($string) {
   if($settings['status']) {
     $fields[] = 'n.status';
   }
-  if($settings['show_unpublished']) {
-    $where_status = '';
-  }
 
+  $where_status = $settings['show_unpublished'] ? "" : "AND n.status = 1";
+  
   // Get nodes
   $result = db_query_range(db_rewrite_sql("SELECT %s FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') %s"), implode(",", $fields), $string, $where_status, 0, 10);
   $i = 0;
@@ -59,6 +57,33 @@ function linkit_node_linkit_load_plugins($string) {
   }
 
   return $matches;
+}
+
+/**
+ * Implementation of hook_linkit_get_search_styled_link().
+ */
+function linkit_node_linkit_get_search_styled_link($string) {
+  // Node links created with Linkit will always begin with "internal:"
+  if(strpos($string, 'internal:') === FALSE) {
+    return;
+  }
+
+  // Check to see that the link really is a node link
+  $splitted_string = explode('/', str_replace('internal:', '', $string));
+  if($splitted_string[0] != 'node') {
+    return;
+  }
+
+  // This is a node link created with Linkit, try to grab the title and path now. 
+  $result = db_query(db_rewrite_sql("SELECT n.nid, n.title FROM {node} n WHERE n.nid = %d"), $splitted_string[1]);
+  $node = db_fetch_object($result);
+  
+  // No reault or no node was found
+  if(!$result || !$node) {
+    return;
+  }
+
+  return check_plain($node->title) . ' [path:internal:node/' . $node->nid . ']';
 }
 
 /**

@@ -24,7 +24,11 @@ var LinkitDialog = {
       });
       
       //href is set here
-      $('#edit-link').val(element.getAttribute('href'));
+      if(element.getAttribute('href').length > 0) {
+			  $('#edit-link').val(linkit_search_styled_link(element.getAttribute('href')));
+			} else {
+			  $('#edit-link').val(element.getAttribute('href'));
+			}
     }
   },
 

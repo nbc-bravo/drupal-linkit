@@ -3,6 +3,8 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.4, xxxx-xx-xx
 ------------------------------
+#831688 by anon: Added support for search styled link in edit mode 
+  (Title [path:internal:node/1])
 by anon: Fixed separated settings for node status and show unpublished nodes, 
   now its possible to see status but not unpublished nodes. 
 by anon: Added uninstall hook

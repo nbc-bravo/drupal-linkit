@@ -18,3 +18,11 @@ body#linkit { padding:1em; }
 
 #linkit #edit-id-wrapper,
 #linkit #edit-rel-wrapper { margin-left:2em; }
+
+span.throbber {
+  height: 15px;
+  margin: 1em 2px;
+  padding-left:20px;
+  background: transparent url(../../../../../misc/throbber.gif) no-repeat 0px -18px;
+  display:block;
+}

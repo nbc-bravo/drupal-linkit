@@ -4,6 +4,11 @@ var LinkitDialog = {
 
 		// Setup browse button
 		if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
+      if($(e).attr('href').length > 0) {
+			  $('#edit-link').val(linkit_search_styled_link($(e).attr('href')));
+			} else {
+			  $('#edit-link').val($(e).attr('href'));
+			}
       $('#edit-link').val($(e).attr('href'));
       $('#edit-title').val($(e).attr('title'));
       $('#edit-id').val($(e).attr('id'));
