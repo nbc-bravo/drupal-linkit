@@ -3,6 +3,8 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.4, xxxx-xx-xx
 ------------------------------
+#831786 by anon: Changed dependencys, either Pathfilter module OR Pathologic
+  module should be installed to install linkit module.
 #831688 by anon: Added support for search styled link in edit mode 
   (Title [path:internal:node/1])
 by anon: Fixed separated settings for node status and show unpublished nodes, 
