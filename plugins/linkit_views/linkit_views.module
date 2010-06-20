@@ -40,6 +40,8 @@ function linkit_views_linkit_load_plugins($string) {
 
 /**
  * Implementation of hook_linkit_info_plugins().
+ * 
+ * This is used by linkit_permissions
  */
 function linkit_views_linkit_info_plugins() {
   $return['linkit_views'] = array(

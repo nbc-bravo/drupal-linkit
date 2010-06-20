@@ -56,6 +56,8 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
 
 /**
  * Implementation of hook_linkit_info_plugins().
+ * 
+ * This is used by linkit_permissions
  */
 function linkit_taxonomy_linkit_info_plugins() {
   $return['linkit_taxonomy'] = array(
