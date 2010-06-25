@@ -14,16 +14,23 @@ function linkit_node_linkit_load_plugins($string) {
   $matches = array();
   
   $settings = variable_get('linkit_node', array());
+ 
   $fields = array('n.nid', 'n.title'); // default fields
 
   if($settings['content_type']) {
     $fields[] = 'n.type';
   }
+  if($settings['status']) {
+    $fields[] = 'n.status';
+  }
   if($settings['language']) {
     $fields[] = 'n.language';
   } 
-  if($settings['status']) {
-    $fields[] = 'n.status';
+  if($settings['created']) {
+    $fields[] = 'n.created';
+  }
+  if($settings['changed']) {
+    $fields[] = 'n.changed';
   }
 
   $where_status = $settings['show_unpublished'] ? "" : "AND n.status = 1";
@@ -46,12 +53,19 @@ function linkit_node_linkit_load_plugins($string) {
     if($settings['content_type']) {
       $matches['node'][$i]['information']['content type'] = $node->type;
     } 
-    if($settings['language']) {
-      $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
-    } 
     if($settings['status']) {
       $matches['node'][$i]['information']['status'] = $node->status ? 'published' : 'unpublished';
     }
+    if($settings['language']) {
+      $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
+    } 
+    if($settings['created']) {
+      $matches['node'][$i]['information']['created'] = $node->created ? format_date($node->created, 'small') : '-';
+    } 
+    if($settings['changed']) {
+      $matches['node'][$i]['information']['changed'] = $node->changed ? format_date($node->changed, 'small') : '-';
+    } 
+
 
     $i++;
   }
@@ -84,6 +98,16 @@ function linkit_node_linkit_get_search_styled_link($string) {
   }
 
   return check_plain($node->title) . ' [path:internal:node/' . $node->nid . ']';
+}
+
+/**
+ * Implementation of hook_linkit_plugin_settings().
+ * 
+ */
+function linkit_node_linkit_plugin_settings() {
+  
+
+  return $form;
 }
 
 /**
