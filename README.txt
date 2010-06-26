@@ -15,7 +15,7 @@ See http://drupal.org/project/linkit for more information
 -- INSTALLATION --
 
  1. Install and enable Linkit's dependencies (see below). Make sure
-    Path Filter is enabled on the input formats you intend to use with linkit
+    Path Filter OR Pathologic is enabled on the input formats you intend to use with linkit
  2. Install and enable linkit (required) and at least one of linkit_node,
     linkit_views, linkit_taxonomy or linkit_user
  3. Enable the Linkit button in your WYSIWYG editor's settings
@@ -29,7 +29,7 @@ To administrate this settings, you need "administer linkit" premission (/admin/u
 
 -- DEPENDENCIES --
 
-Path Filter <http://drupal.org/project/pathfilter>
+Path Filter <http://drupal.org/project/pathfilter> OR Pathologic <http://drupal.org/project/pathologic>
 One of these editors:
  * WYSIWYG <http://drupal.org/project/wysiwyg> with TinyMCE or CKEditor (recommended)
  * CKEditor <http://drupal.org/project/ckeditor>
@@ -41,8 +41,10 @@ For example you may wan't to integrate a third party web service.
 
 There are two hooks that MUST be defined if you want to extend the autocomplete field.
 
-- hook_linkit_load_plugins()
-- hook_linkit_info_plugins()
+- hook_linkit_load_plugins() - Will load the plugin results.
+- hook_linkit_info_plugins() - Will be used if linkit_permissions is enables.
+
+- hook_linkit_get_search_styled_link() - Will be used when a link is being edited (This hook is not necessary).
 
 -- HOOK EXAMPLE --
 
@@ -60,17 +62,18 @@ function MYMODULENAME_linkit_load_plugins($string) {
   while ($foo = db_fetch_object($result)) {
     $matches['MYMODULETYPE'][] = array(
       'title' => $foo->foo,
-      'path' => 'internal:' . $foo->path,
+      'path' => 'internal:' . $foo->path, 
       'information' => array(
         'type' => 'Foos',
+        'info1' => 'value1',
+        'info2' => 'value2',
+        'info3' => 'value3',
       ),
     );
   }
   return $matches;
 }
-
-For alias link, use "base_path().$foo->path" instead of "'internal:' . $foo->path"
-
+(For alias link, use "base_path().$foo->path" instead of "'internal:' . $foo->path")
 
 /**
  * Implementation of hook_linkit_info_plugins().
@@ -80,6 +83,34 @@ function MYMODULENAME_linkit_info_plugins() {
     'type' => 'MYMODULETYPE',
   );
   return $return;
+}
+
+
+/**
+ * Implementation of hook_linkit_get_search_styled_link().
+ */
+function MYMODULETYPE_linkit_get_search_styled_link($string) {
+  // Node links created with Linkit will always begin with "internal:"
+  if(strpos($string, 'internal:') === FALSE) {
+    return;
+  }
+
+  // Check to see that the link really is a node link
+  $splitted_string = explode('/', str_replace('internal:', '', $string));
+  if($splitted_string[0] != 'node') {
+    return;
+  }
+
+  // This is a node link created with Linkit, try to grab the title and path now. 
+  $result = db_query(db_rewrite_sql("SELECT n.nid, n.title FROM {node} n WHERE n.nid = %d"), $splitted_string[1]);
+  $node = db_fetch_object($result);
+  
+  // No reault or no node was found
+  if(!$result || !$node) {
+    return;
+  }
+
+  return check_plain($node->title) . ' [path:internal:node/' . $node->nid . ']';
 }
 
 -- MAINTAINERS --

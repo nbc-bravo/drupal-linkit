@@ -101,16 +101,6 @@ function linkit_node_linkit_get_search_styled_link($string) {
 }
 
 /**
- * Implementation of hook_linkit_plugin_settings().
- * 
- */
-function linkit_node_linkit_plugin_settings() {
-  
-
-  return $form;
-}
-
-/**
  * Implementation of hook_linkit_info_plugins().
  * 
  * This is used by linkit_permissions
