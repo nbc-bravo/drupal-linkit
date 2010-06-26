@@ -1,7 +1,7 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.4, xxxx-xx-xx
+Linkit 6.x-1.4, 2010-06-26
 ------------------------------
 by anon: Added node created- and changed time to result list.
 #831786 by anon: Changed dependencys, either Pathfilter module OR Pathologic
