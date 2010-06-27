@@ -1,10 +1,14 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 6.x-1.5, xxxx-xx-xx
+------------------------------
+#838734 Fixed by anon: Endless loading when editing an external link
+
 Linkit 6.x-1.4, 2010-06-26
 ------------------------------
 by anon: Added node created- and changed time to result list.
-#831786 by anon: Changed dependencys, either Pathfilter module OR Pathologic
+#831786 by anon: Changed dependencies, either Pathfilter module OR Pathologic
   module should be installed to install linkit module.
 #831688 by anon: Added support for search styled link in edit mode 
   (Title [path:internal:node/1])

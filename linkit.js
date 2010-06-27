@@ -8,9 +8,6 @@
  * Makes an AJAX requst when a link is about to be edited with Linkit
  */
 function linkit_search_styled_link(string) {
-	if(string.length < 1 ) {
-		return false;
-	}
   $('#edit-link-wrapper input').hide();
   $('#edit-link-wrapper label').after($('<span></span>').addClass('throbber').html('<strong>' + Drupal.t('Loading path...') + '</strong>'));
 	// DO AJAX!
@@ -19,7 +16,10 @@ function linkit_search_styled_link(string) {
       $('#edit-link').val(data);
       $('#edit-link-wrapper .throbber').remove();
       $('#edit-link-wrapper input').show();
-    } 
+    } else {
+      $('#edit-link').val(string);
+      $('#edit-link-wrapper .throbber').remove();
+      $('#edit-link-wrapper input').show();
+    }
   });
-
 }

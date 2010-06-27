@@ -25,10 +25,8 @@ var LinkitDialog = {
       
       //href is set here
       if(element.getAttribute('href').length > 0) {
-			  $('#edit-link').val(linkit_search_styled_link(element.getAttribute('href')));
-			} else {
-			  $('#edit-link').val(element.getAttribute('href'));
-			}
+			  linkit_search_styled_link(element.getAttribute('href'));
+			} 
     }
   },
 
