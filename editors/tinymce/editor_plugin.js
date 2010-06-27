@@ -37,8 +37,8 @@
 		getInfo : function() {
 			return {
 				longname : 'Linkit',
-				author : 'Anon-Design // Emil Stjerneman',
-				authorurl : 'http://www.anon-design.se',
+				author : 'Emil Stjerneman',
+				authorurl : 'http://www.stjerneman.com',
 				infourl : 'http://drupal.org/project/linkit',
 				version : tinymce.majorVersion + "." + tinymce.minorVersion
 			};
