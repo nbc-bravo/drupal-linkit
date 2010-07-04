@@ -1,3 +1,5 @@
+// $Id$
+
 var LinkitDialog = {
 	init : function() {
 		var ed = tinyMCEPopup.editor;
