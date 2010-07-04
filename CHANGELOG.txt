@@ -3,6 +3,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.5, xxxx-xx-xx
 ------------------------------
+#772594 Added by anon: FCKeditor support for both stand alone AND with wysiwyg
 #838734 Fixed by anon: Endless loading when editing an external link
 
 Linkit 6.x-1.4, 2010-06-26
@@ -18,8 +19,8 @@ by anon: Added uninstall hook
 #824500, #822236 by anon: Added settings to allow users to configurate the 
   search results for nodes with nid, content type, language, status.
 by anon: Changed how the hooks works to make them more configurable.
-#837280 by anon: Fixed the commands for tinymce button so that it dont override the 
-  original link button.
+#837280 by anon: Fixed the commands for tinymce button so that it dont override
+ the  original link button.
 #807974 by anon, grendzy: linkit should not override theme's form styles.
 
 Linkit 6.x-1.3, 2010-04-03

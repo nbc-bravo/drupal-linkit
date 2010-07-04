@@ -19,6 +19,18 @@ See http://drupal.org/project/linkit for more information
  2. Install and enable linkit (required) and at least one of linkit_node,
     linkit_views, linkit_taxonomy or linkit_user
  3. Enable the Linkit button in your WYSIWYG editor's settings
+ 4. If you are using stand alone CKEditor or stand alone FCKeditor, there is some more installation information
+    in each editor dir. 
+      * CKEditor (/sites/all/modules/linkit/editors/ckeditor/README.txt)
+      * FCKeditor (/sites/all/modules/linkit/editors/fckeditor/README.txt)
+
+-- DEPENDENCIES --
+
+Path Filter <http://drupal.org/project/pathfilter> OR Pathologic <http://drupal.org/project/pathologic>
+One of these editors:
+ * WYSIWYG <http://drupal.org/project/wysiwyg> with TinyMCE or CKEditor or FCKeditor  (recommended)
+ * CKEditor <http://drupal.org/project/ckeditor>
+ * FCKeditor <http://drupal.org/project/fckeditor>
 
 -- CONFIGURATION --
 
@@ -26,13 +38,6 @@ No additional configuration is necessary though you may fine-tune settings at
 Administer -> Site configuration -> Linkit settings (/admin/settings/linkit).
 
 To administrate this settings, you need "administer linkit" premission (/admin/user/permissions) or be user 1.
-
--- DEPENDENCIES --
-
-Path Filter <http://drupal.org/project/pathfilter> OR Pathologic <http://drupal.org/project/pathologic>
-One of these editors:
- * WYSIWYG <http://drupal.org/project/wysiwyg> with TinyMCE or CKEditor (recommended)
- * CKEditor <http://drupal.org/project/ckeditor>
 
 -- HOOKS --
 

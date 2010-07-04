@@ -136,6 +136,12 @@ function linkit_dashboard($editor) {
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
       break;
+
+    case 'fckeditor':
+    case 'wysiwyg_fckeditor':
+      // Add JavaScript.
+      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
+      break;
   }
   
 	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
@@ -299,28 +305,34 @@ function _linkit_form() {
   return $form;
 }
 
-
 function linkit_wysiwyg_plugin($editor, $version) {
 
   _linkit_add_settings('wysiwyg_' . $editor);
-
   switch ($editor) {
-  case 'tinymce':      
-    $plugins['linkit'] = array(
-      'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
-      'buttons' => array('linkit' => t('Linkit')),
-      'url' => 'http://drupal.org/project/linkit',
-      'load' => TRUE,
-    );
-    break;
-  case 'ckeditor':      
-    // notice: Big "L" in the name here! important
-    $plugins['Linkit'] = array(
-      'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
-      'buttons' => array('Linkit' => t('Linkit')),
-      'url' => 'http://drupal.org/project/linkit',
-      'load' => TRUE,
-    );
+    case 'tinymce':      
+      $plugins['linkit'] = array(
+        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
+        'buttons' => array('linkit' => t('Linkit')),
+        'url' => 'http://drupal.org/project/linkit',
+        'load' => TRUE,
+      );
+      break;
+    case 'ckeditor':      
+      // notice: Big "L" in the name here! important
+      $plugins['Linkit'] = array(
+        'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
+        'buttons' => array('Linkit' => t('Linkit')),
+        'url' => 'http://drupal.org/project/linkit',
+        'load' => TRUE,
+      );
+      break;
+    case 'fckeditor':      
+      $plugins['linkit'] = array(
+        'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor/',
+        'buttons' => array('linkit' => t('Linkit')),
+        'url' => 'http://drupal.org/project/linkit',
+        'load' => TRUE,
+      );
     break;
   }
 
