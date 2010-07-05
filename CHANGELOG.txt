@@ -3,6 +3,8 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.5, xxxx-xx-xx
 ------------------------------
+by anon: Changed linkit.css so its look the same with the admin module 
+  (http://drupal.org/project/admin) and the theme Rubik
 #772594 Added by anon: FCKeditor support for both stand alone AND with wysiwyg
 #838734 Fixed by anon: Endless loading when editing an external link
 

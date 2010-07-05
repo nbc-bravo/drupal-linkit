@@ -14,9 +14,9 @@ body#linkit { padding:1em; }
   float:left;
 }
 
-#linkit fieldset.collapsible .form-item { width:45%; }
-#linkit fieldset.collapsible .form-item .form-text { width:100%; }
-#linkit fieldset.collapsible .form-item  { float:left; }
+#linkit .collapsible .form-item { width:45%; }
+#linkit .collapsible .form-item .form-text { width:100%; }
+#linkit .collapsible .form-item  { float:left; }
 
 #linkit #edit-id-wrapper,
 #linkit #edit-rel-wrapper { margin-left:2em; }
