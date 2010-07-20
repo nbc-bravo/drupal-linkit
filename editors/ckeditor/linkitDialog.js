@@ -14,6 +14,7 @@ var LinkitDialog = {
     //Get the selected element
     var element = null;
     element = this._getSelection();
+    var selection = editor.getSelection();
 
     // If we have selected an element, grab that elemes attributes
     if(element) {
@@ -23,10 +24,13 @@ var LinkitDialog = {
         $(this).val(element.getAttribute($(this).attr('name')));
       });
       
-      //href is set here
+      // href is set here
       if(element.getAttribute('href').length > 0) {
-			  linkit_search_styled_link(element.getAttribute('href'));
+			  linkit_helper.search_styled_link(element.getAttribute('href'));
 			} 
+    } else if(selection.getNative().isCollapsed) {
+      // Show help text when there is no selection element
+      linkit_helper.show_no_selection_text();
     }
   },
 
@@ -50,7 +54,10 @@ var LinkitDialog = {
     var matches = $('#edit-link').val().match(/\[path:(.*)\]/i);
     href = (matches == null) ? $('#edit-link').val() : matches[1];
    
-    var params = { 'href' : href };
+    var link_text_matches = $('#edit-link').val().match(/(.*)\[path:.*\]/i);
+    link_text = (link_text_matches == null) ? $('#edit-link').val() : link_text_matches[1].replace(/^\s+|\s+$/g, '');
+
+    var params = { 'href' : href , 'link_text' : link_text };
     
     $('fieldset fieldset input').each(function() {
       if($(this).val() != "") {

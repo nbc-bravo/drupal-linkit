@@ -28,7 +28,6 @@
 				var p;
         p = tinymce.DOM.getParent(n, 'A');
         if (!p || !p.name) {
-          cm.setDisabled('linkit', !p && co);
           cm.setActive('linkit', !!p);
         }
 			});

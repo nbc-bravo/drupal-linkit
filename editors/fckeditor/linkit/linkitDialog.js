@@ -15,6 +15,16 @@ dialog.SetAutoSize( true ) ;
 dialog.SetOkButton( true ) ;
 var oLink = dialog.Selection.GetSelection().MoveToAncestorNode( 'A' ) ;
 
+var selection = "";
+if(oEditor.FCK.EditorDocument.selection != null) {
+  selection = oEditor.FCK.EditorDocument.selection.createRange().text;
+} else {
+  selection = oEditor.FCK.EditorWindow.getSelection(); // after this, won't be a string
+  selection = "" + selection; // now a string again
+}
+
+
+
 $(document).ready(function() {
   $('#edit-cancel, #edit-insert').hide();
   $('*', document).keydown(function(ev) {
@@ -29,14 +39,17 @@ $(document).ready(function() {
     FCK.Selection.SelectNode( oLink ) ;
     
     if($(oLink).attr('href').length > 0) {
-     linkit_search_styled_link($(oLink).attr('href'));
-    } 
+     linkit_helper.search_styled_link($(oLink).attr('href'));
+    }
 
     $('#edit-title').val($(oLink).attr('title'));
     $('#edit-id').val($(oLink).attr('id'));
     $('#edit-class').val($(oLink).attr('class'));
     $('#edit-rel').val($(oLink).attr('rel'));
     $('#edit-accesskey').val($(oLink).attr('accesskey'));
+  } else if(selection == "") {
+    // Show help text when there is no selection element
+    linkit_helper.show_no_selection_text();
   }
 });
 
@@ -49,8 +62,8 @@ function Ok() {
   linlit_url = (matches == null) ? $('#edit-link').val() : matches[1];
 
   var asLinkPath = $('#edit-link').val().match(/(.*)\[path:.*\]/i);
-  asLinkPath_text = (matches == null) ? '' : asLinkPath[1].replace(/^\s+|\s+$/g, '');
-  
+  asLinkPath_text = (asLinkPath == null) ? $('#edit-link').val() : asLinkPath[1].replace(/^\s+|\s+$/g, '');
+
   if ( linlit_url.length == 0 ) {
     alert(Drupal.t('No URL'));
     return false ;
@@ -58,10 +71,10 @@ function Ok() {
 
   oEditor.FCKUndo.SaveUndoStep();
 
-  // If no link is selected, create a new one (it may result in more than one link creation - #220).
+  // If no link is selected, create a new one (it may result in more than one link creation).
 	var aLinks = oLink ? [ oLink ] : oEditor.FCK.CreateLink( linlit_url, true ) ;
   
-  // If no selection, no links are created, so use the uri as the link text (by dom, 2006-05-26)
+  // If no selection, no links are created, so use the uri as the link text
 	var aHasSelection = ( aLinks.length > 0 ) ;
 	if ( !aHasSelection )
 	{

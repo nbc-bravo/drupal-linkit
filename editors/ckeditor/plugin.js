@@ -63,7 +63,7 @@
       var selection = editor.getSelection(), ranges = selection.getRanges();
       
       if ( ranges.length == 1 && ranges[0].collapsed ) {
-        var text = new CKEDITOR.dom.text( params.href, editor.document );
+        var text = new CKEDITOR.dom.text( params.link_text, editor.document );
         ranges[0].insertNode( text );
         ranges[0].selectNodeContents( text );
         selection.selectRanges( ranges );
