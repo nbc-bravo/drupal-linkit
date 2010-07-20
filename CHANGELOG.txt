@@ -1,7 +1,7 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.5, xxxx-xx-xx
+Linkit 6.x-1.5, 2010-07-21
 ------------------------------
 #831788 Added by anon: Allow inserting links without selecting text/element
 by anon: Changed linkit.css so its look the same with the admin module 
