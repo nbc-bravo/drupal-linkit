@@ -32,7 +32,8 @@
 
   function insertLink(params, editor) {
     this.fakeObj = false;
-
+    var link_text = params.link_text;
+    delete  params.link_text;
     var selection = editor.getSelection(),
     ranges = selection.getRanges(),
     element = null;
@@ -63,7 +64,7 @@
       var selection = editor.getSelection(), ranges = selection.getRanges();
       
       if ( ranges.length == 1 && ranges[0].collapsed ) {
-        var text = new CKEDITOR.dom.text( params.link_text, editor.document );
+        var text = new CKEDITOR.dom.text( link_text, editor.document );
         ranges[0].insertNode( text );
         ranges[0].selectNodeContents( text );
         selection.selectRanges( ranges );
