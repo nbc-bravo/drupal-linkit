@@ -5,7 +5,8 @@ Linkit 6.x-1.6, xxxx-xx-xx
 ------------------------------
 #867626 Fixed by anon: When inserting or edit a "a" tag "link_text" attribute 
   is added to the "a" tag when using CKeditor
- 
+#860832 Added by anon: Integrate Linkit with IMCE
+
 Linkit 6.x-1.5, 2010-07-21
 ------------------------------
 #831788 Added by anon: Allow inserting links without selecting text/element

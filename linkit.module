@@ -242,6 +242,18 @@ function _linkit_form() {
     '#default_value' => '',
     '#weight' => 1,
   );
+
+  $imcebutton = array(
+    '#type' => 'button',
+    '#value' => t('Browse server'),
+    '#name' => 'linkit-imce',
+    '#id' => 'linkit-imce',
+
+  );
+
+  $form['link']['link']['#field_prefix'] = drupal_render($imcebutton);
+  
+
   $form['link']['attributes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Attributes'),
