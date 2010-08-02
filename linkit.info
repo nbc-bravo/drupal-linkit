@@ -1,6 +1,0 @@
-; $Id$
-name = Linkit
-description = Linkit desc...
-core = 6.x
-dependencies[] = "wysiwyg"
-dependencies[] = "pathfilter"
