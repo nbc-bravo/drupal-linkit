@@ -1,5 +1,6 @@
 ; $Id$
 name = Linkit
-description = Linkit module provides an easy way for users to link to internal nodes, views and files by search with an autocomplete field.
+description = Linkit desc...
 core = 6.x
-package = Linkit
+dependencies[] = "wysiwyg"
+dependencies[] = "pathfilter"

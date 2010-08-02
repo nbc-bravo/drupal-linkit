@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Linkit</title>
+<title>Linkit</title>
   <?php print $head; ?>
   <?php print $styles; ?>
   <?php print $scripts; ?>
@@ -15,7 +15,7 @@
   <?php if (!empty($messages)): print $messages; endif; ?>
   <?php if (!empty($help)): print $help; endif; ?>
   <div class="clear-block">
-    <h1><?php print t('Insert internal or external link'); ?></h1>
+    <h1><?php print t('What kind of link do you what to insert?'); ?></h1>
     <?php print $content; ?>
   </div>
   <?php print $closure; ?>
