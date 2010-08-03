@@ -224,6 +224,9 @@ function linkit_check_match_structure($match) {
  * 
  */
 function _linkit_form() {
+  // Check if we have IMCE and access to it.
+  $imce = module_invoke('imce', 'access');
+
   $form['link'] = array(
     '#type' => 'fieldset',
     '#title' => '',
@@ -243,16 +246,18 @@ function _linkit_form() {
     '#weight' => 1,
   );
 
-  $imcebutton = array(
-    '#type' => 'button',
-    '#value' => t('Browse server'),
-    '#name' => 'linkit-imce',
-    '#id' => 'linkit-imce',
-
-  );
-
-  $form['link']['link']['#field_prefix'] = drupal_render($imcebutton);
-  
+  if($imce) {
+    $imcebutton = array(
+      '#type' => 'button',
+      '#value' => t('Browse server'),
+      '#name' => 'linkit-imce',
+      '#id' => 'linkit-imce',
+    );
+    // Add extra class to edit-link field when we can use IMCE
+    $form['link']['link']['#attributes'] = array('class' => 'with_imce');
+    // Add the imce buttom
+    $form['link']['link']['#field_suffix'] = drupal_render($imcebutton);
+  }
 
   $form['link']['attributes'] = array(
     '#type' => 'fieldset',
