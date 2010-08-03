@@ -28,3 +28,9 @@ span.throbber {
   background: transparent url(../../../../../misc/throbber.gif) no-repeat 0px -18px;
   display:block;
 }
+
+input#edit-link.with_imce {
+  float:left;
+  margin-right:10px;
+  width:75%;
+}
