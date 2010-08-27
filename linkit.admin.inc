@@ -43,8 +43,8 @@ function linkit_admin_settings() {
 
 
 function linkit_admin_settings_submit($form, &$form_state) {
-  foreach($form_state['values'] AS $key => $value) {
-    if(strpos($key, 'linkit_') !== FALSE) {
+  foreach ($form_state['values'] AS $key => $value) {
+    if (strpos($key, 'linkit_') !== FALSE) {
       variable_set($key, $value);
     }
   }

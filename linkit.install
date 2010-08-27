@@ -24,7 +24,7 @@ function linkit_requirements($phase) {
   case 'runtime':
     break;
   case 'install':
-    if(!module_exists('pathfilter') && !module_exists('pathologic')) {
+    if (!module_exists('pathfilter') && !module_exists('pathologic')) {
       $requirements['linkit_dependencies'] = array(
         'title' => $t('Linkit'),
         'severity' => REQUIREMENT_ERROR,

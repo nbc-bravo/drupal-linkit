@@ -73,9 +73,9 @@ function linkit_theme($existing, $type, $theme, $path) {
  * Implementation of hook_form_alter().
  */
 function linkit_form_alter(&$form, &$form_state, $form_id) {
-  if(count($form['#after_build'])) {
-    foreach($form['#after_build'] AS $after_build) {
-      if($after_build == "ckeditor_process_form") {
+  if (count($form['#after_build'])) {
+    foreach ($form['#after_build'] AS $after_build) {
+      if ($after_build == "ckeditor_process_form") {
         _linkit_add_settings('ckeditor');
       }
     }
@@ -105,15 +105,15 @@ function template_preprocess_linkit_dashboard(&$variables) {
  * Creates the dashboard
  */
 function linkit_dashboard($editor) {
-	module_invoke('admin_menu', 'suppress');
+  module_invoke('admin_menu', 'suppress');
   // Add CSS.
- 	drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
+  drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   
   // Add JS
   static $defualt_settings_added = FALSE;
   
   // Add default settings
-  if(!$defualt_settings_added) {
+  if (!$defualt_settings_added) {
     $defualt_settings_added = TRUE;
     
     $settings = array(
@@ -124,7 +124,7 @@ function linkit_dashboard($editor) {
   }
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
 
-  switch($editor) {
+  switch ($editor) {
     case 'wysiwyg_tinymce':
       // Add JavaScript.
       drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
@@ -144,7 +144,7 @@ function linkit_dashboard($editor) {
       break;
   }
   
-	print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
+  print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
 }
 
@@ -154,23 +154,24 @@ function linkit_dashboard($editor) {
 function linkit_autocomplete($string = NULL) {
   $matches = array();
   $hook_matches = array();
-  if($string) {
+  if ($string) {
     $hook_matches = module_invoke_all('linkit_load_plugins', $string);
-    foreach($hook_matches AS $module => $values) {
-      if(module_exists('linkit_permissions')) {
-        if(user_access('create '.$module.' links') || user_access('create all links')){
+    foreach ($hook_matches AS $module => $values) {
+      if (module_exists('linkit_permissions')) {
+        if (user_access('create '. $module .' links') || user_access('create all links')) {
           $matches = array_merge($matches, $hook_matches[$module]);
         }
-      } else {
+      } 
+      else {
         $matches = array_merge($matches, $hook_matches[$module]);
       }
     }
   }
   
   $results = array();
-  foreach($matches AS $match) {
+  foreach ($matches AS $match) {
     // Check for errors and missing required values.
-    if(!linkit_check_match_structure($match)) {
+    if (!linkit_check_match_structure($match)) {
       continue;
     }
     
@@ -179,14 +180,14 @@ function linkit_autocomplete($string = NULL) {
     
     // Get the extra information text
     $information = array();
-    foreach($match['information'] AS $extra_info_key => $extra_info_val) {
+    foreach ($match['information'] AS $extra_info_key => $extra_info_val) {
       $information[] = $extra_info_key . ':<span>' . $extra_info_val . '</span>';
     }
     
     // Build the text
     $text = '<div class="clear-block">';
     $text .= '<div class="auto-item-title">' . check_plain($match['title']) . '</div>';
-    if(count($information)) {
+    if (count($information)) {
       $text .= '<div class="auto-item-info">[' . implode(", ", $information) . ']</div>';
     }
     $text .= '</div>';
@@ -194,7 +195,7 @@ function linkit_autocomplete($string = NULL) {
   }
   
   // Show MAX 10 matches
-  if(count($results) > 10) {
+  if (count($results) > 10) {
     $results = array_slice($results, 0, 10);
   }
 
@@ -204,7 +205,7 @@ function linkit_autocomplete($string = NULL) {
 function linkit_search_styled_link() {
   $matches = array();
   $string = check_plain($_GET['string']);
-  if($string) {
+  if ($string) {
     $matches = module_invoke_all('linkit_get_search_styled_link', $string);
   }
   echo $matches[0];
@@ -213,7 +214,7 @@ function linkit_search_styled_link() {
 
 
 function linkit_check_match_structure($match) {
-  if($match['value_data']) {
+  if ($match['value_data']) {
     //form_set_error(NULL, 'test');
   }
 
@@ -246,7 +247,7 @@ function _linkit_form() {
     '#weight' => 1,
   );
 
-  if($imce) {
+  if ($imce) {
     $imcebutton = array(
       '#type' => 'button',
       '#value' => t('Browse server'),
@@ -358,7 +359,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
 
 function _linkit_add_settings($editor) {
   static $editor_settings_added = array();
- 
+
   if (!$editor_settings_added[$editor]) {
     $editor_settings_added[$editor] = TRUE;
     

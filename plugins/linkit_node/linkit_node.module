@@ -14,22 +14,22 @@ function linkit_node_linkit_load_plugins($string) {
   $matches = array();
   
   $settings = variable_get('linkit_node', array());
- 
+
   $fields = array('n.nid', 'n.title'); // default fields
 
-  if($settings['content_type']) {
+  if ($settings['content_type']) {
     $fields[] = 'n.type';
   }
-  if($settings['status']) {
+  if ($settings['status']) {
     $fields[] = 'n.status';
   }
-  if($settings['language']) {
+  if ($settings['language']) {
     $fields[] = 'n.language';
   } 
-  if($settings['created']) {
+  if ($settings['created']) {
     $fields[] = 'n.created';
   }
-  if($settings['changed']) {
+  if ($settings['changed']) {
     $fields[] = 'n.changed';
   }
 
@@ -46,23 +46,23 @@ function linkit_node_linkit_load_plugins($string) {
         'type' => 'Node',
       ),
     );
- 
-    if($settings['nid']) {
+
+    if ($settings['nid']) {
       $matches['node'][$i]['information']['nid'] = $node->nid;
     } 
-    if($settings['content_type']) {
+    if ($settings['content_type']) {
       $matches['node'][$i]['information']['content type'] = $node->type;
     } 
-    if($settings['status']) {
+    if ($settings['status']) {
       $matches['node'][$i]['information']['status'] = $node->status ? 'published' : 'unpublished';
     }
-    if($settings['language']) {
+    if ($settings['language']) {
       $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
     } 
-    if($settings['created']) {
+    if ($settings['created']) {
       $matches['node'][$i]['information']['created'] = $node->created ? format_date($node->created, 'small') : '-';
     } 
-    if($settings['changed']) {
+    if ($settings['changed']) {
       $matches['node'][$i]['information']['changed'] = $node->changed ? format_date($node->changed, 'small') : '-';
     } 
 
@@ -78,13 +78,13 @@ function linkit_node_linkit_load_plugins($string) {
  */
 function linkit_node_linkit_get_search_styled_link($string) {
   // Node links created with Linkit will always begin with "internal:"
-  if(strpos($string, 'internal:') === FALSE) {
+  if (strpos($string, 'internal:') === FALSE) {
     return;
   }
 
   // Check to see that the link really is a node link
   $splitted_string = explode('/', str_replace('internal:', '', $string));
-  if($splitted_string[0] != 'node') {
+  if ($splitted_string[0] != 'node') {
     return;
   }
 
@@ -93,7 +93,7 @@ function linkit_node_linkit_get_search_styled_link($string) {
   $node = db_fetch_object($result);
   
   // No reault or no node was found
-  if(!$result || !$node) {
+  if (!$result || !$node) {
     return;
   }
 
