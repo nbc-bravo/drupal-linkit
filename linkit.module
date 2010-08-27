@@ -73,10 +73,12 @@ function linkit_theme($existing, $type, $theme, $path) {
  * Implementation of hook_form_alter().
  */
 function linkit_form_alter(&$form, &$form_state, $form_id) {
-  if (count($form['#after_build'])) {
-    foreach ($form['#after_build'] AS $after_build) {
-      if ($after_build == "ckeditor_process_form") {
-        _linkit_add_settings('ckeditor');
+  if (isset($form['#after_build'])) {
+    if (count($form['#after_build'])) {
+      foreach ($form['#after_build'] AS $after_build) {
+        if ($after_build == "ckeditor_process_form") {
+          _linkit_add_settings('ckeditor');
+        }
       }
     }
   }
