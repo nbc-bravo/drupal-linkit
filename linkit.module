@@ -170,10 +170,6 @@ function linkit_autocomplete($string = NULL) {
   
   $results = array();
   foreach ($matches AS $match) {
-    // Check for errors and missing required values.
-    if (!linkit_check_match_structure($match)) {
-      continue;
-    }
     
     // Build the val
     $val = check_plain($match['title'] . ' [path:' . $match['path'] . ']');
@@ -212,18 +208,6 @@ function linkit_search_styled_link() {
   die();
 }
 
-
-function linkit_check_match_structure($match) {
-  if ($match['value_data']) {
-    //form_set_error(NULL, 'test');
-  }
-
-  return TRUE;
-}
-
-/**
- * 
- */
 function _linkit_form() {
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
