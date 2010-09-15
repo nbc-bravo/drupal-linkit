@@ -1,7 +1,7 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.6, xxxx-xx-xx
+Linkit 6.x-1.6, 2010-09-15
 ------------------------------
 #867626 Fixed by anon: When inserting or edit an "a" tag, "link_text" attribute 
   is added to the "a" tag when using CKeditor
