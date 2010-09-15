@@ -3,10 +3,10 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.6, xxxx-xx-xx
 ------------------------------
-#867626 Fixed by anon: When inserting or edit a "a" tag "link_text" attribute 
+#867626 Fixed by anon: When inserting or edit an "a" tag, "link_text" attribute 
   is added to the "a" tag when using CKeditor
 #860832 Added by anon: Integrate Linkit with IMCE
-Fixed by anon: some standard coding
+Fixed by anon: Some standard coding
 Fixed by anon: Deleted some unused code
 #894520 Fixed by jerodfritz: Undefined index for $form['#after_build']
 
