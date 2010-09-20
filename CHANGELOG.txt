@@ -1,6 +1,10 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 6.x-1.7, xxxx-xx-xx
+------------------------------
+Changed by anon: Changed mainterns in README.txt
+
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------
 #867626 Fixed by anon: When inserting or edit an "a" tag, "link_text" attribute 

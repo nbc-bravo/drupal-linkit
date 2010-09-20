@@ -121,6 +121,3 @@ function MYMODULETYPE_linkit_get_search_styled_link($string) {
 -- MAINTAINERS --
 
  * anon <http://drupal.org/user/464598>
- * betamos <http://drupal.org/user/442208>
- * blackdog <http://drupal.org/user/110169>
- * freakalis <http://drupal.org/user/204187>
