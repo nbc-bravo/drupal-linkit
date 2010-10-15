@@ -31,7 +31,7 @@ function linkit_requirements($phase) {
       $value = t('Ok');
     }
     $requirements['linkit_dependencies'] = array(
-        'title' => $t('Linkit'),
+        'title' => t('Linkit'),
         'severity' => $severity,
         'value' => $value,
         'description' =>  t('To parse "internal:" links <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> most be installed.', array(
