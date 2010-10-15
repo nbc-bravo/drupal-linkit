@@ -22,18 +22,23 @@ function linkit_requirements($phase) {
 
   switch ($phase) {
   case 'runtime':
-    break;
-  case 'install':
     if (!module_exists('pathfilter') && !module_exists('pathologic')) {
-      $requirements['linkit_dependencies'] = array(
+      $severity = REQUIREMENT_ERROR; 
+      $value = t('Please install pathfilter <strong>OR</strong> pathologic');
+    }
+    else {
+      $severity = REQUIREMENT_OK; 
+      $value = t('Ok');
+    }
+    $requirements['linkit_dependencies'] = array(
         'title' => $t('Linkit'),
-        'severity' => REQUIREMENT_ERROR,
-        'description' => $t('The Linkit module requires <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a>, be sure you have <strong>ONE</strong> of this modules installed.', array(
+        'severity' => $severity,
+        'value' => $value,
+        'description' =>  t('To parse "internal:" links <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> most be installed.', array(
           '@pathfilter' => 'http://drupal.org/project/pathfilter',
           '@pathologic' => 'http://drupal.org/project/pathologic'
         )),
       );
-    }
     break;
   }
   return $requirements;

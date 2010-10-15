@@ -4,6 +4,8 @@ Linkit x.x-x.x, xxxx-xx-xx
 Linkit 6.x-1.7, xxxx-xx-xx
 ------------------------------
 Changed by anon: Changed mainterns in README.txt
+#855436, #939448, #941320 Fixed by anon: Installation problems when both 
+  Pathfilter and Pathologic was missing. 
 
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------
