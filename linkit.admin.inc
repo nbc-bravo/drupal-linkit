@@ -12,6 +12,20 @@
 function linkit_admin_settings() {
   
   $settings = variable_get('linkit_node', array());
+  
+  $options = array(
+    'nid' => t('Display node id (nid)'),
+    'content_type' => t('Display node content type'),
+    'status' => t('Display node published status'),
+    'language' => t('Display node language'),
+    'created' => t('Display node created time'),
+    'changed' => t('Display node changed time'),
+    'show_unpublished' => t('Show unpublished nodes in the result'),
+  );
+
+  if(module_exists('book')) {
+    $options += array('show_books' => t('Display the book a node belong to'));
+  }
 
   $form['node'] = array(
     '#type' => 'fieldset',
@@ -24,15 +38,7 @@ function linkit_admin_settings() {
   $form['node']['linkit_node'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'checkboxes',
-    '#options' => array(
-      'nid' => t('Display node id (nid)'),
-      'content_type' => t('Display node content type'),
-      'status' => t('Display node published status'),
-      'language' => t('Display node language'),
-      'created' => t('Display node created time'),
-      'changed' => t('Display node changed time'),
-      'show_unpublished' => t('Show unpublished nodes in the result'),
-    ),
+    '#options' => $options,
     '#default_value' => $settings,
   );
 

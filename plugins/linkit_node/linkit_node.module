@@ -16,6 +16,7 @@ function linkit_node_linkit_load_plugins($string) {
   $settings = variable_get('linkit_node', array());
 
   $fields = array('n.nid', 'n.title'); // default fields
+  $from = array('{node} n'); // default from
 
   if ($settings['content_type']) {
     $fields[] = 'n.type';
@@ -32,11 +33,21 @@ function linkit_node_linkit_load_plugins($string) {
   if ($settings['changed']) {
     $fields[] = 'n.changed';
   }
+  if ($settings['show_books'] && module_exists('book')) {
+    $from[] = 'LEFT JOIN {book} b ON b.nid = n.nid';
+    $fields[] = 'b.bid';
+  }
 
   $where_status = $settings['show_unpublished'] ? "" : "AND n.status = 1";
-  
+
+  // Prebuild the SQL query
+  $sql = array();
+  $sql[] = "SELECT %s";
+  $sql[] = "FROM ".implode(" ", $from);
+  $sql[] = "WHERE LOWER(n.title) LIKE LOWER('%%%s%%') %s";
+
   // Get nodes
-  $result = db_query_range(db_rewrite_sql("SELECT %s FROM {node} n WHERE LOWER(n.title) LIKE LOWER('%%%s%%') %s"), implode(",", $fields), $string, $where_status, 0, 10);
+  $result = db_query_range(db_rewrite_sql(implode(" ", $sql)), implode(",", $fields), $string, $where_status, 0, 10);
   $i = 0;
   while ($node = db_fetch_object($result)) {
     $matches['node'][$i] = array(
@@ -47,29 +58,40 @@ function linkit_node_linkit_load_plugins($string) {
       ),
     );
 
+    // Add the node nid
     if ($settings['nid']) {
       $matches['node'][$i]['information']['nid'] = $node->nid;
     } 
+    // Add the node content type
     if ($settings['content_type']) {
       $matches['node'][$i]['information']['content type'] = $node->type;
     } 
+    // Add the node status
     if ($settings['status']) {
       $matches['node'][$i]['information']['status'] = $node->status ? 'published' : 'unpublished';
     }
+    // Add the node language
     if ($settings['language']) {
       $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
     } 
+    // Add the node created time
     if ($settings['created']) {
       $matches['node'][$i]['information']['created'] = $node->created ? format_date($node->created, 'small') : '-';
     } 
+    // Add the node changed time
     if ($settings['changed']) {
       $matches['node'][$i]['information']['changed'] = $node->changed ? format_date($node->changed, 'small') : '-';
     } 
-
+    
+    // Add Title of the book a node belong to
+    if ($settings['show_books'] && $node->bid) {
+      $book_node = node_load($node->bid);
+      $matches['node'][$i]['information']['book'] = $book_node->title;
+    } 
 
     $i++;
   }
-
+  
   return $matches;
 }
 
