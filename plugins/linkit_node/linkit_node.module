@@ -19,7 +19,8 @@ function linkit_node_linkit_load_plugins($string) {
   $from = array('{node} n'); // default from
 
   if ($settings['content_type']) {
-    $fields[] = 'n.type';
+    $from[] = 'INNER JOIN {node_type} nt ON nt.type = n.type';
+    $fields[] = 'nt.name AS content_type';
   }
   if ($settings['status']) {
     $fields[] = 'n.status';
@@ -64,7 +65,7 @@ function linkit_node_linkit_load_plugins($string) {
     } 
     // Add the node content type
     if ($settings['content_type']) {
-      $matches['node'][$i]['information']['content type'] = $node->type;
+      $matches['node'][$i]['information']['content type'] = $node->content_type;
     } 
     // Add the node status
     if ($settings['status']) {

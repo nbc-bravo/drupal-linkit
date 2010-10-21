@@ -7,6 +7,7 @@ Changed by anon: Changed mainterns in README.txt
 #855436, #939448, #941320 Fixed by anon: Installation problems when both 
   Pathfilter and Pathologic was missing. 
 #946092 by anon: Display the book a node belong to in the autocomplete list
+#947726 by anon: Display the conent-type name insead of content-type type
 
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------
