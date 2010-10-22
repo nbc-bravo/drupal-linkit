@@ -295,6 +295,16 @@ function _linkit_form() {
     '#default_value' => '',
     '#weight' => 4,
   );
+  $form['link']['attributes']['anchor'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Anchor'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => 5,
+    '#description' => t('Without the hash (#)'),
+  );
+
   $form['link']['cancel'] = array(
     '#type' => 'button',
     '#value' => t('Cancel'),
