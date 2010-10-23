@@ -11,6 +11,8 @@ Changed by anon: Changed mainterns in README.txt
 Changed by anon: Removed some CSS styles to make the dashboard more like the 
   default theme
 #906476 by anon: Added ability to add an #anchor via the attributes section
+Added by anon: Message via drupal_set_message when Pathfilter and Pathologic 
+  is not installed
 
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------

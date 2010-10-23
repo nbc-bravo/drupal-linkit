@@ -51,6 +51,22 @@ function linkit_menu() {
 }
 
 /**
+ * Implementation of hook_init()
+ */
+function linkit_init() {
+  // Check that we have pathfilter or pathologic installed to parse the "internal:" links
+  if (!module_exists('pathfilter') && !module_exists('pathologic')) {
+      if (user_access('administer site configuration') || user_access('administer linkit')) {
+      drupal_set_message(t('The Linkit module requires <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> to parse "internal:" links. Be sure you have <strong>ONE</strong> of this modules installed.', array(
+          '@pathfilter' => 'http://drupal.org/project/pathfilter',
+          '@pathologic' => 'http://drupal.org/project/pathologic',
+        )
+       ), 'warning');
+    }
+  }
+}
+
+/**
  * Implementation of hook_perm().
  */
 function linkit_perm() {
