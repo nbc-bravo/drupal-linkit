@@ -10,7 +10,7 @@ function linkit_admin_settings() {
   
   $settings = variable_get('linkit_node', array('display_settings' => array(), 'content_types' => array()));
 
-  $display_settings = array(
+  $node_display_settings = array(
     'nid' => t('Display node id (nid)'),
     'content_type' => t('Display node content type'),
     'status' => t('Display node published status'),
@@ -21,7 +21,7 @@ function linkit_admin_settings() {
   );
 
   if(module_exists('book')) {
-    $display_settings += array('show_books' => t('Display the book a node belong to'));
+    $node_display_settings += array('show_books' => t('Display the book a node belong to'));
   }
   
   $form['linkit_node'] = array(
@@ -36,7 +36,7 @@ function linkit_admin_settings() {
   $form['linkit_node']['display_settings']  = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'checkboxes',
-    '#options' => $display_settings,
+    '#options' => $node_display_settings,
     '#default_value' => $settings['display_settings'],
   );
 
