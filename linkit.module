@@ -23,7 +23,6 @@ function linkit_menu() {
 
   $items['admin/linkit/autocomplete'] = array(
     'title' => 'Link to node',
-    'description' => 'description',
     'page callback' => 'linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -32,7 +31,6 @@ function linkit_menu() {
 
   $items['admin/linkit/geteditresult'] = array(
     'title' => 'Get search result styled link',
-    'description' => 'description',
     'page callback' => 'linkit_search_styled_link',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -40,6 +38,7 @@ function linkit_menu() {
 
   $items['admin/settings/linkit'] = array(
     'title' => 'Linkit settings',
+    'description' => 'Configure Linkit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('linkit_admin_settings'),
     'access arguments' => array('administer linkit'),
