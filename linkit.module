@@ -112,7 +112,7 @@ function template_preprocess_linkit_dashboard(&$variables) {
   $variables['help']          = theme('help');
   $variables['language']      = $GLOBALS['language'];
   $variables['language']->dir = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
-  $variables['messages']      = $variables['show_messages'] ? theme('status_messages') : '';
+  $variables['messages']      = isset($variables['show_messages']) ? theme('status_messages') : '';
   $variables['styles']        = drupal_get_css();
   $variables['scripts']       = drupal_get_js();
   $variables['title']         = drupal_get_title();
@@ -371,7 +371,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
 function _linkit_add_settings($editor) {
   static $editor_settings_added = array();
 
-  if (!$editor_settings_added[$editor]) {
+  if (!isset($editor_settings_added[$editor])) {
     $editor_settings_added[$editor] = TRUE;
     
     // Add popup url

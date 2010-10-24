@@ -23,6 +23,5 @@
     <h1><?php print t('Insert internal or external link'); ?></h1>
     <?php print $content; ?>
   </div>
-  <?php print $closure; ?>
 </body>
 </html>
