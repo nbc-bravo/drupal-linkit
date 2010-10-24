@@ -13,7 +13,8 @@ Changed by anon: Removed some CSS styles to make the dashboard more like the
 #906476 by anon: Added ability to add an #anchor via the attributes section
 Added by anon: Message via drupal_set_message when Pathfilter and Pathologic 
   is not installed
-
+#942798 by anon: Added settings for which content types should appear in the
+  suggestions
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------
 #867626 Fixed by anon: When inserting or edit an "a" tag, "link_text" attribute 

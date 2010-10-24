@@ -6,14 +6,11 @@
  * Admin page callbacks for the Linkit module.
  */
 
-/**
- * Form configure the Linikt.
- */
 function linkit_admin_settings() {
   
-  $settings = variable_get('linkit_node', array());
-  
-  $options = array(
+  $settings = variable_get('linkit_node', array('display_settings' => array(), 'content_types' => array()));
+
+  $display_settings = array(
     'nid' => t('Display node id (nid)'),
     'content_type' => t('Display node content type'),
     'status' => t('Display node published status'),
@@ -24,35 +21,32 @@ function linkit_admin_settings() {
   );
 
   if(module_exists('book')) {
-    $options += array('show_books' => t('Display the book a node belong to'));
+    $display_settings += array('show_books' => t('Display the book a node belong to'));
   }
-
-  $form['node'] = array(
+  
+  $form['linkit_node'] = array(
     '#type' => 'fieldset',
     '#title' => t('Node settings'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#description' => t('Linkit node settings'),
+    '#tree' => TRUE,
   );
 
-  $form['node']['linkit_node'] = array(
+  $form['linkit_node']['display_settings']  = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'checkboxes',
-    '#options' => $options,
-    '#default_value' => $settings,
+    '#options' => $display_settings,
+    '#default_value' => $settings['display_settings'],
   );
 
-  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['linkit_node']['content_types'] = array(
+    '#title' => t('Include this content types in the search result'),
+    '#type' => 'checkboxes',
+    '#options' => node_get_types('names'),
+    '#default_value' => $settings['content_types'], 
+    '#description' => t('If none is checked, all content types will be present in the search result.'),
+  );
 
-  return $form;
-}
-
-
-function linkit_admin_settings_submit($form, &$form_state) {
-  foreach ($form_state['values'] AS $key => $value) {
-    if (strpos($key, 'linkit_') !== FALSE) {
-      variable_set($key, $value);
-    }
-  }
-  drupal_set_message(t('Settings has been saved.'));
+  return system_settings_form($form);
 }

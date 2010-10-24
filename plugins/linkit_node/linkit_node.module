@@ -13,42 +13,55 @@
 function linkit_node_linkit_load_plugins($string) {
   $matches = array();
   
-  $settings = variable_get('linkit_node', array());
-
+  $settings = variable_get('linkit_node', array('display_settings' => array(), 'content_types' => array()));
+  
   $fields = array('n.nid', 'n.title'); // default fields
   $from = array('{node} n'); // default from
-
-  if ($settings['content_type']) {
+  $where = array(); // default where
+  
+  if ($settings['display_settings']['content_type']) {
     $from[] = 'INNER JOIN {node_type} nt ON nt.type = n.type';
     $fields[] = 'nt.name AS content_type';
   }
-  if ($settings['status']) {
+  if ($settings['display_settings']['status']) {
     $fields[] = 'n.status';
   }
-  if ($settings['language']) {
+  if ($settings['display_settings']['language']) {
     $fields[] = 'n.language';
   } 
-  if ($settings['created']) {
+  if ($settings['display_settings']['created']) {
     $fields[] = 'n.created';
   }
-  if ($settings['changed']) {
+  if ($settings['display_settings']['changed']) {
     $fields[] = 'n.changed';
   }
-  if ($settings['show_books'] && module_exists('book')) {
+  if ($settings['display_settings']['show_books'] && module_exists('book')) {
     $from[] = 'LEFT JOIN {book} b ON b.nid = n.nid';
     $fields[] = 'b.bid';
   }
-
-  $where_status = $settings['show_unpublished'] ? "" : "AND n.status = 1";
+  if ($settings['display_settings']['show_unpublished']) {
+    $where[] = "AND n.status = 1";
+  }
 
   // Prebuild the SQL query
   $sql = array();
   $sql[] = "SELECT %s";
-  $sql[] = "FROM ".implode(" ", $from);
+  $sql[] = "FROM " . implode(" ", $from);
   $sql[] = "WHERE LOWER(n.title) LIKE LOWER('%%%s%%') %s";
 
+   // Content type check
+  if ($allowed_content_types = array_filter($settings['content_types'])) {
+    $allowed_content_types = implode("', '", $allowed_content_types);
+    // Special treatment!!
+    // If we push this to the $where array, the single-quotes will be
+    // escaped and result in a SQL error. 
+    // I asked chx if its ok to use the content type machine name
+    // "as it is" in this query and he said ok and I trust him.
+    $sql[] = " AND n.type IN ('" . $allowed_content_types . "')";
+  }
+
   // Get nodes
-  $result = db_query_range(db_rewrite_sql(implode(" ", $sql)), implode(",", $fields), $string, $where_status, 0, 10);
+  $result = db_query_range(db_rewrite_sql(implode(" ", $sql)), implode(",", $fields), $string, implode(" ", $where), 0, 10);
   $i = 0;
   while ($node = db_fetch_object($result)) {
     $matches['node'][$i] = array(
@@ -60,32 +73,32 @@ function linkit_node_linkit_load_plugins($string) {
     );
 
     // Add the node nid
-    if ($settings['nid']) {
+    if ($settings['display_settings']['nid']) {
       $matches['node'][$i]['information']['nid'] = $node->nid;
     } 
     // Add the node content type
-    if ($settings['content_type']) {
+    if ($settings['display_settings']['content_type']) {
       $matches['node'][$i]['information']['content type'] = $node->content_type;
     } 
     // Add the node status
-    if ($settings['status']) {
+    if ($settings['display_settings']['status']) {
       $matches['node'][$i]['information']['status'] = $node->status ? 'published' : 'unpublished';
     }
     // Add the node language
-    if ($settings['language']) {
+    if ($settings['display_settings']['language']) {
       $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
     } 
     // Add the node created time
-    if ($settings['created']) {
+    if ($settings['display_settings']['created']) {
       $matches['node'][$i]['information']['created'] = $node->created ? format_date($node->created, 'small') : '-';
     } 
     // Add the node changed time
-    if ($settings['changed']) {
+    if ($settings['display_settings']['changed']) {
       $matches['node'][$i]['information']['changed'] = $node->changed ? format_date($node->changed, 'small') : '-';
     } 
     
     // Add Title of the book a node belong to
-    if ($settings['show_books'] && $node->bid) {
+    if ($settings['display_settings']['show_books'] && $node->bid) {
       $book_node = node_load($node->bid);
       $matches['node'][$i]['information']['book'] = $book_node->title;
     } 
