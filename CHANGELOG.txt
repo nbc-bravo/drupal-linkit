@@ -17,6 +17,7 @@ by anon: Added description to Linkit settings menu callbac
 by anon: Fixed some "PHP notice: Undefined index
 #942798 by anon: Added settings for which content types should appear in the
   suggestions
+#953454 by anon: change callback from linkit_dashboard to linkit_dashboard_page
 
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------

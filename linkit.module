@@ -15,7 +15,7 @@ function linkit_menu() {
   $items['admin/linkit/dashboard/%'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
-    'page callback' => 'linkit_dashboard',
+    'page callback' => 'linkit_dashboard_page',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
     'page arguments' => array(3),
@@ -121,7 +121,7 @@ function template_preprocess_linkit_dashboard(&$variables) {
 /**
  * Creates the dashboard
  */
-function linkit_dashboard($editor) {
+function linkit_dashboard_page($editor) {
   module_invoke('admin_menu', 'suppress');
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
