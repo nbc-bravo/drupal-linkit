@@ -18,6 +18,7 @@ by anon: Fixed some "PHP notice: Undefined index
 #942798 by anon: Added settings for which content types should appear in the
   suggestions
 #953454 by anon: change callback from linkit_dashboard to linkit_dashboard_page
+#955356 by blixxxa: Added Swedish translation
 
 Linkit 6.x-1.6, 2010-09-15
 ------------------------------
