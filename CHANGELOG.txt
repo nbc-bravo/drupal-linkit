@@ -13,7 +13,7 @@ Changed by anon: Removed some CSS styles to make the dashboard more like the
 #906476 by anon: Added ability to add an #anchor via the attributes section
 Added by anon: Message via drupal_set_message when Pathfilter and Pathologic 
   is not installed
-by anon: Added description to Linkit settings menu callbac
+by anon: Added description to Linkit settings menu callback
 by anon: Fixed some "PHP notice: Undefined index
 #942798 by anon: Added settings for which content types should appear in the
   suggestions
