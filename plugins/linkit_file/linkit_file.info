@@ -1,0 +1,6 @@
+; $Id$
+name = Linkit File
+description = Extend Linkit with files
+core = 6.x
+package = Linkit
+dependencies[] = "linkit"
