@@ -5,6 +5,8 @@ Linkit x.x-x.x, xxxx-xx-xx
 Linkit 6.x-1.8, xxxx-xx-xx
 ------------------------------
 #963254 by blixxxa: Added support for link to files
+#958912 by anon: Fixed warning: array_filter() [function.array-filter]: The 
+  first argument should be an array in .../linkit_node.module on line 53.
 
 Linkit 6.x-1.7, 2010-10-31
 ------------------------------
