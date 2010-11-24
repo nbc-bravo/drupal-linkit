@@ -13,7 +13,11 @@
 function linkit_node_linkit_load_plugins($string) {
   $matches = array();
   
-  $default_settings = array(
+  $settings = variable_get('linkit_node', array());
+  
+  // Prevent "PHP notice: Undefined variable" by merging the settings 
+  // with the defule values
+  $settings += array(
     'display_settings' => array(
       'nid' => 0,
       'content_type' => 0,
@@ -33,13 +37,6 @@ function linkit_node_linkit_load_plugins($string) {
       'story' => 0,
     ),
   );
-
-  $settings = variable_get('linkit_node', $default_settings);
-  
-  // Backward compatibility for 6.x-1.7 and older
-  if (!isset($settings['content_types'])) {
-    $settings['content_types'] = array();
-  }
 
   $fields = array('n.nid', 'n.title'); // default fields
   $from = array('{node} n'); // default from
