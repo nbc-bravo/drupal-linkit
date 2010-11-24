@@ -85,7 +85,7 @@ function linkit_node_linkit_load_plugins($string) {
     } 
     // Add the node status
     if ($settings['display_settings']['status']) {
-      $matches['node'][$i]['information']['status'] = $node->status ? 'published' : 'unpublished';
+      $matches['node'][$i]['information']['status'] = $node->status ? t('published') : t('unpublished');
     }
     // Add the node language
     if ($settings['display_settings']['language']) {
