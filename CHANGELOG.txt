@@ -10,6 +10,7 @@ Linkit 6.x-1.8, xxxx-xx-xx
 #958912 by anon: Fixed better way to handle missing settings variables
 #973082 by robbertnl, anon: Show taxonomy term parent in search result
 by anon: Added t() function to some strings that should have it
+by anon: Only show settings for enabled modules
 
 Linkit 6.x-1.7, 2010-10-31
 ------------------------------
