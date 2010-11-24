@@ -15,28 +15,8 @@ function linkit_node_linkit_load_plugins($string) {
   
   $settings = variable_get('linkit_node', array());
   
-  // Prevent "PHP notice: Undefined variable" by merging the settings 
-  // with the defule values
-  $settings += array(
-    'display_settings' => array(
-      'nid' => 0,
-      'content_type' => 0,
-      'status' => 0,
-      'language' => 0,
-      'created' => 0,
-      'changed' => 0,
-      'show_unpublished' => 0,
-      'show_books' => 0,
-    ), 
-    'content_types' => array(
-      'book' => 0,
-      'forum' => 0,
-      'nyheter' => 0,
-      'page' => 0,
-      'panel' => 0,
-      'story' => 0,
-    ),
-  );
+  // Prevent "PHP notice: Undefined variable"
+  _linkit_node_get_default_settings($settings);
 
   $fields = array('n.nid', 'n.title'); // default fields
   $from = array('{node} n'); // default from
@@ -169,4 +149,26 @@ function linkit_node_linkit_info_plugins() {
     'type' => 'node',
   );
   return $return;
+}
+
+/**
+ * Prevent "PHP notice: Undefined variable" by merging the settings 
+ * with the defule values
+ */
+function _linkit_node_get_default_settings(&$settings) {
+  // Merge settings with the default settings
+  $settings += array(
+    'display_settings' => array(
+      'nid' => 0,
+      'content_type' => 0,
+      'status' => 0,
+      'language' => 0,
+      'created' => 0,
+      'changed' => 0,
+      'show_unpublished' => 0,
+      'show_books' => 0,
+    ), 
+    'content_types' => array(
+    ),
+  );
 }
