@@ -8,6 +8,7 @@ Linkit 6.x-1.8, xxxx-xx-xx
 #958912 by anon: Fixed warning: array_filter() [function.array-filter]: The 
   first argument should be an array in .../linkit_node.module on line 53.
 #958912 by anon: Fixed better way to handle missing settings variables
+#973082 by robbertnl, anon: Show taxonomy term parent in search result
 
 Linkit 6.x-1.7, 2010-10-31
 ------------------------------

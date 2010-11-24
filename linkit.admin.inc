@@ -50,6 +50,32 @@ function linkit_admin_settings() {
     '#default_value' => $node_settings['content_types'], 
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
+  
+  if (module_exists('linkit_taxonomy')) {
+    $term_settings = variable_get('linkit_term', array());
 
+    // Prevent "PHP notice: Undefined variable"
+    _linkit_taxonomy_get_default_settings($term_settings);
+    
+    $term_display_settings_options = array(
+      'show_parent' => t('Display the parent of the term'),
+    );
+
+    $form['linkit_term'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Taxonomy term settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#description' => t('Linkit term settings'),
+      '#tree' => TRUE,
+    );
+
+    $form['linkit_term']['display_settings'] = array(
+      '#title' => t('Information to display in the autocomplete field'),
+      '#type' => 'checkboxes',
+      '#options' => $term_display_settings_options,
+      '#default_value' => $term_settings['display_settings'],
+    );
+  }
   return system_settings_form($form);
 }
