@@ -60,6 +60,12 @@ There are two hooks that MUST be defined if you want to extend the autocomplete 
 
 - hook_linkit_get_search_styled_link() - Will be used when a link is being edited (This hook is not necessary).
 
+There is also a hook that you can use if you what to alter the array that 
+contains all the results that will be shown in the search result.
+
+- hook_linkit_load_plugins_alter(&$results)
+  See http://api.drupal.org/api/drupal/includes--common.inc/function/drupal_alter/6 for more info.
+
 -- HOOK EXAMPLE --
 
 /**
