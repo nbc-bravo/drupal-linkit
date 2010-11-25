@@ -184,6 +184,9 @@ function linkit_autocomplete($string = NULL) {
       }
     }
   }
+
+  // hook_linkit_load_plugins_alter() , let other modules change the matches array
+  drupal_alter('linkit_load_plugins', $matches);
   
   $results = array();
   foreach ($matches AS $match) {
@@ -208,11 +211,7 @@ function linkit_autocomplete($string = NULL) {
     $text .= '</div>';
     $results[$val] = $text;
   }
-  
-  // Show MAX 10 matches
-  if (count($results) > 10) {
-    $results = array_slice($results, 0, 10);
-  }
+ 
 
   drupal_json($results);
 }
