@@ -1,7 +1,0 @@
-; $Id$
-name = Linkit Taxonomy
-description = Extend Linkit with taxonomy links
-core = 6.x
-package = Linkit
-dependencies[] = "linkit"
-dependencies[] = "taxonomy"

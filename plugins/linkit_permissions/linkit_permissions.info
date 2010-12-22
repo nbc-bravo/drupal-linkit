@@ -1,6 +1,0 @@
-; $Id$
-name = Linkit Permissions
-description = Extend Linkit with permissions for plugins
-core = 6.x
-package = Linkit
-dependencies[] = "linkit"
