@@ -1,0 +1,6 @@
+; $Id$
+name = Linkit Node
+description = Extend Linkit with node links
+core = 7.x
+package = Linkit
+dependencies[] = "linkit"
