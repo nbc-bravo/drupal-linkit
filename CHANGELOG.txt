@@ -4,3 +4,4 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 7.x-1.0-dev, xxxx-xx-xx
 ------------------------------
+#1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported
