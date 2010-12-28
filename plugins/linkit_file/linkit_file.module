@@ -14,13 +14,19 @@ function linkit_file_linkit_load_plugins($string) {
   $matches = array();
   
   // Get files.
-  $result = db_query_range("SELECT f.fid, f.filename, f.filepath FROM {files} f WHERE f.filename LIKE LOWER('%%%s%%%') AND f.status = 1", $string, 0, 10);
-  while ($file = db_fetch_object($result)) {
+  $result = db_select('file_managed', 'f')
+    ->fields('f', array('filename', 'uri', 'filemime'))
+    ->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
+    ->condition('f.status' , '1')
+    ->range(0, 10)
+    ->execute();
+  foreach ($result AS $file) {
     $matches['file'][] = array(
       'title' => $file->filename,
-      'path' => file_create_url($file->filepath),
+      'path' => file_create_url($file->uri),
       'information' => array(
         'type' => 'File',
+        'filemine' => $file->filemime,
       ),
     );
   }
