@@ -6,3 +6,5 @@ Linkit 7.x-1.x, xxxx-xx-xx
 ------------------------------
 #1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported
 by anon: Ported linkit_files so it works with D7
+by anon: Fixed the popup dashboard and changed some menu callback urls so they 
+  dont piont to admin/linkit 

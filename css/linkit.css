@@ -14,8 +14,6 @@
   float:left;
 }
 
-#edit-link-wrapper .description { clear:both; }
-
 span.throbber {
   height: 15px;
   margin: 1em 2px;
