@@ -2,7 +2,7 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
 
-Linkit 6.x-1.8, xxxx-xx-xx
+Linkit 6.x-1.8, 2010-12-28
 ------------------------------
 #963254 by blixxxa: Added support for link to files
 #958912 by anon: Fixed warning: array_filter() [function.array-filter]: The 
