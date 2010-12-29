@@ -8,3 +8,5 @@ Linkit 7.x-1.x, xxxx-xx-xx
 by anon: Ported linkit_files so it works with D7
 by anon: Fixed the popup dashboard and changed some menu callback urls so they 
   dont piont to admin/linkit 
+by anon: Removed everything with path filter as it its not compatible with 
+  Drupal 7

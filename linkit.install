@@ -22,9 +22,9 @@ function linkit_requirements($phase) {
 
   switch ($phase) {
   case 'runtime':
-    if (!module_exists('pathfilter') && !module_exists('pathologic')) {
+    if (!module_exists('pathologic')) {
       $severity = REQUIREMENT_ERROR; 
-      $value = t('Please install pathfilter <strong>OR</strong> pathologic');
+      $value = t('Please install pathologic');
     }
     else {
       $severity = REQUIREMENT_OK; 
@@ -34,8 +34,7 @@ function linkit_requirements($phase) {
         'title' => t('Linkit'),
         'severity' => $severity,
         'value' => $value,
-        'description' =>  t('To parse "internal:" links <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> most be installed.', array(
-          '@pathfilter' => 'http://drupal.org/project/pathfilter',
+        'description' =>  t('To parse "internal:" links <a href="@pathologic">pathologic</a> most be installed.', array(
           '@pathologic' => 'http://drupal.org/project/pathologic'
         )),
       );
