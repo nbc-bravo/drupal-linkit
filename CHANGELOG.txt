@@ -13,3 +13,4 @@ by anon: Removed everything with path filter as it its not compatible with
   Drupal 7.
 by anon: Removed the limit (SQL range) in all plugins so sites with large 
   amout of content, terms and so on does now suffer from the old 10 limit.
+by anon: Fixed integration width IMCE 7.X
