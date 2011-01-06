@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function linkit_permissions_permission() {
   $perms = array(
@@ -17,7 +17,7 @@ function linkit_permissions_permission() {
     ),
   );
   foreach (module_invoke_all('linkit_info_plugins') as $plugin) {
-    $perms['create '. check_plain($plugin['type']) .' links'] = array(
+    $perms['create ' . check_plain($plugin['type']) . ' links'] = array(
       'title' => t('Create %type links', array('%type' => $plugin['type'])), 
       );
     };

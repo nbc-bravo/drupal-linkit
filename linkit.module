@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function linkit_menu() {
   $items = array();
@@ -58,7 +58,7 @@ function _linkit_dashboard_theme() {
 }
 
 /**
- * Implementation of hook_permission().
+ * Implements hook_permission().
  */
 function linkit_permission() {
   return array(
@@ -70,7 +70,7 @@ function linkit_permission() {
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function linkit_theme($existing, $type, $theme, $path) {
   return array(
@@ -82,7 +82,7 @@ function linkit_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implementation of hook_form_alter().
+ * Implements hook_form_alter().
  */
 function linkit_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['#after_build'])) {
@@ -169,7 +169,7 @@ function linkit_autocomplete($string = NULL) {
     $hook_matches = module_invoke_all('linkit_load_plugins', $string);
     foreach ($hook_matches AS $module => $values) {
       if (module_exists('linkit_permissions')) {
-        if (user_access('create '. $module .' links') || user_access('create all links')) {
+        if (user_access('create ' . $module . ' links') || user_access('create all links')) {
           $matches = array_merge($matches, $hook_matches[$module]);
         }
       } 
@@ -205,7 +205,7 @@ function linkit_autocomplete($string = NULL) {
     $text .= '</div>';
     $results[$val] = $text;
   }
- 
+
   drupal_json_output($results);
 }
 

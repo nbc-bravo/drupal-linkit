@@ -8,7 +8,7 @@
 
 
 /**
- * Implementation of hook_linkit_load_plugins().
+ * Implements hook_linkit_load_plugins().
  */
 function linkit_taxonomy_linkit_load_plugins($string) {
   $matches = array();
@@ -55,7 +55,7 @@ function linkit_taxonomy_linkit_load_plugins($string) {
 }
 
 /**
- * Implementation of hook_linkit_get_search_styled_link().
+ * Implements hook_linkit_get_search_styled_link().
  */
 function linkit_taxonomy_linkit_get_search_styled_link($string) {
   // Term links created with Linkit will always begin with "internal:"
@@ -86,7 +86,7 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
 }
 
 /**
- * Implementation of hook_linkit_info_plugins().
+ * Implements hook_linkit_info_plugins().
  * 
  * This is used by linkit_permissions
  */

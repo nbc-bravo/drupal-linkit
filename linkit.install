@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function linkit_uninstall() {
   variable_del('linkit_node');
@@ -15,7 +15,7 @@ function linkit_uninstall() {
 }
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function linkit_requirements($phase) {
   $requirements = array();
