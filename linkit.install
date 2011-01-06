@@ -10,7 +10,8 @@
  * Implementation of hook_uninstall().
  */
 function linkit_uninstall() {
-  db_query("DELETE FROM {variable} WHERE name LIKE 'linkit%'");
+  variable_del('linkit_node');
+  variable_del('linkit_term');
 }
 
 /**
@@ -41,15 +42,4 @@ function linkit_requirements($phase) {
     break;
   }
   return $requirements;
-}
-
-/**
- * Create a new variable and add the old settings to it.
- */
-function linkit_update_6100() {
-  $ret = array();
-  $old = variable_get('linkit_node', array());
-  $new = array('display_settings' => $old);
-  variable_set('linkit_node', $new);
-  return $ret;  
 }
