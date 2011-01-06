@@ -250,7 +250,7 @@ function _linkit_form() {
       '#id' => 'linkit-imce',
     );
     // Add extra class to edit-link field when we can use IMCE
-    $form['link']['link']['#attributes'] = array('class' => 'with_imce');
+    $form['link']['link']['#attributes'] = array('class' => array('with_imce'));
     // Add the imce buttom
     $form['link']['link']['#field_suffix'] = drupal_render($imcebutton);
   }
