@@ -19,7 +19,6 @@ function linkit_file_linkit_load_plugins($string) {
     ->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
     ->condition('f.status' , '1')
     ->condition('f.uri', 'public://%', 'LIKE')
-    ->range(0, 10)
     ->execute();
   foreach ($result AS $file) {
     $matches['file'][] = array(

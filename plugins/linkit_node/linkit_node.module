@@ -22,7 +22,6 @@ function linkit_node_linkit_load_plugins($string) {
   $query = db_select('node', 'n')
     ->fields('n', array('nid', 'title'))
     ->condition('n.title' , '%' . db_like($string) . '%' , 'LIKE')
-    ->range(0, 10)
     ->addTag('node_access');
 
   if ($settings['display_settings']['content_type']) {

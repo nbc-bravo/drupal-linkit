@@ -17,7 +17,6 @@ function linkit_user_linkit_load_plugins($string) {
     ->fields('u', array('uid', 'name'))
     ->condition('u.name', '%' . db_like($string) . '%', 'LIKE')
     ->condition('u.status' , '1')
-    ->range(0, 10)
     ->execute();
   foreach ($result AS $user) {
     $matches['user'][] = array(

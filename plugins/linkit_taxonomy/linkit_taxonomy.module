@@ -22,7 +22,6 @@ function linkit_taxonomy_linkit_load_plugins($string) {
   $query = db_select('taxonomy_term_data', 't')
     ->fields('t', array('name', 'tid'))
     ->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE')
-    ->range(0, 10)
     ->addTag('term_access');
 
   // Get terms
