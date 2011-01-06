@@ -4,11 +4,12 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 7.x-1.x, xxxx-xx-xx
 ------------------------------
-#1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported
-by anon: Ported linkit_files so it works with D7
+This is a fork from Linkit 6.x-1.x-dev.
+#1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported.
+by anon: Ported linkit_files so it works with D7.
 by anon: Fixed the popup dashboard and changed some menu callback urls so they 
-  dont piont to admin/linkit 
+  dont piont to admin/linkit.
 by anon: Removed everything with path filter as it its not compatible with 
-  Drupal 7
+  Drupal 7.
 by anon: Removed the limit (SQL range) in all plugins so sites with large 
-  amout of content, terms and so on does now suffer from the old 10 limit
+  amout of content, terms and so on does now suffer from the old 10 limit.

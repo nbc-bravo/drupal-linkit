@@ -29,7 +29,7 @@ get the fully functionality.
 
 To begin, we need an editor. Linkit supports all of these editors:
  * WYSIWYG <http://drupal.org/project/wysiwyg> with TinyMCE or CKEditor
-   or FCKeditor  (recommended)
+   or FCKeditor
  * CKEditor <http://drupal.org/project/ckeditor>
 
 Linkit creates internal links with the "internal:" prefix. To make your site 
