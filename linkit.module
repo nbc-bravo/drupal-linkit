@@ -330,10 +330,12 @@ function _linkit_form() {
 function linkit_wysiwyg_plugin($editor, $version) {
   $plugins = array();
   _linkit_add_settings('wysiwyg_' . $editor);
+
   switch ($editor) {
     case 'tinymce':      
       $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
+        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce',
+        'filename' => 'editor_plugin.js',
         'buttons' => array('linkit' => t('Linkit')),
         'url' => 'http://drupal.org/project/linkit',
         'load' => TRUE,
@@ -342,7 +344,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
     case 'ckeditor':      
       // notice: Big "L" in the name here! important
       $plugins['Linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
+        'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor',
         'buttons' => array('Linkit' => t('Linkit')),
         'url' => 'http://drupal.org/project/linkit',
         'load' => TRUE,
@@ -350,7 +352,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
       break;
     case 'fckeditor':      
       $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor/',
+        'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor',
         'buttons' => array('linkit' => t('Linkit')),
         'url' => 'http://drupal.org/project/linkit',
         'load' => TRUE,

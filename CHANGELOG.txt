@@ -1,8 +1,12 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 7.x-1.1, xxxx-xx-xx
+------------------------------
+#955356 by Magnus: Imported translations to localization server and removed CVS files.
+#1019048 by anon: Fixed array structure for plugins in linkit_wysiwyg_plugin
 
-Linkit 7.x-1.x, 2011-01-06
+Linkit 7.x-1.0, 2011-01-06
 ------------------------------
 This is a fork from Linkit 6.x-1.x-dev.
 #1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported.
