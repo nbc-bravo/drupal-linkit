@@ -3,10 +3,13 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.9, xxxx-xx-xx
 ------------------------------
-#908466 by anon: Fixed so links to terms is created properly
-#955356 by Magnus: Imported translations to localization server and removed CVS files.
+#908466 by anon: Fixed so links to terms is created properly.
+#955356 by Magnus: Imported translations to localization server and removed 
+  CVS files.
 #1022940 by anon, fietserwin: Undefined index: show_books in 
   linkit_node_linkit_load_plugins().
+#1019048 by anon, binford2k: Fixed array structure for plugins in 
+  linkit_wysiwyg_plugin.
 
 Linkit 6.x-1.8, 2010-12-28
 ------------------------------

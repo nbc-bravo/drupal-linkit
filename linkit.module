@@ -336,8 +336,9 @@ function _linkit_form() {
 }
 
 function linkit_wysiwyg_plugin($editor, $version) {
-
+  $plugins = array();
   _linkit_add_settings('wysiwyg_' . $editor);
+
   switch ($editor) {
     case 'tinymce':      
       $plugins['linkit'] = array(
