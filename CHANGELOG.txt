@@ -3,9 +3,12 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 7.x-1.1, xxxx-xx-xx
 ------------------------------
-#955356 by Magnus: Imported translations to localization server and removed CVS files.
-#1019048 by anon: Fixed array structure for plugins in linkit_wysiwyg_plugin
-#1024244 by anon: Theme key "closure" not found
+#955356 by Magnus: Imported translations to localization server and removed 
+  CVS files.
+#1019048 by anon: Fixed array structure for plugins in linkit_wysiwyg_plugin.
+#1024244 by anon: Theme key "closure" not found.
+#1022940 by anon, fietserwin: Undefined index: show_books in 
+  linkit_node_linkit_load_plugins().
 
 Linkit 7.x-1.0, 2011-01-06
 ------------------------------
@@ -18,7 +21,7 @@ by anon: Removed everything with path filter as it its not compatible with
   Drupal 7.
 by anon: Removed the limit (SQL range) in all plugins so sites with large 
   amout of content, terms and so on does now suffer from the old 10 limit.
-by anon: Fixed integration width IMCE 7.X
+by anon: Fixed integration width IMCE 7.X.
 by anon: Removed dependency check in linkit_init, there is only one 
   "internal:" parse module for Drupal7. 
-by anon: Added dependency in linkit.info
+by anon: Added dependency in linkit.info.
