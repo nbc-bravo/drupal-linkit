@@ -110,7 +110,6 @@ function template_preprocess_linkit_dashboard(&$variables) {
   $variables['css']               = drupal_add_css();
   $variables['styles']            = drupal_get_css();
   $variables['scripts']           = drupal_get_js();
-  $variables['closure']           = theme('closure');
 }
 
 /**
