@@ -10,6 +10,7 @@ Linkit 7.x-1.1, 2011-01-13
 #1022940 by anon, fietserwin: Undefined index: show_books in 
   linkit_node_linkit_load_plugins().
 by anon: Fixed styles when IMCE is enabled.
+#1026834 by anon: Fixed broken CKeditor integration.
 
 Linkit 7.x-1.0, 2011-01-06
 ------------------------------

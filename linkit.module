@@ -82,16 +82,12 @@ function linkit_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_element_info_alter().
  */
-function linkit_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form['#after_build'])) {
-    if (count($form['#after_build'])) {
-      foreach ($form['#after_build'] AS $after_build) {
-        if ($after_build == "ckeditor_process_form") {
-          _linkit_add_settings('ckeditor');
-        }
-      }
+function linkit_element_info_alter(&$types) {
+  if (is_array($types['text_format']['#pre_render'])) {
+    if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
+      _linkit_add_settings('ckeditor');  
     }
   }
 }
@@ -126,7 +122,7 @@ function linkit_dashboard_page($editor) {
   // Add default settings
   if (!$defualt_settings_added) {
     $defualt_settings_added = TRUE;
-    
+
     $settings = array(
       'linkit' => array('ajaxcall' => url('linkit/geteditresult')),
     );
