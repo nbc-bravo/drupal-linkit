@@ -372,14 +372,30 @@ function linkit_wysiwyg_plugin($editor, $version) {
 
 function _linkit_add_settings($editor) {
   static $editor_settings_added = array();
+  static $global_settings_added = FALSE;
 
   if (!isset($editor_settings_added[$editor])) {
     $editor_settings_added[$editor] = TRUE;
     
     // Add popup url
     $settings = array(
-      'linkit' => array('url' => array($editor => url('admin/linkit/dashboard/' . $editor))),
+      'linkit' => array(
+        'url' => array($editor => url('admin/linkit/dashboard/' . $editor)),
+      ),
     );
     drupal_add_js($settings, 'setting');
+  }
+
+  if (!$global_settings_added) {
+    $global_settings_added = TRUE;
+
+    // Add global settings for Linkit
+    $settings = array(
+      'linkit' => array(
+        'modulepath' => drupal_get_path('module', 'linkit'),
+      ),
+    );
+    drupal_add_js($settings, 'setting');
+    
   }
 }

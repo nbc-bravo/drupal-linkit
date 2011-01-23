@@ -12,10 +12,11 @@ Do the following steps to add Linkit button to the FCKeditor toolbar:
 
    2. Add this BEFORE the first "FCKConfig.ToolbarSets" array.
      
-      var linkit_basePath = '/' // Change this if you have drupal installed in a subdir
-
+      var linkit_basePath = '/' // Change this if you have drupal installed in a subdir.
+      var linkit_modulePath = 'sites/all/modules/linkit'; // Change this if you have Linkit installed in a different location.
+      
       var linkit_url_fckeditor = 'admin/linkit/dashboard/fckeditor'; // DO NOT CHANGE
-      FCKConfig.Plugins.Add( 'linkit', null, linkit_basePath + 'sites/all/modules/linkit/editors/fckeditor/') ; // DO NOT CHANGE
+      FCKConfig.Plugins.Add( 'linkit', null, linkit_basePath + linkit_modulePath +'/editors/fckeditor/') ; // DO NOT CHANGE
 
    3. Add button to the toolbar. The button name is: linkit (NOTICE: small "L" is needed)
       For example if you have a toolbar with an array of buttons defined as follows:

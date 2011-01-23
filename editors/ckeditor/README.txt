@@ -25,4 +25,4 @@ Do the following steps to add Linkit button to the CKEditor toolbar:
       
       // Linkit plugin.
       config.extraPlugins += (config.extraPlugins ? ',Linkit' : 'Linkit' );
-      CKEDITOR.plugins.addExternal('Linkit', Drupal.settings.basePath + 'sites/all/modules/linkit/editors/ckeditor/');
+      CKEDITOR.plugins.addExternal('Linkit', Drupal.settings.basePath + Drupal.settings.linkit.modulepath + '/editors/ckeditor/');
