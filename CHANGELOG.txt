@@ -5,7 +5,8 @@ Linkit 7.x-1.1, 2011-01-13
 ------------------------------
 #955356 by Magnus: Imported translations to localization server and removed 
   CVS files.
-#1019048 by anon, binford2k: Fixed array structure for plugins in linkit_wysiwyg_plugin.
+#1019048 by anon, binford2k: Fixed array structure for plugins in 
+  linkit_wysiwyg_plugin.
 #1024244 by anon: Theme key "closure" not found.
 #1022940 by anon, fietserwin: Undefined index: show_books in 
   linkit_node_linkit_load_plugins().
@@ -13,6 +14,8 @@ by anon: Fixed styles when IMCE is enabled.
 #1026834 by anon: Fixed broken CKeditor integration.
 #1030936 by johannesdr, anon: Fixed/Added more reliable path strings for 
   FCKeditor and CKeditor.
+by anon: Removed README.txt for FCKeditor (use for stand alone FCKeditor), as 
+  this it is no longer supported
 
 Linkit 7.x-1.0, 2011-01-06
 ------------------------------
