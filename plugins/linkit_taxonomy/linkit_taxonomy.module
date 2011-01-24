@@ -28,9 +28,10 @@ function linkit_taxonomy_linkit_load_plugins($string) {
   $result = $query->execute();
   $i = 0;
   foreach ($result as $term) {
+    $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
     $matches['taxonomy'][$i] = array(
       'title' => $term->name,
-      'path' => 'internal:taxonomy/term/' . $term->tid,
+      'path' => 'internal:' . $uri['path'],
       'information' => array(
         'type' => 'Taxonomy',
       ),

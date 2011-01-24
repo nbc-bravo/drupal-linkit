@@ -15,8 +15,9 @@ by anon: Fixed styles when IMCE is enabled.
 #1030936 by johannesdr, anon: Fixed/Added more reliable path strings for 
   FCKeditor and CKeditor.
 by anon: Removed README.txt for FCKeditor (use for stand alone FCKeditor), as 
-  this it is no longer supported
-#1027500 by anon : Fixed IMCE integration assumes clean URLs to be enabled
+  this it is no longer supported.
+#1027500 by anon : Fixed IMCE integration assumes clean URLs to be enabled.
+#908466 by anon: Fixed so links to terms is created properly.
 
 Linkit 7.x-1.0, 2011-01-06
 ------------------------------
