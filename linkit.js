@@ -39,7 +39,7 @@ linkit_helper = {
    * IMCE integration
    */
   openFileBrowser : function () {
-    window.open(Drupal.settings.basePath + 'imce?app=Linkit|url@edit-link--2', '', 'width=760,height=560,resizable=1');
+    window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
   },
   
   /*

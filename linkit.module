@@ -127,6 +127,14 @@ function linkit_dashboard_page($editor) {
       'linkit' => array('ajaxcall' => url('linkit/geteditresult')),
     );
 
+    // Check if we have IMCE and access to it.
+    $imce = module_invoke('imce', 'access');
+    if($imce) {
+      $settings['linkit'] = array(
+        'IMCEurl' => url('imce', array('query' => array('app' => 'Linkit|url@edit-link--2'))),
+      );
+    }
+
     drupal_add_js($settings, 'setting');
   }
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
