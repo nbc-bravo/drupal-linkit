@@ -12,6 +12,7 @@ Linkit 6.x-1.9, xxxx-xx-xx
   linkit_wysiwyg_plugin.
 #1030936 by johannesdr, anon: Fixed/Added more reliable path strings for 
   FCKeditor and CKeditor.
+#1027500 by anon: Fixed IMCE integration assumes clean URLs to be enabled.
 
 Linkit 6.x-1.8, 2010-12-28
 ------------------------------
