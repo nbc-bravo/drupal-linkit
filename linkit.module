@@ -85,7 +85,7 @@ function linkit_theme($existing, $type, $theme, $path) {
  * Implements hook_element_info_alter().
  */
 function linkit_element_info_alter(&$types) {
-  if (is_array($types['text_format']['#pre_render'])) {
+  if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
       _linkit_add_settings('ckeditor');  
     }
