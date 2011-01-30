@@ -1,6 +1,12 @@
 // $Id$
 Linkit x.x-x.x, xxxx-xx-xx
 
+
+Linkit 7.x-1.2, xxxx-xx-xx
+------------------------------
+[bug] [#1044632] by anon: Fixed Drupal.settings is overwritten when IMCE is 
+  enabled
+
 Linkit 7.x-1.1, 2011-01-13
 ------------------------------
 #955356 by Magnus: Imported translations to localization server and removed 
