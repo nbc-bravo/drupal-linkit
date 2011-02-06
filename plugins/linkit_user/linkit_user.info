@@ -1,6 +1,6 @@
 ; $Id$
 name = Linkit User
-description = Extend Linkit with user links
+description = Extend Linkit with support for user links.
 core = 7.x
 package = Linkit
 dependencies[] = "linkit"
