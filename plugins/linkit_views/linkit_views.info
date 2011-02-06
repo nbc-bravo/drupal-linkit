@@ -1,6 +1,6 @@
 ; $Id$
 name = Linkit Views
-description = Extend Linkit with views links
+description = Extend Linkit with views links.
 core = 6.x
 package = Linkit
 dependencies[] = "linkit"

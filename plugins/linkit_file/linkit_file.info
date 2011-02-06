@@ -1,6 +1,6 @@
 ; $Id$
 name = Linkit File
-description = Extend Linkit with files
+description = Extend Linkit with support for file links.
 core = 6.x
 package = Linkit
 dependencies[] = "linkit"
