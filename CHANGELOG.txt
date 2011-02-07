@@ -15,6 +15,8 @@ Linkit 6.x-1.9, xxxx-xx-xx
 #1027500 by anon: Fixed IMCE integration assumes clean URLs to be enabled.
 [bug] [#1044632] by anon: Fixed Drupal.settings is overwritten when IMCE is 
     enabled
+[bug] [#1053400] by anon: Fixed issue when links wasnt edited accurate in 
+  CKeditor
 
 Linkit 6.x-1.8, 2010-12-28
 ------------------------------

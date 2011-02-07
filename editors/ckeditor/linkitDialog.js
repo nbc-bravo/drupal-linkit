@@ -65,7 +65,7 @@ var LinkitDialog = {
     var link_text_matches = $('#edit-link').val().match(/(.*)\[path:.*\]/i);
     link_text = (link_text_matches == null) ? $('#edit-link').val() : link_text_matches[1].replace(/^\s+|\s+$/g, '');
 
-    var params = { 'href' : href , 'link_text' : link_text };
+    var params = { 'href' : href , 'link_text' : link_text, 'data-cke-saved-href' : href };
     
     $("fieldset fieldset input[id!='edit-anchor']").each(function() {
       if($(this).val() != "") {
