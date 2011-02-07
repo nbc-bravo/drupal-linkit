@@ -223,13 +223,13 @@ function linkit_autocomplete($string = NULL) {
 }
 
 function linkit_search_styled_link() {
-  $matches = array();
-  $string = check_plain($_GET['string']);
-  if ($string) {
+  drupal_set_header('Content-Type: text/plain; charset=utf-8');
+  if (isset($_GET['string'])) {
+    $string = check_plain($_GET['string']);
     $matches = module_invoke_all('linkit_get_search_styled_link', $string);
+
+    echo (isset($matches[0]) ? $matches[0] : '');
   }
-  echo $matches[0];
-  die();
 }
 
 function _linkit_form() {
