@@ -6,6 +6,8 @@ Linkit 7.x-1.2, xxxx-xx-xx
 ------------------------------
 [bug] [#1044632] by anon: Fixed Drupal.settings is overwritten when IMCE is 
   enabled
+[bug] [#1053400] by anon: Fixed issue when links wasnt edited accurate in 
+  CKeditor
 
 Linkit 7.x-1.1, 2011-01-13
 ------------------------------
