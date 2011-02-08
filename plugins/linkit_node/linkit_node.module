@@ -116,7 +116,7 @@ function linkit_node_linkit_get_search_styled_link($string) {
 
   // This is a node link created with Linkit, try to grab the title and path now. 
   $result = db_select('node', 'n')
-    ->fields('n', array('nid', 'title'))
+    ->fields('n', array('title'))
     ->condition('n.nid', $splitted_string[1])
     ->addTag('node_access')
     ->execute()
