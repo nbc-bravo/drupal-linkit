@@ -59,7 +59,7 @@ function linkit_node_linkit_load_plugins($string) {
   foreach ($result AS $node) {
     $matches['node'][$i] = array(
       'title' => $node->title,
-      'path' => 'internal:node/' . $node->nid,
+      'path' => 'node/' . $node->nid,
       'information' => array(
         'type' => 'Node',
       ),
@@ -106,13 +106,10 @@ function linkit_node_linkit_load_plugins($string) {
  * Implements hook_linkit_get_search_styled_link().
  */
 function linkit_node_linkit_get_search_styled_link($string) {
-  // Node links created with Linkit will always begin with "internal:"
-  if (strpos($string, 'internal:') === FALSE) {
-    return;
-  }
-
   // Check to see that the link really is a node link
-  $splitted_string = explode('/', str_replace('internal:', '', $string));
+  // Backwards compatible with internal: links
+  $escaped_string = str_replace('internal:', '', $string);
+  $splitted_string = explode('/', $escaped_string);
   if ($splitted_string[0] != 'node') {
     return;
   }
@@ -129,7 +126,7 @@ function linkit_node_linkit_get_search_styled_link($string) {
   if (!$result) {
     return;
   }
-  return check_plain($result->title) . ' [path:internal:node/' . $result->nid . ']';
+  return check_plain($result->title) . ' [path:' . $escaped_string . ']';
 }
 
 /**

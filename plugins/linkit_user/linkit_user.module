@@ -21,7 +21,7 @@ function linkit_user_linkit_load_plugins($string) {
   foreach ($result AS $user) {
     $matches['user'][] = array(
       'title' => $user->name,
-      'path' => 'internal:user/' . $user->uid,
+      'path' => 'user/' . $user->uid,
       'information' => array(
         'type' => 'User',
       ),
@@ -36,13 +36,10 @@ function linkit_user_linkit_load_plugins($string) {
  * Implements hook_linkit_get_search_styled_link().
  */
 function linkit_user_linkit_get_search_styled_link($string) {
-  // User links created with Linkit will always begin with "internal:"
-  if (strpos($string, 'internal:') === FALSE) {
-    return;
-  }
-
   // Check to see that the link really is a user link
-  $splitted_string = explode('/', str_replace('internal:', '', $string));
+  // Backwards compatible with internal: links
+  $escaped_string = str_replace('internal:', '', $string);
+  $splitted_string = explode('/', $escaped_string);
   if ($splitted_string[0] != 'user') {
     return;
   }
@@ -59,7 +56,7 @@ function linkit_user_linkit_get_search_styled_link($string) {
     return;
   }
 
-  return check_plain($result->name) . ' [path:internal:user/' . $result->uid . ']';
+  return check_plain($result->name) . ' [path:' . $escaped_string . ']';
 }
 
 /**

@@ -46,7 +46,7 @@ linkit_helper = {
    * See if the link contains a #anchor
    */
   seek_for_anchor : function(href) {
-    var matches = href.match(/internal:.*(#.*)/i);
+    var matches = href.match(/.*(#.*)/i);
     anchor = (matches == null) ? '' : matches[1].substring(1);
     return anchor;
   }

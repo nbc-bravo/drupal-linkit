@@ -31,7 +31,7 @@ function linkit_taxonomy_linkit_load_plugins($string) {
     $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
     $matches['taxonomy'][$i] = array(
       'title' => $term->name,
-      'path' => 'internal:' . $uri['path'],
+      'path' => $uri['path'],
       'information' => array(
         'type' => 'Taxonomy',
       ),
@@ -59,13 +59,10 @@ function linkit_taxonomy_linkit_load_plugins($string) {
  * Implements hook_linkit_get_search_styled_link().
  */
 function linkit_taxonomy_linkit_get_search_styled_link($string) {
-  // Term links created with Linkit will always begin with "internal:"
-  if (strpos($string, 'internal:') === FALSE) {
-    return;
-  }
-
   // Check to see that the link really is a term link
-  $splitted_string = explode('/', str_replace('internal:', '', $string));
+  // Backwards compatible with internal: links
+  $escaped_string = str_replace('internal:', '', $string);
+  $splitted_string = explode('/', $escaped_string);
   if ($splitted_string[0] != 'taxonomy') {
     return;
   }
@@ -82,8 +79,7 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
   if (!$result) {
     return;
   }
-
-  return check_plain($result->name) . ' [path:internal:taxonomy/term/' . $result->tid . ']';
+  return check_plain($result->name) . ' [path:' . $escaped_string . ']';
 }
 
 /**
