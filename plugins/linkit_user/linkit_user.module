@@ -46,7 +46,7 @@ function linkit_user_linkit_get_search_styled_link($string) {
 
   // This is a node link created with Linkit, try to grab the title and path now.
   $result = db_select('users', 'u')
-    ->fields('u', array('uid', 'name'))
+    ->fields('u', array('name'))
     ->condition('u.uid', $splitted_string[1])
     ->execute()
     ->fetchObject();
