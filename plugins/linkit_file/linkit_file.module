@@ -20,13 +20,14 @@ function linkit_file_linkit_load_plugins($string) {
     ->condition('f.status' , '1')
     ->condition('f.uri', 'public://%', 'LIKE')
     ->execute();
+
   foreach ($result AS $file) {
     $matches['file'][] = array(
       'title' => $file->filename,
       'path' => file_create_url($file->uri),
       'information' => array(
         'type' => 'File',
-        'filemine' => $file->filemime,
+        'mimetype' => $file->filemime,
       ),
     );
   }
