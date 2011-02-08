@@ -4,13 +4,14 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 7.x-1.2, xxxx-xx-xx
 ------------------------------
-[bug] [#1044566] by betamos, anon: Don't use internal: prefix by default
+[bug] [#1044566] by betamos, anon: Don't use internal: prefix by default.
 [bug] [#1044632] by anon: Fixed Drupal.settings is overwritten when IMCE is 
   enabled
 [bug] [#1053400] by anon: Fixed issue when links wasnt edited accurate in 
   CKeditor
 [bug] [#1050980] by vikfroberg, anon: Fixed Linkit geteditresult conflict with
   devel page execution.
+[#1055592] by anon: Removed hook_requirements from install file.
 
 Linkit 7.x-1.1, 2011-01-13
 ------------------------------

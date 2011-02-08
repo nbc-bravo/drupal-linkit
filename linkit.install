@@ -13,33 +13,3 @@ function linkit_uninstall() {
   variable_del('linkit_node');
   variable_del('linkit_term');
 }
-
-/**
- * Implements hook_requirements().
- */
-function linkit_requirements($phase) {
-  $requirements = array();
-  $t = get_t();
-
-  switch ($phase) {
-  case 'runtime':
-    if (!module_exists('pathologic')) {
-      $severity = REQUIREMENT_ERROR; 
-      $value = t('Please install pathologic');
-    }
-    else {
-      $severity = REQUIREMENT_OK; 
-      $value = t('Ok');
-    }
-    $requirements['linkit_dependencies'] = array(
-        'title' => t('Linkit'),
-        'severity' => $severity,
-        'value' => $value,
-        'description' =>  t('To parse "internal:" links <a href="@pathologic">pathologic</a> most be installed.', array(
-          '@pathologic' => 'http://drupal.org/project/pathologic'
-        )),
-      );
-    break;
-  }
-  return $requirements;
-}
