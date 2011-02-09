@@ -21,10 +21,11 @@ function linkit_file_linkit_load_plugins($string) {
     ->condition('f.uri', 'public://%', 'LIKE')
     ->execute();
 
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result AS $file) {
     $matches['file'][] = array(
       'title' => $file->filename,
-      'path' => file_create_url($file->uri),
+      'path' => $public_path . '/' . file_uri_target($file->uri),
       'information' => array(
         'type' => 'File',
         'mimetype' => $file->filemime,
