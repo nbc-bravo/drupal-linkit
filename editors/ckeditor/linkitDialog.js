@@ -1,4 +1,3 @@
-// $Id$
 
 /**
  * @file Linkit ckeditor dialog helper

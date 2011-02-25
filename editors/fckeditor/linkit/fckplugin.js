@@ -1,4 +1,3 @@
-/* $Id$ */
 
 var path = Drupal.settings.linkit.url.wysiwyg_fckeditor;
 var basePath =  Drupal.settings.basePath;
