@@ -1,4 +1,3 @@
-; $Id$
 name = Linkit User
 description = Extend Linkit with user links
 core = 7.x

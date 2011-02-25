@@ -1,4 +1,3 @@
-; $Id$
 name = Linkit File
 description = Extend Linkit with files
 core = 7.x
