@@ -1,4 +1,3 @@
-; $Id$
 name = Linkit Views
 description = Extend Linkit with views links.
 core = 6.x

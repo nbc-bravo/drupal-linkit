@@ -1,4 +1,3 @@
-// $Id$
 
 var LinkitDialog = {
 	init : function() {

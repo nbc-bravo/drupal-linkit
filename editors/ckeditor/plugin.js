@@ -1,4 +1,3 @@
-// $Id$
 
 /**
  * @file Plugin for inserting links with Linkit

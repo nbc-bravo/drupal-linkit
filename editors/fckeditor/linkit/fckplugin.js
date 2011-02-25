@@ -1,4 +1,3 @@
-/* $Id$ */
 
 if(typeof Drupal != 'undefined') {
   var basePath =  Drupal.settings.basePath;

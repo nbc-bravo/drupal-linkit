@@ -1,4 +1,3 @@
-/* $Id$ */
 
 /*
  * Linkit javascript lib 
