@@ -20,7 +20,7 @@
   <div id="linkit">
     <?php if (!empty($messages)): print $messages; endif; ?>
     <?php if (!empty($help)): print $help; endif; ?>
-    <div id="content-content" class="clear-block">
+    <div id="content-content" class="clearfix">
       <?php print $form; ?>
     </div>
   </div>
