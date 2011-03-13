@@ -169,7 +169,7 @@ function linkit_autocomplete($string = NULL) {
     $hook_matches = module_invoke_all('linkit_load_plugins', $string);
     foreach ($hook_matches AS $module => $values) {
       if (module_exists('linkit_permissions')) {
-        if (user_access('create ' . $module . ' links') || user_access('create all links')) {
+        if (user_access('use linkit ' . $module . ' plugin') || user_access('use all linkit plugins')) {
           $matches = array_merge($matches, $hook_matches[$module]);
         }
       } 

@@ -10,14 +10,13 @@
  */
 function linkit_permissions_permission() {
   $perms = array(
-    'create all links' => array(
-      'title' => t('Create all links'), 
-      'description' => t('Can use all Linkt plugins'),
+    'use all linkit plugins' => array(
+      'title' => t('Use all Linkit plguins'), 
     ),
   );
   foreach (module_invoke_all('linkit_info_plugins') as $plugin) {
-    $perms['create ' . check_plain($plugin['type']) . ' links'] = array(
-      'title' => t('Create %type links', array('%type' => $plugin['type'])), 
+    $perms['use linkit ' . check_plain($plugin['type']) . ' plugin'] = array(
+      'title' => t('Use Linkit %type plugin', array('%type' => $plugin['type'])), 
       );
     };
   return $perms;
