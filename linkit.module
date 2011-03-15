@@ -83,6 +83,24 @@ function linkit_theme($existing, $type, $theme, $path) {
   );
 }
 
+
+/**
+ * Implementation of hook_elements().
+ */
+function linkit_elements() {
+  return array('textarea' => array('#after_build' => array('linkit_textarea')));
+}
+
+function linkit_textarea($element, $form_state) {
+  if (isset($element['#process'])) {
+    if (in_array('bueditor_textarea', $element['#process'])) {
+      _linkit_add_settings('bueditor');
+       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/bueditor/editor_plugin.js');
+    }
+  }
+  return $element;
+}
+
 /**
  * Implementation of hook_form_alter().
  */
@@ -163,6 +181,11 @@ function linkit_dashboard_page($editor) {
     case 'wysiwyg_fckeditor':
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
+      break;
+    
+    case 'bueditor':
+      // Add JavaScript.
+      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/bueditor/linkit.js');
       break;
   }
   
