@@ -7,15 +7,21 @@ LinkitDialog = {
 		var ed = tinyMCEPopup.editor;
 		// Setup browse button
 		if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
-      if($(e).attr('href').length > 0) {
-			  linkit_helper.search_styled_link($(e).attr('href'));
+
+      // To prevent dubble anchors
+      var anchor = linkit_helper.seek_for_anchor($(e).attr('href'));
+      // Delete the anchor from the URL, this will be added later on anyway
+      var href = $(e).attr('href').replace('#' + anchor, '');
+
+      if(href.length > 0) {
+			  linkit_helper.search_styled_link(href);
 			} 
       $('#edit-title').val($(e).attr('title'));
       $('#edit-id').val($(e).attr('id'));
       $('#edit-class').val($(e).attr('class'));
       $('#edit-rel').val($(e).attr('rel'));
       $('#edit-accesskey').val($(e).attr('accesskey'));
-      $('#edit-anchor').val(linkit_helper.seek_for_anchor($(e).attr('href')));
+      $('#edit-anchor').val(anchor);
       return false;
 		} else if(ed.selection.isCollapsed()) {
       // Show help text when there is no selection element
@@ -47,8 +53,11 @@ LinkitDialog = {
     href = (matches == null) ? $('#edit-link--2').val() : matches[1];
     
     // Add anchor if we have any and make sure there is no "#" before adding the anchor
+    // But do not add if there is an anchor in the URL
     var anchor = $('#edit-anchor').val().replace(/#/g,'');
-    if(anchor.length > 0) {
+    var hasAnchor = $('#edit-link--2').val().match(/\#/i);
+    
+    if(anchor.length > 0 && hasAnchor == null ) {
       href = href.concat('#' + anchor);
     }
 
@@ -99,7 +108,7 @@ LinkitDialog = {
     }
 
 		tinyMCEPopup.execCommand("mceEndUndoLevel");
-		tinyMCEPopup.close();
+		//tinyMCEPopup.close();
 
   }
 };

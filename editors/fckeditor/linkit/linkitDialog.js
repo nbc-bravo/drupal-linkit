@@ -35,9 +35,14 @@ if(oEditor.FCK.EditorDocument.selection != null) {
 
     if ( oLink ) {
       FCK.Selection.SelectNode( oLink ) ;
+
+       // To prevent dubble anchors
+      var anchor = linkit_helper.seek_for_anchor($(oLink).attr('href'));
+      // Delete the anchor from the URL, this will be added later on anyway
+      var href = $(oLink).attr('href').replace('#' + anchor, '');
       
-      if($(oLink).attr('href').length > 0) {
-       linkit_helper.search_styled_link($(oLink).attr('href'));
+      if(href.length > 0) {
+       linkit_helper.search_styled_link(href);
       }
 
       $('#edit-title').val($(oLink).attr('title'));
@@ -45,7 +50,7 @@ if(oEditor.FCK.EditorDocument.selection != null) {
       $('#edit-class').val($(oLink).attr('class'));
       $('#edit-rel').val($(oLink).attr('rel'));
       $('#edit-accesskey').val($(oLink).attr('accesskey'));
-      $('#edit-anchor').val(linkit_helper.seek_for_anchor($(oLink).attr('href')));
+      $('#edit-anchor').val(anchor);
     } else if(selection == "") {
       // Show help text when there is no selection element
       linkit_helper.show_no_selection_text();
@@ -65,8 +70,11 @@ function Ok() {
     asLinkPath_text = (asLinkPath == null) ? $('#edit-link--2').val() : asLinkPath[1].replace(/^\s+|\s+$/g, '');
 
     // Add anchor if we have any and make sure there is no "#" before adding the anchor
+    // But do not add if there is an anchor in the URL
     var anchor = $('#edit-anchor').val().replace(/#/g,'');
-    if ( anchor.length > 0 ) {
+    var hasAnchor = $('#edit-link--2').val().match(/\#/i);
+
+    if(anchor.length > 0 && hasAnchor == null ) {
       linlit_url = linlit_url.concat('#' + anchor);
       asLinkPath_text = asLinkPath_text.concat('#' + anchor);
     }

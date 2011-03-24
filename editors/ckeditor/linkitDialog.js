@@ -26,12 +26,18 @@ LinkitDialog = {
         // element.getAttribute doent seems to like first arg to be empty.
         $(this).val(element.getAttribute($(this).attr('name')));
       });
+           
+      // To prevent dubble anchors
+      var anchor = linkit_helper.seek_for_anchor(element.getAttribute('href'));
+      // Delete the anchor from the URL, this will be added later on anyway
+      var href = element.getAttribute('href').replace('#' + anchor, '');
+
       // Anchor isnt really an attribute, and we have to find it in the URL to inster it into the textfield.
-      $('#edit-anchor').val(linkit_helper.seek_for_anchor(element.getAttribute('href')));
+      $('#edit-anchor').val(anchor);
 
       // href is set here
-      if(element.getAttribute('href').length > 0) {
-			  linkit_helper.search_styled_link(element.getAttribute('href'));
+      if(href.length > 0) {
+			  linkit_helper.search_styled_link(href);
 			} 
     } else if(selection.getNative().isCollapsed) {
       // Show help text when there is no selection element
@@ -59,8 +65,11 @@ LinkitDialog = {
     href = (matches == null) ? $('#edit-link--2').val() : matches[1];
     
     // Add anchor if we have any and make sure there is no "#" before adding the anchor
+    // But do not add if there is an anchor in the URL
     var anchor = $('#edit-anchor').val().replace(/#/g,'');
-    if(anchor.length > 0) {
+    var hasAnchor = $('#edit-link--2').val().match(/\#/i);
+
+    if(anchor.length > 0 && hasAnchor == null ) {
       href = href.concat('#' + anchor);
     }
 
