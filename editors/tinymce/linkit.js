@@ -36,6 +36,8 @@ var LinkitDialog = {
 				tinyMCEPopup.close();
 				return;
 			}
+      tinyMCEPopup.close();
+		  return;
 		}
     
     tinyMCEPopup.execCommand("mceBeginUndoLevel");
