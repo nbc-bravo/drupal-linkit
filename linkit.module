@@ -155,8 +155,8 @@ function linkit_dashboard_page($editor) {
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
       break;
   }
-  
-  print theme('linkit_dashboard', array('form' => render(drupal_get_form('_linkit_form'))));
+  $form = drupal_get_form('_linkit_form');
+  print theme('linkit_dashboard', array('form' => render($form)));
 }
 
 /**
