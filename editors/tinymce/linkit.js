@@ -108,7 +108,7 @@ LinkitDialog = {
     }
 
 		tinyMCEPopup.execCommand("mceEndUndoLevel");
-		//tinyMCEPopup.close();
+		tinyMCEPopup.close();
 
   }
 };
