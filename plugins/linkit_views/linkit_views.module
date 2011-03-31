@@ -23,7 +23,7 @@ function linkit_views_linkit_load_plugins($string) {
     db_query("INSERT INTO {linkit_tmp_view_table} (title, path) VALUES ('%s', '%s')", $node->name, $optinos['path']);
   }  
   
-  $result = db_query_range("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%%%s%%')", $string, 0, 10);
+  $result = db_query("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%%%s%%')", $string);
   while ($node = db_fetch_object($result)) {
     $matches['view'][] = array(
       'title' => $node->path,

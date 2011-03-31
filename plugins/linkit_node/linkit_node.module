@@ -63,7 +63,7 @@ function linkit_node_linkit_load_plugins($string) {
   }
 
   // Get nodes
-  $result = db_query_range(db_rewrite_sql(implode(" ", $sql)), implode(",", $fields), $string, implode(" ", $where), 0, 10);
+  $result = db_query(db_rewrite_sql(implode(" ", $sql)), implode(",", $fields), $string, implode(" ", $where));
   $i = 0;
   while ($node = db_fetch_object($result)) {
     $matches['node'][$i] = array(

@@ -13,7 +13,7 @@ function linkit_user_linkit_load_plugins($string) {
   $matches = array();
 
   // Get users
-  $result = db_query_range("SELECT u.uid, u.name FROM {users} u WHERE LOWER(u.name) LIKE LOWER('%%%s%%') AND u.status = 1", $string, 0, 10);
+  $result = db_query("SELECT u.uid, u.name FROM {users} u WHERE LOWER(u.name) LIKE LOWER('%%%s%%') AND u.status = 1", $string);
   while ($user = db_fetch_object($result)) {
     $matches['user'][] = array(
       'title' => $user->name,

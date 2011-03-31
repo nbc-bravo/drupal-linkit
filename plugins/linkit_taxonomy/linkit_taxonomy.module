@@ -28,7 +28,7 @@ function linkit_taxonomy_linkit_load_plugins($string) {
   $sql[] = "WHERE LOWER(t.name) LIKE LOWER('%%%s%%') %s";
 
   // Get terms
-  $result = db_query_range(db_rewrite_sql(implode(" ", $sql), 't', 'tid'), implode(",", $fields), $string, implode(" ", $where), 0, 10);
+  $result = db_query(db_rewrite_sql(implode(" ", $sql), 't', 'tid'), implode(",", $fields), $string, implode(" ", $where));
   $i = 0;
   while ($term = db_fetch_object($result)) {
     $matches['taxonomy'][$i] = array(

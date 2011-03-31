@@ -13,7 +13,7 @@ function linkit_file_linkit_load_plugins($string) {
   $matches = array();
   
   // Get files.
-  $result = db_query_range("SELECT f.fid, f.filename, f.filepath FROM {files} f WHERE f.filename LIKE LOWER('%%%s%%%') AND f.status = 1", $string, 0, 10);
+  $result = db_query("SELECT f.fid, f.filename, f.filepath FROM {files} f WHERE f.filename LIKE LOWER('%%%s%%%') AND f.status = 1", $string);
   while ($file = db_fetch_object($result)) {
     $matches['file'][] = array(
       'title' => $file->filename,
