@@ -223,23 +223,14 @@ function _linkit_form() {
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
 
-  $form['link'] = array(
-    '#type' => 'fieldset',
-    '#title' => '',
-    '#weight' => 0,
-    '#collapsible' => FALSE,
-    '#collapsed' => FALSE,
-    '#attributes' => array('class' => array('clearfix')),
-  );
-  $form['link']['link'] = array(
+  $form['search'] = array(
     '#type' => 'textfield',
-    '#title' => t('Link to'),
-    '#description' => t('Search for your internal content <b>OR</b> type the URL (http://www.example.com)'),
+    '#title' => t('Search content'),
+    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.'),
     '#maxlength' => 255,
-    '#size' => 80,
-    '#autocomplete_path' => 'linkit/autocomplete',
+    '#size' => 60,
     '#default_value' => '',
-    '#weight' => 1,
+    '#weight' => -10
   );
 
   if ($imce) {
@@ -250,78 +241,39 @@ function _linkit_form() {
       '#id' => 'linkit-imce',
     );
     // Add extra class to edit-link field when we can use IMCE
-    $form['link']['link']['#attributes'] = array('class' => array('with_imce'));
+    $form['search']['#attributes'] = array('class' => array('with_imce'));
     // Add the imce buttom
-    $form['link']['link']['#field_suffix'] = drupal_render($imcebutton);
+    $form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
-
-  $form['link']['attributes'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Attributes'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#attributes' => array('class' => array('clearfix')),
-    '#weight' => 2,
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link text'),
+    '#required' => TRUE,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -5
   );
-  $form['link']['attributes']['title'] = array(
+  $form['path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Target path'),
+    '#description' => t('Both internal (this site) and external (other sites) paths work. Type or paste. <br /> For example <strong>node/123</strong> or <strong>http://www.example.com/path#anchor</strong>'),
+    '#required' => TRUE,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -1
+  );
+  $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#maxlength' => 255,  
-    '#size' => 40,
+    '#description' => t('The title attirbute provides advisory information and appears as a tooltip when hovering the link. Not required.'),
+    '#size' => 60,
     '#default_value' => '',
-    '#weight' => 0,
   );
-  $form['link']['attributes']['id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('ID'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 1,
-  );
-  $form['link']['attributes']['class'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Class'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 2,
-  );
-  $form['link']['attributes']['rel'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Rel'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 3,
-  );
-  $form['link']['attributes']['accesskey'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Accesskey'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 4,
-  );
-  $form['link']['attributes']['anchor'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Anchor'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 5,
-    '#description' => t('Without the hash (#)'),
-  );
-
-  $form['link']['cancel'] = array(
-    '#type' => 'button',
-    '#value' => t('Cancel'),
-    '#weight' => 10,
-  );
-  $form['link']['insert'] = array(
+  $form['insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert'),
-    '#weight' => 11,
+    '#suffix' => '<a id="cancel" href="#">' . t('Cancel') . '</a>',
+    '#weight' => 100,
   );
 
   return $form;

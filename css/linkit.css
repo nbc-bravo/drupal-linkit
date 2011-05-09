@@ -1,5 +1,5 @@
 
-#linkit { padding:1em; }
+#linkit { padding: 40px; }
 
 #linkit .auto-item-info {
   float:right;
@@ -23,4 +23,14 @@ span.throbber {
 
 input#edit-link--2.with_imce {
   margin-bottom:10px;
+}
+
+#linkit #edit-search {
+  font-size: 1em;
+  height: 2em;
+  padding: 3px 25px 3px 5px;
+}
+
+#linkit #edit-search.throbbing {
+  background: transparent url(../../../../../misc/throbber.gif) no-repeat 99% -13px;
 }

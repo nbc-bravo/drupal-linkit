@@ -7,7 +7,7 @@
         ed.windowManager.open({
 					file : Drupal.settings.linkit.url.wysiwyg_tinymce,
 					width : 580,
-					height : 480,
+					height : 520,
 					inline : true,
           scrollbars : 1,
           popup_css : false
