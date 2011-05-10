@@ -6,7 +6,6 @@ linkitDialog = {
 	init : function() {
   	var ed = tinyMCEPopup.editor;
   	// Setup browse button
-    console.log(ed.selection.getContent());
   	if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
   	
   	  // Delete the anchor from the URL, this will be added later on anyway
@@ -111,7 +110,7 @@ linkitDialog = {
 tinyMCEPopup.onInit.add(linkitDialog.init, linkitDialog);
 
 
-Drupal.behaviors.linkit_init_tinymce =  {
+Drupal.behaviors.linkitInitTinyMCE =  {
   attach: function(context, settings) {
     $('#edit-link', context).keydown(function(ev) {
       if (ev.keyCode == 13) {

@@ -163,6 +163,26 @@ function linkit_dashboard_page($editor) {
  * Autocomplete callback function.
  */
 function linkit_autocomplete($string = NULL) {
+  
+  $temsp = array(
+    'type' => 'Content',
+    'path' => 'node/123',
+    'alias' => 'blog/tutorial',
+    'title' => 'Renderman Tutorial',
+    'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
+  );
+  
+  $temp2 = array(
+    'type' => 'Content',
+    'path' => 'node/120',
+    'alias' => 'blog/hej',
+    'title' => 'Tips till dig',
+    'description' => 'Tips · by admin · created 2010-04-12',
+  );
+  
+  drupal_json_output(array($temsp, $temp2));
+  return;
+  
   $matches = array();
   $hook_matches = array();
   if ($string) {
