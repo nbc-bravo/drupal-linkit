@@ -1,5 +1,9 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 6.x-1.10, xxxx-xx-xx
+------------------------------
+#1127790 by skylord, anon: Fixed error in Opera browser.
+
 Linkit 6.x-1.9, 2011-02-07
 ------------------------------
 #908466 by anon: Fixed so links to terms is created properly.

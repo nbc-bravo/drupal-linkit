@@ -4,10 +4,15 @@
  */
 var LinkitDialog = {
   init : function() {
-    //Get CKEDITOR
-    CKEDITOR = dialogArguments.opener.CKEDITOR;
-    //Get the current instance name
-    var name = dialogArguments.editorname;
+    //Get CKEDITOR and current instance name
+    if (typeof(dialogArguments) != 'undefined') {
+      CKEDITOR = dialogArguments.opener.CKEDITOR;
+      var name = dialogArguments.editorname;
+    } else {
+      CKEDITOR = window.opener.CKEDITOR;
+      var name = decodeURI((RegExp('editorname=(.+?)(&|$)').exec(location.search)||[,null])[1]);
+    }
+
     //Get the editor instance
     editor = CKEDITOR.instances[name];
     //Get the selected element

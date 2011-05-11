@@ -19,7 +19,11 @@
       editor.addCommand( 'Linkit', {
         exec : function () {
           var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor
-          var media = window.showModalDialog(path, { 'opener' : window, 'editorname' : editor.name }, "dialogWidth:750px; dialogHeight:320px; center:yes; resizable:yes; help:no;");
+          if (window.showModalDialog) {
+            var media = window.showModalDialog(path, { 'opener' : window, 'editorname' : editor.name }, "dialogWidth:750px; dialogHeight:320px; center:yes; resizable:yes; help:no;");
+          } else {
+            var media = window.open(path + (path.indexOf('?') == -1 ? '?' : '&') + 'editorname='+encodeURI(editor.name), null, "width=750,height=320,resizable,alwaysRaised,dependent,toolbar=no,location=no,menubar=no");
+          }
         }
       });
       
