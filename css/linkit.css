@@ -41,7 +41,7 @@ input#edit-link.with_imce {
 
 #linkit-autocomplete-results .result {
   position: relative;
-  padding: 7px;
+  padding: 5px;
   background: white;
   border-color: #bfbfbf;
   border-width: 1px 1px 0 1px;
