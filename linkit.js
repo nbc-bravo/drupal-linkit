@@ -60,103 +60,162 @@ Drupal.behaviors.linkitImce =  {
 };
 
 /**
- * $element is the input element wrapped in jQuery
- * selectCallback A callback function to execute when an item gets selected. Takes linkObject as argument
+ * Create an autocomplete instance from a DOM input element by providing a JSON
+ * path 
+ * 
+ * $input The input element wrapped in jQuery
+ * path A path which provides JSON objects upon search
+ * callback A callback function to execute when an item selection is confirmed.
+ *          The callback function recieves an argument which is the JSON object
+ *          that was selected.
+ * options An object with additional options, which can contain these keys:
+ *   - characterLimit (default=3) The minimum number of chars for an AJAX call
+ *   - wait (default=100) The time in ms between a key is pressed and AJAX call
+ *   - ajaxTimeout (default=5000) Timeout on AJAX calls
+ * 
+ * The DOM tree will look like this:
+ * 
+ * input (text input field, provided as the $input argument)
+ * div#linkit-autocomplete-wrapper (no width/height, position relative)
+ *   ul#linkit-autocomplete-results (fixed width, variable height)
+ *     li.result (variable height)
+ *       h4.title (contains the title)
+ *       p.description (contains the description)
+ *     li.result (more results...)
  */
-var AutoCompleteObject = function($element, selectCallback) {
+var AutoCompleteObject = function($input, path, callback, options) {
   var self = this;
-  self.activeCall = null;
-  self.$element = $element;
-  self.selectCallback = selectCallback;
+
+  var options = $.extend({
+    characterLimit: 3,
+    wait: 100,
+    ajaxTimeout: 5000
+  }, options);
+
+  var activeCall = null;
+
+  // A key-value object with keys as the string and value as the JSON result
+  // object
+  var results = {};
+
+  // The user's current string input
+  var userString = $input.val();
+
+  // Turn off the browser's autocompletion
+  $input.attr('autocomplete', 'OFF').attr('aria-autocomplete', 'none');
+
+  var $results = $('<ul id="linkit-autocomplete-results" />').width($input.innerWidth());
+  var $wrapper = $('<div />').append($results).attr('id', 'linkit-autocomplete-wrapper').insertAfter($input);
   
-  self.currentResults = [];
-  console.log('call');
-  self.$element.attr('autocomplete', 'OFF').attr('aria-autocomplete', 'none');
-  
-  // TODO: Wrapper div that has no dimensions instead of the ul
-  self.resultsDOM = $('<ul id="linkit-autocomplete-results" />').width(self.$element.innerWidth()).insertAfter(self.$element);
-  
-  self.$element.focus(function() {
-    self.resultsDOM.show();
+  $input.focus(function() {
+    $wrapper.show();
     console.log('focus');
   });
-  self.$element.blur(function() {
-    self.resultsDOM.hide();
+  $input.blur(function() {
+    $wrapper.hide();
     return false;
   });
-  self.$element.keyup(function() {
-    if (self.$element.val().length >= 3) {
-      self.fetchResults(self.$element.val());
-    }
+  $input.keyup(function() {
+    //console.log(self.displayResults());
+    if (!self.displayResults())
+      self.fetchResults($input.val());
   });
   
   self.setStatus = function(string) {
     self.status = string;
     switch (string) {
     case 'loading':
-      self.$element.addClass('throbbing');
+      $input.addClass('throbbing');
       break;
     }
   };
   
   self.fetchResults = function(str) {
-    self.$element.addClass('throbbing');
-    if (self.activeCall !== null) {
-      self.activeCall.abort();
-      
-      console.log(self.activeCall);
-    }
+    $input.addClass('throbbing');
+    console.log('fetching');
     var xhr = $.ajax({
+      // TODO: move uri
       url: 'http://d7.dev/linkit/autocomplete',
       dataType: 'json',
-      success: function(results, textStatus) {
-        self.currentResults = results;
+      data: {s: str},
+      context: str,
+      timeout: options.ajaxTimeout,
+      success: function(res, textStatus) {
+        console.log('ajax success');
+        results[this] = res;
         self.activeCall = null;
+        // TODO: Make a callback method instead
         self.displayResults();
-        self.$element.removeClass('throbbing');
+        $input.removeClass('throbbing');
       }
     });
-    self.activeCall = xhr;
+    activeCall = xhr;
   };
   
   /**
    * Put the mouse cursor in this autocomplete field
    */
   self.focus = function() {
-    self.$element.focus();
+    $input.focus();
   };
-  
+
+  /**
+   * Display results from a certain string
+   * Returns true if displayed properly
+   */
   self.displayResults = function() {
-    self.resultsDOM.empty();
-    for (i in self.currentResults) {
-      var res = self.currentResults[i];
-      var DOMResult = $('<li />').addClass('result').append('<h4>' + res.title + '</h4><p>' + res.description + '</p>');
+
+    // Update user string
+    userString = $input.val();
+    
+    $results.empty();
+
+    if (userString.length < options.characterLimit) {
+      $wrapper.hide();
+      return true;
+    }
+
+    // The result is not in cache, so there is nothing to display right now
+    if (typeof results[userString] !== 'object') {
+      $wrapper.hide();
+      return false;
+    }
+    console.log('render');
+    for (i in results[userString]) {
+
+      // Shortname for this result
+      var result = results[userString][i];
+      var $result = $('<li />').addClass('result')
+        .append('<h4>' + result.title + '</h4><p>' + result.description + '</p>')
+        .data('linkObject', result)
+        .appendTo($results);
+      $wrapper.show();
+      // Select the first result
       if (i == 0) {
-        console.log(i);
-        DOMResult.addClass('selected');
+        $result.addClass('selected');
       }
-      DOMResult.data('linkObject', res);
-      self.resultsDOM.append(DOMResult);
-      DOMResult.mouseover(function() {
-        // Some dude hovered in
-        $('.result.selected', self.resultsDOM).removeClass('selected');
+
+      // When the user hovers the result with the mouse, select it
+      // TODO: perhaps use live() instead?
+      $result.mouseover(function() {
+        console.log('mouseover');
+        $('.result.selected', $results).removeClass('selected');
         $(this).addClass('selected');
       });
       
       // A result is inserted
       // TODO: Move most code to new method self.selectResult(id) so it can also be keyboard navigated
-      DOMResult.mousedown(function() {
-        // Some dude clicked
-        console.log(27);
-        if (typeof self.selectCallback === 'function')
-          self.selectCallback($(this).data('linkObject'));
-        //self.$element.blur();
-        self.$element.val('');
-        self.resultsDOM.empty();
+      $result.mousedown(function() {
+        // If a callback is provided, call it now
+        if (typeof callback === 'function')
+          callback($(this).data('linkObject'));
+        // Clear the input field
+        $input.val('');
+        // And remove results TODO: maybe call this method recursively instead?
+        $results.empty();
       });
     }
-    
-    // self.results.push();
+    return true;
   };
 };
 
@@ -165,10 +224,12 @@ Drupal.behaviors.linkitAutocomplete = {
     var aco = new AutoCompleteObject($('#linkit #edit-search', context), function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
+      console.log('inserting');
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
       $('#linkit #edit-path').val(linkObject.path);
     });
     if (context === window.document) {
+      // TODO: Make autofocus with html5?
       aco.focus();
     }
   }
