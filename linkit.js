@@ -205,9 +205,16 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
       // Shortname for this result
       var result = results[userString][i];
+
+      // If we don't have title or description, we don't have much to display
+      if (typeof result.title === 'undefined' && typeof result.description === 'undefined')
+        continue;
       var $result = $('<li />').addClass('result')
-        .append('<h4>' + result.title + '</h4><p>' + result.description + '</p>')
-        .data('result', result)
+        .append(
+            (typeof result.title !== 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
+            (typeof result.description !== 'undefined' ? '<p>' + result.description + '</p>' : '')
+        )
+        .data('result', result) // Store the result object on this DOM element
         .appendTo($resultList);
       $wrapper.show();
       // Select the first result
