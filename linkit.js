@@ -92,8 +92,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
     ajaxTimeout: 5000
   }, options);
 
-  var activeCall = null;
-
   // A key-value object with keys as the string and value as the JSON result
   // object
   var results = {};
@@ -104,19 +102,17 @@ var AutoCompleteObject = function($input, path, callback, options) {
   // Turn off the browser's autocompletion
   $input.attr('autocomplete', 'OFF').attr('aria-autocomplete', 'none');
 
-  var $results = $('<ul id="linkit-autocomplete-results" />').width($input.innerWidth());
-  var $wrapper = $('<div />').append($results).attr('id', 'linkit-autocomplete-wrapper').insertAfter($input);
+  var $resultList = $('<ul />').attr('id', 'linkit-autocomplete-results').width($input.innerWidth());
+  var $wrapper = $('<div />').append($resultList).attr('id', 'linkit-autocomplete-wrapper').insertAfter($input);
   
   $input.focus(function() {
     $wrapper.show();
-    console.log('focus');
   });
   $input.blur(function() {
     $wrapper.hide();
     return false;
   });
   $input.keyup(function() {
-    //console.log(self.displayResults());
     if (!self.displayResults())
       self.fetchResults($input.val());
   });
@@ -129,19 +125,23 @@ var AutoCompleteObject = function($input, path, callback, options) {
       break;
     }
   };
-  
-  self.fetchResults = function(str) {
+
+  /**
+   * Fetch results asynchronously via AJAX
+   * 
+   * @param search The search string
+   * @param callback The callback function to
+   */
+  self.fetchResults = function(search, callback) {
     $input.addClass('throbbing');
-    console.log('fetching');
     var xhr = $.ajax({
       // TODO: move uri
-      url: 'http://d7.dev/linkit/autocomplete',
+      url: path,
       dataType: 'json',
-      data: {s: str},
-      context: str,
+      data: {s: search},
+      context: search,
       timeout: options.ajaxTimeout,
       success: function(res, textStatus) {
-        console.log('ajax success');
         results[this] = res;
         self.activeCall = null;
         // TODO: Make a callback method instead
@@ -149,7 +149,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
         $input.removeClass('throbbing');
       }
     });
-    activeCall = xhr;
   };
   
   /**
@@ -168,7 +167,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
     // Update user string
     userString = $input.val();
     
-    $results.empty();
+    $resultList.empty();
 
     if (userString.length < options.characterLimit) {
       $wrapper.hide();
@@ -180,7 +179,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
       $wrapper.hide();
       return false;
     }
-    console.log('render');
     for (i in results[userString]) {
 
       // Shortname for this result
@@ -188,7 +186,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
       var $result = $('<li />').addClass('result')
         .append('<h4>' + result.title + '</h4><p>' + result.description + '</p>')
         .data('linkObject', result)
-        .appendTo($results);
+        .appendTo($resultList);
       $wrapper.show();
       // Select the first result
       if (i == 0) {
@@ -198,8 +196,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
       // When the user hovers the result with the mouse, select it
       // TODO: perhaps use live() instead?
       $result.mouseover(function() {
-        console.log('mouseover');
-        $('.result.selected', $results).removeClass('selected');
+        $('.result.selected', $resultList).removeClass('selected');
         $(this).addClass('selected');
       });
       
@@ -212,7 +209,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
         // Clear the input field
         $input.val('');
         // And remove results TODO: maybe call this method recursively instead?
-        $results.empty();
+        $resultList.empty();
       });
     }
     return true;
@@ -221,10 +218,9 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
 Drupal.behaviors.linkitAutocomplete = {
   attach: function(context, settings) {
-    var aco = new AutoCompleteObject($('#linkit #edit-search', context), function(linkObject) {
+    var aco = new AutoCompleteObject($('#linkit #edit-search', context), 'http://d7.dev/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
-      console.log('inserting');
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
       $('#linkit #edit-path').val(linkObject.path);
     });
