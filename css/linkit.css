@@ -26,7 +26,6 @@ input#edit-link.with_imce {
   width: 0;
   height: 0;
   font-family: 'Lucida Grande', Helvetica, Arial, Verdana, sans-serif;
-  cursor: default;
 }
 
 #linkit-autocomplete-results {
@@ -37,6 +36,7 @@ input#edit-link.with_imce {
   -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  cursor: default;
 }
 
 #linkit-autocomplete-results .result {
