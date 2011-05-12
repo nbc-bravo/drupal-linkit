@@ -60,18 +60,8 @@ Drupal.behaviors.linkitImce =  {
 };
 
 /**
- * Create an autocomplete instance from a DOM input element by providing a JSON
- * path 
- * 
- * $input The input element wrapped in jQuery
- * path A path which provides JSON objects upon search
- * callback A callback function to execute when an item selection is confirmed.
- *          The callback function recieves an argument which is the JSON object
- *          that was selected.
- * options An object with additional options, which can contain these keys:
- *   - characterLimit (default=3) The minimum number of chars for an AJAX call
- *   - wait (default=100) The time in ms between a key is pressed and AJAX call
- *   - ajaxTimeout (default=5000) Timeout on AJAX calls
+ * Create an autocomplete object instance from a DOM input element by
+ * providing a JSON path
  * 
  * The DOM tree will look like this:
  * 
@@ -82,6 +72,16 @@ Drupal.behaviors.linkitImce =  {
  *       h4.title (contains the title)
  *       p.description (contains the description)
  *     li.result (more results...)
+ * 
+ * @param $input The input element wrapped in jQuery
+ * @param path A path which provides JSON objects upon search
+ * @param callback A callback function to execute when an item selection is
+ *        confirmed. The callback function recieves an argument which is the
+ *        JSON object that was selected.
+ * @param options An object with additional options:
+ *        - characterLimit (default=3) The minimum number of chars for an AJAX call
+ *        - wait (default=100) The time in ms between a key is pressed and AJAX call
+ *        - ajaxTimeout (default=5000) Timeout on AJAX calls
  */
 var AutoCompleteObject = function($input, path, callback, options) {
   var self = this;
@@ -188,7 +188,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
       var result = results[userString][i];
       var $result = $('<li />').addClass('result')
         .append('<h4>' + result.title + '</h4><p>' + result.description + '</p>')
-        .data('linkObject', result)
+        .data('result', result)
         .appendTo($resultList);
       $wrapper.show();
       // Select the first result
@@ -208,7 +208,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
       $result.mousedown(function() {
         // If a callback is provided, call it now
         if (typeof callback === 'function')
-          callback($(this).data('linkObject'));
+          callback($(this).data('result'));
         // Clear the input field
         $input.val('');
         // And remove results TODO: maybe call this method recursively instead?
