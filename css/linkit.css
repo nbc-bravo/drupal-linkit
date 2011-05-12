@@ -1,14 +1,6 @@
 
 #linkit { padding: 40px; }
 
-span.throbber {
-  height: 15px;
-  margin: 1em 2px;
-  padding-left:20px;
-  background: transparent url(../../../../../misc/throbber.gif) no-repeat 0px -18px;
-  display:block;
-}
-
 input#edit-link.with_imce {
   margin-bottom:10px;
 }
@@ -17,26 +9,34 @@ input#edit-link.with_imce {
   font-size: 1em;
   height: 2em;
   padding: 3px 25px 3px 5px;
+  background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
 }
 
 #linkit #edit-search.throbbing {
-  background: transparent url(../../../../../misc/throbber.gif) no-repeat 99% -13px;
+  background-image: url(../throbber-active.gif);
 }
 
 /* Autocomplete */
 
-#linkit-autocomplete-results {
+#linkit-autocomplete-wrapper {
   position: relative;
   clear: both;
   top: -2px;
   left: 0;
   width: 0;
   height: 0;
+  font-family: 'Lucida Grande', Helvetica, Arial, Verdana, sans-serif;
+  cursor: default;
+}
+
+#linkit-autocomplete-results {
+  position: relative;
   list-style: none;
   padding: 0;
   margin: 0;
-  font-family: 'Lucida Grande', Helvetica, Arial, Verdana, sans-serif;
-  cursor: default;
+  -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 #linkit-autocomplete-results .result {
