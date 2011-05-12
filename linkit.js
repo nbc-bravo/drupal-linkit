@@ -120,7 +120,25 @@ var AutoCompleteObject = function($input, path, callback, options) {
       });
     }
   });
-  
+
+  // When the user hovers a result with the mouse, select it
+  $('.result', $resultList[0]).live('mouseover', function() {
+    $('.result.selected', $resultList).removeClass('selected');
+    $(this).addClass('selected');
+  });
+
+  // A result is inserted
+  // TODO: Move most code to new method self.selectResult(id) so it can also be keyboard navigated
+  $('.result', $resultList[0]).live('mousedown', function() {
+    // If a callback is provided, call it now
+    if (typeof callback === 'function')
+      callback($(this).data('result'));
+    // Clear the input field
+    $input.val('');
+    // And remove results TODO: maybe call this method recursively instead?
+    $resultList.empty();
+  });
+
   self.setStatus = function(string) {
     self.status = string;
     switch (string) {
@@ -195,25 +213,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
       if (i == 0) {
         $result.addClass('selected');
       }
-
-      // When the user hovers the result with the mouse, select it
-      // TODO: perhaps use live() instead?
-      $result.mouseover(function() {
-        $('.result.selected', $resultList).removeClass('selected');
-        $(this).addClass('selected');
-      });
-      
-      // A result is inserted
-      // TODO: Move most code to new method self.selectResult(id) so it can also be keyboard navigated
-      $result.mousedown(function() {
-        // If a callback is provided, call it now
-        if (typeof callback === 'function')
-          callback($(this).data('result'));
-        // Clear the input field
-        $input.val('');
-        // And remove results TODO: maybe call this method recursively instead?
-        $resultList.empty();
-      });
     }
     return true;
   };
