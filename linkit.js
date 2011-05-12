@@ -74,21 +74,26 @@ Drupal.behaviors.linkitImce =  {
  *     li.result (more results...)
  * 
  * @param $input The input element wrapped in jQuery
- * @param path A path which provides JSON objects upon search
+ * @param path A path which provides JSON objects upon search. This path should
+ *        print a JSON array containing result objects. Each result object
+ *        should contain at least a title or description key. All other keys
+ *        are for the developer to define.
  * @param callback A callback function to execute when an item selection is
  *        confirmed. The callback function recieves an argument which is the
  *        JSON object that was selected.
  * @param options An object with additional options:
- *        - characterLimit (default=3) The minimum number of chars for an AJAX call
- *        - wait (default=100) The time in ms between a key is pressed and AJAX call
- *        - ajaxTimeout (default=5000) Timeout on AJAX calls
+ *      - charLimit (default=3) The minimum number of chars to do an AJAX call
+ *      - wait (default=100) The time in ms between a key is pressed and AJAX call
+ *      - getParam (default="s") The get parameter for AJAX calls: "?param=search"
+ *      - ajaxTimeout (default=5000) Timeout on AJAX calls
  */
 var AutoCompleteObject = function($input, path, callback, options) {
   var self = this;
 
   var options = $.extend({
-    characterLimit: 3,
+    charLimit: 3,
     wait: 100,
+    getParam: 's',
     ajaxTimeout: 5000
   }, options);
 
@@ -103,7 +108,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   var $resultList = $('<ul />').attr('id', 'linkit-autocomplete-results').width($input.innerWidth());
   var $wrapper = $('<div />').append($resultList).attr('id', 'linkit-autocomplete-wrapper').insertAfter($input);
-  
+
   $input.focus(function() {
     $wrapper.show();
   });
@@ -113,10 +118,10 @@ var AutoCompleteObject = function($input, path, callback, options) {
   });
   $input.keyup(function() {
     // If the results can't be displayed we must fetch them, then display
-    if (!self.displayResults()) {
+    if (!self.renderResults()) {
       self.fetchResults($input.val(), function(data, search) {
         results[search] = data;
-        self.displayResults();
+        self.renderResults();
       });
     }
   });
@@ -133,9 +138,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
     // If a callback is provided, call it now
     if (typeof callback === 'function')
       callback($(this).data('result'));
-    // Clear the input field
-    $input.val('');
-    self.displayResults();
   });
 
   self.setStatus = function(string) {
@@ -182,14 +184,14 @@ var AutoCompleteObject = function($input, path, callback, options) {
    * Display results from a certain string
    * Returns true if displayed properly
    */
-  self.displayResults = function() {
+  self.renderResults = function() {
 
     // Update user string
     userString = $input.val();
     
     $resultList.empty();
 
-    if (userString.length < options.characterLimit) {
+    if (userString.length < options.charLimit) {
       $wrapper.hide();
       return true;
     }
