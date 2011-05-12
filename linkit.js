@@ -162,7 +162,12 @@ var AutoCompleteObject = function($input, path, callback, options) {
     var xhr = $.ajax({
       url: path,
       dataType: 'json',
-      data: {s: search},
+      // Self-invoking function needed to create an object with a dynamic key
+      data: (function() {
+        var o = new Object();
+        o[options.getParam] = search;
+        return o;
+      }()),
       context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
