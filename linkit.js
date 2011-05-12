@@ -92,8 +92,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
     ajaxTimeout: 5000
   }, options);
 
-  // A key-value object with keys as the string and value as the JSON result
-  // object
+  // A key-value object, key is search string, value is a result object
   var results = {};
 
   // The user's current string input
@@ -113,8 +112,13 @@ var AutoCompleteObject = function($input, path, callback, options) {
     return false;
   });
   $input.keyup(function() {
-    if (!self.displayResults())
-      self.fetchResults($input.val());
+    // If the results can't be displayed we must fetch them, then display
+    if (!self.displayResults()) {
+      self.fetchResults($input.val(), function(data, search) {
+        results[search] = data;
+        self.displayResults();
+      });
+    }
   });
   
   self.setStatus = function(string) {
@@ -128,29 +132,28 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   /**
    * Fetch results asynchronously via AJAX
+   * Errors are ignored.
    * 
    * @param search The search string
-   * @param callback The callback function to
+   * @param callback The callback function on success. Takes two
+   *        arguments: data (array of results), search string
    */
   self.fetchResults = function(search, callback) {
     $input.addClass('throbbing');
     var xhr = $.ajax({
-      // TODO: move uri
       url: path,
       dataType: 'json',
       data: {s: search},
       context: search,
       timeout: options.ajaxTimeout,
-      success: function(res, textStatus) {
-        results[this] = res;
-        self.activeCall = null;
-        // TODO: Make a callback method instead
-        self.displayResults();
+      success: function(data, textStatus) {
+        // TODO: Keep count of how many calls are active, when 0 remove throbber
         $input.removeClass('throbbing');
+        callback(data, this);
       }
     });
   };
-  
+
   /**
    * Put the mouse cursor in this autocomplete field
    */
