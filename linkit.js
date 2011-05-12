@@ -135,8 +135,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
       callback($(this).data('result'));
     // Clear the input field
     $input.val('');
-    // And remove results TODO: maybe call this method recursively instead?
-    $resultList.empty();
+    self.displayResults();
   });
 
   self.setStatus = function(string) {
