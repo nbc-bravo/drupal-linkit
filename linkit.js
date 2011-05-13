@@ -95,7 +95,7 @@ $.expr[':'].focus = function( elem ) {
  *      - ajaxTimeout (default=5000) Timeout on AJAX calls
  * @todo Check Drupal coding standards...
  */
-var AutoCompleteObject = function($input, path, callback, options) {
+var BetterAutoComplete = function($input, path, callback, options) {
   var self = this;
   
   var lastRenderedSearch = '';
@@ -333,7 +333,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
 Drupal.behaviors.linkitAutocomplete = {
   attach: function(context, settings) {
     var $linkitSearch = $('#linkit #edit-search', context);
-    var aco = new AutoCompleteObject($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
+    var bac = new BetterAutoComplete($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
       $('#linkit #edit-search', context).val('');
