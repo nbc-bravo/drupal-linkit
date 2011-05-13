@@ -114,6 +114,7 @@ function linkit_dashboard_page($editor) {
   module_invoke('admin_menu', 'suppress');
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
+  drupal_add_js(drupal_get_path('module', 'linkit') . '/betterautocomplete.js', array('group' => JS_LIBRARY));
   
   // Add JS
   static $defualt_settings_added = FALSE;
