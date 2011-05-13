@@ -197,6 +197,9 @@ var AutoCompleteObject = function($input, path, callback, options) {
     // If a callback is provided, call it now
     if (typeof callback === 'function')
       callback($('.result', $resultList).eq(selectionIndex).data('result'));
+
+    // Parse once more, if the callback changed focus or content
+    self.parseResults();
   };
 
   /**
