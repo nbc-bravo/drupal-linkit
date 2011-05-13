@@ -55,7 +55,7 @@ $.expr[':'].focus = function( elem ) {
  */
 BetterAutoComplete = function($input, path, callback, options) {
   var self = this;
-  
+
   var lastRenderedSearch = '';
 
   var options = $.extend({
@@ -102,16 +102,18 @@ BetterAutoComplete = function($input, path, callback, options) {
     var newIndex;
     var size = $('.result', $resultList).length;
     switch (event.keyCode) {
-    case 38: // Up arrow
-      newIndex = Math.max(0, index-1);
-      break;
-    case 40: // Down arrow
-      newIndex = Math.min(size-1, index+1);
-      break;
-    case 9:
-    case 13:
-      self.confirmSelection();
-      return false;
+      case 38: // Up arrow
+        newIndex = Math.max(0, index-1);
+        break;
+
+      case 40: // Down arrow
+        newIndex = Math.min(size-1, index+1);
+        break;
+
+      case 9:
+      case 13:
+        self.confirmSelection();
+        return false;
     }
     // Index have changed so update selection and cancel the event
     if (typeof newIndex === 'number') {
@@ -129,8 +131,9 @@ BetterAutoComplete = function($input, path, callback, options) {
       timer = setTimeout(function() {
         self.fetchResults($input.val(), function(data, search) {
           results[search] = data;
-          if ($input.is(':focus'))
+          if ($input.is(':focus')) {
             self.parseResults();
+          }
         });
       }, options.wait);
     }
@@ -172,11 +175,13 @@ BetterAutoComplete = function($input, path, callback, options) {
    */
   self.confirmSelection = function() {
     var $result = $('.result', $resultList).eq(self.getSelection());
-    if ($result.length === 0)
+    if ($result.length === 0) {
       return false;
+    }
     // If a callback is provided, call it now
-    if (typeof callback === 'function')
+    if (typeof callback === 'function') {
       callback($result.data('result'));
+    }
 
     // Parse once more, if the callback changed focus or content
     self.parseResults();
@@ -220,12 +225,15 @@ BetterAutoComplete = function($input, path, callback, options) {
   self.needsFetching = function() {
     var userString = $input.val();
 
-    if (userString.length < options.charLimit)
+    if (userString.length < options.charLimit) {
       return false;
-    else if (results[userString] instanceof Array)
+    }
+    else if (results[userString] instanceof Array) {
       return false;
-    else
+    }
+    else {
       return true;
+    }
   };
 
   /**
@@ -238,8 +246,9 @@ BetterAutoComplete = function($input, path, callback, options) {
       return;
     }
     $wrapper.hide();
-    if (self.needsFetching())
+    if (self.needsFetching()) {
       return;
+    }
     lastRenderedSearch = $input.val();
 
     // Not in cache
@@ -258,7 +267,7 @@ BetterAutoComplete = function($input, path, callback, options) {
 
     // Update user string
     userString = $input.val();
-    
+
     $resultList.empty();
 
     // The result is not in cache, so there is nothing to display right now
@@ -272,8 +281,9 @@ BetterAutoComplete = function($input, path, callback, options) {
       var result = results[userString][index];
 
       // If we don't have title or description, we don't have much to display
-      if (typeof result.title === 'undefined' && typeof result.description === 'undefined')
+      if (typeof result.title === 'undefined' && typeof result.description === 'undefined') {
         continue;
+      }
       var $result = $('<li />').addClass('result')
         .append(
             (typeof result.title !== 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
