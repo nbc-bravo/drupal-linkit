@@ -114,7 +114,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
   });
   $input.blur(function() {
     $wrapper.hide();
-    return false;
   });
   $input.keyup(function() {
     // If the results can't be displayed we must fetch them, then display
