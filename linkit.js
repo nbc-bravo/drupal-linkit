@@ -115,6 +115,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
     .width($input.innerWidth())
     .appendTo($wrapper);
 
+  // Just toggle visibility of the results on focus/blur
   $input.focus(function() {
     $wrapper.show();
   });
@@ -193,6 +194,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
   /**
    * Display results from a certain string
    * Returns true if displayed properly
+   * 
+   * TODO: Grouping
    */
   self.renderResults = function() {
 
