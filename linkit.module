@@ -164,11 +164,25 @@ function linkit_dashboard_page($editor) {
  */
 function linkit_autocomplete($string = NULL) {
   
+  $search = $_GET['s'];
+  
+  if ($search == 'noresults') {
+    drupal_json_output(array());
+    return;
+  }
+  
   $temsp = array(
     'type' => 'Content',
     'path' => 'node/123',
     'alias' => 'blog/tutorial',
-    'title' => 'Renderman Tutorial',
+    'title' => 'Renderman Tutorial '. $search,
+    'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
+  );
+  $temdp = array(
+    'type' => 'Content',
+    'path' => 'node/123',
+    'alias' => 'blog/tutorial',
+    'title' => 'Renderman Tutorial '. $search,
     'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
   );
   
@@ -180,7 +194,7 @@ function linkit_autocomplete($string = NULL) {
     'description' => 'Tips · by admin · created 2010-04-12',
   );
   
-  drupal_json_output(array($temsp, $temp2));
+  drupal_json_output(array($temsp, $temp2, $temdp));
   return;
   
   $matches = array();
