@@ -145,13 +145,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
       callback($(this).data('result'));
   });
 
-  self.setStatus = function(string) {
-    self.status = string;
-    switch (string) {
-    case 'loading':
-      $input.addClass('throbbing');
-      break;
-    }
   };
 
   /**
