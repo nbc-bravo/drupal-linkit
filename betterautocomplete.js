@@ -49,18 +49,26 @@ $.expr[':'].focus = function( elem ) {
  *     li.result (more results...)
  * 
  * @param $input The input element wrapped in jQuery
+ * 
  * @param path A path which provides JSON objects upon search. This path should
  *        print a JSON array containing result objects. Each result object
- *        should contain at least a title or description key. All other keys
- *        are for the developer to define.
+ *        should contain at least a title or description key.
+ *        Other optional keys are:
+ *      - insert (default='') The text that should be inserted to the input
+ *        field if that item is selected.
+ * 
+ *        Other keys can be defined by the developer.
+ * 
  * @param callback A callback function to execute when an item selection is
  *        confirmed. The callback function recieves an argument which is the
  *        JSON object that was selected.
+ * 
  * @param options An object with additional options:
  *      - charLimit (default=3) The minimum number of chars to do an AJAX call
  *      - wait (default=100) The time in ms between a key is pressed and AJAX call
  *      - getParam (default="s") The get parameter for AJAX calls: "?param=search"
  *      - ajaxTimeout (default=5000) Timeout on AJAX calls
+ * 
  * @todo Check Drupal coding standards...
  */
 BetterAutocomplete = function($input, path, callback, options) {
@@ -188,9 +196,17 @@ BetterAutocomplete = function($input, path, callback, options) {
     if ($result.length === 0) {
       return false;
     }
+    var result = $result.data('result');
+    if (typeof result.insert !== 'undefined') {
+      $input.val(result.insert);
+    }
+    else {
+      $input.val('');
+    }
+
     // If a callback is provided, call it now
     if (typeof callback === 'function') {
-      callback($result.data('result'));
+      callback(result);
     }
 
     // Parse once more, if the callback changed focus or content
