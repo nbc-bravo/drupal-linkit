@@ -132,12 +132,23 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   $input.keydown(function(event) {
     var index = self.getSelection();
+    var newIndex;
+    var size = $('.result', $resultList).length;
     switch (event.keyCode) {
-    case 38:
-      self.setSelection(--index);
+    case 38: // Up arrow
+      newIndex = Math.max(0, index-1);
+      break;
+    case 40: // Down arrow
+      newIndex = Math.min(size-1, index+1);
+      break;
+    case 9:
+    case 13:
+      self.confirmSelection();
       return false;
-    case 40:
-      self.setSelection(++index);
+    }
+    // Index have changed so update selection and cancel the event
+    if (typeof newIndex === 'number') {
+      self.setSelection(newIndex);
       return false;
     }
   });
@@ -314,6 +325,7 @@ Drupal.behaviors.linkitAutocomplete = {
       $('#linkit #edit-search', context).val('');
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
       $('#linkit #edit-path').val(linkObject.path);
+      $('#linkit #edit-text').focus();
     });
     if (context === window.document) {
       // TODO: Make autofocus with html5?
