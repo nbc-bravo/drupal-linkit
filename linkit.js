@@ -86,9 +86,12 @@ Drupal.behaviors.linkitImce =  {
  *      - wait (default=100) The time in ms between a key is pressed and AJAX call
  *      - getParam (default="s") The get parameter for AJAX calls: "?param=search"
  *      - ajaxTimeout (default=5000) Timeout on AJAX calls
+ * @todo Check Drupal coding standards...
  */
 var AutoCompleteObject = function($input, path, callback, options) {
   var self = this;
+  
+  var lastRenderedSearch = '';
 
   var options = $.extend({
     charLimit: 3,
@@ -97,6 +100,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
     ajaxTimeout: 5000
   }, options);
 
+  // Caching of search results
   // A key-value object, key is search string, value is a result object
   var results = {};
 
@@ -104,7 +108,9 @@ var AutoCompleteObject = function($input, path, callback, options) {
   var userString = $input.val();
 
   // Turn off the browser's autocompletion
-  $input.attr('autocomplete', 'OFF').attr('aria-autocomplete', 'none');
+  $input
+    .attr('autocomplete', 'OFF')
+    .attr('aria-autocomplete', 'none');
 
   var $wrapper = $('<div />')
     .attr('id', 'linkit-autocomplete-wrapper')
@@ -117,24 +123,39 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   // Just toggle visibility of the results on focus/blur
   $input.focus(function() {
+    self.renderResults();
     $wrapper.show();
   });
   $input.blur(function() {
     $wrapper.hide();
   });
+
+  $input.keydown(function(event) {
+    var index = self.getSelection();
+    switch (event.keyCode) {
+    case 38:
+      self.setSelection(--index);
+      return false;
+    case 40:
+      self.setSelection(++index);
+      return false;
+    }
+  });
   $input.keyup(function() {
+    // Parse always!
+    self.parseResults();
     // If the results can't be displayed we must fetch them, then display
-    if (!self.renderResults()) {
+    if (self.needsFetching()) {
       self.fetchResults($input.val(), function(data, search) {
         results[search] = data;
-        self.renderResults();
+        self.parseResults();
       });
     }
   });
 
   // When the user hovers a result with the mouse, select it
   $('.result', $resultList[0]).live('mouseover', function() {
-    self.select($(this).data('index'));
+    self.setSelection($(this).data('index'));
   });
 
   // A result is inserted
@@ -144,13 +165,24 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   /**
    * Select a result based on index
+   * 
    * @param index The index number of the result, starting on 0
    */
-  self.select = function(index) {
+  self.setSelection = function(index) {
     selectionIndex = index;
+    // TODO: Check that it's not out of bounds
     $('.result', $resultList)
       .removeClass('selected')
       .eq(index).addClass('selected');
+  };
+
+  /**
+   * Get the current selection index
+   * 
+   * @return The index number of the result, -1 if not found
+   */
+  self.getSelection = function() {
+    return $('.result', $resultList).index($('.result.selected', $resultList));
   };
 
   /**
@@ -192,8 +224,43 @@ var AutoCompleteObject = function($input, path, callback, options) {
   };
 
   /**
-   * Display results from a certain string
-   * Returns true if displayed properly
+   * Does the current user string need fetching?
+   * Checks character limit and cache.
+   * 
+   * @returns {Boolean} true if fetching is required
+   */
+  self.needsFetching = function() {
+    var userString = $input.val();
+
+    if (userString.length < options.charLimit)
+      return false;
+    else if (results[userString] instanceof Array)
+      return false;
+    else
+      return true;
+  };
+
+  /**
+   * Checks if needed to re-render etc
+   */
+  self.parseResults = function() {
+    // Check if already rendered
+    if (lastRenderedSearch === $input.val()) {
+      $wrapper.show();
+      return;
+    }
+    $wrapper.hide();
+
+    // Not in cache
+    if (self.renderResults() >= 1) {
+      lastRenderedSearch = $input.val();
+      self.setSelection(0);
+      $wrapper.show();
+    }
+  };
+
+  /**
+   * Generate DOM result items from the current search using the results cache
    * 
    * TODO: Grouping
    */
@@ -204,16 +271,11 @@ var AutoCompleteObject = function($input, path, callback, options) {
     
     $resultList.empty();
 
-    if (userString.length < options.charLimit) {
-      $wrapper.hide();
-      return true;
-    }
-
     // The result is not in cache, so there is nothing to display right now
-    if (typeof results[userString] !== 'object') {
-      $wrapper.hide();
-      return false;
+    if (!(results[userString] instanceof Array)) {
+      return -1;
     }
+    var index = 0;
     for (index in results[userString]) {
 
       // Shortname for this result
@@ -230,10 +292,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
         .data('result', result) // Store the result object on this DOM element
         .data('index', index) // For quick determination of index on events
         .appendTo($resultList);
-      $wrapper.show();
     }
-    self.select(0);
-    return true;
+    return index;
   };
 };
 
