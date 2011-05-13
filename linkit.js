@@ -141,7 +141,9 @@ var AutoCompleteObject = function($input, path, callback, options) {
       return false;
     }
   });
+
   $input.keyup(function() {
+    // TODO: Use timeout
     // Parse always!
     self.parseResults();
     // If the results can't be displayed we must fetch them, then display
