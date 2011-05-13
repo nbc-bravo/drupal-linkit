@@ -307,7 +307,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
     if (!(results[userString] instanceof Array)) {
       return -1;
     }
-    var index = 0;
+    var index = -1;
     for (index in results[userString]) {
 
       // Shortname for this result
@@ -325,6 +325,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
         .data('index', index) // For quick determination of index on events
         .appendTo($resultList);
     }
+    index++;
     return index;
   };
 };
