@@ -191,6 +191,9 @@ var AutoCompleteObject = function($input, path, callback, options) {
    * Confirm a selection and call the defined callback
    */
   self.confirmSelection = function() {
+    var $result = $('.result', $resultList).eq(selectionIndex);
+    if ($result.length === 0)
+      return false;
     // If a callback is provided, call it now
     if (typeof callback === 'function')
       callback($('.result', $resultList).eq(selectionIndex).data('result'));
