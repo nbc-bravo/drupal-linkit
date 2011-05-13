@@ -125,7 +125,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   // Just toggle visibility of the results on focus/blur
   $input.focus(function() {
-    self.renderResults();
+    self.parseResults();
     $wrapper.show();
   });
   $input.blur(function() {
@@ -156,7 +156,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
   });
 
   $input.keyup(function() {
-    console.log($input.val());
     clearTimeout(timer);
     // Parse always!
     self.parseResults();
@@ -187,7 +186,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
    * @param index The index number of the result, starting on 0
    */
   self.setSelection = function(index) {
-    selectionIndex = index;
     // TODO: Check that it's not out of bounds
     $('.result', $resultList)
       .removeClass('selected')
