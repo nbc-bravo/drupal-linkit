@@ -1,19 +1,22 @@
 
 /**
- * Better Auto Complete
- * ====================
+ * Better Autocomplete
+ * ===================
  * 
  * Provides an object for fetching autocomplete results via XMLHttpRequest
  * from a JSON resource path.
  * 
+ * For usage, see below
+ * 
  * @author Didrik Nordström, http://betamos.se/
  * 
  * Requirements:
- * jQuery 1.4+
- * A modern web browser
+ * 
+ * - jQuery 1.4+
+ * - A modern web browser
  */
 
-var BetterAutoComplete;
+var BetterAutocomplete;
 
 (function ($) {
 
@@ -27,6 +30,13 @@ $.expr[':'].focus = function( elem ) {
 /**
  * Create an autocomplete object instance from a DOM input element by
  * providing a JSON path
+ * 
+ * Example usage:
+ * 
+ * var bac = new BetterAutocomplete($('#find'), '/ajaxcall', function(result) {
+ *   $('#title').val(result.title);
+ *   $('#myoption').val(result.myOption);
+ * }, { getParam: 'keywords', ajaxTimeout: 10000 });
  * 
  * The DOM tree will look like this:
  * 
@@ -53,7 +63,7 @@ $.expr[':'].focus = function( elem ) {
  *      - ajaxTimeout (default=5000) Timeout on AJAX calls
  * @todo Check Drupal coding standards...
  */
-BetterAutoComplete = function($input, path, callback, options) {
+BetterAutocomplete = function($input, path, callback, options) {
   var self = this;
 
   var lastRenderedSearch = '';
