@@ -231,11 +231,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
         .data('index', index) // For quick determination of index on events
         .appendTo($resultList);
       $wrapper.show();
-      // Select the first result
-      if (index == 0) {
-        $result.addClass('selected');
-      }
     }
+    self.select(0);
     return true;
   };
 };
