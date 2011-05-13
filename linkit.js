@@ -145,6 +145,15 @@ var AutoCompleteObject = function($input, path, callback, options) {
       callback($(this).data('result'));
   });
 
+  /**
+   * Select a result based on index
+   * @param index The index number of the result, starting on 0
+   */
+  self.select = function(index) {
+    selectionIndex = index;
+    $('.result', $resultList)
+      .removeClass('selected')
+      .eq(index).addClass('selected');
   };
 
   /**
