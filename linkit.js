@@ -60,6 +60,13 @@ Drupal.behaviors.linkitImce =  {
 };
 
 /**
+ * Focus selector, required by AutoCompleteObject
+ */
+jQuery.expr[':'].focus = function( elem ) {
+  return elem === document.activeElement && ( elem.type || elem.href );
+};
+
+/**
  * Create an autocomplete object instance from a DOM input element by
  * providing a JSON path
  * 
@@ -164,7 +171,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
       timer = setTimeout(function() {
         self.fetchResults($input.val(), function(data, search) {
           results[search] = data;
-          self.parseResults();
+          if ($input.is(':focus'))
+            self.parseResults();
         });
       }, options.wait);
     }
