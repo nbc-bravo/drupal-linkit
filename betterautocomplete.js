@@ -298,22 +298,4 @@ BetterAutoComplete = function($input, path, callback, options) {
   };
 };
 
-Drupal.behaviors.linkitAutocomplete = {
-  attach: function(context, settings) {
-    var $linkitSearch = $('#linkit #edit-search', context);
-    var bac = new BetterAutoComplete($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
-      // Select callback is executed when an object is chosen
-      // Only change the link text if it is empty
-      $('#linkit #edit-search', context).val('');
-      $('#linkit #edit-text:text[value=""]').val(linkObject.title);
-      $('#linkit #edit-path').val(linkObject.path);
-      $('#linkit #edit-text').focus();
-    });
-    if (context === window.document) {
-      // TODO: Make autofocus with html5?
-      $linkitSearch.focus();
-    }
-  }
-};
-
 })(jQuery);
