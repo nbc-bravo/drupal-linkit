@@ -62,7 +62,7 @@ Drupal.behaviors.linkitImce =  {
 /**
  * Focus selector, required by AutoCompleteObject
  */
-jQuery.expr[':'].focus = function( elem ) {
+$.expr[':'].focus = function( elem ) {
   return elem === document.activeElement && ( elem.type || elem.href );
 };
 
