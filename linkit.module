@@ -173,14 +173,7 @@ function linkit_autocomplete($string = NULL) {
   }
   
   $temsp = array(
-    'type' => 'Content',
-    'path' => 'node/123',
-    'alias' => 'blog/tutorial',
-    'title' => 'Renderman Tutorial '. $search,
-    'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
-  );
-  $temdp = array(
-    'type' => 'Content',
+    'group' => 'Content',
     'path' => 'node/123',
     'alias' => 'blog/tutorial',
     'title' => 'Renderman Tutorial '. $search,
@@ -188,11 +181,18 @@ function linkit_autocomplete($string = NULL) {
   );
   
   $temp2 = array(
-    'type' => 'Content',
+    'group' => 'Content',
     'path' => 'node/120',
     'alias' => 'blog/hej',
     'title' => 'Tips till dig',
     'description' => 'Tips · by admin · created 2010-04-12',
+  );
+  $temdp = array(
+    'group' => 'Bacon',
+    'path' => 'node/123',
+    'alias' => 'blog/tutorial',
+    'title' => 'Renderman Tutorial '. $search,
+    'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
   );
   
   drupal_json_output(array($temsp, $temp2, $temdp));

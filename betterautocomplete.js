@@ -56,6 +56,10 @@ $.expr[':'].focus = function( elem ) {
  *        Other optional keys are:
  *      - insert (default='') The text that should be inserted to the input
  *        field if that item is selected.
+ *      - group (default=undefined) Add groups to the content. Will render nice
+ *        group headings. Remember to put the results grouped together,
+ *        otherwise they will be rendered as multiple groups.
+ *        Leave if you do not require grouping.
  * 
  *        Other keys can be defined by the developer.
  * 
@@ -162,9 +166,14 @@ BetterAutocomplete = function($input, path, callback, options) {
     self.setSelection($(this).data('index'));
   });
 
-  // A result is inserted
+  //A result is clicked
   $('.result', $resultList[0]).live('mousedown', function() {
     self.confirmSelection();
+  });
+
+  // A group is clicked
+  $('.group', $resultList[0]).live('mousedown', function() {
+    return false;
   });
 
   /**
@@ -301,8 +310,8 @@ BetterAutocomplete = function($input, path, callback, options) {
       return -1;
     }
     var index = -1;
+    var lastGroup;
     for (index in results[userString]) {
-
       // Shortname for this result
       var result = results[userString][index];
 
@@ -310,6 +319,15 @@ BetterAutocomplete = function($input, path, callback, options) {
       if (typeof result.title === 'undefined' && typeof result.description === 'undefined') {
         continue;
       }
+
+      // Grouping
+      if (typeof result.group !== 'undefined' && result.group !== lastGroup) {
+        var $groupHeading = $('<li />').addClass('group')
+          .append('<h3>' + result.group + '</h3>')
+          .appendTo($resultList);
+      }
+      lastGroup = result.group;
+
       var $result = $('<li />').addClass('result')
         .append(
             (typeof result.title !== 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
