@@ -246,6 +246,7 @@ Drupal.behaviors.linkitAutocomplete = {
     var aco = new AutoCompleteObject($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
+      $('#linkit #edit-search', context).val('');
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
       $('#linkit #edit-path').val(linkObject.path);
     });
