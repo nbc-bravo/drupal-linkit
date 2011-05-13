@@ -106,8 +106,14 @@ var AutoCompleteObject = function($input, path, callback, options) {
   // Turn off the browser's autocompletion
   $input.attr('autocomplete', 'OFF').attr('aria-autocomplete', 'none');
 
-  var $resultList = $('<ul />').attr('id', 'linkit-autocomplete-results').width($input.innerWidth());
-  var $wrapper = $('<div />').append($resultList).attr('id', 'linkit-autocomplete-wrapper').insertAfter($input);
+  var $wrapper = $('<div />')
+    .attr('id', 'linkit-autocomplete-wrapper')
+    .insertAfter($input);
+
+  var $resultList = $('<ul />')
+    .attr('id', 'linkit-autocomplete-results')
+    .width($input.innerWidth())
+    .appendTo($wrapper);
 
   $input.focus(function() {
     $wrapper.show();
