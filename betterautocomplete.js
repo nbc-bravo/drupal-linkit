@@ -314,6 +314,9 @@ BetterAutocomplete = function($input, path, callback, options) {
     for (index in results[userString]) {
       // Shortname for this result
       var result = results[userString][index];
+      if (!(result instanceof Object)) {
+        continue;
+      }
 
       // If we don't have title or description, we don't have much to display
       if (typeof result.title === 'undefined' && typeof result.description === 'undefined') {
