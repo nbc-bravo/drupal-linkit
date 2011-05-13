@@ -186,13 +186,6 @@ var AutoCompleteObject = function($input, path, callback, options) {
   };
 
   /**
-   * Put the mouse cursor in this autocomplete field
-   */
-  self.focus = function() {
-    $input.focus();
-  };
-
-  /**
    * Display results from a certain string
    * Returns true if displayed properly
    */
@@ -240,7 +233,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
 Drupal.behaviors.linkitAutocomplete = {
   attach: function(context, settings) {
-    var aco = new AutoCompleteObject($('#linkit #edit-search', context), 'http://d7.dev/linkit/autocomplete', function(linkObject) {
+    var $linkitSearch = $('#linkit #edit-search', context);
+    var aco = new AutoCompleteObject($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
@@ -248,7 +242,7 @@ Drupal.behaviors.linkitAutocomplete = {
     });
     if (context === window.document) {
       // TODO: Make autofocus with html5?
-      aco.focus();
+      $linkitSearch.focus();
     }
   }
 };
