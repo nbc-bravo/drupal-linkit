@@ -137,11 +137,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
   });
 
   // A result is inserted
-  // TODO: Move most code to new method self.selectResult(id) so it can also be keyboard navigated
   $('.result', $resultList[0]).live('mousedown', function() {
-    // If a callback is provided, call it now
-    if (typeof callback === 'function')
-      callback($(this).data('result'));
+    self.confirmSelection();
   });
 
   /**
@@ -153,6 +150,15 @@ var AutoCompleteObject = function($input, path, callback, options) {
     $('.result', $resultList)
       .removeClass('selected')
       .eq(index).addClass('selected');
+  };
+
+  /**
+   * Confirm a selection and call the defined callback
+   */
+  self.confirmSelection = function() {
+    // If a callback is provided, call it now
+    if (typeof callback === 'function')
+      callback($('.result', $resultList).eq(selectionIndex).data('result'));
   };
 
   /**
