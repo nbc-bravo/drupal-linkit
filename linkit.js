@@ -95,7 +95,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   var options = $.extend({
     charLimit: 3,
-    wait: 100,
+    wait: 250,
     getParam: 's',
     ajaxTimeout: 5000
   }, options);
@@ -106,6 +106,8 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   // The user's current string input
   var userString = $input.val();
+
+  var timer;
 
   // Turn off the browser's autocompletion
   $input
@@ -154,15 +156,18 @@ var AutoCompleteObject = function($input, path, callback, options) {
   });
 
   $input.keyup(function() {
-    // TODO: Use timeout
+    console.log($input.val());
+    clearTimeout(timer);
     // Parse always!
     self.parseResults();
     // If the results can't be displayed we must fetch them, then display
     if (self.needsFetching()) {
-      self.fetchResults($input.val(), function(data, search) {
-        results[search] = data;
-        self.parseResults();
-      });
+      timer = setTimeout(function() {
+        self.fetchResults($input.val(), function(data, search) {
+          results[search] = data;
+          self.parseResults();
+        });
+      }, options.wait);
     }
   });
 
@@ -202,12 +207,12 @@ var AutoCompleteObject = function($input, path, callback, options) {
    * Confirm a selection and call the defined callback
    */
   self.confirmSelection = function() {
-    var $result = $('.result', $resultList).eq(selectionIndex);
+    var $result = $('.result', $resultList).eq(self.getSelection());
     if ($result.length === 0)
       return false;
     // If a callback is provided, call it now
     if (typeof callback === 'function')
-      callback($('.result', $resultList).eq(selectionIndex).data('result'));
+      callback($result.data('result'));
 
     // Parse once more, if the callback changed focus or content
     self.parseResults();
@@ -269,10 +274,12 @@ var AutoCompleteObject = function($input, path, callback, options) {
       return;
     }
     $wrapper.hide();
+    if (self.needsFetching())
+      return;
+    lastRenderedSearch = $input.val();
 
     // Not in cache
     if (self.renderResults() >= 1) {
-      lastRenderedSearch = $input.val();
       self.setSelection(0);
       $wrapper.show();
     }
