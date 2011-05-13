@@ -133,8 +133,7 @@ var AutoCompleteObject = function($input, path, callback, options) {
 
   // When the user hovers a result with the mouse, select it
   $('.result', $resultList[0]).live('mouseover', function() {
-    $('.result.selected', $resultList).removeClass('selected');
-    $(this).addClass('selected');
+    self.select($(this).data('index'));
   });
 
   // A result is inserted
