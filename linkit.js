@@ -205,10 +205,10 @@ var AutoCompleteObject = function($input, path, callback, options) {
       $wrapper.hide();
       return false;
     }
-    for (i in results[userString]) {
+    for (index in results[userString]) {
 
       // Shortname for this result
-      var result = results[userString][i];
+      var result = results[userString][index];
 
       // If we don't have title or description, we don't have much to display
       if (typeof result.title === 'undefined' && typeof result.description === 'undefined')
@@ -219,10 +219,11 @@ var AutoCompleteObject = function($input, path, callback, options) {
             (typeof result.description !== 'undefined' ? '<p>' + result.description + '</p>' : '')
         )
         .data('result', result) // Store the result object on this DOM element
+        .data('index', index) // For quick determination of index on events
         .appendTo($resultList);
       $wrapper.show();
       // Select the first result
-      if (i == 0) {
+      if (index == 0) {
         $result.addClass('selected');
       }
     }
