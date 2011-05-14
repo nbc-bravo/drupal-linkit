@@ -140,6 +140,19 @@ BetterAutocomplete = function($input, path, callback, options) {
     // Index have changed so update selection and cancel the event
     if (typeof newIndex === 'number') {
       self.setSelection(newIndex);
+
+      // Automatic scrolling
+      var $result = $('.result', $resultList).eq(self.getSelection());
+      // TODO: Make group titles visible
+
+      // Is the result above the visible region?
+      if ($result.position().top < 0) {
+        $resultList.scrollTop($result.position().top + $resultList.scrollTop());
+      }
+      // Or is it below the visible region?
+      else if (($result.position().top + $result.outerHeight()) > $resultList.height()) {
+        $resultList.scrollTop($result.position().top + $resultList.scrollTop() + $result.outerHeight() - $resultList.height());
+      }
       return false;
     }
   });
