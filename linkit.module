@@ -195,7 +195,7 @@ function linkit_autocomplete($string = NULL) {
     'description' => 'Tutorial · by Jens Löwmark · created 2010-02-12',
   );
   
-  drupal_json_output(array($temsp, $temp2, $temdp));
+  drupal_json_output(array($temsp, $temp2, $temdp, $temdp, $temdp, $temdp));
   return;
   
   $matches = array();

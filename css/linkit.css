@@ -30,6 +30,8 @@ input#edit-link.with_imce {
 
 #linkit-autocomplete-results {
   position: relative;
+  max-height: 330px;
+  overflow: auto;
   list-style: none;
   padding: 0;
   margin: 0;
