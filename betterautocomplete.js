@@ -141,17 +141,19 @@ BetterAutocomplete = function($input, path, callback, options) {
     if (typeof newIndex === 'number') {
       self.setSelection(newIndex);
 
-      // Automatic scrolling
-      var $result = $('.result', $resultList).eq(self.getSelection());
-      // TODO: Make group titles visible
+      // Automatic scrolling to the selected result
+      var $scrollTo = $('.result', $resultList).eq(self.getSelection());
 
+      if ($scrollTo.prev().is('.group') && event.keyCode === 38) {
+        $scrollTo = $scrollTo.prev();
+      }
       // Is the result above the visible region?
-      if ($result.position().top < 0) {
-        $resultList.scrollTop($result.position().top + $resultList.scrollTop());
+      if ($scrollTo.position().top < 0) {
+        $resultList.scrollTop($scrollTo.position().top + $resultList.scrollTop());
       }
       // Or is it below the visible region?
-      else if (($result.position().top + $result.outerHeight()) > $resultList.height()) {
-        $resultList.scrollTop($result.position().top + $resultList.scrollTop() + $result.outerHeight() - $resultList.height());
+      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultList.height()) {
+        $resultList.scrollTop($scrollTo.position().top + $resultList.scrollTop() + $scrollTo.outerHeight() - $resultList.height());
       }
       return false;
     }
