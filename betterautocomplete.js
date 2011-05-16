@@ -56,12 +56,14 @@ $.expr[':'].focus = function( elem ) {
  *        Other optional keys are:
  *      - insert (default='') The text that should be inserted to the input
  *        field if that item is selected.
- *      - group (default=undefined) Add groups to the content. Will render nice
- *        group headings. Remember to put the results grouped together,
+ *      - group Add groups to the results. Will render nice group headings.
+ *        Remember to put the results grouped together in the JSON array,
  *        otherwise they will be rendered as multiple groups.
  *        Leave if you do not require grouping.
+ *      - class Add CSS classes to the result object separated by spaces.
  * 
- *        Other keys can be defined by the developer.
+ *        Other keys can be defined by the developer and will be returned
+ *        with the selection callback.
  * 
  * @param callback A callback function to execute when an item selection is
  *        confirmed. The callback function recieves an argument which is the
@@ -69,11 +71,9 @@ $.expr[':'].focus = function( elem ) {
  * 
  * @param options An object with additional options:
  *      - charLimit (default=3) The minimum number of chars to do an AJAX call
- *      - wait (default=100) The time in ms between a key is pressed and AJAX call
- *      - getParam (default="s") The get parameter for AJAX calls: "?param=search"
+ *      - wait (default=250) The time in ms between last keypress and AJAX call
+ *      - getParam (default="s") The get parameter for AJAX calls: "?param="
  *      - ajaxTimeout (default=5000) Timeout on AJAX calls
- * 
- * @todo Check Drupal coding standards...
  */
 BetterAutocomplete = function($input, path, callback, options) {
   var self = this;
