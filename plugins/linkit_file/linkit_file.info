@@ -1,5 +1,0 @@
-name = Linkit File
-description = Extend Linkit with support for file links.
-core = 7.x
-package = Linkit
-dependencies[] = "linkit"

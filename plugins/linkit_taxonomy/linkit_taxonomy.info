@@ -1,6 +1,0 @@
-name = Linkit Taxonomy
-description = Extend Linkit with support for taxonomy links.
-core = 7.x
-package = Linkit
-dependencies[] = "linkit"
-dependencies[] = "taxonomy"
