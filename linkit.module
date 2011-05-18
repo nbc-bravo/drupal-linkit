@@ -417,3 +417,18 @@ function linkit_help($path, $arg) {
 function linkit_include($file) {
   module_load_include('inc', 'linkit', "plugins/" . $file);
 }
+
+/**
+ * Determines if a profile witha  given name exists.
+ *
+ * @param $profile_name
+ *   The ID of the profileto check.
+ *
+ * @return
+ *   TRUE if the text format exists, FALSE otherwise.
+ *
+ * @see filter_format_load()
+ */
+function linkit_profile_exists($profile_name) {
+  return variable_get('linkit_profile_' . $profile_name, FALSE);
+}
