@@ -39,8 +39,7 @@ function linkit_menu() {
   $items['admin/config/content/linkit'] = array(
     'title' => 'Linkit settings',
     'description' => 'Configure Linkit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('linkit_admin_settings'),
+    'page callback' => 'linkit_admin',
     'access arguments' => array('administer linkit'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'linkit.admin.inc',
@@ -387,5 +386,17 @@ function _linkit_add_settings($editor) {
       ),
     );
     drupal_add_js($settings, 'setting');
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function linkit_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/content/linkit':
+      $output = '<p>' . t('Help text here.') . '</p>';
+      $output .= '<p>' . t('More help text.') . '</p>';
+      return $output;
   }
 }

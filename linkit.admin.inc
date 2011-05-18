@@ -4,6 +4,11 @@
  * @file
  * Admin page callbacks for the Linkit module.
  */
+function linkit_admin() {
+  
+  return 'linkit admin';
+
+}
 
 function linkit_admin_settings() {
   $form = array();
