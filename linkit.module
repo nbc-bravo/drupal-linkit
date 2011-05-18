@@ -45,6 +45,16 @@ function linkit_menu() {
     'file' => 'linkit.admin.inc',
   );
 
+  $items['admin/config/content/linkit/profile/add'] = array(
+    'title' => 'Add linkit profile',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('linkit_admin_settings'),
+    'access arguments' => array('administer linkit'),
+    'type' => MENU_LOCAL_ACTION,
+    'weight' => 1,
+    'file' => 'linkit.admin.inc',
+  );
+
   return $items;
 }
 
@@ -399,4 +409,11 @@ function linkit_help($path, $arg) {
       $output .= '<p>' . t('More help text.') . '</p>';
       return $output;
   }
+}
+
+/**
+ * Include linkit core .inc files.
+ */
+function linkit_include($file) {
+  module_load_include('inc', 'linkit', "plugins/" . $file);
 }

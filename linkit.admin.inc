@@ -6,14 +6,27 @@
  */
 function linkit_admin() {
   
-  return 'linkit admin';
+  $header = array(t('Profile name'), array('data' => t('Operations'), 'colspan' => 2));
+
+  $rows[] = array('', '' );
+
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
+
+  return $output;
 
 }
 
 function linkit_admin_settings() {
   $form = array();
+    
+    linkit_include('node');
+    linkit_include('taxonomy');
 
-  if (module_exists('linkit_node')) {
+    // @Todo: 
+    // Write profile name
+    // Select plugins
+    // Select settings
+
     $node_settings = variable_get('linkit_node', array());
 
     // Prevent "PHP notice: Undefined variable"
@@ -57,9 +70,6 @@ function linkit_admin_settings() {
       '#description' => t('If none is checked, all content types will be present in the search result.'),
     );
     
-  }
-
-  if (module_exists('linkit_taxonomy')) {
     $term_settings = variable_get('linkit_term', array());
 
     // Prevent "PHP notice: Undefined variable"
@@ -84,18 +94,6 @@ function linkit_admin_settings() {
       '#options' => $term_display_settings_options,
       '#default_value' => $term_settings['display_settings'],
     );
-  }
-
   
-  if (!count($form)) {
-    // No linkit plugins is enabled that uses settings
-    // Print a message about this
-    $form['error_msg'] = array(
-      '#type' => 'item',
-      '#title' => t("No Linkit plugins is enabled that uses settings"),
-      '#value' => t("No Linkit plugins is enabled that uses settings"),
-    );
-  }
-
   return system_settings_form($form);
 }
