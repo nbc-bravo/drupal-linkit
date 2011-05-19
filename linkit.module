@@ -161,19 +161,16 @@ function linkit_dashboard_page($editor) {
 /**
  * Autocomplete callback function.
  */
-function linkit_autocomplete($string = NULL) {
+function linkit_autocomplete($search = NULL) {
   $matches = array();
-  $hook_matches = array();
-  if ($string) {
-    $hook_matches = module_invoke_all('linkit_load_plugins', $string);
-    foreach ($hook_matches AS $module => $values) {
-      if (module_exists('linkit_permissions')) {
-        if (user_access('use linkit ' . $module . ' plugin') || user_access('use all linkit plugins')) {
-          $matches = array_merge($matches, $hook_matches[$module]);
-        }
-      } 
-      else {
-        $matches = array_merge($matches, $hook_matches[$module]);
+  if ($search) {
+    // Load all plugins for this user from active profile
+    // TODO: Add profile
+    foreach (linkit_load_plugins() AS $name => $plugin) {
+      if (function_exists($plugin['autocomplete callback'])) {
+        $results = call_user_func($plugin['autocomplete callback'], $search);
+        // TODO: Maybe validate the result?
+        $matches = array_merge($matches, $results);
       }
     }
   }
@@ -390,6 +387,23 @@ function _linkit_add_settings($editor) {
 }
 
 /**
+ * Loads plugin files and returns active plugins for this user.
+ * @return An array with plugins enabled
+ * @todo Add parameter profile
+ */
+function linkit_load_plugins() {
+  $enabled_plugins = array();
+  foreach (module_invoke_all('linkit_plugins') as $name => $plugin) {
+    // TODO: If this module should be loaded, add it to the list...
+    $enabled_plugins[$name] = $plugin;
+    if ($plugin['file']) {
+      require_once DRUPAL_ROOT . $plugin['file'];
+    }
+  }
+  return $enabled_plugins;
+}
+
+/**
  * Implements hook_linkit_plugins
  */
 function linkit_linkit_plugins() {
@@ -397,7 +411,9 @@ function linkit_linkit_plugins() {
     // TODO: Wrap in t(), make awesome strings
     'title' => 'Node linking',
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
-    'file' => 'plugins/linkit.node.inc',
+    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
   );
+  
+  return $plugins;
 }
