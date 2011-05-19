@@ -9,7 +9,7 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function linkit_node_linkit_load_plugins($string) {
+function _linkit_node_results($string) {
   $matches = array();
   
   $settings = variable_get('linkit_node', array());
