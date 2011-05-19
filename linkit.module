@@ -388,3 +388,16 @@ function _linkit_add_settings($editor) {
     drupal_add_js($settings, 'setting');
   }
 }
+
+/**
+ * Implements hook_linkit_plugins
+ */
+function linkit_linkit_plugins() {
+  $plugins['node'] = array(
+    // TODO: Wrap in t(), make awesome strings
+    'title' => 'Node linking',
+    'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
+    'file' => 'plugins/linkit.node.inc',
+    'autocomplete callback' => '_linkit_node_autocomplete',
+  );
+}

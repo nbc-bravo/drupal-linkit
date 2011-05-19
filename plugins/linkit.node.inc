@@ -8,8 +8,9 @@
 
 /**
  * Implements hook_linkit_load_plugins().
+ * TODO: Add second parameter $settings with this plugins settings for the current profile
  */
-function _linkit_node_results($string) {
+function _linkit_node_autocomplete($string) {
   $matches = array();
   
   $settings = variable_get('linkit_node', array());
