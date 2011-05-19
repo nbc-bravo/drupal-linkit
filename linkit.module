@@ -65,7 +65,6 @@ function linkit_permission() {
       'title' => t('Administer linkit settings'), 
     ),
   );
-  return array('administer linkit');
 }
 
 /**
