@@ -353,6 +353,7 @@ BetterAutocomplete = function($input, path, callback, options) {
         )
         .data('result', result) // Store the result object on this DOM element
         .data('index', index) // For quick determination of index on events
+        .addClass(result.class)
         .appendTo($resultList);
     }
     index++;
