@@ -354,7 +354,6 @@ function linkit_linkit_plugins() {
   );
 
   $plugins['user'] = array(
-    // TODO: Wrap in t(), make awesome strings
     'title' => 'User linking',
     'description' => 'Extends Linkit with the ability to find users in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
@@ -369,7 +368,6 @@ function linkit_linkit_plugins() {
   );
 
   $plugins['taxonomy'] = array(
-    // TODO: Wrap in t(), make awesome strings
     'title' => 'Taxonomy linking',
     'description' => 'Extends Linkit with the ability to find terms in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
