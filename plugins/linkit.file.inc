@@ -9,7 +9,7 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function linkit_file_linkit_load_plugins($string) {
+function _linkit_file_autocomplete($string) {
   $matches = array();
   
   // Get files.
@@ -22,7 +22,7 @@ function linkit_file_linkit_load_plugins($string) {
 
   $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result AS $file) {
-    $matches['file'][] = array(
+    $matches[] = array(
       'title' => $file->filename,
       'path' => $public_path . '/' . file_uri_target($file->uri),
       'information' => array(

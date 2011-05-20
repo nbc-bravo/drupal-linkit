@@ -414,6 +414,14 @@ function linkit_linkit_plugins() {
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
   );
-  
+
+  $plugins['file'] = array(
+    // TODO: Wrap in t(), make awesome strings
+    'title' => 'File linking',
+    'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
+    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
+    'autocomplete callback' => '_linkit_file_autocomplete',
+  );
+
   return $plugins;
 }
