@@ -57,7 +57,7 @@ function _linkit_node_autocomplete($string) {
   $i = 0;
 
   foreach ($result AS $node) {
-    $matches['node'][$i] = array(
+    $matches[$i] = array(
       'title' => $node->title,
       'path' => 'node/' . $node->nid,
       'information' => array(
