@@ -14,7 +14,7 @@ function _linkit_file_autocomplete($string) {
   
   // Get files.
   $result = db_select('file_managed', 'f')
-    ->fields('f', array('filename', 'uri', 'filemime'))
+    ->fields('f', array('filename', 'uri', 'filemime', 'filesize'))
     ->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
     ->condition('f.status' , '1')
     ->condition('f.uri', 'public://%', 'LIKE')
@@ -24,7 +24,7 @@ function _linkit_file_autocomplete($string) {
   foreach ($result AS $file) {
     $matches[] = array(
       'title' => $file->filename,
-      'description' => $file->filemime,
+      'description' => $file->filemime . ' · ' . format_size($file->filesize) . '<br />' . $public_path . '/' . file_uri_target($file->uri),
       'path' => $public_path . '/' . file_uri_target($file->uri),
       'group' => t('Files'),
     );
