@@ -5,9 +5,9 @@
  var linkit_helper = {};
 
 (function ($) {
-linkit_helper = {
+linkitHelper = {
   /*
-   * Makes an AJAX requst when a link is about to be edited with Linkit
+   * Makes an AJAX request when a link is about to be edited with Linkit
    */
   search_styled_link : function(string) {
     $('#linkit .form-item-link input').hide();
@@ -30,9 +30,8 @@ linkit_helper = {
    * Show helper text
    * If there is no selection, the link text will be the result title.
    */
-  show_no_selection_text : function() {
-    var info_text = Drupal.t('<em class="notice">Notice: No selection element was found, your link text will appear as the item title you are linking to.</em>');
-    $('#linkit .form-item-link').prepend(info_text);    
+  populateTitle : function(title) {
+    $('#linkit #edit-text').val(title);
   },
   /*
    * IMCE integration
@@ -44,20 +43,37 @@ linkit_helper = {
   /*
    * See if the link contains a #anchor
    */
-  seek_for_anchor : function(href) {
+  findAnchor : function(href) {
     var matches = href.match(/.*(#.*)/i);
     anchor = (matches == null) ? '' : matches[1].substring(1);
     return anchor;
   }
-}
+};
 
-Drupal.behaviors.linkit_imce =  {
+Drupal.behaviors.linkitImce =  {
   attach: function(context, settings) {
     $('#linkit-imce').click(function() {
       linkit_helper.openFileBrowser();
       return false;
     });
   }
-}
+};
+
+Drupal.behaviors.linkitAutocomplete = {
+  attach: function(context, settings) {
+    var $linkitSearch = $('#linkit #edit-search', context);
+    var bac = new BetterAutocomplete($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
+      // Select callback is executed when an object is chosen
+      // Only change the link text if it is empty
+      $('#linkit #edit-text:text[value=""]').val(linkObject.title);
+      $('#linkit #edit-path').val(linkObject.path);
+      $('#linkit #edit-text').focus();
+    });
+    if (context === window.document) {
+      // TODO: Make autofocus with html5?
+      $linkitSearch.focus();
+    }
+  }
+};
 
 })(jQuery);

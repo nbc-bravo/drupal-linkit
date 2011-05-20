@@ -1,26 +1,93 @@
 
-#linkit { padding:1em; }
+#linkit { padding: 40px; }
 
-#linkit .auto-item-info {
-  float:right;
-  font-size:10px;
-}
-
-#linkit .auto-item-info span { font-weight:bold; }
-
-#linkit .auto-item-title {
-  margin-right:1.5em;
-  float:left;
-}
-
-span.throbber {
-  height: 15px;
-  margin: 1em 2px;
-  padding-left:20px;
-  background: transparent url(../../../../../misc/throbber.gif) no-repeat 0px -18px;
-  display:block;
-}
-
-input#edit-link--2.with_imce {
+input#edit-link.with_imce {
   margin-bottom:10px;
+}
+
+#linkit #edit-search {
+  font-size: 1em;
+  height: 2em;
+  padding: 3px 25px 3px 5px;
+  background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
+}
+
+#linkit #edit-search.throbbing {
+  background-image: url(../throbber-active.gif);
+}
+
+/* Autocomplete */
+
+#linkit-autocomplete-wrapper {
+  position: relative;
+  clear: both;
+  top: -2px;
+  left: 0;
+  width: 0;
+  height: 0;
+  font-family: 'Lucida Grande', Helvetica, Arial, Verdana, sans-serif;
+}
+
+#linkit-autocomplete-results {
+  position: relative;
+  max-height: 330px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+#linkit-autocomplete-results .group {
+  position: relative;
+  padding: 3px;
+  text-align: center;
+  background: #e7e7e7;
+  border-color: #bfbfbf;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+}
+
+#linkit-autocomplete-results .group h3 {
+	font-size: 11px;
+	color: #555;
+	margin: 0;
+}
+
+#linkit-autocomplete-results .result {
+  position: relative;
+  padding: 5px;
+  background: white;
+  border-color: #bfbfbf;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+}
+
+#linkit-autocomplete-results .result.selected {
+  background: #0075ba;
+  border-top-color: #1f4a64;
+}
+
+#linkit-autocomplete-results .result:last-child {
+	border-bottom: 1px solid #bfbfbf;
+}
+
+#linkit-autocomplete-results .result h4 {
+  font-size: 12px;
+  color: #3c3c3c;
+  margin: 0;
+}
+
+#linkit-autocomplete-results .result p {
+  font-size: 11px;
+  color: #6f6f6f;
+  margin: 0;
+}
+
+#linkit-autocomplete-results .result.selected h4,
+#linkit-autocomplete-results .result.selected p {
+  color: white;
 }

@@ -26,7 +26,6 @@ function linkit_menu() {
     'page callback' => 'linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
-    'page arguments' => array(2),
   );
 
   $items['linkit/geteditresult'] = array(
@@ -113,6 +112,7 @@ function linkit_dashboard_page($editor) {
   module_invoke('admin_menu', 'suppress');
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
+  drupal_add_js(drupal_get_path('module', 'linkit') . '/betterautocomplete.js', array('group' => JS_LIBRARY));
   
   // Add JS
   static $defualt_settings_added = FALSE;
@@ -162,6 +162,10 @@ function linkit_dashboard_page($editor) {
  * Autocomplete callback function.
  */
 function linkit_autocomplete($search = NULL) {
+
+  // TODO: Security!
+  $search = $_GET['s'];
+
   $matches = array();
   if ($search) {
     // Load all plugins for this user from active profile
@@ -177,32 +181,8 @@ function linkit_autocomplete($search = NULL) {
 
   // hook_linkit_load_plugins_alter() , let other modules change the matches array
   drupal_alter('linkit_load_plugins', $matches);
-  
-  $results = array();
-  foreach ($matches AS $match) {
-    
-    // Build the val
-    $val = check_plain($match['title'] . ' [path:' . $match['path'] . ']');
-    
-    // Get the extra information text
-    $information = array();
-    foreach ($match['information'] AS $extra_info_key => $extra_info_val) {
-      // Coder is telling us that "The first parameter to t() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there"
-      // But the "$extra_info_key" is hard coded and cant be change by users or administratios so its ok to use t() this way.
-      $information[] = t(drupal_ucfirst($extra_info_key)) . ':<span>' . $extra_info_val . '</span>';
-    }
-    
-    // Build the text
-    $text = '<div class="clearfix">';
-    $text .= '<div class="auto-item-title">' . check_plain($match['title']) . '</div>';
-    if (count($information)) {
-      $text .= '<div class="auto-item-info">[' . implode(", ", $information) . ']</div>';
-    }
-    $text .= '</div>';
-    $results[$val] = $text;
-  }
 
-  drupal_json_output($results);
+  drupal_json_output($matches);
 }
 
 function linkit_search_styled_link() {
@@ -219,23 +199,14 @@ function _linkit_form() {
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
 
-  $form['link'] = array(
-    '#type' => 'fieldset',
-    '#title' => '',
-    '#weight' => 0,
-    '#collapsible' => FALSE,
-    '#collapsed' => FALSE,
-    '#attributes' => array('class' => array('clearfix')),
-  );
-  $form['link']['link'] = array(
+  $form['search'] = array(
     '#type' => 'textfield',
-    '#title' => t('Link to'),
-    '#description' => t('Search for your internal content <b>OR</b> type the URL (http://www.example.com)'),
+    '#title' => t('Search content'),
+    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.'),
     '#maxlength' => 255,
-    '#size' => 80,
-    '#autocomplete_path' => 'linkit/autocomplete',
+    '#size' => 60,
     '#default_value' => '',
-    '#weight' => 1,
+    '#weight' => -10
   );
 
   if ($imce) {
@@ -246,78 +217,39 @@ function _linkit_form() {
       '#id' => 'linkit-imce',
     );
     // Add extra class to edit-link field when we can use IMCE
-    $form['link']['link']['#attributes'] = array('class' => array('with_imce'));
+    $form['search']['#attributes'] = array('class' => array('with_imce'));
     // Add the imce buttom
-    $form['link']['link']['#field_suffix'] = drupal_render($imcebutton);
+    $form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
-
-  $form['link']['attributes'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Attributes'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#attributes' => array('class' => array('clearfix')),
-    '#weight' => 2,
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link text'),
+    '#required' => TRUE,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -5
   );
-  $form['link']['attributes']['title'] = array(
+  $form['path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Target path'),
+    '#description' => t('Both internal (this site) and external (other sites) paths work. Type or paste. <br /> For example <strong>node/123</strong> or <strong>http://www.example.com/path#anchor</strong>'),
+    '#required' => TRUE,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -1
+  );
+  $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#maxlength' => 255,  
-    '#size' => 40,
+    '#description' => t('The title attirbute provides advisory information and appears as a tooltip when hovering the link. Not required.'),
+    '#size' => 60,
     '#default_value' => '',
-    '#weight' => 0,
   );
-  $form['link']['attributes']['id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('ID'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 1,
-  );
-  $form['link']['attributes']['class'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Class'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 2,
-  );
-  $form['link']['attributes']['rel'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Rel'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 3,
-  );
-  $form['link']['attributes']['accesskey'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Accesskey'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 4,
-  );
-  $form['link']['attributes']['anchor'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Anchor'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => 5,
-    '#description' => t('Without the hash (#)'),
-  );
-
-  $form['link']['cancel'] = array(
-    '#type' => 'button',
-    '#value' => t('Cancel'),
-    '#weight' => 10,
-  );
-  $form['link']['insert'] = array(
+  $form['insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert'),
-    '#weight' => 11,
+    '#suffix' => '<a id="cancel" href="#">' . t('Cancel') . '</a>',
+    '#weight' => 100,
   );
 
   return $form;
