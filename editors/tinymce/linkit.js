@@ -1,33 +1,24 @@
 
-var LinkitDialog = {};
+var linkitDialog = {};
 
 (function ($) {
-LinkitDialog = {
+linkitDialog = {
 	init : function() {
-		var ed = tinyMCEPopup.editor;
-		// Setup browse button
-		if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
-
-      // To prevent dubble anchors
-      var anchor = linkit_helper.seek_for_anchor($(e).attr('href'));
-      // Delete the anchor from the URL, this will be added later on anyway
-      var href = $(e).attr('href').replace('#' + anchor, '');
-
-      if(href.length > 0) {
-			  linkit_helper.search_styled_link(href);
-			} 
-      $('#edit-title').val($(e).attr('title'));
-      $('#edit-id').val($(e).attr('id'));
-      $('#edit-class').val($(e).attr('class'));
-      $('#edit-rel').val($(e).attr('rel'));
-      $('#edit-accesskey').val($(e).attr('accesskey'));
-      $('#edit-anchor').val(anchor);
-      return false;
-		} else if(ed.selection.isCollapsed()) {
-      // Show help text when there is no selection element
-      linkit_helper.show_no_selection_text();
-    }
-    
+  	var ed = tinyMCEPopup.editor;
+  	// Setup browse button
+  	if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
+  	
+  	  // Delete the anchor from the URL, this will be added later on anyway
+  	  var href = $(e).attr('href');
+  	
+  	  if(href.length > 0) {
+  		  linkitHelper.search_styled_link(href);
+  			} 
+  	  $('#edit-title').val($(e).attr('title'));
+  	  return false;
+  	}
+  	// Populate the title field
+  	linkitHelper.populateTitle(ed.selection.getContent());
 	},
   
   insertLink : function() {
@@ -116,10 +107,10 @@ LinkitDialog = {
 };
 
 
-tinyMCEPopup.onInit.add(LinkitDialog.init, LinkitDialog);
+tinyMCEPopup.onInit.add(linkitDialog.init, linkitDialog);
 
 
-Drupal.behaviors.linkit_init_tinymce =  {
+Drupal.behaviors.linkitInitTinyMCE =  {
   attach: function(context, settings) {
     $('#edit-link', context).keydown(function(ev) {
       if (ev.keyCode == 13) {
@@ -129,14 +120,14 @@ Drupal.behaviors.linkit_init_tinymce =  {
       }
     });
     $('#edit-insert', context).click(function() {
-      LinkitDialog.insertLink();
+      linkitDialog.insertLink();
       return false;
     });
 
-    $('#edit-cancel', context).click(function() {
+    $('#linkit #cancel', context).click(function() {
       tinyMCEPopup.close();
     });
   }
-}
+};
 
 })(jQuery);
