@@ -397,7 +397,12 @@ function linkit_load_plugins() {
     // TODO: If this module should be loaded, add it to the list...
     $enabled_plugins[$name] = $plugin;
     if ($plugin['file']) {
-      require_once DRUPAL_ROOT . '/' . $plugin['file'];
+      if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
+        require_once DRUPAL_ROOT . '/' . $plugin['file'];
+      }
+      else {
+         drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+      }
     }
   }
   return $enabled_plugins;
