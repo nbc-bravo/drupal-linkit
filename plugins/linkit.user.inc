@@ -8,7 +8,7 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function linkit_user_linkit_load_plugins($string) {
+function _linkit_user_autocomplete($string) {
   $matches = array();
 
   // Get users
@@ -18,7 +18,7 @@ function linkit_user_linkit_load_plugins($string) {
     ->condition('u.status' , '1')
     ->execute();
   foreach ($result AS $user) {
-    $matches['user'][] = array(
+    $matches[] = array(
       'title' => $user->name,
       'path' => 'user/' . $user->uid,
       'information' => array(

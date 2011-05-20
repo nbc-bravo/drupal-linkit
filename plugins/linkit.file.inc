@@ -24,11 +24,9 @@ function _linkit_file_autocomplete($string) {
   foreach ($result AS $file) {
     $matches[] = array(
       'title' => $file->filename,
+      'description' => $file->filemime,
       'path' => $public_path . '/' . file_uri_target($file->uri),
-      'information' => array(
-        'type' => 'File',
-        'mimetype' => $file->filemime,
-      ),
+      'group' => t('Files'),
     );
   }
 

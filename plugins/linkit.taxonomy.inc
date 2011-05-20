@@ -9,7 +9,7 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function linkit_taxonomy_linkit_load_plugins($string) {
+function _linkit_taxonomy_autocomplete($string) {
   $matches = array();
 
   $settings = variable_get('linkit_term', array());
@@ -28,12 +28,10 @@ function linkit_taxonomy_linkit_load_plugins($string) {
   $i = 0;
   foreach ($result as $term) {
     $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
-    $matches['taxonomy'][$i] = array(
+    $matches[] = array(
       'title' => $term->name,
       'path' => $uri['path'],
-      'information' => array(
-        'type' => 'Taxonomy',
-      ),
+      'group' => t('Terms'),
     );
     // Add the taxonomy path
     if ($settings['display_settings']['show_parent']) {

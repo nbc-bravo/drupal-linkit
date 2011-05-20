@@ -20,26 +20,16 @@ function _linkit_node_autocomplete($string) {
   
   // Build default query
   $query = db_select('node', 'n')
-    ->fields('n', array('nid', 'title'))
+    ->fields('n', array('nid', 'title', 'type'))
     ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
     ->addTag('node_access');
 
-  if ($settings['display_settings']['content_type']) {
-    $query->addField('nt', 'name', 'content_type');
-    $query->innerJoin('node_type', 'nt', 'nt.type = n.type');
-  }
-  if ($settings['display_settings']['status']) {
-    $query->addField('n', 'status');
-  }
-  if ($settings['display_settings']['language']) {
-    $query->addField('n', 'language');
-  } 
-  if ($settings['display_settings']['created']) {
-    $query->addField('n', 'created');
-  }
-  if ($settings['display_settings']['changed']) {
-    $query->addField('n', 'changed');
-  }
+  $query->addField('nt', 'name', 'content_type');
+  $query->innerJoin('node_type', 'nt', 'nt.type = n.type');
+  $query->addField('n', 'status');
+  $query->addField('n', 'language');
+  $query->addField('n', 'created');
+  $query->addField('n', 'changed');
   if ($settings['display_settings']['show_books'] && module_exists('book')) {
     $query->leftJoin('book', 'b', 'b.nid = n.nid');
     $query->addField('b', 'bid');
@@ -55,14 +45,17 @@ function _linkit_node_autocomplete($string) {
   
   $result = $query->execute();
   $i = 0;
+  // TODO: Join on author
+  $description = '[node:type] · created [node:created]';
 
   foreach ($result AS $node) {
     $matches[$i] = array(
       'title' => $node->title,
+      'description' => token_replace($description, array(
+        'node' => $node,
+      )),
       'path' => 'node/' . $node->nid,
-      'information' => array(
-        'type' => 'Node',
-      ),
+      'group' => t('Content')
     );
 
     // Add the node nid
