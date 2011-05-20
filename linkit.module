@@ -407,8 +407,9 @@ function linkit_load_plugins() {
  * Implements hook_linkit_plugins
  */
 function linkit_linkit_plugins() {
-  $plugins['node'] = array(
     // TODO: Wrap in t(), make awesome strings
+    // TODO: Maybe settings form callback can be added here?
+  $plugins['node'] = array(
     'title' => 'Node linking',
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
@@ -416,7 +417,6 @@ function linkit_linkit_plugins() {
   );
 
   $plugins['file'] = array(
-    // TODO: Wrap in t(), make awesome strings
     'title' => 'File linking',
     'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
