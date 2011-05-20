@@ -232,7 +232,7 @@ function _linkit_form() {
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Target path'),
-    '#description' => t('Both internal (this site) and external (other sites) paths work. Type or paste. <br /> For example <strong>node/123</strong> or <strong>http://www.example.com/path#anchor</strong>'),
+    '#description' => t('Both internal (this site) and external (other sites) paths work. Type or paste. <br /> For example <strong>node/123</strong> or <strong>http://www.example.com/path#anchor</strong>'),
     '#required' => TRUE,
     '#size' => 60,
     '#default_value' => '',
