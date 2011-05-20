@@ -62,7 +62,7 @@ Drupal.behaviors.linkitImce =  {
 Drupal.behaviors.linkitAutocomplete = {
   attach: function(context, settings) {
     var $linkitSearch = $('#linkit #edit-search', context);
-    var bac = new BetterAutocomplete($linkitSearch, 'http://d7.dev/linkit/autocomplete', function(linkObject) {
+    var bac = new BetterAutocomplete($linkitSearch, '/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
