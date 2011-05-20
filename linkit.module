@@ -397,7 +397,7 @@ function linkit_load_plugins() {
     // TODO: If this module should be loaded, add it to the list...
     $enabled_plugins[$name] = $plugin;
     if ($plugin['file']) {
-      require_once DRUPAL_ROOT . $plugin['file'];
+      require_once DRUPAL_ROOT . '/' . $plugin['file'];
     }
   }
   return $enabled_plugins;
