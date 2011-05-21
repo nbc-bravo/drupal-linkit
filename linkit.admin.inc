@@ -106,6 +106,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['node']['display_settings'],
   );
   
+  // @TODO: Change this to exclude?
   $form['node']['content_types'] = array(
     '#title' => t('Include this content types in the search result'),
     '#type' => 'checkboxes',
@@ -157,9 +158,7 @@ function linkit_admin_settings_validate($form, &$form_state) {
  */
 function linkit_admin_settings_submit($form, &$form_state) {
   // Exclude unnecessary elements.
-  form_state_values_clean($form_state);
-  // Unset actions values
-  unset($form_state['values']['actions']);
+  _linkit_form_state_values_clean($form_state);
   
   // Get the current profile settings variable
   $profile_settings = variable_get('linkit_profiles', array());
@@ -295,9 +294,7 @@ function linkit_profile_assignment_validate($form, &$form_state) {
  */
 function linkit_profile_assignment_submit($form, &$form_state) {
   // Exclude unnecessary elements.
-  form_state_values_clean($form_state);
-  // Unset actions values
-  unset($form_state['values']['actions']);
+  _linkit_form_state_values_clean($form_state);
   
   // Get the current role -> profile configuration variable
   $profile_settings = variable_get('linkit_roles_profiles', array());
@@ -307,4 +304,11 @@ function linkit_profile_assignment_submit($form, &$form_state) {
   
   drupal_set_message(t('The configuration options have been saved.'));
   $form_state['redirect'] = 'admin/config/content/linkit';
+}
+
+function _linkit_form_state_values_clean(&$form_state) {
+   // Exclude unnecessary elements.
+  form_state_values_clean($form_state);
+  // Unset actions values
+  unset($form_state['values']['actions']);
 }
