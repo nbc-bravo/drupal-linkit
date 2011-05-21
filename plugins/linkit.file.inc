@@ -23,13 +23,11 @@ function _linkit_file_autocomplete($string) {
   $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result AS $file) {
   
-    if (in_array($file->filemime, array('image/jpg', 'image/png', 'image/gif'))) {
-      $image = theme_image_style(array(
-        'style_name' => 'linkit_thumb',
-        'path' => $file->uri,
-      ));
-      $imageinfo = image_get_info($file->uri);
-    }
+    $imageinfo = image_get_info($file->uri);
+    $image = $imageinfo ? theme_image_style(array(
+      'style_name' => 'linkit_thumb',
+      'path' => $file->uri,
+    )) : '';
     
     $matches[] = array(
       'title' => $file->filename,
