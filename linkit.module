@@ -207,10 +207,10 @@ function linkit_autocomplete($search = NULL) {
   $matches = array();
   if ($search) {
     // Load all plugins for this user from active profile
-    // TODO: Add profile
-    foreach (linkit_load_plugins() AS $name => $plugin) {
+    $settings = _linkit_load_profile_settings();
+    foreach (linkit_load_plugins($settings) AS $name => $plugin) {
       if (function_exists($plugin['autocomplete callback'])) {
-        $results = call_user_func($plugin['autocomplete callback'], $search);
+        $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
         // TODO: Maybe validate the result?
         $matches = array_merge($matches, $results);
       }
@@ -370,6 +370,7 @@ function linkit_help($path, $arg) {
 
 /**
  * Include linkit core .inc files.
+ * @TODO: Is this used??
  */
 function linkit_include($file) {
   module_load_include('inc', 'linkit', "plugins/" . $file);
@@ -459,3 +460,23 @@ function linkit_linkit_plugins() {
   return $plugins;
 }
 
+/**
+ * Get the "best" Linkit profile based on the users roles.
+ */
+function _linkit_load_profile_settings() {
+  global $user;
+
+  // Get the role -> profile configuration
+  $role_profile = variable_get('linkit_roles_profiles', array());
+
+  // Get the profile settings
+  $profile_settings = variable_get('linkit_profiles', array());
+
+  $role_profile = array_reverse(array_filter($role_profile), TRUE);
+  
+  foreach($role_profile AS $rid => $profile_name) {
+    if(isset($user->roles[$rid])) {
+      return $profile_settings[$profile_name];
+    }
+  }
+}

@@ -29,7 +29,6 @@ function linkit_admin_page() {
   $output .= drupal_render($linkit_profile_assignment );
 
   return $output;
-
 }
 
  /**
@@ -221,7 +220,7 @@ function linkit_profile_assignment($form, &$form_state) {
   $drupal_roles = user_roles();
 
   // Get the current role -> profile configuration variable
-  $profile_settings = variable_get('linkit_roles_profiles', array());
+  $profile_settings = variable_get('linkit_roles_profiles', array()); // @TODO: named "profile_settings" ??
 
   foreach($drupal_roles AS $rid => $role_name) {
     $form['roles'][$rid] = array(
