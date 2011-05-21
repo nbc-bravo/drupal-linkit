@@ -23,8 +23,10 @@ function linkit_admin_page() {
       l(t('Delete'), 'admin/config/content/linkit/profile/'. $profile['machine_name'] . '/delete'),
     );
   }
-
-  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
+  $output = '<h2>' . t('Profiles') . '</h2>';
+  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
+  $linkit_profile_assignment = drupal_get_form('linkit_profile_assignment');
+  $output .= drupal_render($linkit_profile_assignment );
 
   return $output;
 
@@ -209,5 +211,100 @@ function linkit_admin_profile_delete_submit($form, &$form_state) {
   variable_set('linkit_profiles', $profile_settings);
 
   drupal_set_message(t('Deleted Linkit profile %profile.', array('%profile' => $profile['name'])));
+  $form_state['redirect'] = 'admin/config/content/linkit';
+}
+
+/**
+ * Enter description here ...
+ */
+function linkit_profile_assignment($form, &$form_state) {
+  $form = array();
+  $drupal_roles = user_roles();
+
+  // Get the current role -> profile configuration variable
+  $profile_settings = variable_get('linkit_roles_profiles', array());
+
+  foreach($drupal_roles AS $rid => $role_name) {
+    $form['roles'][$rid] = array(
+      '#type' => 'select', 
+      '#title' => '', 
+      '#default_value' => $profile_settings[$rid],
+      '#options' => _linkit_get_profile_names(),
+      '#empty_option' => t('- None -'),
+    );
+  }
+
+  $form['#theme'] = 'linkit_profile_assignment';
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  if (!empty($_POST) && form_get_errors()) {
+    drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
+  }
+
+  return $form;
+}
+
+/**
+ * Enter description here ...
+ */
+function _linkit_get_profile_names() {
+  // Get all profiles
+  $profile_settings = variable_get('linkit_profiles', array());
+  $profiles = array();
+ 
+  foreach($profile_settings AS $profile) {
+    $profiles[$profile['machine_name']] = $profile['name'];
+  }
+  
+  return $profiles;
+}
+
+/**
+ * Enter description here ...
+ */
+function theme_linkit_profile_assignment($variables) {
+  $form = $variables['form'];
+  $drupal_roles = user_roles();
+
+  $header = array(t('User role'), t('Linkit profile'));
+  $rows = array();
+
+  foreach($drupal_roles AS $rid => $role_name) {
+    $rows[] = array($role_name, drupal_render($form['roles'][$rid]));
+  }
+  
+  $output = '<h2>' . t('Role-profile assignments') . '</h2>';
+  $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= drupal_render_children($form);
+  return $output;
+}
+
+/**
+ * Validate profile assignment form submissions.
+ */
+function linkit_profile_assignment_validate($form, &$form_state) {
+}
+
+/**
+ * Process profile assignment form submissions.
+ */
+function linkit_profile_assignment_submit($form, &$form_state) {
+  // Exclude unnecessary elements.
+  form_state_values_clean($form_state);
+  // Unset actions values
+  unset($form_state['values']['actions']);
+  
+  // Get the current role -> profile configuration variable
+  $profile_settings = variable_get('linkit_roles_profiles', array());
+    
+  // Save the hole settings array. Note: This includes ALL profiles.
+  variable_set('linkit_roles_profiles', $form_state['values']);
+  
+  drupal_set_message(t('The configuration options have been saved.'));
   $form_state['redirect'] = 'admin/config/content/linkit';
 }
