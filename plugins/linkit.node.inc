@@ -10,13 +10,8 @@
  * Implements hook_linkit_load_plugins().
  * TODO: Add second parameter $settings with this plugins settings for the current profile
  */
-function _linkit_node_autocomplete($string) {
+function _linkit_node_autocomplete($string, $settings) {
   $matches = array();
-  
-  $settings = variable_get('linkit_node', array());
-  
-  // Prevent "PHP notice: Undefined variable"
-  _linkit_node_get_default_settings($settings);
   
   // Build default query
   $query = db_select('node', 'n')
@@ -132,27 +127,4 @@ function linkit_node_linkit_info_plugins() {
     'type' => 'node',
   );
   return $return;
-}
-
-/**
- * Prevent "PHP notice: Undefined variable" by merging the settings 
- * with the defule values
- */
-function _linkit_node_get_default_settings(&$settings) {
-  // Merge settings with the default settings
-  $settings += array(
-    'display_settings' => array(), 
-    'content_types' => array(),
-  );
-
-  $settings['display_settings'] += array(
-    'nid' => 0,
-    'content_type' => 0,
-    'status' => 0,
-    'language' => 0,
-    'created' => 0,
-    'changed' => 0,
-    'show_unpublished' => 0,
-    'show_books' => 0,
-  );
 }
