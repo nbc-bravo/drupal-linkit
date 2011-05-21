@@ -53,16 +53,7 @@ function linkit_admin_profile_page($profile = NULL) {
  */
 function linkit_admin_settings($form, &$form_state, $profile) {
   $form = array();
-    
-    // Include all the plugins
-    linkit_include('node');
-    linkit_include('taxonomy');
-    
-    // @Todo: 
-    // Write profile name
-    // Select plugins
-    // Select settings
-  
+      
   $form['#tree'] = TRUE;
 
   $form['name'] = array(
@@ -71,7 +62,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['name'],
     '#required' => TRUE,
   );
-  
+
   $form['machine_name'] = array(
     '#type' => 'machine_name',
     '#required' => TRUE,
@@ -82,76 +73,63 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     ),
     '#disabled' => !empty($profile['machine_name']),
   );
+
+  $node_display_settings_options = array(
+    'nid' => t('Display node id (nid)'),
+    'content_type' => t('Display node content type'),
+    'status' => t('Display node published status'),
+    'language' => t('Display node language'),
+    'created' => t('Display node created time'),
+    'changed' => t('Display node changed time'),
+    'show_unpublished' => t('Show unpublished nodes in the result'),
+  );
   
-    /*
-    $node_settings = variable_get('linkit_node', array());
+  if (module_exists('book')) {
+    $node_display_settings_options += array('show_books' => t('Display the book a node belong to'));
+  }
+  
+  $form['node'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Node settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => TRUE,
+    // KOLLA PÅ #STATES
+  );
 
-    // Prevent "PHP notice: Undefined variable"
-    _linkit_node_get_default_settings($node_settings);
+  $form['node']['display_settings'] = array(
+    '#title' => t('Information to display in the autocomplete field'),
+    '#type' => 'checkboxes',
+    '#options' => $node_display_settings_options,
+    '#default_value' => $profile['node']['display_settings'],
+  );
+  
+  $form['node']['content_types'] = array(
+    '#title' => t('Include this content types in the search result'),
+    '#type' => 'checkboxes',
+    '#options' => node_type_get_names(),
+    '#default_value' => $profile['node']['content_types'], 
+    '#description' => t('If none is checked, all content types will be present in the search result.'),
+  );
 
-    $node_display_settings_options = array(
-      'nid' => t('Display node id (nid)'),
-      'content_type' => t('Display node content type'),
-      'status' => t('Display node published status'),
-      'language' => t('Display node language'),
-      'created' => t('Display node created time'),
-      'changed' => t('Display node changed time'),
-      'show_unpublished' => t('Show unpublished nodes in the result'),
-    );
-    
-    if (module_exists('book')) {
-      $node_display_settings_options += array('show_books' => t('Display the book a node belong to'));
-    }
-    
-    $form['linkit_node'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Node settings'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
-      '#description' => t('Linkit node settings'),
-      '#tree' => TRUE,
-    );
+  $term_display_settings_options = array(
+    'show_parent' => t('Display the parent of the term'),
+  );
 
-    $form['linkit_node']['display_settings']  = array(
-      '#title' => t('Information to display in the autocomplete field'),
-      '#type' => 'checkboxes',
-      '#options' => $node_display_settings_options,
-      '#default_value' => $node_settings['display_settings'],
-    );
-    
-    $form['linkit_node']['content_types'] = array(
-      '#title' => t('Include this content types in the search result'),
-      '#type' => 'checkboxes',
-      '#options' => node_type_get_names(),
-      '#default_value' => $node_settings['content_types'], 
-      '#description' => t('If none is checked, all content types will be present in the search result.'),
-    );
-    
-    $term_settings = variable_get('linkit_term', array());
+  $form['taxonomy'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Taxonomy term settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => TRUE,
+  );
 
-    // Prevent "PHP notice: Undefined variable"
-    _linkit_taxonomy_get_default_settings($term_settings);
-    
-    $term_display_settings_options = array(
-      'show_parent' => t('Display the parent of the term'),
-    );
-
-    $form['linkit_term'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Taxonomy term settings'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
-      '#description' => t('Linkit term settings'),
-      '#tree' => TRUE,
-    );
-
-    $form['linkit_term']['display_settings'] = array(
-      '#title' => t('Information to display in the autocomplete field'),
-      '#type' => 'checkboxes',
-      '#options' => $term_display_settings_options,
-      '#default_value' => $term_settings['display_settings'],
-    );
-    */
+  $form['taxonomy']['display_settings'] = array(
+    '#title' => t('Information to display in the autocomplete field'),
+    '#type' => 'checkboxes',
+    '#options' => $term_display_settings_options,
+    '#default_value' => $profile['taxonomy']['display_settings'],
+  );
   
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
@@ -188,9 +166,6 @@ function linkit_admin_settings_submit($form, &$form_state) {
   // This so other modules can preform hook_gform_alter here and get there 
   // variables saved aswell.
   foreach ($form_state['values'] as $key => $value) {
-    if (is_array($value) && isset($form_state['values']['array_filter'])) {
-      $value = array_keys(array_filter($value));
-    }
     $profile_settings[$form_state['values']['machine_name']][$key] = $value;
   }
   
