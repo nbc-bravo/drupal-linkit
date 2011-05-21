@@ -38,14 +38,49 @@ function linkit_menu() {
   $items['admin/config/content/linkit'] = array(
     'title' => 'Linkit settings',
     'description' => 'Configure Linkit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('linkit_admin_settings'),
+    'page callback' => 'linkit_admin_page',
     'access arguments' => array('administer linkit'),
-    'type' => MENU_NORMAL_ITEM,
+    'file' => 'linkit.admin.inc',
+  );
+
+  $items['admin/config/content/linkit/profile/add'] = array(
+    'title' => 'Add new Linkit profile',
+    'page callback' => 'linkit_admin_profile_page',
+    'access arguments' => array('administer linkit'),
+    'type' => MENU_LOCAL_ACTION,
+    'weight' => 1,
+    'file' => 'linkit.admin.inc',
+  );
+
+  $items['admin/config/content/linkit/profile/%linkit_profile'] = array(
+    'title callback' => 'linkit_admin_profile_title',
+    'title arguments' => array('Edit', 5),
+    'page callback' => 'linkit_admin_profile_page',
+    'page arguments' => array(5),
+    'access arguments' => array('administer linkit'),
+    'file' => 'linkit.admin.inc',
+  );
+
+  $items['admin/config/content/linkit/profile/%linkit_profile/delete'] = array(
+    'title' => 'Delete Linkit profile',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('linkit_admin_profile_delete', 5),
+    'access arguments' => array('administer linkit'),
     'file' => 'linkit.admin.inc',
   );
 
   return $items;
+}
+
+/**
+ * Load the profile object from the variable table in the database.
+ *
+ * @param $profile_name
+ *   The profile ID.
+ */
+function linkit_profile_load($profile_name) {
+  $profiles = variable_get('linkit_profiles', array());
+  return isset($profiles[$profile_name]) ? $profiles[$profile_name] : FALSE;
 }
 
 /**
@@ -74,6 +109,9 @@ function linkit_theme($existing, $type, $theme, $path) {
     'linkit_dashboard' => array(
       'variables' => array('form' => NULL),
       'template' => 'linkit-dashboard',
+    ),
+    'linkit_profile_assignment' => array(
+      'render element' => 'form',
     ),
   );
 }
@@ -169,10 +207,10 @@ function linkit_autocomplete($search = NULL) {
   $matches = array();
   if ($search) {
     // Load all plugins for this user from active profile
-    // TODO: Add profile
-    foreach (linkit_load_plugins() AS $name => $plugin) {
+    $settings = _linkit_load_profile_settings();
+    foreach (linkit_load_plugins($settings) AS $name => $plugin) {
       if (function_exists($plugin['autocomplete callback'])) {
-        $results = call_user_func($plugin['autocomplete callback'], $search);
+        $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
         // TODO: Maybe validate the result?
         $matches = array_merge($matches, $results);
       }
@@ -319,6 +357,49 @@ function _linkit_add_settings($editor) {
 }
 
 /**
+ * Implements hook_help().
+ */
+function linkit_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/content/linkit':
+      $output = '<p>' . t('Help text here.') . '</p>';
+      $output .= '<p>' . t('More help text.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Include linkit core .inc files.
+ * @TODO: Is this used??
+ */
+function linkit_include($file) {
+  module_load_include('inc', 'linkit', "plugins/" . $file);
+}
+
+/**
+ * Determines if a profile with a given name exists.
+ *
+ * @param $profile_name
+ *   The ID of the profile check.
+ *
+ * @return
+ *   TRUE if the profile exists, FALSE otherwise.
+ *
+ * @see filter_format_load()
+ */
+function linkit_profile_exists($profile_name) {
+  $profiles = variable_get('linkit_profiles', array());
+  return isset($profiles[$profile_name]);
+}
+
+/**
+ * Generate a page title.
+ */
+function linkit_admin_profile_title($op, $profile) {
+  return $op . ' Linkit profile - ' . $profile['name']; // @TODO:: Översättning här?
+}
+
+/**
  * Loads plugin files and returns active plugins for this user.
  * @return An array with plugins enabled
  * @todo Add parameter profile
@@ -395,4 +476,25 @@ function linkit_image_default_styles() {
   );
 
   return $styles;
+}
+
+/**
+ * Get the "best" Linkit profile based on the users roles.
+ */
+function _linkit_load_profile_settings() {
+  global $user;
+
+  // Get the role -> profile configuration
+  $role_profile = variable_get('linkit_roles_profiles', array());
+
+  // Get the profile settings
+  $profile_settings = variable_get('linkit_profiles', array());
+
+  $role_profile = array_reverse(array_filter($role_profile), TRUE);
+  
+  foreach($role_profile AS $rid => $profile_name) {
+    if(isset($user->roles[$rid])) {
+      return $profile_settings[$profile_name];
+    }
+  }
 }
