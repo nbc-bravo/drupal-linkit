@@ -64,6 +64,20 @@ input#edit-link.with_imce {
   border-color: #bfbfbf;
   border-width: 1px 1px 0 1px;
   border-style: solid;
+  clear: both;
+}
+
+/**
+ * Clearfix
+ * TODO: Clearfix in IE7 may need *:first-child + html .clearfix {
+ */
+
+#linkit-autocomplete-results .result:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
 }
 
 #linkit-autocomplete-results .result.selected {
@@ -78,7 +92,7 @@ input#edit-link.with_imce {
 #linkit-autocomplete-results .result h4 {
   font-size: 12px;
   color: #3c3c3c;
-  margin: 0;
+  margin: 0 0 2px 0;
 }
 
 #linkit-autocomplete-results .result p {
@@ -91,4 +105,9 @@ input#edit-link.with_imce {
 #linkit-autocomplete-results .result.selected h4,
 #linkit-autocomplete-results .result.selected p {
   color: white;
+}
+
+#linkit-autocomplete-results .result img {
+	float: left;
+	margin: 0 5px 5px 0;
 }

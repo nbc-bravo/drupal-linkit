@@ -376,3 +376,23 @@ function linkit_linkit_plugins() {
 
   return $plugins;
 }
+
+/**
+ * Implementation of hook_image_default_styles
+ * Enter description here ...
+ */
+function linkit_image_default_styles() {
+  $styles = array();
+
+  $styles['linkit_thumb'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 50, 'height' => 50, 'upscale' => 0),
+        'weight' => 0,
+      ),
+    ),
+  );
+
+  return $styles;
+}
