@@ -101,6 +101,7 @@ BetterAutocomplete = function($input, path, callback, options) {
     .attr('autocomplete', 'OFF')
     .attr('aria-autocomplete', 'none');
 
+  // TODO: Generalize id:s and make them classnames instead
   var $wrapper = $('<div />')
     .attr('id', 'linkit-autocomplete-wrapper')
     .insertAfter($input);
@@ -140,6 +141,8 @@ BetterAutocomplete = function($input, path, callback, options) {
     // Index have changed so update selection and cancel the event
     if (typeof newIndex === 'number') {
       self.setSelection(newIndex);
+      // TODO: The scrollTop method triggers the mouseover event on the results.
+      // We do not want that in our case. Tested on FF, Chrome
 
       // Automatic scrolling to the selected result
       var $scrollTo = $('.result', $resultList).eq(self.getSelection());
@@ -206,6 +209,7 @@ BetterAutocomplete = function($input, path, callback, options) {
   /**
    * Get the current selection index
    * 
+   * @todo Make a naming distinction between selection and highlighting?
    * @return The index number of the result, -1 if not found
    */
   self.getSelection = function() {
