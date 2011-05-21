@@ -95,6 +95,8 @@ BetterAutocomplete = function($input, path, callback, options) {
   var userString = $input.val();
 
   var timer;
+  
+  var disableMouseSelection = false;
 
   // Turn off the browser's autocompletion
   $input
@@ -140,9 +142,11 @@ BetterAutocomplete = function($input, path, callback, options) {
     }
     // Index have changed so update selection and cancel the event
     if (typeof newIndex === 'number') {
+
+      // Disable the auto-triggered mouseover event
+      disableMouseSelection = true;
+
       self.setSelection(newIndex);
-      // TODO: The scrollTop method triggers the mouseover event on the results.
-      // We do not want that in our case. Tested on FF, Chrome
 
       // Automatic scrolling to the selected result
       var $scrollTo = $('.result', $resultList).eq(self.getSelection());
@@ -181,10 +185,19 @@ BetterAutocomplete = function($input, path, callback, options) {
 
   // When the user hovers a result with the mouse, select it
   $('.result', $resultList[0]).live('mouseover', function() {
+    if (disableMouseSelection) {
+      return;
+    }
     self.setSelection($(this).data('index'));
   });
+  
+  // Mousemove gets triggered after mouseover
+  $('.result', $resultList[0]).live('mousemove', function() {
+    // Enable mouseover again
+    disableMouseSelection = false;
+  });
 
-  //A result is clicked
+  // A result is clicked
   $('.result', $resultList[0]).live('mousedown', function() {
     self.confirmSelection();
   });
