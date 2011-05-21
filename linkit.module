@@ -110,6 +110,9 @@ function linkit_theme($existing, $type, $theme, $path) {
       'variables' => array('form' => NULL),
       'template' => 'linkit-dashboard',
     ),
+    'linkit_profile_assignment' => array(
+      'render element' => 'form',
+    ),
   );
 }
 
@@ -455,3 +458,4 @@ function linkit_linkit_plugins() {
 
   return $plugins;
 }
+
