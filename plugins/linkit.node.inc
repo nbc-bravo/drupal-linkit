@@ -26,7 +26,6 @@ function _linkit_node_autocomplete($string, $settings) {
   
 
   foreach ($result_tokens['node'] AS $token => $token_value) {
-  
     switch ($token) {
       case 'content-type':
         $query->addField('n', 'type');
@@ -38,20 +37,21 @@ function _linkit_node_autocomplete($string, $settings) {
         break;
     }
   }
+  
+  if(count($result_tokens['node'])) {
+    // This tokens can be chained so we cant use them in the foreach loop above.
+    if (token_find_with_prefix($result_tokens['node'], 'author')) {
+      $query->addField('n', 'uid');
+    }
 
-  // This tokens can be chained so we cant use them in the foreach loop above.
-  if ($author_tokens = token_find_with_prefix($result_tokens['node'], 'author')) {
-    $query->addField('n', 'uid');
+    if (token_find_with_prefix($result_tokens['node'], 'created')) {
+      $query->addField('n', 'created');
+    }
+
+    if (token_find_with_prefix($result_tokens['node'], 'changed')) {
+      $query->addField('n', 'changed');
+    }
   }
-
-  if ($created_tokens = token_find_with_prefix($result_tokens['node'], 'created')) {
-    $query->addField('n', 'created');
-  }
-
-  if ($changed_tokens = token_find_with_prefix($result_tokens['node'], 'changed')) {
-    $query->addField('n', 'changed');
-  }
-
 
   //$query->addField('n', 'status');
 
