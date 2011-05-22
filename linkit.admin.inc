@@ -74,21 +74,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     ),
     '#disabled' => !empty($profile['machine_name']),
   );
-
-  $node_display_settings_options = array(
-    'nid' => t('Display node id (nid)'),
-    'content_type' => t('Display node content type'),
-    'status' => t('Display node published status'),
-    'language' => t('Display node language'),
-    'created' => t('Display node created time'),
-    'changed' => t('Display node changed time'),
-    'show_unpublished' => t('Show unpublished nodes in the result'),
-  );
-  
-  if (module_exists('book')) {
-    $node_display_settings_options += array('show_books' => t('Display the book a node belong to'));
-  }
-  
+ 
   $form['node'] = array(
     '#type' => 'fieldset',
     '#title' => t('Node settings'),
@@ -97,13 +83,14 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     // KOLLA PÅ #STATES
   );
-
-  $form['node']['display_settings'] = array(
+  
+   $form['node']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
-    '#type' => 'checkboxes',
-    '#options' => $node_display_settings_options,
-    '#default_value' => $profile['node']['display_settings'],
+    '#type' => 'textfield',
+    '#default_value' => $profile['node']['result_description'],
+    '#description' => t('@TODO Better text here. You can use tokens here'),
   );
+
   
   // @TODO: Change this to exclude?
   $form['node']['content_types'] = array(

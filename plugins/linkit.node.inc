@@ -13,18 +13,49 @@
 function _linkit_node_autocomplete($string, $settings) {
   $matches = array();
   
+  $result_description = check_plain($settings['node']['result_description']);
+  
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
+  
   // Build default query
   $query = db_select('node', 'n')
-    ->fields('n', array('nid', 'title', 'type'))
+    ->fields('n', array('nid', 'title'))
     ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
     ->addTag('node_access');
+  
 
-  $query->addField('nt', 'name', 'content_type');
-  $query->innerJoin('node_type', 'nt', 'nt.type = n.type');
-  $query->addField('n', 'status');
-  $query->addField('n', 'language');
-  $query->addField('n', 'created');
-  $query->addField('n', 'changed');
+  foreach ($result_tokens['node'] AS $token => $token_value) {
+  
+    switch ($token) {
+      case 'content-type':
+        $query->addField('n', 'type');
+        $query->addField('nt', 'name', 'content_type');
+        $query->innerJoin('node_type', 'nt', 'nt.type = n.type');
+        break;
+      case 'language':
+        $query->addField('n', 'language');
+        break;
+    }
+  }
+
+  // This tokens can be chained so we cant use them in the foreach loop above.
+  if ($author_tokens = token_find_with_prefix($result_tokens['node'], 'author')) {
+    $query->addField('n', 'uid');
+  }
+
+  if ($created_tokens = token_find_with_prefix($result_tokens['node'], 'created')) {
+    $query->addField('n', 'created');
+  }
+
+  if ($changed_tokens = token_find_with_prefix($result_tokens['node'], 'changed')) {
+    $query->addField('n', 'changed');
+  }
+
+
+  //$query->addField('n', 'status');
+
+  /*
   if ($settings['display_settings']['show_books'] && module_exists('book')) {
     $query->leftJoin('book', 'b', 'b.nid = n.nid');
     $query->addField('b', 'bid');
@@ -37,22 +68,20 @@ function _linkit_node_autocomplete($string, $settings) {
   if ($allowed_content_types = array_filter($settings['content_types'])) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
-  
+  */
   $result = $query->execute();
-  $i = 0;
-  // TODO: Join on author
-  $description = '[node:type] · created [node:created]';
 
+  $i = 0;
   foreach ($result AS $node) {
     $matches[$i] = array(
       'title' => $node->title,
-      'description' => token_replace($description, array(
+      'description' => token_replace($result_description, array(
         'node' => $node,
       )),
       'path' => 'node/' . $node->nid,
-      'group' => t('Content')
+      'group' => t('Content'),
     );
-
+    /*
     // Add the node nid
     if ($settings['display_settings']['nid']) {
       $matches['node'][$i]['information']['nid'] = $node->nid;
@@ -83,7 +112,7 @@ function _linkit_node_autocomplete($string, $settings) {
       $book_node = node_load($node->bid);
       $matches['node'][$i]['information']['book'] = $book_node->title;
     } 
-
+    */
     $i++;
   }
 
