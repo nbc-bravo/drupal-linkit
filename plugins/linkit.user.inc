@@ -8,22 +8,38 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function _linkit_user_autocomplete($string) {
+function _linkit_user_autocomplete($string, $settings) {
   $matches = array();
+  
+  $result_description = check_plain($settings['user']['result_description']);
+  
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
 
   // Get users
-  $result = db_select('users', 'u')
+  $query = db_select('users', 'u')
     ->fields('u', array('uid', 'name'))
     ->condition('u.name', '%' . db_like($string) . '%', 'LIKE')
-    ->condition('u.status' , '1')
-    ->execute();
+    ->condition('u.status' , '1');
+  
+  foreach ($result_tokens['user'] AS $token => $token_value) {
+    switch ($token) {
+      case 'mail':
+        $query->addField('u', 'mail');
+        break;
+    }
+  }
+
+  $result = $query->execute();
+
   foreach ($result AS $user) {
     $matches[] = array(
       'title' => $user->name,
+      'description' => token_replace($result_description, array(
+        'user' => $user,
+      )),
       'path' => 'user/' . $user->uid,
-      'information' => array(
-        'type' => 'User',
-      ),
+      'group' => t('Users'),
     );
 
   }

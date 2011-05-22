@@ -119,6 +119,22 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#options' => $term_display_settings_options,
     '#default_value' => $profile['taxonomy']['display_settings'],
   );
+
+  $form['user'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('User settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => TRUE,
+    // KOLLA PÅ #STATES
+  );
+  
+   $form['user']['result_description'] = array(
+    '#title' => t('Information to display in the autocomplete field'),
+    '#type' => 'textfield',
+    '#default_value' => $profile['user']['result_description'],
+    '#description' => t('@TODO Better text here. You can use tokens here'),
+  );
   
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
