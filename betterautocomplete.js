@@ -103,7 +103,7 @@ BetterAutocomplete = function($input, path, callback, options) {
     .attr('autocomplete', 'OFF')
     .attr('aria-autocomplete', 'none');
 
-  // TODO: Generalize id:s and make them classnames instead
+  // TODO: Change specific id:s to generic classnames
   var $wrapper = $('<div />')
     .attr('id', 'linkit-autocomplete-wrapper')
     .insertAfter($input);

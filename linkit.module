@@ -166,7 +166,8 @@ function linkit_dashboard_page($editor) {
     // Check if we have IMCE and access to it.
     $imce = module_invoke('imce', 'access');
     if($imce) {
-      $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|url@edit-link--2')));
+      // TODO: imce inserts a slash before the file path that we want http://drupal.org/node/1167814
+      $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|url@edit-path')));
     }
 
     drupal_add_js($settings, 'setting');

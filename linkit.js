@@ -2,12 +2,13 @@
 /*
  * Linkit javascript lib 
  */
- var linkit_helper = {};
+ var linkitHelper = {};
 
 (function ($) {
 linkitHelper = {
   /*
    * Makes an AJAX request when a link is about to be edited with Linkit
+   * TODO: Major rewrite!
    */
   search_styled_link : function(string) {
     $('#linkit .form-item-link input').hide();
@@ -53,7 +54,7 @@ linkitHelper = {
 Drupal.behaviors.linkitImce =  {
   attach: function(context, settings) {
     $('#linkit-imce').click(function() {
-      linkit_helper.openFileBrowser();
+      linkitHelper.openFileBrowser();
       return false;
     });
   }
@@ -62,12 +63,15 @@ Drupal.behaviors.linkitImce =  {
 Drupal.behaviors.linkitAutocomplete = {
   attach: function(context, settings) {
     var $linkitSearch = $('#linkit #edit-search', context);
+
+    // Create a better autocomplete objects, see betterautocomplete.js
+    // TODO: Retrieve an absolute path through the Drupal.settings
     var bac = new BetterAutocomplete($linkitSearch, '/linkit/autocomplete', function(linkObject) {
       // Select callback is executed when an object is chosen
       // Only change the link text if it is empty
       $('#linkit #edit-text:text[value=""]').val(linkObject.title);
       $('#linkit #edit-path').val(linkObject.path);
-      $('#linkit #edit-text').focus();
+      $('#linkit #edit-text').focus().select();
     });
     if (context === window.document) {
       // TODO: Make autofocus with html5?
