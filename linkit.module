@@ -3,6 +3,7 @@
 /**
  * @file
  * Main file for linkit module.
+ * @todo Provide help
  */
 
 /**
@@ -96,7 +97,7 @@ function _linkit_dashboard_theme() {
 function linkit_permission() {
   return array(
     'administer linkit' => array(
-      'title' => t('Administer linkit settings'), 
+      'title' => t('Administer Linkit'), 
     ),
   );
 }

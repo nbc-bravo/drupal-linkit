@@ -1,8 +1,9 @@
-name = Linkit
-description = Linkit provides an easy way for users to link to internal content by search with an autocomplete field.
-core = 7.x
 
-package = Linkit
+name = Linkit
+
+description = Provides an easy interface for inserting links to internal content, files and external pages by providing autocomplete search for several WYSIWYG-editors.
+
+core = 7.x
 
 configure = admin/config/content/linkit
 
