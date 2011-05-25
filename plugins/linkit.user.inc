@@ -28,7 +28,7 @@ function _linkit_user_autocomplete($string, $settings) {
   // [user:name]
   // [user:mail]
   // [user:last-login] (short, medium, long, since, raw, custom, [default : medium])
-  // [user:created] (short, medium, long, since, raw, custom)
+  // [user:created] (short, medium, long, since, raw, custom, [default : medium])
 
   foreach ($result_tokens['user'] AS $token => $token_value) {
     switch ($token) {
