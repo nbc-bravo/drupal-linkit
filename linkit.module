@@ -161,14 +161,13 @@ function linkit_dashboard_page($editor) {
     $defualt_settings_added = TRUE;
 
     $settings = array(
-      'linkit' => array('ajaxcall' => url('linkit/geteditresult')),
+      'linkit' => array('autocompletePath' => url('linkit/autocomplete', array('absolute' => TRUE))),
     );
 
-    // Check if we have IMCE and access to it.
+    // Check if IMCE is enbled and accessable
     $imce = module_invoke('imce', 'access');
     if($imce) {
-      // TODO: imce inserts a slash before the file path that we want http://drupal.org/node/1167814
-      $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|url@edit-path')));
+      $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|sendto@Drupal.linkit.IMCECallback')));
     }
 
     drupal_add_js($settings, 'setting');

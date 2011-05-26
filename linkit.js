@@ -1,83 +1,102 @@
-
-/*
- * Linkit javascript lib 
- */
- var linkitHelper = {};
-
 (function ($) {
-linkitHelper = {
-  /*
-   * Makes an AJAX request when a link is about to be edited with Linkit
-   * TODO: Major rewrite!
-   */
-  search_styled_link : function(string) {
-    $('#linkit .form-item-link input').hide();
-    $('#linkit .form-item-link label').after($('<span></span>').addClass('throbber').html('<strong>' + Drupal.t('Loading path...') + '</strong>'));
-    // DO AJAX!
-    var result = $.get(Drupal.settings.linkit.ajaxcall, { string: string } , function(data) {
-      if(data) {
-        $('#linkit #edit-link--2').val(data);
-        $('#linkit .form-item-link .throbber').remove();
-        $('#linkit .form-item-link input').show();
-      } else {
-        $('#linkit #edit-link--2').val(string);
-        $('#linkit .form-item-link .throbber').remove();
-        $('#linkit .form-item-link input').show();
-      }
-    });
-  }, 
 
-  /*
-   * Show helper text
-   * If there is no selection, the link text will be the result title.
-   */
-  populateTitle : function(title) {
-    $('#linkit #edit-text').val(title);
-  },
-  /*
-   * IMCE integration
-   */
-  openFileBrowser : function () {
-    window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
-  },
-  
-  /*
-   * See if the link contains a #anchor
-   */
-  findAnchor : function(href) {
-    var matches = href.match(/.*(#.*)/i);
-    anchor = (matches == null) ? '' : matches[1].substring(1);
-    return anchor;
-  }
-};
+Drupal.behaviors.linkit = {
 
-Drupal.behaviors.linkitImce =  {
   attach: function(context, settings) {
+
+    var $searchInput = $('#linkit #edit-search', context);
+
+    // Create a better autocomplete objects, see betterautocomplete.js
+    // TODO: Retrieve an absolute path through the Drupal.settings
+    var bac = new BetterAutocomplete($searchInput, Drupal.settings.linkit.autocompletePath, function(linkObject) {
+      // Select callback is executed when an object is chosen
+      // Only change the link text if it is empty
+      Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+    });
+
+    if (context === window.document) {
+      // TODO: Make autofocus with html5?
+      $searchInput.focus();
+    }
+
+    // Open IMCE
     $('#linkit-imce').click(function() {
-      linkitHelper.openFileBrowser();
+      Drupal.linkit.openFileBrowser();
       return false;
     });
   }
 };
 
-Drupal.behaviors.linkitAutocomplete = {
-  attach: function(context, settings) {
-    var $linkitSearch = $('#linkit #edit-search', context);
+Drupal.linkit = Drupal.linkit || {};
 
-    // Create a better autocomplete objects, see betterautocomplete.js
-    // TODO: Retrieve an absolute path through the Drupal.settings
-    var bac = new BetterAutocomplete($linkitSearch, '/linkit/autocomplete', function(linkObject) {
-      // Select callback is executed when an object is chosen
-      // Only change the link text if it is empty
-      $('#linkit #edit-text:text[value=""]').val(linkObject.title);
-      $('#linkit #edit-path').val(linkObject.path);
-      $('#linkit #edit-text').focus().select();
-    });
-    if (context === window.document) {
-      // TODO: Make autofocus with html5?
-      $linkitSearch.focus();
+/**
+ * Populate the title and path fields when a linkable object is selected
+ * 
+ * @param title
+ *   The title of the link, only populated if title is empty
+ * @param path
+ *   The target path of the link
+ */
+Drupal.linkit.populateLink = function(text, path) {
+  // Only change the link text if it is empty
+  $('#linkit #edit-text:text[value=""]').val(text);
+  $('#linkit #edit-path').val(path);
+  $('#linkit #edit-text').focus().select();
+};
+
+/**
+ * Makes an AJAX request when a link is about to be edited with Linkit
+ * 
+ * @todo Major rewrite!
+ */
+Drupal.linkit.fetchPathInfo = function(string) {
+  $('#linkit .form-item-link input').hide();
+  $('#linkit .form-item-link label').after($('<span></span>').addClass('throbber').html('<strong>' + Drupal.t('Loading path...') + '</strong>'));
+  // DO AJAX!
+  var result = $.get(Drupal.settings.linkit.ajaxcall, { string: string } , function(data) {
+    if(data) {
+      $('#linkit #edit-link--2').val(data);
+      $('#linkit .form-item-link .throbber').remove();
+      $('#linkit .form-item-link input').show();
+    } else {
+      $('#linkit #edit-link--2').val(string);
+      $('#linkit .form-item-link .throbber').remove();
+      $('#linkit .form-item-link input').show();
     }
-  }
+  });
+};
+
+/**
+ * Open the IMCE file browser
+ */
+Drupal.linkit.openFileBrowser = function () {
+  window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
+};
+
+/**
+ * Find and return the #anchor from the path field
+ * 
+ * @return
+ *   The anchor name, without the # or null if no anchor
+ */
+Drupal.linkit.getAnchor = function(href) {
+  var matches = href.match(/#(.*)$/i);
+  return (matches == null) ? null : matches[1];
+};
+
+/**
+ * When a file is inserted through IMCE, this function is called
+ * See IMCE api for details
+ * 
+ * @param file
+ *   The file object that was selected inside IMCE
+ * @param win
+ *   The IMCE window object
+ */
+Drupal.linkit.IMCECallback = function(file, win) {
+  // TODO: Retrieve public files path by adding it to Drupal.settings
+  Drupal.linkit.populateLink(file.name, win.imce.decode('sites/default/files/' + file.relpath));
+  win.close();
 };
 
 })(jQuery);
