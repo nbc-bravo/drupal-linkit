@@ -22,7 +22,7 @@ linkitDialog = {
   	// TODO: Change all linkitHelper references to
   	// Drupal.linkit.<new_function_name>
   	// linkitHelper.populateTitle(ed.selection.getContent());
-  	Drupal.linkit.populateLink(ed.selection.getContent(), '');
+  	Drupal.linkit.populateLink(ed.selection.getContent(), '', true);
 	},
   
   insertLink : function() {

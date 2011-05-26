@@ -22,7 +22,6 @@ Drupal.behaviors.linkit = {
     // Open IMCE
     $('#linkit-imce').click(function() {
       Drupal.linkit.openFileBrowser();
-      return false;
     });
   }
 };
@@ -36,12 +35,20 @@ Drupal.linkit = Drupal.linkit || {};
  *   The title of the link, only populated if title is empty
  * @param path
  *   The target path of the link
+ * @param {Boolean} silent
+ *   Only populate fields, do not focus and select the title field
+ * 
+ * @todo Create another function which populates by field name since
+ * other fields may be populated by the editor.
  */
-Drupal.linkit.populateLink = function(text, path) {
+Drupal.linkit.populateLink = function(text, path, silent) {
+  var silent = silent || false;
   // Only change the link text if it is empty
   $('#linkit #edit-text:text[value=""]').val(text);
   $('#linkit #edit-path').val(path);
-  $('#linkit #edit-text').focus().select();
+  if (!silent) {
+    $('#linkit #edit-text').focus().select();
+  }
 };
 
 /**

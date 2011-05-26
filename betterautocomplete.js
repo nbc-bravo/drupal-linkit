@@ -200,6 +200,8 @@ BetterAutocomplete = function($input, path, callback, options) {
   // A result is clicked
   $('.result', $resultList[0]).live('mousedown', function() {
     self.confirmSelection();
+    // TODO: Do everything look good when the blur event is not invoked?
+    return false;
   });
 
   // A group is clicked
@@ -235,7 +237,7 @@ BetterAutocomplete = function($input, path, callback, options) {
   self.confirmSelection = function() {
     var $result = $('.result', $resultList).eq(self.getSelection());
     if ($result.length === 0) {
-      return false;
+      return;
     }
     var result = $result.data('result');
     if (typeof result.insert !== 'undefined') {

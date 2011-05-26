@@ -245,20 +245,21 @@ function _linkit_form() {
     '#maxlength' => 255,
     '#size' => 60,
     '#default_value' => '',
-    '#weight' => -10
+    '#weight' => -10,
   );
 
   if ($imce) {
-    $imcebutton = array(
+    $form['browse_files'] = array(
       '#type' => 'button',
       '#value' => t('Browse server'),
       '#name' => 'linkit-imce',
       '#id' => 'linkit-imce',
+    '#weight' => -8,
     );
     // Add extra class to edit-link field when we can use IMCE
     $form['search']['#attributes'] = array('class' => array('with_imce'));
     // Add the imce buttom
-    $form['search']['#field_suffix'] = drupal_render($imcebutton);
+    //$form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
   $form['text'] = array(
     '#type' => 'textfield',
@@ -266,7 +267,7 @@ function _linkit_form() {
     '#required' => TRUE,
     '#size' => 60,
     '#default_value' => '',
-    '#weight' => -5
+    '#weight' => -5,
   );
   $form['path'] = array(
     '#type' => 'textfield',
@@ -275,7 +276,7 @@ function _linkit_form() {
     '#required' => TRUE,
     '#size' => 60,
     '#default_value' => '',
-    '#weight' => -1
+    '#weight' => -1,
   );
   $form['title'] = array(
     '#type' => 'textfield',
