@@ -279,6 +279,10 @@ BetterAutocomplete = function($input, path, callback, options) {
         // TODO: Keep count of how many calls are active, when 0 remove throbber
         $input.removeClass('throbbing');
         callback(data, this);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        // TODO: Maybe alert the user that an error occured?
+        $input.removeClass('throbbing');
       }
     });
   };
