@@ -22,6 +22,7 @@ Drupal.behaviors.linkit = {
     // Open IMCE
     $('#linkit-imce').click(function() {
       Drupal.linkit.openFileBrowser();
+      return false;
     });
   }
 };
