@@ -105,6 +105,22 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     'show_parent' => t('Display the parent of the term'),
   );
 
+  $form['user'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('User settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => TRUE,
+    // KOLLA PÅ #STATES
+  );
+  
+  $form['user']['result_description'] = array(
+    '#title' => t('Information to display in the autocomplete field'),
+    '#type' => 'textfield',
+    '#default_value' => $profile['user']['result_description'],
+    '#description' => t('@TODO Better text here. You can use tokens here'),
+  );
+
   $form['taxonomy'] = array(
     '#type' => 'fieldset',
     '#title' => t('Taxonomy term settings'),
@@ -120,19 +136,26 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['taxonomy']['display_settings'],
   );
 
-  $form['user'] = array(
+  $form['taxonomy']['result_description'] = array(
+    '#title' => t('Information to display in the autocomplete field'),
+    '#type' => 'textfield',
+    '#default_value' => $profile['taxonomy']['result_description'],
+    '#description' => t('@TODO Better text here. You can use tokens here'),
+  );
+
+  $form['file'] = array(
     '#type' => 'fieldset',
-    '#title' => t('User settings'),
+    '#title' => t('File settings'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#tree' => TRUE,
     // KOLLA PÅ #STATES
   );
   
-   $form['user']['result_description'] = array(
+  $form['file']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => $profile['user']['result_description'],
+    '#default_value' => $profile['file']['result_description'],
     '#description' => t('@TODO Better text here. You can use tokens here'),
   );
   
