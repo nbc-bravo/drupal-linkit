@@ -24,16 +24,44 @@ function _linkit_node_autocomplete($string, $settings) {
     ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
     ->addTag('node_access');
   
+  // Not all tokens are supported by Linkit.
+  // Here is a list of valid tokens
+  // [node:nid]
+  // [node:vid]
+  // [node:tnid]
+  // [node:type]
+  // [node:type-name]
+  // [node:title]
+  // [node:language]
+  // [node:created] (short, medium, long, since, raw, custom, [default : medium])
+  // [node:changed] (short, medium, long, since, raw, custom, [default : medium])
+  // [node:author]  (Can use the user tokens, [default : name])
 
   foreach ($result_tokens['node'] AS $token => $token_value) {
     switch ($token) {
-      case 'content-type':
+      case 'vid':
+        $query->addField('n', 'vid');
+        break;
+      case 'tnid':
+        $query->addField('n', 'tnid');
+        break;
+      case 'type':
+      case 'type-name';
         $query->addField('n', 'type');
-        $query->addField('nt', 'name', 'content_type');
-        $query->innerJoin('node_type', 'nt', 'nt.type = n.type');
         break;
       case 'language':
         $query->addField('n', 'language');
+        break;
+      case 'author':
+        $query->addField('n', 'uid'); // @todo: kolla på detta!
+        $query->addField('u', 'name', 'name');
+        $query->leftJoin('users', 'u', 'u.uid = n.uid');
+        break;
+      case 'created':
+        $query->addField('n', 'created');
+        break;
+      case 'changed':
+        $query->addField('n', 'changed');
         break;
     }
   }
