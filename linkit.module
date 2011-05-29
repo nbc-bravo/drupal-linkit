@@ -207,11 +207,36 @@ function _linkit_autocomplete($search = NULL) {
   // TODO: Security!
   $search = $_GET['s'];
 
+  $url = parse_url($search);
+
+  if (!$url['scheme']) {
+    $results = _linkit_autocomplete_search($search);
+  }
+  elseif ($result = _linkit_internal_path_info($search)) {
+    // Internal absolute URI detected
+    $results = array($result);
+  }
+
+  // TODO: This hook should be removed, right?
+  // hook_linkit_load_plugins_alter() , let other modules change the results array
+  drupal_alter('linkit_load_plugins', $results);
+
+  drupal_json_output($results);
+}
+
+/**
+ * Perform internal autocomplete search
+ * Enter description here ...
+ * @param $search The search string
+ * @return $results An array with the result objects
+ */
+function _linkit_autocomplete_search($search) {
   $matches = array();
   if ($search) {
     // Load all plugins for this user from active profile
     $settings = _linkit_load_profile_settings();
     foreach (linkit_load_plugins($settings) AS $name => $plugin) {
+      // The function should exist, maybe it's better to just throw the error?
       if (function_exists($plugin['autocomplete callback'])) {
         $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
         // TODO: Maybe validate the result?
@@ -219,11 +244,84 @@ function _linkit_autocomplete($search = NULL) {
       }
     }
   }
+  return $matches;
+}
 
-  // hook_linkit_load_plugins_alter() , let other modules change the matches array
-  drupal_alter('linkit_load_plugins', $matches);
+/**
+ * Get information about an internal path
+ * 
+ * @param $path
+ *   The path, either like <http://example.com/path> or <path>
+ * @param $absolute
+ * 	 True if $path is an absolute URL, false if relative to the Drupal root
+ * @return
+ *   A result array with information about the path, or false if an absolute
+ *   path does not refer to this Drupal site.
+ */
+function _linkit_internal_path_info($path, $absolute = TRUE) {
+  // URL to frontpage
+  $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
+  if ($absolute && preg_match('~^' . $root_url . '($|/)~', $path)) {
+    // Look for path, construct result and send back
+    // Build the full URL, then take it apart
+    $parts = parse_url('http://example.com' . preg_replace('~^' . $root_url . '~', '', $path));
+    // TODO: One line?
+    // TODO: Does this work when Drupal is installed in a subdir?
+    $path = preg_replace('~^/~', '', $parts['path']);
+    $path = preg_replace('~/$~', '', $path);
+  }
+  else {
+    return FALSE;
+  }
 
-  drupal_json_output($matches);
+  if (empty($path)) {
+    $path = variable_get('site_frontpage', 'node');
+    $frontpage = TRUE;
+  }
+  $system_path = drupal_lookup_path('source', $path);
+  $system_path = $system_path ? $system_path : $path;
+
+  // TODO: Makes sure it works with files
+  if ($system_path !== FALSE && drupal_valid_path($system_path)) {
+    $class = 'status-ok';
+    $alias = drupal_lookup_path('alias', $path);
+    $object = menu_get_item($system_path);
+    if (!empty($object['title'])) {
+      $title = $object['title'];
+      // TODO: Should plugins be able to alter title/description?
+      $description = 'The page exists on this site.';
+    }
+    else {
+      $title = $path;
+      $description = 'The page exists on this site, but we don\'t know the title of it.';
+    }
+  }
+  else {
+    $class = 'status-warning';
+    $title = 'Page not found';
+    $description = 'This page does not exist or you do not have access to it';
+  }
+  if ($frontpage) {
+    $target_path = '<front>';
+  }
+  elseif (!empty($system_path)) {
+    $target_path = $system_path;
+  }
+  else {
+    $target_path = $path;
+  }
+  $description .= '<br />System path: ' . check_plain($target_path);
+  // Append query and anchor
+  $target_path .= ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
+
+  // Build the result
+  $result = array(
+    'path' => $target_path,
+    'title' => $title,
+    'description' => $description,
+    'class' => $class,
+  );
+  return $result;
 }
 
 // TODO: Major rewrite
