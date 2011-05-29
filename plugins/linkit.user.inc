@@ -49,12 +49,10 @@ function _linkit_user_autocomplete($string, $settings) {
   // There can be tokens that is chained so we will not find them in the switch statement above.
   if(count($result_tokens['user'])) {
     if (token_find_with_prefix($result_tokens['user'], 'last-login')) {
-      watchdog('linkit_user', 'Har token [user:last-login] !');
       $query->addField('u', 'login');
     }
 
     if (token_find_with_prefix($result_tokens['user'], 'created')) {
-      watchdog('linkit_user', 'Har token [user:created] !');
       $query->addField('u', 'created');
     }
   }
