@@ -8,6 +8,8 @@
 
 /**
  * Implements hook_menu().
+ * 
+ * @todo Strings should be wrapped in t()
  */
 function linkit_menu() {
   $items = array();
@@ -15,7 +17,7 @@ function linkit_menu() {
   $items['linkit/dashboard/%'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
-    'page callback' => 'linkit_dashboard_page',
+    'page callback' => '_linkit_dashboard',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
     'page arguments' => array(2),
@@ -24,7 +26,7 @@ function linkit_menu() {
 
   $items['linkit/autocomplete'] = array(
     'title' => 'Link to node',
-    'page callback' => 'linkit_autocomplete',
+    'page callback' => '_linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
@@ -37,8 +39,8 @@ function linkit_menu() {
   );
 
   $items['admin/config/content/linkit'] = array(
-    'title' => 'Linkit settings',
-    'description' => 'Configure Linkit',
+    'title' => 'Linkit profiles',
+    'description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
     'page callback' => 'linkit_admin_page',
     'access arguments' => array('administer linkit'),
     'file' => 'linkit.admin.inc',
@@ -147,7 +149,7 @@ function template_preprocess_linkit_dashboard(&$variables) {
 /**
  * Creates the dashboard.
  */
-function linkit_dashboard_page($editor) {
+function _linkit_dashboard($editor) {
   module_invoke('admin_menu', 'suppress');
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
@@ -193,14 +195,14 @@ function linkit_dashboard_page($editor) {
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
       break;
   }
-  $form = drupal_get_form('_linkit_form');
+  $form = drupal_get_form('_linkit_dashboard_form');
   print theme('linkit_dashboard', array('form' => render($form)));
 }
 
 /**
  * Autocomplete callback function.
  */
-function linkit_autocomplete($search = NULL) {
+function _linkit_autocomplete($search = NULL) {
 
   // TODO: Security!
   $search = $_GET['s'];
@@ -224,6 +226,7 @@ function linkit_autocomplete($search = NULL) {
   drupal_json_output($matches);
 }
 
+// TODO: Major rewrite
 function linkit_search_styled_link() {
   drupal_add_http_header('Content-Type', 'text/plain; charset=utf-8');
   if (isset($_GET['string'])) {
@@ -234,14 +237,14 @@ function linkit_search_styled_link() {
   }
 }
 
-function _linkit_form() {
+function _linkit_dashboard_form() {
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
 
   $form['search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search content'),
-    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.'),
+    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.') .'<br />'. t('You can also paste an URL here.'),
     '#maxlength' => 255,
     '#size' => 60,
     '#default_value' => '',
@@ -249,9 +252,9 @@ function _linkit_form() {
   );
 
   if ($imce) {
-    $form['browse_files'] = array(
+    $form['file_browser'] = array(
       '#type' => 'button',
-      '#value' => t('Browse server'),
+      '#value' => t('Open file browser'),
       '#name' => 'linkit-imce',
       '#id' => 'linkit-imce',
     '#weight' => -8,
@@ -272,7 +275,7 @@ function _linkit_form() {
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Target path'),
-    '#description' => t('Both internal (this site) and external (other sites) paths work. Type or paste. <br /> For example <strong>node/123</strong> or <strong>http://www.example.com/path#anchor</strong>'),
+    '#description' => t('Examples: <strong>node/123</strong>, <strong>http://www.example.com/path#anchor</strong>'),
     '#required' => TRUE,
     '#size' => 60,
     '#default_value' => '',
@@ -281,13 +284,13 @@ function _linkit_form() {
   $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#description' => t('The title attirbute provides advisory information and appears as a tooltip when hovering the link. Not required.'),
+    '#description' => t('The title attribute provides advisory information and appears as a tooltip when hovering the link. Not required.'),
     '#size' => 60,
     '#default_value' => '',
   );
   $form['insert'] = array(
     '#type' => 'button',
-    '#value' => t('Insert'),
+    '#value' => t('Insert link'),
     '#suffix' => '<a id="cancel" href="#">' . t('Cancel') . '</a>',
     '#weight' => 100,
   );
@@ -416,7 +419,8 @@ function linkit_load_plugins() {
         require_once DRUPAL_ROOT . '/' . $plugin['file'];
       }
       else {
-         drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+        // TODO: require_once will emit an error, why add another one? Study other .inc modules
+        drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
       }
     }
   }
