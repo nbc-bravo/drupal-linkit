@@ -79,7 +79,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#type' => 'fieldset',
     '#title' => t('Node settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
     '#tree' => TRUE,
     // KOLLA PÅ #STATES
   );
@@ -110,7 +110,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#type' => 'fieldset',
     '#title' => t('User settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
     '#tree' => TRUE,
     // KOLLA PÅ #STATES
   );
@@ -128,7 +128,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#type' => 'fieldset',
     '#title' => t('Taxonomy term settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
     '#tree' => TRUE,
   );
 
@@ -145,7 +145,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#type' => 'fieldset',
     '#title' => t('File settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
     '#tree' => TRUE,
     // KOLLA PÅ #STATES
   );
