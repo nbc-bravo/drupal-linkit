@@ -103,7 +103,7 @@ BetterAutocomplete = function($input, path, callback, options) {
     .attr('autocomplete', 'OFF')
     .attr('aria-autocomplete', 'none');
 
-  // TODO: Generalize id:s and make them classnames instead
+  // TODO: Change specific id:s to generic classnames
   var $wrapper = $('<div />')
     .attr('id', 'linkit-autocomplete-wrapper')
     .insertAfter($input);
@@ -200,6 +200,8 @@ BetterAutocomplete = function($input, path, callback, options) {
   // A result is clicked
   $('.result', $resultList[0]).live('mousedown', function() {
     self.confirmSelection();
+    // TODO: Do everything look good when the blur event is not invoked?
+    return false;
   });
 
   // A group is clicked
@@ -235,7 +237,7 @@ BetterAutocomplete = function($input, path, callback, options) {
   self.confirmSelection = function() {
     var $result = $('.result', $resultList).eq(self.getSelection());
     if ($result.length === 0) {
-      return false;
+      return;
     }
     var result = $result.data('result');
     if (typeof result.insert !== 'undefined') {
@@ -279,6 +281,10 @@ BetterAutocomplete = function($input, path, callback, options) {
         // TODO: Keep count of how many calls are active, when 0 remove throbber
         $input.removeClass('throbbing');
         callback(data, this);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        // TODO: Maybe alert the user that an error occured?
+        $input.removeClass('throbbing');
       }
     });
   };

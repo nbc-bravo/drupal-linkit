@@ -1,4 +1,6 @@
 
+// TODO: rename this file, for easier debugging
+
 var linkitDialog = {};
 
 (function ($) {
@@ -12,13 +14,15 @@ linkitDialog = {
   	  var href = $(e).attr('href');
   	
   	  if(href.length > 0) {
-  		  linkitHelper.search_styled_link(href);
+  		  // linkitHelper.search_styled_link(href);
   			} 
   	  $('#edit-title').val($(e).attr('title'));
   	  return false;
   	}
-  	// Populate the title field
-  	linkitHelper.populateTitle(ed.selection.getContent());
+  	// TODO: Change all linkitHelper references to
+  	// Drupal.linkit.<new_function_name>
+  	// linkitHelper.populateTitle(ed.selection.getContent());
+  	Drupal.linkit.populateLink(ed.selection.getContent(), '', true);
 	},
   
   insertLink : function() {
@@ -109,7 +113,11 @@ linkitDialog = {
 
 tinyMCEPopup.onInit.add(linkitDialog.init, linkitDialog);
 
-
+/*
+ * TODO: Shouldn't it be the other way around, i.e that these editor specific
+ * scripts attaches callbacks to the Drupal.linkit object instead so that
+ * these files does not need to do any DOM manipulation etc.?
+ */
 Drupal.behaviors.linkitInitTinyMCE =  {
   attach: function(context, settings) {
     $('#edit-link', context).keydown(function(ev) {

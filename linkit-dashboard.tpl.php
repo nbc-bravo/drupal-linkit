@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * @todo Message when JS is off that Linkit doesn't work?
  * Linkit dashboard template file
  */
 ?>
