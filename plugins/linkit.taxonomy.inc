@@ -3,51 +3,61 @@
 /**
  * @file
  * Extend Linkit with taxonomy links.
+ * @todo Rename to just term?
  */
 
 
 /**
  * Implements hook_linkit_load_plugins().
  */
-function _linkit_taxonomy_autocomplete($string) {
+function _linkit_taxonomy_autocomplete($string, $settings) {
   $matches = array();
 
-  $settings = variable_get('linkit_term', array());
+  $result_description = check_plain($settings['taxonomy']['result_description']);
 
-  // Prevent "PHP notice: Undefined variable"
-  _linkit_taxonomy_get_default_settings($settings);
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
 
   // Build default query
   $query = db_select('taxonomy_term_data', 't')
-    ->fields('t', array('name', 'tid'))
+    ->fields('t', array('tid', 'name'))
     ->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE')
     ->addTag('term_access');
 
+  // Not all tokens are supported by Linkit.
+  // Here is a list of valid tokens
+  // [term:tid]
+  // [term:name]
+  // [term:vocabulary] (vid, name, [default : name])
+  // [term:parent]
+
+  foreach ($result_tokens['term'] AS $token => $token_value) {
+    switch ($token) {
+      case 'vocabulary':
+        $query->addField('t', 'vid');
+        break;
+    }
+  }
+
+  // There can be tokens that is chained so we will not find them in the switch statement above.
+  if(count($result_tokens['term'])) {
+    if (token_find_with_prefix($result_tokens['term'], 'vocabulary')) {
+      $query->addField('t', 'vid');
+    }
+  }
+
   // Get terms
   $result = $query->execute();
-  $i = 0;
   foreach ($result as $term) {
     $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
     $matches[] = array(
       'title' => $term->name,
+      'description' => token_replace($result_description, array(
+        'term' => $term,
+      )),
       'path' => $uri['path'],
       'group' => t('Terms'),
     );
-    // Add the taxonomy path
-    if ($settings['display_settings']['show_parent']) {
-      // Possible to find all parents to the root level, for now this isnt really pretty to put in
-      // $parents = taxonomy_get_parents_all($term->tid);
-
-      // The API says "Find all parents of a given term ID." but thats not true
-      // It is only returning the very next parent
-      $parents = taxonomy_get_parents($term->tid);
-      
-      if (count($parents)) {
-        $current = current($parents);
-        $matches['taxonomy'][$i]['information']['parent'] = $current->name;
-      }
-    } 
-    $i++;
   }
   return  $matches;
 }
@@ -89,17 +99,4 @@ function linkit_taxonomy_linkit_info_plugins() {
     'type' => 'taxonomy',
   );
   return $return;
-}
-
-/**
- * Prevent "PHP notice: Undefined variable" by merging the settings 
- * with the defule values
- */
-function _linkit_taxonomy_get_default_settings(&$settings) {
-  // Merge settings with the default settings
-  $settings += array(
-    'display_settings' => array(
-      'show_parent' => 0,
-    ), 
-  );
 }
