@@ -88,10 +88,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => $profile['node']['result_description'],
+    '#size' => 120, 
+    '#maxlength' => 255, 
     '#description' => t('@TODO Better text here. You can use tokens here'),
   );
 
-  
   // @TODO: Change this to exclude?
   $form['node']['content_types'] = array(
     '#title' => t('Include this content types in the search result'),
@@ -118,6 +119,8 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => $profile['user']['result_description'],
+    '#size' => 120, 
+    '#maxlength' => 255, 
     '#description' => t('@TODO Better text here. You can use tokens here'),
   );
 
@@ -129,17 +132,12 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
   );
 
-  $form['taxonomy']['display_settings'] = array(
-    '#title' => t('Information to display in the autocomplete field'),
-    '#type' => 'checkboxes',
-    '#options' => $term_display_settings_options,
-    '#default_value' => $profile['taxonomy']['display_settings'],
-  );
-
   $form['taxonomy']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => $profile['taxonomy']['result_description'],
+    '#size' => 120, 
+    '#maxlength' => 255, 
     '#description' => t('@TODO Better text here. You can use tokens here'),
   );
 
@@ -156,6 +154,8 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => $profile['file']['result_description'],
+    '#size' => 120, 
+    '#maxlength' => 255, 
     '#description' => t('@TODO Better text here. You can use tokens here'),
   );
   
