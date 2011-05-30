@@ -74,6 +74,26 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     ),
     '#disabled' => !empty($profile['machine_name']),
   );
+  
+  $header = array(
+    'name' => array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
+    'desc' => array('data' => t('Description'), 'field' => 'description'),
+  );
+  
+  $options = array();
+
+  foreach(linkit_load_plugins() AS $name => $plugin) {
+    $options[$name]['name'] =  $plugin['title'];
+    $options[$name]['desc'] =  $plugin['description'];
+  }
+  
+  $form['enabled_plugins'] = array(
+    '#type' => 'tableselect', 
+    '#header' => $header, 
+    '#options' => $options, 
+    '#empty' => t('No plugins available'),
+    '#default_value' => $profile['enabled_plugins'],
+  );
  
   $form['node'] = array(
     '#type' => 'fieldset',
@@ -176,6 +196,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
  * Validate profile form submissions.
  */
 function linkit_admin_settings_validate($form, &$form_state) {
+
 }
 
 /**

@@ -235,7 +235,7 @@ function _linkit_autocomplete_search($search) {
   if ($search) {
     // Load all plugins for this user from active profile
     $settings = _linkit_load_profile_settings();
-    foreach (linkit_load_plugins($settings) AS $name => $plugin) {
+    foreach (linkit_load_plugins(TRUE) AS $name => $plugin) {
       // The function should exist, maybe it's better to just throw the error?
       if (function_exists($plugin['autocomplete callback'])) {
         $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
@@ -507,26 +507,48 @@ function linkit_admin_profile_title($op, $profile) {
  * @return An array with plugins enabled
  * @todo Add parameter profile
  */
-function linkit_load_plugins() {
-  $enabled_plugins = array();
-  foreach (module_invoke_all('linkit_plugins') as $name => $plugin) {
-    // TODO: If this module should be loaded, add it to the list...
-    $enabled_plugins[$name] = $plugin;
-    if ($plugin['file']) {
-      if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
-        require_once DRUPAL_ROOT . '/' . $plugin['file'];
-      }
-      else {
-        // TODO: require_once will emit an error, why add another one? Study other .inc modules
-        drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
-      }
-    }
+function linkit_load_plugins($include = FALSE) {
+  static $installed_plugins;
+
+  if (isset($installed_plugins)) {
+    return $installed_plugins;
   }
-  return $enabled_plugins;
+  
+  foreach (module_invoke_all('linkit_plugins') as $name => $plugin) {
+    $installed_plugins[$name] = $plugin;
+  }
+  
+  // Include plugin file.
+  if ($include) {
+    _linkit_include_plugins($installed_plugins);
+  }
+
+  return $installed_plugins;
 }
 
 /**
- * Implements hook_linkit_plugins
+ * Includes all plugin files that are actived for the profile.
+ */ 
+function _linkit_include_plugins($plugins) {
+  $settings = _linkit_load_profile_settings();
+  
+  foreach ($plugins AS $name => $plugin) {
+    // Only include files for plugins that is enabled in the profile for this user.
+    if ($settings['enabled_plugins'][$name]) {
+      if ($plugin['file']) {
+        if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
+          require_once DRUPAL_ROOT . '/' . $plugin['file'];
+        }
+        else {
+          drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_linkit_plugins().
  */
 function linkit_linkit_plugins() {
     // TODO: Wrap in t(), make awesome strings
@@ -586,7 +608,12 @@ function linkit_image_default_styles() {
  * Get the "best" Linkit profile based on the users roles.
  */
 function _linkit_load_profile_settings() {
+  static $settings;
   global $user;
+  
+  if(isset($settings)) {
+    return $settings;
+  }
 
   // Get the role -> profile configuration
   $role_profile = variable_get('linkit_roles_profiles', array());
@@ -598,7 +625,8 @@ function _linkit_load_profile_settings() {
   
   foreach($role_profile AS $rid => $profile_name) {
     if(isset($user->roles[$rid])) {
-      return $profile_settings[$profile_name];
+      $settings = $profile_settings[$profile_name];
+      return $settings;
     }
   }
 }
