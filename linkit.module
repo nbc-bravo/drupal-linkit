@@ -25,7 +25,7 @@ function linkit_menu() {
   );
 
   $items['linkit/autocomplete'] = array(
-    'title' => 'Link to node',
+    'title' => 'Linkit autocomplete response function',
     'page callback' => '_linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -478,14 +478,6 @@ function linkit_help($path, $arg) {
 }
 
 /**
- * Include linkit core .inc files.
- * @TODO: Is this used??
- */
-function linkit_include($file) {
-  module_load_include('inc', 'linkit', "plugins/" . $file);
-}
-
-/**
  * Determines if a profile with a given name exists.
  *
  * @param $profile_name
@@ -505,13 +497,16 @@ function linkit_profile_exists($profile_name) {
  * Generate a page title.
  */
 function linkit_admin_profile_title($op, $profile) {
-  return $op . ' Linkit profile - ' . $profile['name']; // @TODO:: Översättning här?
+  return $op . ' Linkit profile - ' . $profile['name']; // @TODO: Översättning här?
 }
 
 /**
  * Loads plugin files and returns active plugins for this user.
+ *
  * @return An array with plugins enabled
+ *
  * @todo Add parameter profile
+ * @todo Add static flag variable since it only needs to be called once
  */
 function linkit_load_plugins() {
   $enabled_plugins = array();

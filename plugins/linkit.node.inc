@@ -11,7 +11,6 @@
  * TODO: Add second parameter $settings with this plugins settings for the current profile
  */
 function _linkit_node_autocomplete($string, $settings) {
-  $matches = array();
   
   $result_description = check_plain($settings['node']['result_description']);
   
@@ -71,9 +70,8 @@ function _linkit_node_autocomplete($string, $settings) {
   */
   $result = $query->execute();
 
-  $i = 0;
   foreach ($result AS $node) {
-    $matches[$i] = array(
+    $matches[] = array(
       'title' => $node->title,
       'description' => token_replace($result_description, array(
         'node' => $node,
@@ -113,7 +111,6 @@ function _linkit_node_autocomplete($string, $settings) {
       $matches['node'][$i]['information']['book'] = $book_node->title;
     } 
     */
-    $i++;
   }
 
   return $matches;
