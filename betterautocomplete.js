@@ -334,7 +334,12 @@ BetterAutocomplete = function($input, path, callback, options) {
   /**
    * Generate DOM result items from the current search using the results cache
    * 
-   * TODO: Grouping
+   * @todo Grouping of items even if they are recieved in an arbitrary order?
+   *
+   * @todo Sanitization of title/description? Something that just filters XSS
+   * would be necessary, I think. Maybe a list of allowed HTML tags.
+   * Another option is to inform the developers that they should sanitize
+   * server-side.
    */
   self.renderResults = function() {
 

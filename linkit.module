@@ -25,7 +25,7 @@ function linkit_menu() {
   );
 
   $items['linkit/autocomplete'] = array(
-    'title' => 'Link to node',
+    'title' => 'Linkit autocomplete response function',
     'page callback' => '_linkit_autocomplete',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -209,12 +209,12 @@ function _linkit_autocomplete($search = NULL) {
 
   $url = parse_url($search);
 
-  if (!$url['scheme']) {
-    $results = _linkit_autocomplete_search($search);
+  // Absolute URI
+  if ($url['scheme']) {
+    $results = array(_linkit_path_info($search));
   }
-  elseif ($result = _linkit_internal_path_info($search)) {
-    // Internal absolute URI detected
-    $results = array($result);
+  else {
+    $results = _linkit_autocomplete_search($search);
   }
 
   // TODO: This hook should be removed, right?
@@ -248,91 +248,154 @@ function _linkit_autocomplete_search($search) {
 }
 
 /**
- * Get information about an internal path
+ * Get information about an url, whether it is internal or external,
+ * the system path, in case there is any, etc.
+ * 
+ * @todo Flag for allowing relative paths, to scan absolute only.
+ *
+ * @param $url
+ *   The url that should be scanned. 
+ *
+ * @return
+ *   An associative array containing:
+ *   - target: Either "internal" or "external".
+ *   - url: The same as the argument $url, untouched
+ *   - system_path: The drupal system path, e.g. "node/23" if target is
+ *     internal and the path is valid.
+ *   - alias: The alias to the path, if the system path has an alias.
+ *   - parts: An associative array created by parse_url() containing url parts
+ */
+function _linkit_scan_url($url) {
+  $path_info['url'] = $url;
+  // Build the full URL, then take it apart
+  $path_info['parts'] = parse_url($url);
+  // URL to frontpage
+  $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
+
+  // Internal URL
+  if ($path_info['parts']['scheme'] && preg_match('~^' . $root_url . '($|/|\?|#)~', $url)) {
+    $path_info['absolute'] = TRUE;
+    $path_info['target'] = 'internal';
+    // Look for path, construct result and send back
+    // TODO: One line?
+    // TODO: Does this work when Drupal is installed in a subdir? At another port?
+    $path = trim($path_info['parts']['path'], '/');
+
+    // Frontpage check
+    if (empty($path)) {
+      $path = variable_get('site_frontpage', 'node');
+      $path_info['frontpage'] = TRUE;
+    }
+    $system_path = drupal_lookup_path('source', $path);
+    $system_path = $system_path ? $system_path : $path;
+
+    if ($system_path !== FALSE && drupal_valid_path($system_path)) {
+      $path_info['system_path'] = $system_path;
+      $path_info['alias'] = drupal_lookup_path('alias', $path);
+    }
+  }
+  // External URL
+  elseif ($path_info['parts']['scheme']) {
+    $path_info['absolute'] = TRUE;
+    $path_info['target'] = 'external';
+  }
+  // Internal path? No absolute URL given
+  else {
+    // For now, this is the simplest solution, change later if necessary
+    return FALSE;
+  }
+  return $path_info;
+}
+
+/**
+ * Retrieve information about a path. This method will iterate over Linkit
+ * plugins to look for information about that path. Both internal and
+ * external paths work.
  * 
  * @param $path
  *   The path, either like <http://example.com/path> or <path>
+ *
  * @param $absolute
- * 	 True if $path is an absolute URL, false if relative to the Drupal root
+ * 	 True if $path is an absolute URL, false if relative to the Drupal root.
+ *
  * @return
- *   A result array with information about the path, or false if an absolute
- *   path does not refer to this Drupal site.
+ *   An array with information about the path. It is intended to be passed
+ *   directly to the autocomplete function, so that it can be rendered
+ *   instantly upon the AJAX success. The array consists of:
+ *   - title: The title of the result
+ *   - description: The description of the result (may contain HTML)
+ *   - path: The target path which will be inserted as the href in the link
+ *   - alias: (optional) The alias to an internal path
+ *   - class: A CSS class that will be added to the DOM result div
+ *
+ * @todo Implement the non absolute URL feature
  */
-function _linkit_internal_path_info($path, $absolute = TRUE) {
-  // URL to frontpage
-  $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
-  if ($absolute && preg_match('~^' . $root_url . '($|/)~', $path)) {
-    // Look for path, construct result and send back
-    // Build the full URL, then take it apart
-    $parts = parse_url('http://example.com' . preg_replace('~^' . $root_url . '~', '', $path));
-    // TODO: One line?
-    // TODO: Does this work when Drupal is installed in a subdir?
-    $path = preg_replace('~^/~', '', $parts['path']);
-    $path = preg_replace('~/$~', '', $path);
+function _linkit_path_info($path, $absolute = TRUE) {
+  if (!$path_info = _linkit_scan_url($path)) {
+    return;
   }
-  else {
-    return FALSE;
-  }
+  $parts = $path_info['parts'];
+  $query_fragment = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
 
-  if (empty($path)) {
-    $path = variable_get('site_frontpage', 'node');
-    $frontpage = TRUE;
-  }
-  $system_path = drupal_lookup_path('source', $path);
-  $system_path = $system_path ? $system_path : $path;
-
-  // TODO: Makes sure it works with files
-  if ($system_path !== FALSE && drupal_valid_path($system_path)) {
-    $class = 'status-ok';
-    $alias = drupal_lookup_path('alias', $path);
-    $object = menu_get_item($system_path);
-    if (!empty($object['title'])) {
-      $title = $object['title'];
-      // TODO: Should plugins be able to alter title/description?
-      $description = 'The page exists on this site.';
-    }
-    else {
-      $title = $path;
-      $description = 'The page exists on this site, but we don\'t know the title of it.';
+  // Let plugins review the path and optionally return a result
+  $settings = _linkit_load_profile_settings();
+  foreach (linkit_load_plugins() as $name => $plugin) {
+    // TODO: Well, plugins should be able to give info about external paths as well?
+    if ($plugin['path info callback'] && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
+      break;
     }
   }
-  else {
-    $class = 'status-warning';
-    $title = 'Page not found';
-    $description = 'This page does not exist or you do not have access to it';
+  // A plugin gave a result
+  if ($result) {
+    if (!$result['class']) {
+      $result['class'] = 'status-ok';
+    }
+    if (!$result['path'] && $path_info['target'] == 'internal') {
+      // This is default target path for internal links, can be overridden by plugins.
+      $result['path'] = $path_info['system_path'] . $query_fragment;
+    }
+    elseif (!$result['path'] && $path_info['target'] == 'external') {
+      // This is default target path for external links, can be overridden by plugins.
+      $result['path'] = $path_info['url'];
+    }
+    if ($path_info['frontpage']) {
+      $result['path'] = '<front>' . $query_fragment;
+    }
+    // There is no alias for front, and alias shouldn't be altered by plugins
+    elseif ($path_info['alias']) {
+      $result['alias'] = $path_info['alias'];
+    }
   }
-  if ($frontpage) {
-    $target_path = '<front>';
+  // No plugin results, internal, exists
+  elseif ($path_info['system_path']) {
+    $menu_item = menu_get_item($path_info['system_path']);
+    $result = array(
+      'path' => $path_info['system_path'],
+      'alias' => $path_info['alias'],
+      'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path_info['system_path']),
+      'description' => 'This is an internal path.',
+      'class' => 'status-ok',
+    );
   }
-  elseif (!empty($system_path)) {
-    $target_path = $system_path;
+  // No plugin results, internal, doesn't exist
+  elseif ($path_info['target'] == 'internal') {
+    $result = array(
+      'path' => substr($path_info['parts']['path'], 1) . $query_fragment,
+      'title' => 'Page not found',
+      'description' => 'This page does not exist or you do not have access to it.',
+      'class' => 'status-warning',
+    );
   }
-  else {
-    $target_path = $path;
+  // No plugin results, external
+  elseif ($path_info['target'] == 'external') {
+    $result = array(
+      'title' => 'No information available',
+      'description' => 'This is an external URL, but we don\'t know where it leads.',
+      'path' => $path_info['url'],
+      'class' => 'status-notice',
+    );
   }
-  $description .= '<br />System path: ' . check_plain($target_path);
-  // Append query and anchor
-  $target_path .= ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
-
-  // Build the result
-  $result = array(
-    'path' => $target_path,
-    'title' => $title,
-    'description' => $description,
-    'class' => $class,
-  );
   return $result;
-}
-
-// TODO: Major rewrite
-function linkit_search_styled_link() {
-  drupal_add_http_header('Content-Type', 'text/plain; charset=utf-8');
-  if (isset($_GET['string'])) {
-    $string = check_plain($_GET['string']);
-    $matches = module_invoke_all('linkit_get_search_styled_link', $string);
-    
-    echo (isset($matches[0]) ? $matches[0] : '');
-  }
 }
 
 function _linkit_dashboard_form() {
@@ -472,14 +535,6 @@ function linkit_help($path, $arg) {
 }
 
 /**
- * Include linkit core .inc files.
- * @TODO: Is this used??
- */
-function linkit_include($file) {
-  module_load_include('inc', 'linkit', "plugins/" . $file);
-}
-
-/**
  * Determines if a profile with a given name exists.
  *
  * @param $profile_name
@@ -499,13 +554,16 @@ function linkit_profile_exists($profile_name) {
  * Generate a page title.
  */
 function linkit_admin_profile_title($op, $profile) {
-  return $op . ' Linkit profile - ' . $profile['name']; // @TODO:: Översättning här?
+  return $op . ' Linkit profile - ' . $profile['name']; // @TODO: Översättning här?
 }
 
 /**
  * Loads plugin files and returns active plugins for this user.
+ *
  * @return An array with plugins enabled
+ *
  * @todo Add parameter profile
+ * @todo Add static flag variable since it only needs to be called once
  */
 function linkit_load_plugins($include = FALSE) {
   static $installed_plugins;
@@ -558,6 +616,7 @@ function linkit_linkit_plugins() {
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
+    'path info callback' => '_linkit_node_path_info'
   );
 
   $plugins['user'] = array(

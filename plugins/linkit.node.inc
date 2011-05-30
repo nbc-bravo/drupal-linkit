@@ -11,7 +11,6 @@
  * TODO: Add second parameter $settings with this plugins settings for the current profile
  */
 function _linkit_node_autocomplete($string, $settings) {
-  $matches = array();
   
   $result_description = check_plain($settings['node']['result_description']);
   
@@ -99,9 +98,8 @@ function _linkit_node_autocomplete($string, $settings) {
   */
   $result = $query->execute();
 
-  $i = 0;
   foreach ($result AS $node) {
-    $matches[$i] = array(
+    $matches[] = array(
       'title' => $node->title,
       'description' => token_replace($result_description, array(
         'node' => $node,
@@ -141,47 +139,51 @@ function _linkit_node_autocomplete($string, $settings) {
       $matches['node'][$i]['information']['book'] = $book_node->title;
     } 
     */
-    $i++;
   }
 
   return $matches;
 }
 
 /**
- * Implements hook_linkit_get_search_styled_link().
+ * Implements hook_linkit_plugins "path info callback".
+ *
+ * If the path given is a node item, then return information about that node.
+ *
+ * @see linkit.api.php
+ *
+ * @todo the query will almost be equal to autocomplete search.
+ * Perhaps create a new function that constructs the first part of the query
+ * to avoid duplicate code?
+ *
+ * @todo Perhaps non core plugins should be able to alter the appearance of
+ * title and description by for example adding tokens and having a way to
+ * alter the query so their particular field can be loaded. For example if
+ * they want a new token "node image" which fetches an image field file ref
+ * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
-function linkit_node_linkit_get_search_styled_link($string) {
-  // Check to see that the link really is a node link
+function _linkit_node_path_info($path_info, $settings) {
+  // TODO: Move to linkit.module:
   // Backwards compatible with internal: links
-  $escaped_string = str_replace('internal:', '', $string);
-  $splitted_string = explode('/', $escaped_string);
-  if ($splitted_string[0] != 'node') {
-    return;
+  // $escaped_string = str_replace('internal:', '', $string)
+
+  // Check if path is referring to a node
+  if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
+    $db_result = db_select('node', 'n')
+      ->fields('n', array('title', 'type', 'nid'))
+      ->condition('n.nid', arg(1, $path_info['system_path']))
+      ->addTag('node_access')
+      ->execute()
+      ->fetchObject();
+
+    if ($db_result) {
+      $parts = $path_info['parts'];
+      // TODO: Use tokens instead
+      $result = array(
+        'title' => check_plain($db_result->title),
+        'description' => check_plain('id: ' . $db_result->nid . ' · type: ' . $db_result->type),
+      );
+      return $result;
+    }
   }
-
-  // This is a node link created with Linkit, try to grab the title and path now. 
-  $result = db_select('node', 'n')
-    ->fields('n', array('title'))
-    ->condition('n.nid', $splitted_string[1])
-    ->addTag('node_access')
-    ->execute()
-    ->fetchObject();
-
-  // No reault was found
-  if (!$result) {
-    return;
-  }
-  return check_plain($result->title) . ' [path:' . $escaped_string . ']';
-}
-
-/**
- * Implements hook_linkit_info_plugins().
- * 
- * This is used by linkit_permissions
- */
-function linkit_node_linkit_info_plugins() {
-  $return['linkit_node'] = array(
-    'type' => 'node',
-  );
-  return $return;
+  return FALSE;
 }
