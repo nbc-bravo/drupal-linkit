@@ -283,62 +283,43 @@ function _linkit_internal_path_info($path, $absolute = TRUE) {
 
   // TODO: Makes sure it works with files
   if ($system_path !== FALSE && drupal_valid_path($system_path)) {
-    $class = 'status-ok';
-    $alias = drupal_lookup_path('alias', $path);
-    // TODO: Check all path info callback before calling the heavy menu_get_item
-    $menu_item = menu_get_item($system_path);
-    if (!empty($menu_item['title'])) {
-      $title = $menu_item['title'];
-      $settings = _linkit_load_profile_settings();
-      foreach (linkit_load_plugins() as $name => $plugin) {
-        if (isset($plugin['path info callback']) && $description = call_user_func($plugin['path info callback'], $system_path, $menu_item, $settings)) {
-          break;
-        }
+
+    // Ask plugins for information about this path
+    $settings = _linkit_load_profile_settings();
+    foreach (linkit_load_plugins() as $name => $plugin) {
+      // TODO: Well, plugins should be able to give info about external paths as well?
+      if (isset($plugin['path info callback']) && $path_info = call_user_func($plugin['path info callback'], $system_path, $settings)) {
+        break;
       }
-      $description = $description ? $description : 'The page exists on this site.';
     }
-    else {
-      $title = $path;
-      $description = 'The page exists on this site, but we don\'t know the title of it.';
+    // No plugin gave path information
+    if (!$path_info) {
+      $menu_item = menu_get_item($system_path);
+      $path_info['title'] = $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path) . ' <em>(Internal path)</em>';
+      $path_info['description'] = 'No additional information available';
     }
+
+    $path_info['class'] = 'status-ok';
+    $path_info['alias'] = drupal_lookup_path('alias', $path);
   }
   else {
-    $class = 'status-warning';
-    $title = 'Page not found';
-    $description = 'This page does not exist or you do not have access to it';
+    $path_info['class'] = 'status-warning';
+    $path_info['title'] = 'Page not found';
+    $path_info['description'] = 'This page does not exist or you do not have access to it';
   }
   if ($frontpage) {
-    $target_path = '<front>';
+    $path_info['path'] = '<front>';
   }
   elseif (!empty($system_path)) {
-    $target_path = $system_path;
+    $path_info['path'] = $system_path;
   }
   else {
-    $target_path = $path;
+    $path_info['path'] = $path;
   }
-  $description .= '<br />System path: ' . check_plain($target_path);
   // Append query and anchor
-  $target_path .= ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
-
-  // Build the result
-  $result = array(
-    'path' => $target_path,
-    'title' => $title,
-    'description' => $description,
-    'class' => $class,
-  );
-  return $result;
-}
-
-// TODO: Major rewrite
-function linkit_search_styled_link() {
-  drupal_add_http_header('Content-Type', 'text/plain; charset=utf-8');
-  if (isset($_GET['string'])) {
-    $string = check_plain($_GET['string']);
-    $matches = module_invoke_all('linkit_get_search_styled_link', $string);
-    
-    echo (isset($matches[0]) ? $matches[0] : '');
-  }
+  $path_info['path'] .= ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
+  $path_info['description'] .= '<br />Internal target path: ' . check_plain($path_info['path']);
+  return $path_info;
 }
 
 function _linkit_dashboard_form() {

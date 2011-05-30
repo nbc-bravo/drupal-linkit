@@ -126,34 +126,36 @@ function _linkit_node_autocomplete($string, $settings) {
  * @todo the query will almost be equal to autocomplete search.
  * Perhaps create a new function that constructs the first part of the query
  * to avoid duplicate code?
+ *
+ * @todo Perhaps non core plugins should be able to alter the appearance of
+ * title and description by for example adding tokens and having a way to
+ * alter the query so their particular field can be loaded. For example if
+ * they want a new token "node image" which fetches an image field file ref
+ * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
-function _linkit_node_path_info($path, $menu_item, $settings) {
-  // Check to see that the link really is a node link
+function _linkit_node_path_info($path, $settings) {
+  // TODO: Move to linkit.module:
   // Backwards compatible with internal: links
-  // TODO: Move to _linkit_internal_path_info:
-  // $escaped_string = str_replace('internal:', '', $string);
-  // TODO: Use arg() instead
-  $splitted_string = explode('/', $path);
-  if ($splitted_string[0] != 'node') {
-    return FALSE;
-  }
-  $result_description = check_plain($settings['node']['result_description']);
-  
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
+  // $escaped_string = str_replace('internal:', '', $string)
 
-  // This is a node link created with Linkit, try to grab the title and path now.
-  $result = db_select('node', 'n')
-    ->fields('n', array('title', 'type', 'nid'))
-    ->condition('n.nid', $splitted_string[1])
-    ->addTag('node_access')
-    ->execute()
-    ->fetchObject();
+  // Check if path is referring to a node
+  if (arg(0, $path) == 'node' && is_numeric(arg(1, $path))) {
+    $result_description = check_plain($settings['node']['result_description']);
+    $result = db_select('node', 'n')
+      ->fields('n', array('title', 'type', 'nid'))
+      ->condition('n.nid', arg(1, $path))
+      ->addTag('node_access')
+      ->execute()
+      ->fetchObject();
 
-  // No result was found
-  if (!$result) {
-    return FALSE;
+    if ($result) {
+      // TODO: Use tokens instead
+      $path_info = array(
+        'title' => check_plain($result->title),
+        'description' => check_plain('id: ' . $result->nid . ' · type: ' . $result->type),
+      );
+      return $path_info;
+    }
   }
-  // TODO: Use the tokenized fields
-  return check_plain('id: ' . $result->nid . ' · type: ' . $result->type);
+  return FALSE;
 }
