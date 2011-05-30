@@ -285,11 +285,17 @@ function _linkit_internal_path_info($path, $absolute = TRUE) {
   if ($system_path !== FALSE && drupal_valid_path($system_path)) {
     $class = 'status-ok';
     $alias = drupal_lookup_path('alias', $path);
-    $object = menu_get_item($system_path);
-    if (!empty($object['title'])) {
-      $title = $object['title'];
-      // TODO: Should plugins be able to alter title/description?
-      $description = 'The page exists on this site.';
+    // TODO: Check all path info callback before calling the heavy menu_get_item
+    $menu_item = menu_get_item($system_path);
+    if (!empty($menu_item['title'])) {
+      $title = $menu_item['title'];
+      $settings = _linkit_load_profile_settings();
+      foreach (linkit_load_plugins() as $name => $plugin) {
+        if (isset($plugin['path info callback']) && $description = call_user_func($plugin['path info callback'], $system_path, $menu_item, $settings)) {
+          break;
+        }
+      }
+      $description = $description ? $description : 'The page exists on this site.';
     }
     else {
       $title = $path;
@@ -536,6 +542,7 @@ function linkit_linkit_plugins() {
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
+    'path info callback' => '_linkit_node_path_info'
   );
 
   $plugins['user'] = array(
