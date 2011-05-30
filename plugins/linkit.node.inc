@@ -133,28 +133,28 @@ function _linkit_node_autocomplete($string, $settings) {
  * they want a new token "node image" which fetches an image field file ref
  * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
-function _linkit_node_path_info($path, $settings) {
+function _linkit_node_path_info($path_info, $settings) {
   // TODO: Move to linkit.module:
   // Backwards compatible with internal: links
   // $escaped_string = str_replace('internal:', '', $string)
 
   // Check if path is referring to a node
-  if (arg(0, $path) == 'node' && is_numeric(arg(1, $path))) {
-    $result_description = check_plain($settings['node']['result_description']);
-    $result = db_select('node', 'n')
+  if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
+    $db_result = db_select('node', 'n')
       ->fields('n', array('title', 'type', 'nid'))
-      ->condition('n.nid', arg(1, $path))
+      ->condition('n.nid', arg(1, $path_info['system_path']))
       ->addTag('node_access')
       ->execute()
       ->fetchObject();
 
-    if ($result) {
+    if ($db_result) {
+      $parts = $path_info['parts'];
       // TODO: Use tokens instead
-      $path_info = array(
-        'title' => check_plain($result->title),
-        'description' => check_plain('id: ' . $result->nid . ' · type: ' . $result->type),
+      $result = array(
+        'title' => check_plain($db_result->title),
+        'description' => check_plain('id: ' . $db_result->nid . ' · type: ' . $db_result->type),
       );
-      return $path_info;
+      return $result;
     }
   }
   return FALSE;
