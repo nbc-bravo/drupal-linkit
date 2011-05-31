@@ -11,7 +11,8 @@
  * TODO: Add second parameter $settings with this plugins settings for the current profile
  */
 function _linkit_node_autocomplete($string, $settings) {
-  
+  $matches = array();
+
   $result_description = check_plain($settings['node']['result_description']);
   
   // Build a list of all token-like patterns that appear in the text.
