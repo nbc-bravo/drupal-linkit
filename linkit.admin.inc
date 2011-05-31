@@ -157,7 +157,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="enabled_plugins[term]"]' => array('checked' =>FALSE),
+        'input[name="enabled_plugins[taxonomy]"]' => array('checked' =>FALSE),
       ),
     ),
   );
