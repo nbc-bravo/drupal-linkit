@@ -126,10 +126,6 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
 
-  $term_display_settings_options = array(
-    'show_parent' => t('Display the parent of the term'),
-  );
-
   $form['user'] = array(
     '#type' => 'fieldset',
     '#title' => t('User settings'),
