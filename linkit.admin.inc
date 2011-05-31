@@ -101,7 +101,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    // KOLLA PÅ #STATES
+    '#states' => array(
+      'invisible' => array(
+        'input[name="enabled_plugins[node]"]' => array('checked' =>FALSE),
+      ),
+    ),
   );
   
    $form['node']['result_description'] = array(
@@ -132,7 +136,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    // KOLLA PÅ #STATES
+    '#states' => array(
+      'invisible' => array(
+        'input[name="enabled_plugins[user]"]' => array('checked' =>FALSE),
+      ),
+    ),
   );
   
   $form['user']['result_description'] = array(
@@ -150,6 +158,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
+    '#states' => array(
+      'invisible' => array(
+        'input[name="enabled_plugins[term]"]' => array('checked' =>FALSE),
+      ),
+    ),
   );
 
   $form['taxonomy']['result_description'] = array(
@@ -167,7 +180,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    // KOLLA PÅ #STATES
+    '#states' => array(
+      'invisible' => array(
+        'input[name="enabled_plugins[file]"]' => array('checked' =>FALSE),
+      ),
+    ),
   );
   
   $form['file']['result_description'] = array(
