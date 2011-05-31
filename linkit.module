@@ -640,6 +640,13 @@ function linkit_linkit_plugins() {
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
   );
 
+  $plugins['external'] = array(
+    'title' => 'External linking',
+    'description' => 'Extends Linkit with the ability to ping and retrieve information about external sites',
+    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
+    'path info callback' => '_linkit_external_path_info'
+  );
+
   return $plugins;
 }
 
