@@ -76,8 +76,8 @@ function linkit_admin_settings($form, &$form_state, $profile) {
   );
   
   $header = array(
-    'name' => array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
-    'desc' => array('data' => t('Description'), 'field' => 'description'),
+    'name' => array('data' => t('Name')),
+    'desc' => array('data' => t('Description')),
   );
   
   $options = array();
@@ -86,7 +86,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     $options[$name]['name'] =  $plugin['title'];
     $options[$name]['desc'] =  $plugin['description'];
   }
-  
+    
   $form['enabled_plugins'] = array(
     '#type' => 'tableselect', 
     '#header' => $header, 
