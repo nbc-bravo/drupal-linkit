@@ -93,6 +93,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#options' => $options, 
     '#empty' => t('No plugins available'),
     '#default_value' => $profile['enabled_plugins'],
+    '#js_select' => FALSE,
   );
  
   $form['node'] = array(
