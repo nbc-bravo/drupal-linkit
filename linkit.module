@@ -236,11 +236,14 @@ function _linkit_autocomplete_search($search) {
     // Load all plugins for this user from active profile
     $settings = _linkit_load_profile_settings();
     foreach (linkit_load_plugins(TRUE) AS $name => $plugin) {
-      // The function should exist, maybe it's better to just throw the error?
-      if (function_exists($plugin['autocomplete callback'])) {
-        $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
-        // TODO: Maybe validate the result?
-        $matches = array_merge($matches, $results);
+      // Only call callbacks for plugins that is enabled in the profile for this user.
+      if ($settings['enabled_plugins'][$name]) {
+        // The function should exist, maybe it's better to just throw the error?
+        if (function_exists($plugin['autocomplete callback'])) {
+          $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
+          // TODO: Maybe validate the result?
+          $matches = array_merge($matches, $results);
+        }
       }
     }
   }
