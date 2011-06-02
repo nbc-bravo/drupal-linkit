@@ -16,77 +16,107 @@
  * - A modern web browser
  */
 
-var BetterAutocomplete;
-
 (function ($) {
-
-/**
- * Focus selector, required by BetterAutoComplete
- */
-$.expr[':'].focus = function( elem ) {
-  return elem === document.activeElement && ( elem.type || elem.href );
-};
 
 /**
  * Create an autocomplete object instance from a DOM input element by
  * providing a JSON path
  *
  * Example usage:
- *
- * var bac = new BetterAutocomplete($('#find'), '/ajaxcall', function(result) {
- *   $('#title').val(result.title);
- *   $('#myoption').val(result.myOption);
- * }, { getParam: 'keywords', ajaxTimeout: 10000 });
+ * @code
+ *   var bac = new BetterAutocomplete($('#find'), '/ajaxcall', {
+ *     // Options
+ *     getParam: 'keywords',
+ *     ajaxTimeout: 10000
+ *   }, {
+ *     // Callbacks
+ *     select: function(result) {
+ *       $('#title').val(result.title);
+ *       $('#myoption').val(result.myOption);
+ *     }
+ *   });
+ * @endcode
  *
  * The DOM tree will look like this:
  *
- * input (text input field, provided as the $input argument)
- * div#linkit-autocomplete-wrapper (no width/height, position relative)
- *   ul#linkit-autocomplete-results (fixed width, variable height)
- *     li.result (variable height)
- *       h4.title (contains the title)
- *       p.description (contains the description)
- *     li.result (more results...)
- * 
- * @param $input The input element wrapped in jQuery
+ * - input (text input field, provided as the $input argument)
+ * - div#linkit-autocomplete-wrapper (no width/height, position relative)
+ *   - ul#linkit-autocomplete-results (fixed width, variable height)
+ *     - li.result (variable height)
+ *       - h4.title (contains the title)
+ *       - p.description (contains the description)
+ *     - li.result (more results...)
+ *
+ * Note that everything within li.result can be altered by the user,
+ * @see callbacks.renderResult(). The default rendering function outputs:
+ *
+ * @param inputElement
+ *   The text input element.
+ *   // TODO: If it's made a jQuery plugin, it should be multiple elements?
  *
  * @param path
- *   A path which provides JSON objects upon search. This path should print a
- *   JSON array containing result objects. Each result object should contain at
- *   least a title or description property. Other optional properties:
- *   - insert (default='') The text that should be inserted to the input
- *     field if that item is selected.
- *   - group Add groups to the results. Will render nice group headings.
+ *   A path which provides JSON objects upon an HTTP request. This path should
+ *   print a JSON-encoded array containing result objects. Each result object
+ *   should contain these properties:
+ *   - title: (optional) Per default, this will be rendered as an h4 tag in the
+ *     list item. To alter, @see callbacks.renderResult().
+ *   - description: (optional) Per default, this will be rendered as an p tag
+ *     in the list item.
+ *   - group: (optional) Add groups to the results. Will render nice group headings.
  *     Remember to put the results grouped together in the JSON array,
  *     otherwise they will be rendered as multiple groups.
- *     Leave if you do not require grouping.
- *   - class Add CSS classes to the result object separated by spaces.
+ *   - class: (optional) Add CSS classes to the result object separated by spaces. TODO: Rename, reserved in ECMAScript
  *
- *   Feel free to add more properties. They will be returned with the selection
- *   callback just like the other properties.
- *
- * @param callback
- *   A callback function to execute when an item is selected.
- *   It recieves the JSON object that was selected as argument #1.
+ *   Feel free to add more properties. They will be returned with the callbacks
+ *   just like the other properties.
  *
  * @param options
  *   An object with configurable options:
- *   - charLimit (default=3) The minimum number of chars to do an AJAX call
- *   - wait (default=250) The time in ms between last keypress and AJAX call
- *   - getParam (default="s") The get parameter for AJAX calls: "?param="
- *   - ajaxTimeout (default=5000) Timeout on AJAX calls
+ *   - charLimit: (default=3) The minimum number of chars to do an AJAX call.
+ *     A typical use case for this limit is to reduce server load.
+ *   - wait: (default=250) The time in ms between last keypress and AJAX call.
+ *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
+ *   - ajaxTimeout: (default=5000) Timeout on AJAX calls.
+ *
+ * @param callbacks
+ *   An object containing optional callback functions on certain events:
+ *   - select: Gets executed when a result gets selected (clicked) by the user.
+ *     Arguments:
+ *     - result: The result object that was selected.
+ *   - renderResult: Gets executed when results has been fetched and needs to
+ *     be rendered. It should return a DOM element, an HTML string, or a jQuery
+ *     object which will be inserted into the list item. Arguments:
+ *     - result: The result object that should be rendered.
  */
-BetterAutocomplete = function($input, path, callback, options) {
+window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
   var self = this;
 
-  var lastRenderedSearch = '';
+  var $input = $(inputElement).filter(':input[type=text]');
 
-  var options = $.extend({
+  options = $.extend({
     charLimit: 3,
     wait: 250,
     getParam: 's',
     ajaxTimeout: 5000
   }, options);
+
+  callbacks = $.extend({
+    select: function(result) {
+      $input.blur();
+    },
+    renderResult: function(result) {
+      var output = '';
+      if (typeof result.title != 'undefined') {
+        output += '<h4>' + result.title + '</h4>';
+      }
+      if (typeof result.description != 'undefined') {
+        output += '<p>' + result.description + '</p>';
+      }
+      return output;
+    }
+  }, callbacks);
+
+  var lastRenderedSearch = '';
 
   // Caching of search results
   // A key-value object, key is search string, value is a result object
@@ -177,9 +207,7 @@ BetterAutocomplete = function($input, path, callback, options) {
       timer = setTimeout(function() {
         self.fetchResults($input.val(), function(data, search) {
           results[search] = data;
-          if ($input.is(':focus')) {
-            self.parseResults();
-          }
+          self.parseResults();
         });
       }, options.wait);
     }
@@ -242,17 +270,8 @@ BetterAutocomplete = function($input, path, callback, options) {
       return;
     }
     var result = $result.data('result');
-    if (typeof result.insert != 'undefined') {
-      $input.val(result.insert);
-    }
-    else {
-      $input.val('');
-    }
 
-    // If a callback is provided, call it now
-    if (typeof callback == 'function') {
-      callback(result);
-    }
+    callbacks.select(result);
 
     // Parse once more, if the callback changed focus or content
     self.parseResults();
@@ -320,6 +339,11 @@ BetterAutocomplete = function($input, path, callback, options) {
    * Checks if needed to re-render etc
    */
   self.parseResults = function() {
+    // TODO: Logical statements here, cleanup?
+    if (!$input.is(':focus')) {
+      $wrapper.hide();
+      return;
+    }
     // Check if already rendered
     if (lastRenderedSearch == $input.val()) {
       $wrapper.show();
@@ -382,10 +406,7 @@ BetterAutocomplete = function($input, path, callback, options) {
       lastGroup = result.group;
 
       var $result = $('<li />').addClass('result')
-        .append(
-            (typeof result.title != 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
-            (typeof result.description != 'undefined' ? '<p>' + result.description + '</p>' : '')
-        )
+        .append(callbacks.renderResult(result))
         .data('result', result) // Store the result object on this DOM element
         .data('index', index) // For quick determination of index on events
         .addClass(result.class)
@@ -394,6 +415,13 @@ BetterAutocomplete = function($input, path, callback, options) {
     index++;
     return index;
   };
+};
+
+/**
+ * Focus selector, required by BetterAutoComplete
+ */
+$.expr[':'].focus = function( elem ) {
+  return elem === document.activeElement && ( elem.type || elem.href );
 };
 
 })(jQuery);
