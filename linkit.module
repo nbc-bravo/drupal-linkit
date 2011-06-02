@@ -154,25 +154,29 @@ function _linkit_dashboard($editor) {
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/betterautocomplete.js', array('group' => JS_LIBRARY));
-  
+
   // Add JS
   static $defualt_settings_added = FALSE;
-  
+
   // Add default settings
   if (!$defualt_settings_added) {
     $defualt_settings_added = TRUE;
 
-    $settings = array(
-      'linkit' => array('autocompletePath' => url('linkit/autocomplete', array('absolute' => TRUE))),
-    );
+    $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
 
+    // TODO: Btw, should there not be a plugin "init dashboard" callback so they can add their JS and stuff like that? Or should it be done via hook_init or something?
+
+    // TODO: Condition: if files plugin is enabled
     // Check if IMCE is enbled and accessable
-    $imce = module_invoke('imce', 'access');
-    if($imce) {
-      $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|sendto@Drupal.linkit.IMCECallback')));
+    if(module_invoke('imce', 'access')) {
+      $settings['IMCEurl'] = url('imce', array('query' => array(
+        'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
+        'absolute' => TRUE,
+      )));
+      $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
     }
 
-    drupal_add_js($settings, 'setting');
+    drupal_add_js(array('linkit' => $settings), 'setting');
   }
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
 
@@ -342,7 +346,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
 
   // Let plugins review the path and optionally return a result
   $settings = _linkit_load_profile_settings();
-  foreach (linkit_load_plugins() as $name => $plugin) {
+  foreach (linkit_load_plugins(TRUE) as $name => $plugin) {
     // TODO: Well, plugins should be able to give info about external paths as well?
     if ($plugin['path info callback'] && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
       break;
@@ -415,6 +419,7 @@ function _linkit_dashboard_form() {
     '#weight' => -10,
   );
 
+  // TODO: Add to condition that file plugin should be enabled
   if ($imce) {
     $form['file_browser'] = array(
       '#type' => 'button',
@@ -592,7 +597,7 @@ function linkit_load_plugins($include = FALSE) {
  */ 
 function _linkit_include_plugins($plugins) {
   $settings = _linkit_load_profile_settings();
-  
+
   foreach ($plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
     if ($settings['enabled_plugins'][$name]) {
@@ -601,7 +606,7 @@ function _linkit_include_plugins($plugins) {
           require_once DRUPAL_ROOT . '/' . $plugin['file'];
         }
         else {
-          drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+          drupal_set_message(t('The Linkit plugin %plugin could not be loaded because the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
         }
       }
     }
@@ -612,8 +617,8 @@ function _linkit_include_plugins($plugins) {
  * Implements hook_linkit_plugins().
  */
 function linkit_linkit_plugins() {
-    // TODO: Wrap in t(), make awesome strings
-    // TODO: Maybe settings form callback can be added here?
+  // TODO: Wrap in t(), make awesome strings
+  // TODO: Maybe settings form callback can be added here?
   $plugins['node'] = array(
     'title' => 'Node linking',
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
@@ -629,11 +634,13 @@ function linkit_linkit_plugins() {
     'autocomplete callback' => '_linkit_user_autocomplete',
   );
 
+  // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
   $plugins['file'] = array(
     'title' => 'File linking',
     'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
     'autocomplete callback' => '_linkit_file_autocomplete',
+    'path info callback' => '_linkit_file_path_info',
   );
 
   $plugins['taxonomy'] = array(
