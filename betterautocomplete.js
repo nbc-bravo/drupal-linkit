@@ -183,29 +183,28 @@ BetterAutocomplete = function($input, path, callback, options) {
     }
   });
 
-  // When the user hovers a result with the mouse, select it
-  $('.result', $resultList[0]).live('mouseover', function() {
-    if (disableMouseSelection) {
-      return;
+  $('.result', $resultList[0]).live({
+    // When the user hovers a result with the mouse, select it.
+    mouseover: function() {
+      if (disableMouseSelection) {
+        return;
+      }
+      self.setSelection($(this).data('index'));
+    },
+    mousemove: function() {
+      // Enable mouseover again.
+      disableMouseSelection = false;
+    },
+    mousedown: function() {
+      self.confirmSelection();
+      // TODO: Do everything look good when the blur event is not invoked?
+      return false;
     }
-    self.setSelection($(this).data('index'));
-  });
-  
-  // Mousemove gets triggered after mouseover
-  $('.result', $resultList[0]).live('mousemove', function() {
-    // Enable mouseover again
-    disableMouseSelection = false;
   });
 
-  // A result is clicked
-  $('.result', $resultList[0]).live('mousedown', function() {
-    self.confirmSelection();
-    // TODO: Do everything look good when the blur event is not invoked?
-    return false;
-  });
-
-  // A group is clicked
-  $('.group', $resultList[0]).live('mousedown', function() {
+  // Prevent blur when clicking on group titles, scrollbars etc.,
+  // This event is triggered after the others' because of bubbling order.
+  $resultList.mousedown(function() {
     return false;
   });
 
