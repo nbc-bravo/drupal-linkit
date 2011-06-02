@@ -342,7 +342,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
 
   // Let plugins review the path and optionally return a result
   $settings = _linkit_load_profile_settings();
-  foreach (linkit_load_plugins() as $name => $plugin) {
+  foreach (linkit_load_plugins(TRUE) as $name => $plugin) {
     // TODO: Well, plugins should be able to give info about external paths as well?
     if ($plugin['path info callback'] && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
       break;
@@ -592,7 +592,7 @@ function linkit_load_plugins($include = FALSE) {
  */ 
 function _linkit_include_plugins($plugins) {
   $settings = _linkit_load_profile_settings();
-  
+
   foreach ($plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
     if ($settings['enabled_plugins'][$name]) {
@@ -601,7 +601,7 @@ function _linkit_include_plugins($plugins) {
           require_once DRUPAL_ROOT . '/' . $plugin['file'];
         }
         else {
-          drupal_set_message(t('The plugin %plugin could not be loaded becasue the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+          drupal_set_message(t('The Linkit plugin %plugin could not be loaded because the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
         }
       }
     }
@@ -612,8 +612,8 @@ function _linkit_include_plugins($plugins) {
  * Implements hook_linkit_plugins().
  */
 function linkit_linkit_plugins() {
-    // TODO: Wrap in t(), make awesome strings
-    // TODO: Maybe settings form callback can be added here?
+  // TODO: Wrap in t(), make awesome strings
+  // TODO: Maybe settings form callback can be added here?
   $plugins['node'] = array(
     'title' => 'Node linking',
     'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
@@ -629,6 +629,7 @@ function linkit_linkit_plugins() {
     'autocomplete callback' => '_linkit_user_autocomplete',
   );
 
+  // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
   $plugins['file'] = array(
     'title' => 'File linking',
     'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
