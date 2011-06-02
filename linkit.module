@@ -82,8 +82,15 @@ function linkit_menu() {
  *   The profile ID.
  */
 function linkit_profile_load($profile_name) {
-  $profiles = variable_get('linkit_profiles', array());
-  return isset($profiles[$profile_name]) ? $profiles[$profile_name] : FALSE;
+  static $profile = array();
+
+  if (isset($profile[$profile_name])) {
+    return $profile[$profile_name];
+  }
+
+  $linkit_profiles = variable_get('linkit_profiles', array());
+  $profile[$profile_name] = isset($linkit_profiles[$profile_name]) ? $linkit_profiles[$profile_name] : FALSE;
+  return $profile[$profile_name];
 }
 
 /**
@@ -115,6 +122,10 @@ function linkit_theme($existing, $type, $theme, $path) {
     ),
     'linkit_profile_assignment' => array(
       'render element' => 'form',
+    ),
+    'linkit_admin_settings' => array(
+      'render element' => 'form',
+      'file' => 'linkit.admin.inc',
     ),
   );
 }
@@ -705,4 +716,68 @@ function _linkit_load_profile_settings() {
       return $settings;
     }
   }
+}
+
+/**
+ * Define attribures to use.
+ *
+ * Define them like form elements.
+ */
+function _linkit_get_attributes($profile_name = NULL) {
+  
+  // Get a specific profile (Used by settings form).
+  if (!is_null($profile_name)) {
+    $settings = linkit_profile_load($profile_name);
+  }
+  // Get the "best" Linkit profile based on the users roles (Used when the dashboard is generated).
+  else {
+    $settings = _linkit_load_profile_settings();
+  }
+
+  $attrs['accesskey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Accesskey'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($settings['enabled_attributes']['accesskey']['weight']) ? $settings['enabled_attributes']['accesskey']['weight'] : 0,
+  );
+
+  $attrs['class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Class'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($settings['enabled_attributes']['class']['weight']) ? $settings['enabled_attributes']['class']['weight'] : 0,
+  );
+
+  $attrs['id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('ID'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($settings['enabled_attributes']['id']['weight']) ? $settings['enabled_attributes']['id']['weight'] : 0,
+  );
+
+  $attrs['rel'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Rel'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($settings['enabled_attributes']['rel']['weight']) ? $settings['enabled_attributes']['rel']['weight'] : 0,
+  );
+
+  $attrs['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#maxlength' => 255,  
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($settings['enabled_attributes']['title']['weight']) ? $settings['enabled_attributes']['title']['weight'] : 0,
+  );
+
+  return $attrs;
 }

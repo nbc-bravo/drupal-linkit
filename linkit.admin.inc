@@ -17,8 +17,8 @@ function linkit_admin_page() {
   foreach ($profile_settings AS $profile) {
     $rows[] = array(
       check_plain($profile['name']),
-      l(t('Edit'), 'admin/config/content/linkit/profile/'. $profile['machine_name']), 
-      l(t('Delete'), 'admin/config/content/linkit/profile/'. $profile['machine_name'] . '/delete'),
+      l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']), 
+      l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
     );
   }
 
@@ -78,26 +78,53 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => FALSE,
   );
 
-  $header = array(
-    'name' => array('data' => t('Name')),
-    'desc' => array('data' => t('Description')),
-  );
-
-  $options = array();
-
+  $plugins = array();
   foreach (linkit_load_plugins() AS $name => $plugin) {
-    $options[$name]['name'] =  $plugin['title'];
-    $options[$name]['desc'] =  $plugin['description'];
+    $plugins[$name]['name'] =  $plugin['title'];
+    $plugins[$name]['desc'] =  $plugin['description'];
   }
 
   $form['enabled_plugins_fieldset']['enabled_plugins'] = array(
     '#type' => 'tableselect', 
-    '#header' => $header, 
-    '#options' => $options, 
+    '#header' => array(
+      'name' => array('data' => t('Name')),
+      'desc' => array('data' => t('Description')),
+    ), 
+    '#options' => $plugins, 
     '#empty' => t('No plugins available'),
     '#default_value' => isset($profile['enabled_plugins']) ? $profile['enabled_plugins'] : array(),
     '#js_select' => FALSE,
   );
+
+  $form['enabled_attributes_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Enabled attributes'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => FALSE,
+  );
+
+  $form['enabled_attributes_fieldset']['enabled_attributes'] = array(
+    '#markup' => '',
+    '#tree' => TRUE,
+  );
+
+  $enabled_attributes_weight = 0;
+  $attrs = _linkit_get_attributes($profile['name']);
+
+  // Sort by #weight.
+  uasort($attrs, "_linkit_sort_attributes");
+
+  foreach ($attrs as $name => $attr) {
+    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
+    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight'] = array(
+      '#type' => 'weight',
+      '#title' => t('Weight for @title', array('@title' => $attr['#title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['enabled_attributes'][$name]['weight']) ? $profile['enabled_attributes'][$name]['weight'] : $enabled_attributes_weight,
+    );
+    $enabled_attributes_weight++;
+  }
 
   $form['node'] = array(
     '#type' => 'fieldset',
@@ -240,6 +267,38 @@ function linkit_admin_settings_submit($form, &$form_state) {
 }
 
 /**
+ * Returns HTML for the linkit_admin_settings form.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - form: A render element representing the form.
+ *
+ * @ingroup themeable
+ */
+function theme_linkit_admin_settings($variables) {
+  $form = $variables['form'];
+  $rows = array();
+  foreach (element_children($form['enabled_attributes_fieldset']['enabled_attributes']) as $name) {
+    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight']['#attributes']['class'] = array('linkit-enabled-attributes-weight');
+    $rows[] = array(
+      'data' => array(
+        drupal_render($form['enabled_attributes_fieldset']['enabled_attributes'][$name]['name']),
+        drupal_render($form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight']),
+      ),
+      'class' => array('draggable'),
+    );
+  }
+  $header = array(t('Name'), t('Weight'));
+  // Add the table iinto the fieldset.
+  $form['enabled_attributes_fieldset']['enabled_attributes']['#markup'] = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-enabled-attributes')));
+  $output = drupal_render_children($form);
+
+  drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'sibling', 'linkit-enabled-attributes-weight');
+
+  return $output;
+}
+
+/**
  * Menu callback; confirm removal of a Linkit profile.
  *
  * @ingroup forms.
@@ -379,4 +438,11 @@ function _linkit_form_state_values_clean(&$form_state) {
   form_state_values_clean($form_state);
   // Unset actions values.
   unset($form_state['values']['actions']);
+}
+
+/**
+ * Sort attributes by weight.
+ */
+function _linkit_sort_attributes($a, $b) {
+  return $a["#weight"] >= $b["#weight"];
 }
