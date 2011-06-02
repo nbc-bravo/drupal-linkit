@@ -123,7 +123,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['node']['result_description'],
     '#size' => 120, 
     '#maxlength' => 255, 
-    '#description' => t('@TODO Better text here. You can use tokens here'),
+    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
   // @TODO: Change this to exclude?
@@ -154,7 +154,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['user']['result_description'],
     '#size' => 120, 
     '#maxlength' => 255, 
-    '#description' => t('@TODO Better text here. You can use tokens here'),
+    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
   );
 
   $form['taxonomy'] = array(
@@ -176,7 +176,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['taxonomy']['result_description'],
     '#size' => 120, 
     '#maxlength' => 255, 
-    '#description' => t('@TODO Better text here. You can use tokens here'),
+    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
   $form['file'] = array(
@@ -198,7 +198,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#default_value' => $profile['file']['result_description'],
     '#size' => 120, 
     '#maxlength' => 255, 
-    '#description' => t('@TODO Better text here. You can use tokens here'),
+    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
   
   $form['actions']['#type'] = 'actions';
