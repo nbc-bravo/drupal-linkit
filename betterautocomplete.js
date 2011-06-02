@@ -2,10 +2,10 @@
 /**
  * Better Autocomplete
  * ===================
- * 
+ *
  * Provides an object for fetching autocomplete results via XMLHttpRequest
  * from a JSON resource path.
- * 
+ *
  * For usage, see below
  * 
  * @author Didrik Nordström, http://betamos.se/
@@ -30,16 +30,16 @@ $.expr[':'].focus = function( elem ) {
 /**
  * Create an autocomplete object instance from a DOM input element by
  * providing a JSON path
- * 
+ *
  * Example usage:
- * 
+ *
  * var bac = new BetterAutocomplete($('#find'), '/ajaxcall', function(result) {
  *   $('#title').val(result.title);
  *   $('#myoption').val(result.myOption);
  * }, { getParam: 'keywords', ajaxTimeout: 10000 });
- * 
+ *
  * The DOM tree will look like this:
- * 
+ *
  * input (text input field, provided as the $input argument)
  * div#linkit-autocomplete-wrapper (no width/height, position relative)
  *   ul#linkit-autocomplete-results (fixed width, variable height)
@@ -49,31 +49,32 @@ $.expr[':'].focus = function( elem ) {
  *     li.result (more results...)
  * 
  * @param $input The input element wrapped in jQuery
- * 
- * @param path A path which provides JSON objects upon search. This path should
- *        print a JSON array containing result objects. Each result object
- *        should contain at least a title or description key.
- *        Other optional keys are:
- *      - insert (default='') The text that should be inserted to the input
- *        field if that item is selected.
- *      - group Add groups to the results. Will render nice group headings.
- *        Remember to put the results grouped together in the JSON array,
- *        otherwise they will be rendered as multiple groups.
- *        Leave if you do not require grouping.
- *      - class Add CSS classes to the result object separated by spaces.
- * 
- *        Other keys can be defined by the developer and will be returned
- *        with the selection callback.
- * 
- * @param callback A callback function to execute when an item selection is
- *        confirmed. The callback function recieves an argument which is the
- *        JSON object that was selected.
- * 
- * @param options An object with additional options:
- *      - charLimit (default=3) The minimum number of chars to do an AJAX call
- *      - wait (default=250) The time in ms between last keypress and AJAX call
- *      - getParam (default="s") The get parameter for AJAX calls: "?param="
- *      - ajaxTimeout (default=5000) Timeout on AJAX calls
+ *
+ * @param path
+ *   A path which provides JSON objects upon search. This path should print a
+ *   JSON array containing result objects. Each result object should contain at
+ *   least a title or description property. Other optional properties:
+ *   - insert (default='') The text that should be inserted to the input
+ *     field if that item is selected.
+ *   - group Add groups to the results. Will render nice group headings.
+ *     Remember to put the results grouped together in the JSON array,
+ *     otherwise they will be rendered as multiple groups.
+ *     Leave if you do not require grouping.
+ *   - class Add CSS classes to the result object separated by spaces.
+ *
+ *   Feel free to add more properties. They will be returned with the selection
+ *   callback just like the other properties.
+ *
+ * @param callback
+ *   A callback function to execute when an item is selected.
+ *   It recieves the JSON object that was selected as argument #1.
+ *
+ * @param options
+ *   An object with configurable options:
+ *   - charLimit (default=3) The minimum number of chars to do an AJAX call
+ *   - wait (default=250) The time in ms between last keypress and AJAX call
+ *   - getParam (default="s") The get parameter for AJAX calls: "?param="
+ *   - ajaxTimeout (default=5000) Timeout on AJAX calls
  */
 BetterAutocomplete = function($input, path, callback, options) {
   var self = this;
@@ -96,7 +97,7 @@ BetterAutocomplete = function($input, path, callback, options) {
 
   var timer;
   
-  var disableMouseSelection = false;
+  var disableMouseHighlight = false;
 
   // Turn off the browser's autocompletion
   $input
@@ -108,59 +109,60 @@ BetterAutocomplete = function($input, path, callback, options) {
     .attr('id', 'linkit-autocomplete-wrapper')
     .insertAfter($input);
 
-  var $resultList = $('<ul />')
+  var $resultsList = $('<ul />')
     .attr('id', 'linkit-autocomplete-results')
     .width($input.innerWidth())
     .appendTo($wrapper);
 
   // Just toggle visibility of the results on focus/blur
-  $input.focus(function() {
-    self.parseResults();
-    $wrapper.show();
-  });
-  $input.blur(function() {
-    $wrapper.hide();
+  $input.bind({
+    focus: function() {
+      self.parseResults();
+      $wrapper.show();
+    },
+    blur: function() {
+      $wrapper.hide();
+    }
   });
 
   $input.keydown(function(event) {
-    var index = self.getSelection();
+    var index = self.getHighlighted();
     var newIndex;
-    var size = $('.result', $resultList).length;
+    var size = $('.result', $resultsList).length;
     switch (event.keyCode) {
       case 38: // Up arrow
         newIndex = Math.max(0, index-1);
         break;
-
       case 40: // Down arrow
         newIndex = Math.min(size-1, index+1);
         break;
-
-      case 9:
-      case 13:
-        self.confirmSelection();
+      case 9: // Tab
+      case 13: // Enter
+        self.select();
         return false;
     }
-    // Index have changed so update selection and cancel the event
-    if (typeof newIndex === 'number') {
+    // Index have changed so update highlighted element, then cancel the event.
+    if (typeof newIndex == 'number') {
 
       // Disable the auto-triggered mouseover event
-      disableMouseSelection = true;
+      disableMouseHighlight = true;
 
-      self.setSelection(newIndex);
+      self.setHighlighted(newIndex);
 
-      // Automatic scrolling to the selected result
-      var $scrollTo = $('.result', $resultList).eq(self.getSelection());
+      // Automatic scrolling to the highlighted result
+      var $scrollTo = $('.result', $resultsList).eq(self.getHighlighted());
 
-      if ($scrollTo.prev().is('.group') && event.keyCode === 38) {
+      // Scrolling up, then show the group title
+      if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
         $scrollTo = $scrollTo.prev();
       }
       // Is the result above the visible region?
       if ($scrollTo.position().top < 0) {
-        $resultList.scrollTop($scrollTo.position().top + $resultList.scrollTop());
+        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
       }
       // Or is it below the visible region?
-      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultList.height()) {
-        $resultList.scrollTop($scrollTo.position().top + $resultList.scrollTop() + $scrollTo.outerHeight() - $resultList.height());
+      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
+        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
       }
       return false;
     }
@@ -183,20 +185,20 @@ BetterAutocomplete = function($input, path, callback, options) {
     }
   });
 
-  $('.result', $resultList[0]).live({
-    // When the user hovers a result with the mouse, select it.
+  $('.result', $resultsList[0]).live({
+    // When the user hovers a result with the mouse, highlight it.
     mouseover: function() {
-      if (disableMouseSelection) {
+      if (disableMouseHighlight) {
         return;
       }
-      self.setSelection($(this).data('index'));
+      self.setHighlighted($(this).data('index'));
     },
     mousemove: function() {
       // Enable mouseover again.
-      disableMouseSelection = false;
+      disableMouseHighlight = false;
     },
     mousedown: function() {
-      self.confirmSelection();
+      self.select();
       // TODO: Do everything look good when the blur event is not invoked?
       return false;
     }
@@ -204,42 +206,43 @@ BetterAutocomplete = function($input, path, callback, options) {
 
   // Prevent blur when clicking on group titles, scrollbars etc.,
   // This event is triggered after the others' because of bubbling order.
-  $resultList.mousedown(function() {
+  $resultsList.mousedown(function() {
     return false;
   });
 
   /**
-   * Select a result based on index
-   * 
-   * @param index The index number of the result, starting on 0
+   * Set highlight to a specific result item
+   *
+   * @param index
+   *   The result's index, starting on 0
    */
-  self.setSelection = function(index) {
+  self.setHighlighted = function(index) {
     // TODO: Check that it's not out of bounds
-    $('.result', $resultList)
-      .removeClass('selected')
-      .eq(index).addClass('selected');
+    $('.result', $resultsList)
+      .removeClass('highlight')
+      .eq(index).addClass('highlight');
   };
 
   /**
-   * Get the current selection index
-   * 
-   * @todo Make a naming distinction between selection and highlighting?
-   * @return The index number of the result, -1 if not found
+   * Retrieve the index of the currently highlighted result item
+   *
+   * @return
+   *   The result's index or -1 if no result is highlighted
    */
-  self.getSelection = function() {
-    return $('.result', $resultList).index($('.result.selected', $resultList));
+  self.getHighlighted = function() {
+    return $('.result', $resultsList).index($('.result.highlight', $resultsList));
   };
 
   /**
-   * Confirm a selection and call the defined callback
+   * Select the current highlighted element and call the selection callback
    */
-  self.confirmSelection = function() {
-    var $result = $('.result', $resultList).eq(self.getSelection());
-    if ($result.length === 0) {
+  self.select = function() {
+    var $result = $('.result', $resultsList).eq(self.getHighlighted());
+    if ($result.length == 0) {
       return;
     }
     var result = $result.data('result');
-    if (typeof result.insert !== 'undefined') {
+    if (typeof result.insert != 'undefined') {
       $input.val(result.insert);
     }
     else {
@@ -247,7 +250,7 @@ BetterAutocomplete = function($input, path, callback, options) {
     }
 
     // If a callback is provided, call it now
-    if (typeof callback === 'function') {
+    if (typeof callback == 'function') {
       callback(result);
     }
 
@@ -256,12 +259,17 @@ BetterAutocomplete = function($input, path, callback, options) {
   };
 
   /**
-   * Fetch results asynchronously via AJAX
+   * Fetch results asynchronously via AJAX.
    * Errors are ignored.
-   * 
-   * @param search The search string
-   * @param callback The callback function on success. Takes two
-   *        arguments: data (array of results), search string
+   *
+   * @param search
+   *   The search string
+   *
+   * @param callback
+   *   The callback function on success. Takes two arguments:
+   *   TODO: Naming "data"?
+   *   - data (array of results)
+   *   - search string
    */
   self.fetchResults = function(search, callback) {
     $input.addClass('throbbing');
@@ -313,7 +321,7 @@ BetterAutocomplete = function($input, path, callback, options) {
    */
   self.parseResults = function() {
     // Check if already rendered
-    if (lastRenderedSearch === $input.val()) {
+    if (lastRenderedSearch == $input.val()) {
       $wrapper.show();
       return;
     }
@@ -325,7 +333,7 @@ BetterAutocomplete = function($input, path, callback, options) {
 
     // Not in cache
     if (self.renderResults() >= 1) {
-      self.setSelection(0);
+      self.setHighlighted(0);
       $wrapper.show();
     }
   };
@@ -345,7 +353,7 @@ BetterAutocomplete = function($input, path, callback, options) {
     // Update user string
     userString = $input.val();
 
-    $resultList.empty();
+    $resultsList.empty();
 
     // The result is not in cache, so there is nothing to display right now
     if (!(results[userString] instanceof Array)) {
@@ -361,27 +369,27 @@ BetterAutocomplete = function($input, path, callback, options) {
       }
 
       // If we don't have title or description, we don't have much to display
-      if (typeof result.title === 'undefined' && typeof result.description === 'undefined') {
+      if (typeof result.title == 'undefined' && typeof result.description == 'undefined') {
         continue;
       }
 
       // Grouping
-      if (typeof result.group !== 'undefined' && result.group !== lastGroup) {
+      if (typeof result.group != 'undefined' && result.group !== lastGroup) {
         var $groupHeading = $('<li />').addClass('group')
           .append('<h3>' + result.group + '</h3>')
-          .appendTo($resultList);
+          .appendTo($resultsList);
       }
       lastGroup = result.group;
 
       var $result = $('<li />').addClass('result')
         .append(
-            (typeof result.title !== 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
-            (typeof result.description !== 'undefined' ? '<p>' + result.description + '</p>' : '')
+            (typeof result.title != 'undefined' ? '<h4>' + result.title + '</h4>' : '') + 
+            (typeof result.description != 'undefined' ? '<p>' + result.description + '</p>' : '')
         )
         .data('result', result) // Store the result object on this DOM element
         .data('index', index) // For quick determination of index on events
         .addClass(result.class)
-        .appendTo($resultList);
+        .appendTo($resultsList);
     }
     index++;
     return index;

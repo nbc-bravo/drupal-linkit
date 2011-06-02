@@ -67,7 +67,7 @@ input#edit-link.with_imce {
   clear: both;
 }
 
-#linkit-autocomplete-results .result.selected {
+#linkit-autocomplete-results .result.highlight {
   background: #0075ba;
   border-top-color: #1f4a64;
 }
@@ -111,8 +111,8 @@ input#edit-link.with_imce {
   font-size: 0;
 }
 
-#linkit-autocomplete-results .result.selected h4,
-#linkit-autocomplete-results .result.selected p {
+#linkit-autocomplete-results .result.highlight h4,
+#linkit-autocomplete-results .result.highlight p {
   color: white;
 }
 
