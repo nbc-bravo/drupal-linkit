@@ -103,7 +103,7 @@ Drupal.linkit.getAnchor = function(href) {
  */
 Drupal.linkit.IMCECallback = function(file, win) {
   // TODO: Retrieve public files path by adding it to Drupal.settings
-  Drupal.linkit.populateLink(file.name, win.imce.decode('sites/default/files/' + file.relpath));
+  Drupal.linkit.populateLink(file.name, win.imce.decode(Drupal.settings.linkit.publicFilesDirectory + '/' + file.relpath));
   win.close();
 };
 
