@@ -16,7 +16,7 @@ function linkit_admin_page() {
   $rows = array();
   foreach ($profile_settings AS $profile) {
     $rows[] = array(
-      $profile['name'], 
+      check_plain($profile['name']),
       l(t('Edit'), 'admin/config/content/linkit/profile/'. $profile['machine_name']), 
       l(t('Delete'), 'admin/config/content/linkit/profile/'. $profile['machine_name'] . '/delete'),
     );
