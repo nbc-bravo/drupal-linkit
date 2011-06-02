@@ -27,7 +27,7 @@ function linkit_admin_page() {
   $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
   $linkit_profile_assignment = drupal_get_form('linkit_profile_assignment');
   $output .= drupal_render($linkit_profile_assignment );
-
+  
   return $output;
 }
 
@@ -75,6 +75,14 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#disabled' => !empty($profile['machine_name']),
   );
   
+  $form['enabled_plugins_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Enabled plugins'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+
   $header = array(
     'name' => array('data' => t('Name')),
     'desc' => array('data' => t('Description')),
@@ -86,8 +94,8 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     $options[$name]['name'] =  $plugin['title'];
     $options[$name]['desc'] =  $plugin['description'];
   }
-    
-  $form['enabled_plugins'] = array(
+  
+  $form['enabled_plugins_fieldset']['enabled_plugins'] = array(
     '#type' => 'tableselect', 
     '#header' => $header, 
     '#options' => $options, 
