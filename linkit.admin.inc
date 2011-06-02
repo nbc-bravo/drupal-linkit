@@ -251,7 +251,7 @@ function linkit_admin_profile_delete($form, &$form_state, $profile) {
   return confirm_form($form,
     t('Are you sure you want to delete the profile %profile?', array('%profile' => $profile['name'])),
     'admin/config/content/linkit',
-    t('@TODO: Help text about delete. This action cannot be undone.'),
+    t('This action cannot be undone.'),
     t('Delete')
   );
 }
@@ -285,13 +285,12 @@ function linkit_profile_assignment($form, &$form_state) {
   $drupal_roles = user_roles();
 
   // Get the current role -> profile configuration variable.
-  // @TODO: Why named "profile_settings" ??
-  $profile_settings = variable_get('linkit_roles_profiles', array());
+  $roles_profiles = variable_get('linkit_roles_profiles', array());
   foreach ($drupal_roles AS $rid => $role_name) {
     $form['roles'][$rid] = array(
       '#type' => 'select', 
       '#title' => '', 
-      '#default_value' => $profile_settings[$rid],
+      '#default_value' => $roles_profiles[$rid],
       '#options' => _linkit_get_profile_names(),
       '#empty_option' => t('- None -'),
     );
