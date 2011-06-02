@@ -635,6 +635,7 @@ function linkit_linkit_plugins() {
     'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
     'autocomplete callback' => '_linkit_file_autocomplete',
+    'path info callback' => '_linkit_file_path_info',
   );
 
   $plugins['taxonomy'] = array(

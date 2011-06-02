@@ -97,20 +97,37 @@ function _linkit_file_autocomplete($string, $settings) {
 }
 
 /**
- * Implements hook_linkit_get_search_styled_link().
+ * Implements hook_linkit_plugins "path info callback".
+ *
+ * If the path given is a public file, then return information about that file.
+ *
+ * @see linkit.api.php
  */
-function linkit_file_linkit_get_search_styled_link($string) {
-  return;
-}
+function _linkit_file_path_info($path_info, $settings) {
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
 
-/**
- * Implements hook_linkit_info_plugins().
- * 
- * This is used by linkit_permissions
- */
-function linkit_file_linkit_info_plugins() {
-  $return['linkit_file'] = array(
-    'type' => 'file',
-  );
-  return $return;
+  // TODO: In path info, this variable should already exist, to avoid duplication
+  $relative_path = substr($path_info['parts']['path'], 1);
+  preg_match('~^' . $public_path . '/(.+)$~', $relative_path, $matches);
+  $filepath = $matches[1];
+  if ($filepath) {
+    
+    $query = db_select('file_managed', 'f')
+      ->fields('f', array('uri', 'filename'))
+      ->condition('f.status' , '1')
+      ->condition('f.uri', 'public://' . $filepath);
+    
+    $db_result = $query->execute();
+
+    if ($file = $db_result->fetch()) {
+      // TODO: Use tokens instead, by sharing functionalty with _linkit_file_autocomplete
+      $result = array(
+        'title' => check_plain($file->filename),
+        'description' => check_plain('herro'),
+        'path' => $public_path . '/' . file_uri_target($file->uri),
+      );
+      return $result;
+    }
+  }
+  return FALSE;
 }
