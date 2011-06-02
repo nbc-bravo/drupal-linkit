@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Admin page callbacks for the Linkit module.
@@ -9,25 +8,24 @@
  * Menu callback; Displays a list of all profiles.
  */
 function linkit_admin_page() {
-  
   $header = array(t('Profile name'), array('data' => t('Operations'), 'colspan' => 2));
-  
-  // Get the current profile settings variable
+
+  // Get the current profile settings variable.
   $profile_settings = variable_get('linkit_profiles', array());
-  
+
   $rows = array();
-  foreach($profile_settings AS $profile) {
+  foreach ($profile_settings AS $profile) {
     $rows[] = array(
       $profile['name'], 
       l(t('Edit'), 'admin/config/content/linkit/profile/'. $profile['machine_name']), 
       l(t('Delete'), 'admin/config/content/linkit/profile/'. $profile['machine_name'] . '/delete'),
     );
   }
+
   $output = '<h2>' . t('Profiles') . '</h2>';
   $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
   $linkit_profile_assignment = drupal_get_form('linkit_profile_assignment');
   $output .= drupal_render($linkit_profile_assignment );
-  
   return $output;
 }
 
@@ -37,10 +35,7 @@ function linkit_admin_page() {
 function linkit_admin_profile_page($profile = NULL) {
   if (!isset($profile['name'])) {
     drupal_set_title(t('Add new linkit profile'));
-    $profile = array(
-      'name' => NULL,
-      'machine_name' => NULL,
-    );
+    $profile = array();
   }
   return drupal_get_form('linkit_admin_settings', $profile);
 }
@@ -48,33 +43,33 @@ function linkit_admin_profile_page($profile = NULL) {
 /**
  * Generate a profile form.
  *
- * @ingroup forms
- * @see linkit_admin_settings_validate()
- * @see linkit_admin_settings_submit()
+ * @ingroup forms.
+ * @see linkit_admin_settings_validate().
+ * @see linkit_admin_settings_submit().
  */
 function linkit_admin_settings($form, &$form_state, $profile) {
   $form = array();
-      
+
   $form['#tree'] = TRUE;
 
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $profile['name'],
+    '#default_value' => isset($profile['name']) ? $profile['name'] : '',
     '#required' => TRUE,
   );
 
   $form['machine_name'] = array(
     '#type' => 'machine_name',
     '#required' => TRUE,
-    '#default_value' => $profile['machine_name'],
+    '#default_value' => isset($profile['machine_name']) ? $profile['machine_name'] : '',
     '#maxlength' => 255,
     '#machine_name' => array(
       'exists' => 'linkit_profile_exists',
     ),
     '#disabled' => !empty($profile['machine_name']),
   );
-  
+
   $form['enabled_plugins_fieldset'] = array(
     '#type' => 'fieldset',
     '#title' => t('Enabled plugins'),
@@ -87,23 +82,23 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     'name' => array('data' => t('Name')),
     'desc' => array('data' => t('Description')),
   );
-  
+
   $options = array();
 
-  foreach(linkit_load_plugins() AS $name => $plugin) {
+  foreach (linkit_load_plugins() AS $name => $plugin) {
     $options[$name]['name'] =  $plugin['title'];
     $options[$name]['desc'] =  $plugin['description'];
   }
-  
+
   $form['enabled_plugins_fieldset']['enabled_plugins'] = array(
     '#type' => 'tableselect', 
     '#header' => $header, 
     '#options' => $options, 
     '#empty' => t('No plugins available'),
-    '#default_value' => $profile['enabled_plugins'],
+    '#default_value' => isset($profile['enabled_plugins']) ? $profile['enabled_plugins'] : array(),
     '#js_select' => FALSE,
   );
- 
+
   $form['node'] = array(
     '#type' => 'fieldset',
     '#title' => t('Node settings'),
@@ -116,11 +111,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
       ),
     ),
   );
-  
-   $form['node']['result_description'] = array(
+
+  $form['node']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => $profile['node']['result_description'],
+    '#default_value' => isset($profile['node']['result_description']) ? $profile['node']['result_description'] : '',
     '#size' => 120, 
     '#maxlength' => 255, 
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
@@ -131,7 +126,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#title' => t('Include this content types in the search result'),
     '#type' => 'checkboxes',
     '#options' => node_type_get_names(),
-    '#default_value' => $profile['node']['content_types'], 
+    '#default_value' => isset($profile['node']['content_types']) ? $profile['node']['content_types'] : array(), 
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
 
@@ -147,11 +142,11 @@ function linkit_admin_settings($form, &$form_state, $profile) {
       ),
     ),
   );
-  
+
   $form['user']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => $profile['user']['result_description'],
+    '#default_value' => isset($profile['user']['result_description']) ? $profile['user']['result_description'] : '',
     '#size' => 120, 
     '#maxlength' => 255, 
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
@@ -173,7 +168,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
   $form['taxonomy']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => $profile['taxonomy']['result_description'],
+    '#default_value' => isset($profile['taxonomy']['result_description']) ? $profile['taxonomy']['result_description'] : '',
     '#size' => 120, 
     '#maxlength' => 255, 
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
@@ -191,16 +186,16 @@ function linkit_admin_settings($form, &$form_state, $profile) {
       ),
     ),
   );
-  
+
   $form['file']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => $profile['file']['result_description'],
+    '#default_value' => isset($profile['file']['result_description']) ? $profile['file']['result_description'] : '',
     '#size' => 120, 
     '#maxlength' => 255, 
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
-  
+
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -218,7 +213,6 @@ function linkit_admin_settings($form, &$form_state, $profile) {
  * Validate profile form submissions.
  */
 function linkit_admin_settings_validate($form, &$form_state) {
-
 }
 
 /**
@@ -227,20 +221,20 @@ function linkit_admin_settings_validate($form, &$form_state) {
 function linkit_admin_settings_submit($form, &$form_state) {
   // Exclude unnecessary elements.
   _linkit_form_state_values_clean($form_state);
-  
-  // Get the current profile settings variable
+
+  // Get the current profile settings variable.
   $profile_settings = variable_get('linkit_profiles', array());
-  
-  // Save all vaules into the variable
-  // This so other modules can preform hook_gform_alter here and get there 
+
+  // Save all vaules into the variable.
+  // This so other modules can preform hook_gform_alter here and get there
   // variables saved aswell.
   foreach ($form_state['values'] as $key => $value) {
     $profile_settings[$form_state['values']['machine_name']][$key] = $value;
   }
-  
+
   // Save the hole settings array. Note: This includes ALL profiles.
   variable_set('linkit_profiles', $profile_settings);
-  
+
   drupal_set_message(t('The configuration options have been saved.'));
   $form_state['redirect'] = 'admin/config/content/linkit';
 }
@@ -248,8 +242,8 @@ function linkit_admin_settings_submit($form, &$form_state) {
 /**
  * Menu callback; confirm removal of a Linkit profile.
  *
- * @ingroup forms
- * @see linkit_admin_profile_delete_submit()
+ * @ingroup forms.
+ * @see linkit_admin_profile_delete_submit().
  */
 function linkit_admin_profile_delete($form, &$form_state, $profile) {
   $form['#profile'] = $profile;
@@ -257,7 +251,7 @@ function linkit_admin_profile_delete($form, &$form_state, $profile) {
   return confirm_form($form,
     t('Are you sure you want to delete the profile %profile?', array('%profile' => $profile['name'])),
     'admin/config/content/linkit',
-    t('@TODO: Help text abpout delete. This action cannot be undone.'),
+    t('@TODO: Help text about delete. This action cannot be undone.'),
     t('Delete')
   );
 }
@@ -267,11 +261,11 @@ function linkit_admin_profile_delete($form, &$form_state, $profile) {
  */
 function linkit_admin_profile_delete_submit($form, &$form_state) {
   $profile = $form['#profile'];
-  
-  // Get the current profile settings variable
+
+  // Get the current profile settings variable.
   $profile_settings = variable_get('linkit_profiles', array());
-  
-  // Delete the profile from the variable
+
+  // Delete the profile from the variable.
   unset($profile_settings[$profile['machine_name']]);
 
   // Save the hole settings array. Note: This includes ALL profiles.
@@ -282,16 +276,18 @@ function linkit_admin_profile_delete_submit($form, &$form_state) {
 }
 
 /**
- * Enter description here ...
+ * Generate the role-profile assignments form.
+ *
+ * @ingroup forms.
  */
 function linkit_profile_assignment($form, &$form_state) {
   $form = array();
   $drupal_roles = user_roles();
 
-  // Get the current role -> profile configuration variable
-  $profile_settings = variable_get('linkit_roles_profiles', array()); // @TODO: named "profile_settings" ??
-
-  foreach($drupal_roles AS $rid => $role_name) {
+  // Get the current role -> profile configuration variable.
+  // @TODO: Why named "profile_settings" ??
+  $profile_settings = variable_get('linkit_roles_profiles', array());
+  foreach ($drupal_roles AS $rid => $role_name) {
     $form['roles'][$rid] = array(
       '#type' => 'select', 
       '#title' => '', 
@@ -317,22 +313,22 @@ function linkit_profile_assignment($form, &$form_state) {
 }
 
 /**
- * Enter description here ...
+ * Get all Linkit profiles and return there names.
  */
 function _linkit_get_profile_names() {
-  // Get all profiles
+  // Get all profiles.
   $profile_settings = variable_get('linkit_profiles', array());
   $profiles = array();
- 
-  foreach($profile_settings AS $profile) {
+
+  foreach ($profile_settings AS $profile) {
     $profiles[$profile['machine_name']] = $profile['name'];
   }
-  
+
   return $profiles;
 }
 
 /**
- * Enter description here ...
+ * Theme the role-profile assignments form.
  */
 function theme_linkit_profile_assignment($variables) {
   $form = $variables['form'];
@@ -341,10 +337,10 @@ function theme_linkit_profile_assignment($variables) {
   $header = array(t('User role'), t('Linkit profile'));
   $rows = array();
 
-  foreach($drupal_roles AS $rid => $role_name) {
+  foreach ($drupal_roles AS $rid => $role_name) {
     $rows[] = array($role_name, drupal_render($form['roles'][$rid]));
   }
-  
+
   $output = '<h2>' . t('Role-profile assignments') . '</h2>';
   $output .= theme('table', array('header' => $header, 'rows' => $rows));
   $output .= drupal_render_children($form);
@@ -363,20 +359,25 @@ function linkit_profile_assignment_validate($form, &$form_state) {
 function linkit_profile_assignment_submit($form, &$form_state) {
   // Exclude unnecessary elements.
   _linkit_form_state_values_clean($form_state);
-  
-  // Get the current role -> profile configuration variable
+
+  // Get the current role -> profile configuration variable.
   $profile_settings = variable_get('linkit_roles_profiles', array());
-    
+
   // Save the hole settings array. Note: This includes ALL profiles.
   variable_set('linkit_roles_profiles', $form_state['values']);
-  
+
   drupal_set_message(t('The configuration options have been saved.'));
   $form_state['redirect'] = 'admin/config/content/linkit';
 }
 
+/**
+ * Extended form_state_values_clean.
+ *
+ * @see form_state_values_clean().
+ */
 function _linkit_form_state_values_clean(&$form_state) {
-   // Exclude unnecessary elements.
+  // Exclude unnecessary elements.
   form_state_values_clean($form_state);
-  // Unset actions values
+  // Unset actions values.
   unset($form_state['values']['actions']);
 }
