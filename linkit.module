@@ -333,7 +333,7 @@ function _linkit_scan_url($url) {
  *   - description: The description of the result (may contain HTML)
  *   - path: The target path which will be inserted as the href in the link
  *   - alias: (optional) The alias to an internal path
- *   - class: A CSS class that will be added to the DOM result div
+ *   - addClass: A CSS class that will be added to the DOM result div
  *
  * @todo Implement the non absolute URL feature
  */
@@ -354,8 +354,8 @@ function _linkit_path_info($path, $absolute = TRUE) {
   }
   // A plugin gave a result
   if ($result) {
-    if (!$result['class']) {
-      $result['class'] = 'status-ok';
+    if (!$result['addClass']) {
+      $result['addClass'] = 'status-ok';
     }
     if (!$result['path'] && $path_info['target'] == 'internal') {
       // This is default target path for internal links, can be overridden by plugins.
@@ -381,7 +381,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
       'alias' => $path_info['alias'],
       'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path_info['system_path']),
       'description' => 'This is an internal path.',
-      'class' => 'status-ok',
+      'addClass' => 'status-ok',
     );
   }
   // No plugin results, internal, doesn't exist
@@ -390,7 +390,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
       'path' => substr($path_info['parts']['path'], 1) . $query_fragment,
       'title' => 'Page not found',
       'description' => 'This page does not exist or you do not have access to it.',
-      'class' => 'status-warning',
+      'addClass' => 'status-warning',
     );
   }
   // No plugin results, external
@@ -399,7 +399,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
       'title' => 'No information available',
       'description' => 'This is an external URL, but we don\'t know where it leads.',
       'path' => $path_info['url'],
-      'class' => 'status-notice',
+      'addClass' => 'status-notice',
     );
   }
   return $result;

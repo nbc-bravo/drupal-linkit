@@ -66,7 +66,7 @@ function _linkit_external_path_info($path_info, $settings) {
       'path' => $path_info['url'],
       'title' => check_plain($title ? $title : $path_info['url']),
       'description' => $status,
-      'class' => $class,
+      'addClass' => $class,
     );
     curl_close($ch);
     return $result;

@@ -65,7 +65,7 @@
  *   - group: (optional) Add groups to the results. Will render nice group headings.
  *     Remember to put the results grouped together in the JSON array,
  *     otherwise they will be rendered as multiple groups.
- *   - class: (optional) Add CSS classes to the result object separated by spaces. TODO: Rename, reserved in ECMAScript
+ *   - addClass: (optional) Add CSS classes to the result object separated by spaces. TODO: Rename, reserved in ECMAScript
  *
  *   Feel free to add more properties. They will be returned with the callbacks
  *   just like the other properties.
@@ -409,7 +409,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
         .append(callbacks.renderResult(result))
         .data('result', result) // Store the result object on this DOM element
         .data('index', index) // For quick determination of index on events
-        .addClass(result.class)
+        .addClass(result.addClass)
         .appendTo($resultsList);
     }
     index++;
