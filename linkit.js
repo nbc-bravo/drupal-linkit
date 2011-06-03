@@ -13,6 +13,12 @@ Drupal.behaviors.linkit = {
       select: function(linkObject) {
         // Only change the link text if it is empty
         Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+      },
+      beginFetching: function() {
+        $searchInput.addClass('throbbing');
+      },
+      finishFetching: function() {
+        $searchInput.removeClass('throbbing');
       }
     });
 

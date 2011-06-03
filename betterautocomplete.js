@@ -38,7 +38,8 @@
  *
  * The DOM tree will look like this:
  *
- * - input (text input field, provided as the $input argument)
+ * - input (text input field) Per default the input will have the class
+ *   "fetching" while AJAX requests are made.
  * - div#linkit-autocomplete-wrapper (no width/height, position relative)
  *   - ul#linkit-autocomplete-results (fixed width, variable height)
  *     - li.result (variable height)
@@ -148,6 +149,12 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
         output += '<p>' + result.description + '</p>';
       }
       return output;
+    },
+    beginFetching: function() {
+      $input.addClass('fetching');
+    },
+    finishFetching: function() {
+      $input.removeClass('fetching');
     }
   }, callbacks);
 
@@ -342,8 +349,8 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    */
   var fetchResults = function(search, callback) {
     // TODO: That class name is not generic?
-    $input.addClass('throbbing');
     activeAJAXCalls++;
+    callbacks.beginFetching();
     var xhr = $.ajax({
       url: path,
       dataType: 'json',
@@ -367,7 +374,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       complete: function() {
         // Complete runs after success or error
         if (activeAJAXCalls == 0) {
-          $input.removeClass('throbbing');
+          callbacks.finishFetching();
         }
       }
     });
