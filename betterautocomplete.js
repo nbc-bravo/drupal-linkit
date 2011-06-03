@@ -188,70 +188,75 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     .width($input.innerWidth())
     .appendTo($wrapper);
 
-  var inputEvents = {
-    focus: function() {
-      parseResults();
-      $wrapper.show();
-    },
-    blur: function() {
-      $wrapper.hide();
-    },
-    keydown: function(event) {
-      var index = getHighlighted();
-      var newIndex;
-      var size = $('.result', $resultsList).length;
-      switch (event.keyCode) {
-        case 38: // Up arrow
-          newIndex = Math.max(0, index-1);
-          break;
-        case 40: // Down arrow
-          newIndex = Math.min(size-1, index+1);
-          break;
-        case 9: // Tab
-        case 13: // Enter
-          select();
-          return false;
-      }
-      // Index have changed so update highlighted element, then cancel the event.
-      if (typeof newIndex == 'number') {
+  // By using an object for all events, $(...).bind() can be used.
+  var inputEvents = {};
 
-        // Disable the auto-triggered mouseover event
-        disableMouseHighlight = true;
+  inputEvents.focus = function() {
+    // Parse results to be sure, the input value may have changed
+    parseResults();
+    $wrapper.show();
+  };
 
-        setHighlighted(newIndex);
+  inputEvents.blur = function() {
+    $wrapper.hide();
+  },
 
-        // Automatic scrolling to the highlighted result
-        var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
-
-        // Scrolling up, then show the group title
-        if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
-          $scrollTo = $scrollTo.prev();
-        }
-        // Is the result above the visible region?
-        if ($scrollTo.position().top < 0) {
-          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
-        }
-        // Or is it below the visible region?
-        else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
-          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
-        }
+  inputEvents.keydown = function(event) {
+    var index = getHighlighted();
+    var newIndex;
+    var size = $('.result', $resultsList).length;
+    switch (event.keyCode) {
+      case 38: // Up arrow
+        newIndex = Math.max(0, index-1);
+        break;
+      case 40: // Down arrow
+        newIndex = Math.min(size-1, index+1);
+        break;
+      case 9: // Tab
+      case 13: // Enter
+        select();
         return false;
+    }
+    // Index have changed so update highlighted element, then cancel the event.
+    if (typeof newIndex == 'number') {
+
+      // Disable the auto-triggered mouseover event
+      disableMouseHighlight = true;
+
+      setHighlighted(newIndex);
+
+      // Automatic scrolling to the highlighted result
+      var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
+
+      // Scrolling up, then show the group title
+      if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
+        $scrollTo = $scrollTo.prev();
       }
-    },
-    keyup: function() {
-      clearTimeout(timer);
-      // Parse always!
-      parseResults();
-      // If the results can't be displayed we must fetch them, then display
-      if (needsFetching()) {
-        timer = setTimeout(function() {
-          // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
-          fetchResults($input.val(), function(data, search) {
-            results[search] = data;
-            parseResults();
-          });
-        }, options.wait);
+      // Is the result above the visible region?
+      if ($scrollTo.position().top < 0) {
+        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
       }
+      // Or is it below the visible region?
+      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
+        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
+      }
+      return false;
+    }
+  };
+
+  inputEvents.keyup = function() {
+    clearTimeout(timer);
+    // Parse always!
+    parseResults();
+    // If the results can't be displayed we must fetch them, then display
+    if (needsFetching()) {
+      timer = setTimeout(function() {
+        // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
+        fetchResults($input.val(), function(data, search) {
+          results[search] = data;
+          parseResults();
+        });
+      }, options.wait);
     }
   };
 
