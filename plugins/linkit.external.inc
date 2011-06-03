@@ -15,7 +15,7 @@ function _linkit_external_path_info($path_info, $settings) {
   $settings['fetch_document'] = TRUE;
   // Check if path is referring to an http resource
   // TODO: Add ftp?
-  if ($path_info['target'] == 'external' && function_exists('curl_init') && preg_match('~^https?$~', $path_info['parts']['scheme'])) {
+  if ($path_info['target'] == 'external' && function_exists('curl_init') && preg_match('~^https?$~', preg_quote($path_info['parts']['scheme'], '~'))) {
     $ch = curl_init(preg_replace('~#.+$~', '', $path_info['url']));
     curl_setopt_array($ch, array(
       CURLOPT_RETURNTRANSFER => TRUE,

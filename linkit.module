@@ -280,7 +280,7 @@ function _linkit_scan_url($url) {
   $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
-  if ($path_info['parts']['scheme'] && preg_match('~^' . $root_url . '($|/|\?|#)~', $url)) {
+  if ($path_info['parts']['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '($|/|\?|#)~', $url)) {
     $path_info['absolute'] = TRUE;
     $path_info['target'] = 'internal';
     // Look for path, construct result and send back

@@ -108,7 +108,7 @@ function _linkit_file_path_info($path_info, $settings) {
 
   // TODO: In path info, this variable should already exist, to avoid duplication
   $relative_path = substr($path_info['parts']['path'], 1);
-  preg_match('~^' . $public_path . '/(.+)$~', $relative_path, $matches);
+  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $relative_path, $matches);
   $filepath = $matches[1];
   if ($filepath) {
     
