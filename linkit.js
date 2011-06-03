@@ -7,7 +7,7 @@ Drupal.behaviors.linkit = {
     var $searchInput = $('#linkit #edit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
-    var bac = new BetterAutocomplete($searchInput, Drupal.settings.linkit.autocompletePath,
+    $searchInput.betterAutocomplete(Drupal.settings.linkit.autocompletePath,
       {}, // Options
       { // Callbacks
       select: function(linkObject) {

@@ -91,13 +91,20 @@
  *     be rendered. It should return a DOM element, an HTML string, or a jQuery
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
- *
- * @todo Make this a jQuery plugin
  */
-window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
-  var self = this;
+$.fn.betterAutocomplete = function(path, options, callbacks) {
 
-  var $input = $(inputElement).filter(':input[type=text]');
+  var $inputs = this.filter(':input[type=text]');
+
+  $inputs.each(function() {
+    new BetterAutocomplete($(this), path, options, callbacks);
+  });
+};
+
+/**
+ * The BetterAutocomplete constructor function
+ */
+var BetterAutocomplete = function($input, path, options, callbacks) {
 
   options = $.extend({
     charLimit: 3,
@@ -121,6 +128,8 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       return output;
     }
   }, callbacks);
+
+  var self = this;
 
   var lastRenderedSearch = '';
 
@@ -424,7 +433,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
 };
 
 /**
- * Focus selector, required by BetterAutoComplete
+ * Focus selector, required by BetterAutocomplete
  */
 $.expr[':'].focus = function( elem ) {
   return elem === document.activeElement && ( elem.type || elem.href );
