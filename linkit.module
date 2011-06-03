@@ -265,27 +265,32 @@ function _linkit_autocomplete_search($search) {
  *
  * @return
  *   An associative array containing:
+ *   - url: The same as the argument $url, untouched.
  *   - target: Either "internal" or "external".
- *   - url: The same as the argument $url, untouched
  *   - system_path: The drupal system path, e.g. "node/23" if target is
  *     internal and the path is valid.
+ *   - relative_path: If internal, the path requested relative to Drupal root. TODO: Won't work now if subdir installation?
  *   - alias: The alias to the path, if the system path has an alias.
- *   - parts: An associative array created by parse_url() containing url parts
+ *   - query_fragment: The query and fragment of the url, often not needed for
+ *     searching, it's just appended back when everything is done. This string
+ *     will look like '?foo=bar#anchor'
  */
 function _linkit_scan_url($url) {
   $path_info['url'] = $url;
+  $path_info['query_fragment'] = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
   // Build the full URL, then take it apart
-  $path_info['parts'] = parse_url($url);
+  $parts = parse_url($url);
   // URL to frontpage
   $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
-  if ($path_info['parts']['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '($|/|\?|#)~', $url)) {
+  if ($parts['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '($|/|\?|#)~', $url)) {
     $path_info['absolute'] = TRUE;
     $path_info['target'] = 'internal';
+    $path_info['relative_path'] = substr($parts['path'], 1);
     // Look for path, construct result and send back
     // TODO: Does this work when Drupal is installed in a subdir? At another port?
-    $path = trim($path_info['parts']['path'], '/');
+    $path = trim($parts['path'], '/');
 
     // Frontpage check
     if (empty($path)) {
@@ -301,7 +306,7 @@ function _linkit_scan_url($url) {
     }
   }
   // External URL
-  elseif ($path_info['parts']['scheme']) {
+  elseif ($parts['scheme']) {
     $path_info['absolute'] = TRUE;
     $path_info['target'] = 'external';
   }
@@ -340,8 +345,6 @@ function _linkit_path_info($path, $absolute = TRUE) {
   if (!$path_info = _linkit_scan_url($path)) {
     return;
   }
-  $parts = $path_info['parts'];
-  $query_fragment = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
 
   // Let plugins review the path and optionally return a result
   $settings = _linkit_load_profile_settings();
@@ -358,14 +361,14 @@ function _linkit_path_info($path, $absolute = TRUE) {
     }
     if (!$result['path'] && $path_info['target'] == 'internal') {
       // This is default target path for internal links, can be overridden by plugins.
-      $result['path'] = $path_info['system_path'] . $query_fragment;
+      $result['path'] = $path_info['system_path'] . $path_info['query_fragment'];
     }
     elseif (!$result['path'] && $path_info['target'] == 'external') {
       // This is default target path for external links, can be overridden by plugins.
       $result['path'] = $path_info['url'];
     }
     if ($path_info['frontpage']) {
-      $result['path'] = '<front>' . $query_fragment;
+      $result['path'] = '<front>' . $path_info['query_fragment'];
     }
     // There is no alias for front, and alias shouldn't be altered by plugins
     elseif ($path_info['alias']) {
@@ -386,7 +389,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
   // No plugin results, internal, doesn't exist
   elseif ($path_info['target'] == 'internal') {
     $result = array(
-      'path' => substr($path_info['parts']['path'], 1) . $query_fragment,
+      'path' => $path_info['relative_path'] . $path_info['query_fragment'],
       'title' => 'Page not found',
       'description' => 'This page does not exist or you do not have access to it.',
       'addClass' => 'status-warning',

@@ -107,16 +107,15 @@ function _linkit_file_path_info($path_info, $settings) {
   $public_path = variable_get('file_public_path', conf_path() . '/files');
 
   // TODO: In path info, this variable should already exist, to avoid duplication
-  $relative_path = substr($path_info['parts']['path'], 1);
-  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $relative_path, $matches);
+  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['relative_path'], $matches);
   $filepath = $matches[1];
   if ($filepath) {
-    
+
     $query = db_select('file_managed', 'f')
       ->fields('f', array('uri', 'filename'))
       ->condition('f.status' , '1')
       ->condition('f.uri', 'public://' . $filepath);
-    
+
     $db_result = $query->execute();
 
     if ($file = $db_result->fetch()) {
