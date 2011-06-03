@@ -5,6 +5,16 @@
  */
 
 /**
+ * 
+ */
+define('LINKIT_ATTR_ENABLED', 1);
+
+/**
+ * 
+ */
+define('LINKIT_ATTR_DISABLED', 0);
+
+/**
  * Menu callback; Displays a list of all profiles.
  */
 function linkit_admin_page() {
@@ -110,18 +120,27 @@ function linkit_admin_settings($form, &$form_state, $profile) {
   );
 
   $enabled_attributes_weight = 0;
-  $attrs = _linkit_get_attributes($profile['name']);
+  $attrs = _linkit_get_attributes(isset($profile['machine_name']) ? $profile['machine_name'] : NULL);
 
   // Sort by #weight.
   uasort($attrs, "_linkit_sort_attributes");
 
   foreach ($attrs as $name => $attr) {
     $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
+    
     $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight'] = array(
       '#type' => 'weight',
       '#title' => t('Weight for @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['enabled_attributes'][$name]['weight']) ? $profile['enabled_attributes'][$name]['weight'] : $enabled_attributes_weight,
+    );
+    
+    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['status'] = array(
+      '#type' => 'select',
+      '#options' => array(LINKIT_ATTR_ENABLED => t('Enabled'), LINKIT_ATTR_DISABLED => t('Disabled')),
+      '#title' => t('Status for @title', array('@title' => $attr['#title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['enabled_attributes'][$name]['status']) ? $profile['enabled_attributes'][$name]['status'] : 0,
     );
     $enabled_attributes_weight++;
   }
@@ -246,6 +265,7 @@ function linkit_admin_settings_validate($form, &$form_state) {
  * Process profile form submissions.
  */
 function linkit_admin_settings_submit($form, &$form_state) {
+
   // Exclude unnecessary elements.
   _linkit_form_state_values_clean($form_state);
 
@@ -267,6 +287,33 @@ function linkit_admin_settings_submit($form, &$form_state) {
 }
 
 /**
+ * Processes variables 
+ *
+ * The $variables array contains the following arguments:
+ * - $form
+ *
+ * @see linkit_admin_settings()
+ */
+function template_preprocess_linkit_admin_settings(&$variables) {
+  $form = $variables['form'];
+
+  $attributes_listing = array();
+  
+  foreach (element_children($form['enabled_attributes_fieldset']['enabled_attributes']) as $name) {
+    $form_elem = $form['enabled_attributes_fieldset']['enabled_attributes'][$name];
+    
+    $status = $form_elem['status']['#default_value'];
+    
+    $form_elem['weight']['#attributes']['class'] = array('attribute-weight', 'attribute-weight-' . $status);
+    $form_elem['status']['#attributes']['class'] = array('attribute-status', 'attribute-status-' . $status);
+    
+    $attributes_listing[$status][$name] = $form_elem;
+  }
+  
+  $variables['linkit_attributes_listing'] = $attributes_listing;
+}
+
+/**
  * Returns HTML for the linkit_admin_settings form.
  *
  * @param $variables
@@ -278,22 +325,51 @@ function linkit_admin_settings_submit($form, &$form_state) {
 function theme_linkit_admin_settings($variables) {
   $form = $variables['form'];
   $rows = array();
+  dsm($variables['linkit_attributes_listing']);
+  
+  /*
   foreach (element_children($form['enabled_attributes_fieldset']['enabled_attributes']) as $name) {
-    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight']['#attributes']['class'] = array('linkit-enabled-attributes-weight');
+    $form_elem = $form['enabled_attributes_fieldset']['enabled_attributes'][$name];
+    $form_elem['weight']['#attributes']['class'] = array('linkit-enabled-attributes-weight');
     $rows[] = array(
       'data' => array(
-        drupal_render($form['enabled_attributes_fieldset']['enabled_attributes'][$name]['name']),
-        drupal_render($form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight']),
+        drupal_render($form_elem['name']),
+        drupal_render($form_elem['weight']),
+        drupal_render($form_elem['status']),
       ),
-      'class' => array('draggable'),
+      'class' => array('draggable', 'linkit_attr_' . $form_elem['status']['#default_value']),
     );
   }
-  $header = array(t('Name'), t('Weight'));
+  */
+  
+  foreach ($variables['linkit_attributes_listing'] AS $status => $attrs) {
+    $rows[] = array(
+      'data' => array(array('data' => t($status), 'colspan' => '4')),
+      'class' => array(),
+    );
+    
+    foreach ($attrs AS $attr) {
+       $rows[] = array(
+        'data' => array(
+          drupal_render($attr['name']),
+          drupal_render($attr['weight']),
+          drupal_render($attr['status']),
+            
+        ),
+        'class' => array('draggable'),
+      );
+    }
+    //drupal_add_tabledrag('linkit-enabled-attributes', 'match', 'sibling', 'attribute-select', 'attribute-select-' . $status, NULL, FALSE);
+    drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'sibling', 'attribute-weight', 'attribute-weight-' . $status);
+  }
+  
+  $header = array(t('Name'), t('Weight'), t('Status'));
   // Add the table iinto the fieldset.
   $form['enabled_attributes_fieldset']['enabled_attributes']['#markup'] = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-enabled-attributes')));
   $output = drupal_render_children($form);
 
-  drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'sibling', 'linkit-enabled-attributes-weight');
+  //drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'group', 'linkit-enabled-attributes-weight');
+
 
   return $output;
 }
