@@ -3,15 +3,14 @@
  * Better Autocomplete
  * ===================
  *
- * Provides an object for fetching autocomplete results via XMLHttpRequest
- * from a JSON resource path.
+ * Provides a jQuery plugin for fetching autocomplete results via
+ * XMLHttpRequest from a JSON resource path.
  *
  * For usage, see below
  *
  * @author Didrik Nordström, http://betamos.se/
  *
  * Requirements:
- *
  * - jQuery 1.4+
  * - A modern web browser
  */
@@ -92,13 +91,36 @@
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
  */
-$.fn.betterAutocomplete = function(path, options, callbacks) {
+$.fn.betterAutocomplete = function(method, path, options, callbacks) {
 
-  var $inputs = this.filter(':input[type=text]');
+  var methods = {
+      init: function(path, options, callbacks) {
+        this.filter(':input[type=text]').each(function() {
+          $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+        });
+      },
+      destroy: function() {
+        this.filter(':input[type=text]').each(function() {
+          var bac = $(this).data('betterAutocomplete');
+          if (bac instanceof BetterAutocomplete) {
+            bac.destroy();
+          }
+        });
+      }
+  };
 
-  $inputs.each(function() {
-    new BetterAutocomplete($(this), path, options, callbacks);
-  });
+  //Method calling logic
+  if (methods[method]) {
+    return methods[method].apply( this, Array.prototype.slice.call(arguments, 1));
+  }
+  else if (typeof method === 'object' || ! method) {
+    return methods.init.apply(this, arguments);
+  }
+  else {
+    $.error( 'Method ' +  method + ' does not exist on jQuery.betterAutocomplete' );
+  }
+
+  return this;
 };
 
 /**
@@ -131,6 +153,12 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   var self = this;
 
+  self.destroy = function() {
+    // TODO: Unbind only the specific functions
+    $input.unbind();
+    $wrapper.remove();
+  };
+
   var lastRenderedSearch = '';
 
   // Caching of search results
@@ -162,7 +190,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   // Just toggle visibility of the results on focus/blur
   $input.bind({
     focus: function() {
-      self.parseResults();
+      parseResults();
       $wrapper.show();
     },
     blur: function() {
@@ -171,7 +199,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   });
 
   $input.keydown(function(event) {
-    var index = self.getHighlighted();
+    var index = getHighlighted();
     var newIndex;
     var size = $('.result', $resultsList).length;
     switch (event.keyCode) {
@@ -183,7 +211,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
         break;
       case 9: // Tab
       case 13: // Enter
-        self.select();
+        select();
         return false;
     }
     // Index have changed so update highlighted element, then cancel the event.
@@ -192,10 +220,10 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       // Disable the auto-triggered mouseover event
       disableMouseHighlight = true;
 
-      self.setHighlighted(newIndex);
+      setHighlighted(newIndex);
 
       // Automatic scrolling to the highlighted result
-      var $scrollTo = $('.result', $resultsList).eq(self.getHighlighted());
+      var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
 
       // Scrolling up, then show the group title
       if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
@@ -216,14 +244,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   $input.keyup(function() {
     clearTimeout(timer);
     // Parse always!
-    self.parseResults();
+    parseResults();
     // If the results can't be displayed we must fetch them, then display
-    if (self.needsFetching()) {
+    if (needsFetching()) {
       timer = setTimeout(function() {
         // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
-        self.fetchResults($input.val(), function(data, search) {
+        fetchResults($input.val(), function(data, search) {
           results[search] = data;
-          self.parseResults();
+          parseResults();
         });
       }, options.wait);
     }
@@ -235,14 +263,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       if (disableMouseHighlight) {
         return;
       }
-      self.setHighlighted($(this).data('index'));
+      setHighlighted($(this).data('index'));
     },
     mousemove: function() {
       // Enable mouseover again.
       disableMouseHighlight = false;
     },
     mousedown: function() {
-      self.select();
+      select();
       return false;
     }
   });
@@ -259,7 +287,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    * @param index
    *   The result's index, starting on 0
    */
-  self.setHighlighted = function(index) {
+  var setHighlighted = function(index) {
     $('.result', $resultsList)
       .removeClass('highlight')
       .eq(index).addClass('highlight');
@@ -271,15 +299,15 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    * @return
    *   The result's index or -1 if no result is highlighted
    */
-  self.getHighlighted = function() {
+  var getHighlighted = function() {
     return $('.result', $resultsList).index($('.result.highlight', $resultsList));
   };
 
   /**
-   * Select the current highlighted element and call the selection callback
+   * Select the current highlighted element and call the selection cak
    */
-  self.select = function() {
-    var $result = $('.result', $resultsList).eq(self.getHighlighted());
+  var select = function() {
+    var $result = $('.result', $resultsList).eq(getHighlighted());
     if ($result.length == 0) {
       return;
     }
@@ -288,7 +316,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     callbacks.select(result);
 
     // Parse once more, if the callback changed focus or content
-    self.parseResults();
+    parseResults();
   };
 
   /**
@@ -304,7 +332,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    *   - data (array of results)
    *   - search string
    */
-  self.fetchResults = function(search, callback) {
+  var fetchResults = function(search, callback) {
     // TODO: That class name is not generic?
     $input.addClass('throbbing');
     var xhr = $.ajax({
@@ -336,7 +364,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    * 
    * @returns {Boolean} true if fetching is required
    */
-  self.needsFetching = function() {
+  var needsFetching = function() {
     var userString = $input.val();
 
     if (userString.length < options.charLimit) {
@@ -353,7 +381,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   /**
    * Checks if needed to re-render etc
    */
-  self.parseResults = function() {
+  var parseResults = function() {
     // TODO: Logical statements here, cleanup?
     if (!$input.is(':focus')) {
       $wrapper.hide();
@@ -365,14 +393,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       return;
     }
     $wrapper.hide();
-    if (self.needsFetching()) {
+    if (needsFetching()) {
       return;
     }
     lastRenderedSearch = $input.val();
 
     // Not in cache
-    if (self.renderResults() >= 1) {
-      self.setHighlighted(0);
+    if (renderResults() >= 1) {
+      setHighlighted(0);
       $wrapper.show();
     }
   };
@@ -387,7 +415,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    * Another option is to inform the developers that they should sanitize
    * server-side.
    */
-  self.renderResults = function() {
+  var renderResults = function() {
 
     // Update user string
     userString = $input.val();
@@ -434,6 +462,10 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
 /**
  * Focus selector, required by BetterAutocomplete
+ *
+ * @see http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus
+ *
+ * @todo Check if focus selector already exists? jQuery 1.6 has it built-in.
  */
 $.expr[':'].focus = function( elem ) {
   return elem === document.activeElement && ( elem.type || elem.href );
