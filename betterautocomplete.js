@@ -170,7 +170,9 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   var userString = $input.val();
 
   var timer;
-  
+
+  var activeAJAXCalls = 0;
+
   var disableMouseHighlight = false;
 
   // Turn off the browser's autocompletion
@@ -341,6 +343,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   var fetchResults = function(search, callback) {
     // TODO: That class name is not generic?
     $input.addClass('throbbing');
+    activeAJAXCalls++;
     var xhr = $.ajax({
       url: path,
       dataType: 'json',
@@ -354,12 +357,18 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
         // TODO: Keep count of how many calls are active, when 0 remove throbber
-        $input.removeClass('throbbing');
+        activeAJAXCalls--;
         callback(data, this);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         // TODO: A callback for when an error occurs?
-        $input.removeClass('throbbing');
+        activeAJAXCalls--;
+      },
+      complete: function() {
+        // Complete runs after success or error
+        if (activeAJAXCalls == 0) {
+          $input.removeClass('throbbing');
+        }
       }
     });
   };
