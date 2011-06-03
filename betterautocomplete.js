@@ -7,11 +7,11 @@
  * from a JSON resource path.
  *
  * For usage, see below
- * 
+ *
  * @author Didrik Nordström, http://betamos.se/
- * 
+ *
  * Requirements:
- * 
+ *
  * - jQuery 1.4+
  * - A modern web browser
  */
@@ -43,12 +43,14 @@
  * - div#linkit-autocomplete-wrapper (no width/height, position relative)
  *   - ul#linkit-autocomplete-results (fixed width, variable height)
  *     - li.result (variable height)
- *       - h4.title (contains the title)
- *       - p.description (contains the description)
+ *       - Customizable output.
  *     - li.result (more results...)
  *
  * Note that everything within li.result can be altered by the user,
  * @see callbacks.renderResult(). The default rendering function outputs:
+ * - h4.title (contains the title)
+ * - p.description (contains the description)
+ * Note that no sanitization of title/description occurs client side.
  *
  * @param inputElement
  *   The text input element.
@@ -62,10 +64,11 @@
  *     list item. To alter, @see callbacks.renderResult().
  *   - description: (optional) Per default, this will be rendered as an p tag
  *     in the list item.
- *   - group: (optional) Add groups to the results. Will render nice group headings.
- *     Remember to put the results grouped together in the JSON array,
- *     otherwise they will be rendered as multiple groups.
- *   - addClass: (optional) Add CSS classes to the result object separated by spaces. TODO: Rename, reserved in ECMAScript
+ *   - group: (optional) Add groups to the results. Will render nice group
+ *     headings. Remember to put the results grouped together in the JSON
+ *     array, otherwise they will be rendered as multiple groups.
+ *   - addClass: (optional) Add CSS classes to the result object separated by
+ *     spaces.
  *
  *   Feel free to add more properties. They will be returned with the callbacks
  *   just like the other properties.
@@ -76,6 +79,7 @@
  *     A typical use case for this limit is to reduce server load.
  *   - wait: (default=250) The time in ms between last keypress and AJAX call.
  *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
+ *     TODO: Make a generic "construct URL callback" instead.
  *   - ajaxTimeout: (default=5000) Timeout on AJAX calls.
  *
  * @param callbacks
@@ -87,6 +91,8 @@
  *     be rendered. It should return a DOM element, an HTML string, or a jQuery
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
+ *
+ * @todo Make this a jQuery plugin
  */
 window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
   var self = this;
@@ -205,6 +211,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
     // If the results can't be displayed we must fetch them, then display
     if (self.needsFetching()) {
       timer = setTimeout(function() {
+        // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
         self.fetchResults($input.val(), function(data, search) {
           results[search] = data;
           self.parseResults();
@@ -227,7 +234,6 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
     },
     mousedown: function() {
       self.select();
-      // TODO: Do everything look good when the blur event is not invoked?
       return false;
     }
   });
@@ -245,7 +251,6 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
    *   The result's index, starting on 0
    */
   self.setHighlighted = function(index) {
-    // TODO: Check that it's not out of bounds
     $('.result', $resultsList)
       .removeClass('highlight')
       .eq(index).addClass('highlight');
@@ -279,18 +284,19 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
 
   /**
    * Fetch results asynchronously via AJAX.
-   * Errors are ignored.
+   * Errors are ignored. TODO: Disable enter and tab while fetching
    *
    * @param search
    *   The search string
    *
    * @param callback
    *   The callback function on success. Takes two arguments:
-   *   TODO: Naming "data"?
+   *   TODO: Naming "data" and "callback"?
    *   - data (array of results)
    *   - search string
    */
   self.fetchResults = function(search, callback) {
+    // TODO: That class name is not generic?
     $input.addClass('throbbing');
     var xhr = $.ajax({
       url: path,
@@ -309,7 +315,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
         callback(data, this);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        // TODO: Maybe alert the user that an error occured?
+        // TODO: A callback for when an error occurs?
         $input.removeClass('throbbing');
       }
     });
