@@ -150,7 +150,8 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     charLimit: 3,
     wait: 250,
     getParam: 's',
-    ajaxTimeout: 5000
+    ajaxTimeout: 5000,
+    selectKeys: [9, 13] // [tab, enter]
   }, options);
 
   callbacks = $.extend({
@@ -248,16 +249,15 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       case 40: // Down arrow
         newIndex = Math.min(size-1, index+1);
         break;
-      // TODO: Provide option, which keys performs selection?
-      case 9: // Tab
-      case 13: // Enter
-        // Only hijack the event if selecting is possible or pending action.
-        if (select() || activeAJAXCalls >= 1 || timer !== null) {
-          return false;
-        }
-        else {
-          return true;
-        }
+    }
+    if (options.selectKeys.indexOf(event.keyCode) >= 0) {
+      // Only hijack the event if selecting is possible or pending action.
+      if (select() || activeAJAXCalls >= 1 || timer !== null) {
+        return false;
+      }
+      else {
+        return true;
+      }
     }
     // Index have changed so update highlighted element, then cancel the event.
     if (typeof newIndex == 'number') {
