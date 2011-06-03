@@ -61,7 +61,7 @@
  *   should contain these properties:
  *   - title: (optional) Per default, this will be rendered as an h4 tag in the
  *     list item. To alter, @see callbacks.renderResult().
- *   - description: (optional) Per default, this will be rendered as an p tag
+ *   - description: (optional) Per default, this will be rendered as a p tag
  *     in the list item.
  *   - group: (optional) Add groups to the results. Will render nice group
  *     headings. Remember to put the results grouped together in the JSON
@@ -91,7 +91,7 @@
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
  */
-$.fn.betterAutocomplete = function(method, path, options, callbacks) {
+$.fn.betterAutocomplete = function(method) {
 
   var methods = {
       init: function(path, options, callbacks) {
@@ -155,8 +155,9 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   self.destroy = function() {
     // TODO: Unbind only the specific functions
-    $input.unbind();
+    $input.unbind(inputEvents);
     $wrapper.remove();
+    $input.removeData('betterAutocomplete');
   };
 
   var lastRenderedSearch = '';
@@ -187,75 +188,75 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     .width($input.innerWidth())
     .appendTo($wrapper);
 
-  // Just toggle visibility of the results on focus/blur
-  $input.bind({
+  var inputEvents = {
     focus: function() {
       parseResults();
       $wrapper.show();
     },
     blur: function() {
       $wrapper.hide();
-    }
-  });
+    },
+    keydown: function(event) {
+      var index = getHighlighted();
+      var newIndex;
+      var size = $('.result', $resultsList).length;
+      switch (event.keyCode) {
+        case 38: // Up arrow
+          newIndex = Math.max(0, index-1);
+          break;
+        case 40: // Down arrow
+          newIndex = Math.min(size-1, index+1);
+          break;
+        case 9: // Tab
+        case 13: // Enter
+          select();
+          return false;
+      }
+      // Index have changed so update highlighted element, then cancel the event.
+      if (typeof newIndex == 'number') {
 
-  $input.keydown(function(event) {
-    var index = getHighlighted();
-    var newIndex;
-    var size = $('.result', $resultsList).length;
-    switch (event.keyCode) {
-      case 38: // Up arrow
-        newIndex = Math.max(0, index-1);
-        break;
-      case 40: // Down arrow
-        newIndex = Math.min(size-1, index+1);
-        break;
-      case 9: // Tab
-      case 13: // Enter
-        select();
+        // Disable the auto-triggered mouseover event
+        disableMouseHighlight = true;
+
+        setHighlighted(newIndex);
+
+        // Automatic scrolling to the highlighted result
+        var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
+
+        // Scrolling up, then show the group title
+        if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
+          $scrollTo = $scrollTo.prev();
+        }
+        // Is the result above the visible region?
+        if ($scrollTo.position().top < 0) {
+          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
+        }
+        // Or is it below the visible region?
+        else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
+          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
+        }
         return false;
-    }
-    // Index have changed so update highlighted element, then cancel the event.
-    if (typeof newIndex == 'number') {
-
-      // Disable the auto-triggered mouseover event
-      disableMouseHighlight = true;
-
-      setHighlighted(newIndex);
-
-      // Automatic scrolling to the highlighted result
-      var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
-
-      // Scrolling up, then show the group title
-      if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
-        $scrollTo = $scrollTo.prev();
       }
-      // Is the result above the visible region?
-      if ($scrollTo.position().top < 0) {
-        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
+    },
+    keyup: function() {
+      clearTimeout(timer);
+      // Parse always!
+      parseResults();
+      // If the results can't be displayed we must fetch them, then display
+      if (needsFetching()) {
+        timer = setTimeout(function() {
+          // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
+          fetchResults($input.val(), function(data, search) {
+            results[search] = data;
+            parseResults();
+          });
+        }, options.wait);
       }
-      // Or is it below the visible region?
-      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
-        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
-      }
-      return false;
     }
-  });
+  };
 
-  $input.keyup(function() {
-    clearTimeout(timer);
-    // Parse always!
-    parseResults();
-    // If the results can't be displayed we must fetch them, then display
-    if (needsFetching()) {
-      timer = setTimeout(function() {
-        // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
-        fetchResults($input.val(), function(data, search) {
-          results[search] = data;
-          parseResults();
-        });
-      }, options.wait);
-    }
-  });
+  // Just toggle visibility of the results on focus/blur
+  $input.bind(inputEvents);
 
   $('.result', $resultsList[0]).live({
     // When the user hovers a result with the mouse, highlight it.
