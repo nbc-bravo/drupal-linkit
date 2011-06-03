@@ -94,10 +94,27 @@
  */
 $.fn.betterAutocomplete = function(method) {
 
+  // TODO: Cleanup dupe code.
   var methods = {
       init: function(path, options, callbacks) {
         this.filter(':input[type=text]').each(function() {
           $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+        });
+      },
+      enable: function() {
+        this.filter(':input[type=text]').each(function() {
+          var bac = $(this).data('betterAutocomplete');
+          if (bac instanceof BetterAutocomplete) {
+            bac.enable();
+          }
+        });
+      },
+      disable: function() {
+        this.filter(':input[type=text]').each(function() {
+          var bac = $(this).data('betterAutocomplete');
+          if (bac instanceof BetterAutocomplete) {
+            bac.disable();
+          }
         });
       },
       destroy: function() {
@@ -112,13 +129,13 @@ $.fn.betterAutocomplete = function(method) {
 
   //Method calling logic
   if (methods[method]) {
-    return methods[method].apply( this, Array.prototype.slice.call(arguments, 1));
+    return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
   }
   else if (typeof method === 'object' || ! method) {
     return methods.init.apply(this, arguments);
   }
   else {
-    $.error( 'Method ' +  method + ' does not exist on jQuery.betterAutocomplete' );
+    $.error('Method ' +  method + ' does not exist on jQuery.betterAutocomplete');
   }
 
   return this;
@@ -160,10 +177,20 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   var self = this;
 
-  self.destroy = function() {
-    // TODO: Unbind only the specific functions
+  // TODO: Add init
+  // TODO: Think carefully through what should be part of init, enable, disable
+  self.enable = function() {
+    $input.bind(inputEvents);
+  };
+
+  self.disable = function() {
+    $wrapper.hide();
     $input.unbind(inputEvents);
+  };
+
+  self.destroy = function() {
     $wrapper.remove();
+    $input.unbind(inputEvents);
     $input.removeData('betterAutocomplete');
   };
 
@@ -363,7 +390,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
-        // TODO: Keep count of how many calls are active, when 0 remove throbber
         activeAJAXCalls--;
         callback(data, this);
       },
@@ -383,7 +409,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   /**
    * Does the current user string need fetching?
    * Checks character limit and cache.
-   * 
+   *
    * @returns {Boolean} true if fetching is required
    */
   var needsFetching = function() {
