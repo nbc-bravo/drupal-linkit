@@ -248,10 +248,16 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       case 40: // Down arrow
         newIndex = Math.min(size-1, index+1);
         break;
+      // TODO: Provide option, which keys performs selection?
       case 9: // Tab
       case 13: // Enter
-        select();
-        return false;
+        // Only hijack the event if selecting is possible or pending action.
+        if (select() || activeAJAXCalls >= 1 || timer !== null) {
+          return false;
+        }
+        else {
+          return true;
+        }
     }
     // Index have changed so update highlighted element, then cancel the event.
     if (typeof newIndex == 'number') {
@@ -282,16 +288,21 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   inputEvents.keyup = function() {
     clearTimeout(timer);
+    // Indicate that timer is inactive
+    timer = null;
     // Parse always!
     parseResults();
     // If the results can't be displayed we must fetch them, then display
     if (needsFetching()) {
+      $resultsList.empty();
+      // TODO: If local objects, i.e. options.wait == 0, execute immidiately
       timer = setTimeout(function() {
         // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
         fetchResults($input.val(), function(data, search) {
           results[search] = data;
           parseResults();
         });
+        timer = null;
       }, options.wait);
     }
   };
@@ -346,12 +357,15 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   };
 
   /**
-   * Select the current highlighted element and call the selection cak
+   * Select the current highlighted element
+   *
+   * @return
+   *   True if a selection was possible
    */
   var select = function() {
     var $result = $('.result', $resultsList).eq(getHighlighted());
     if ($result.length == 0) {
-      return;
+      return false;
     }
     var result = $result.data('result');
 
@@ -359,6 +373,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
     // Parse once more, if the callback changed focus or content
     parseResults();
+    return true;
   };
 
   /**
