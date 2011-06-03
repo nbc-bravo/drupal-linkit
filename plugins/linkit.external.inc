@@ -15,6 +15,7 @@ function _linkit_external_path_info($path_info, $settings) {
   $settings['fetch_document'] = TRUE;
   // Check if path is referring to an http resource
   // TODO: Add ftp?
+  // TODO: Curl check should be performed later, first the fetch_document setting must be true
   if ($path_info['target'] == 'external' && function_exists('curl_init') && preg_match('~^https?$~', preg_quote($path_info['parts']['scheme'], '~'))) {
     $ch = curl_init(preg_replace('~#.+$~', '', $path_info['url']));
     curl_setopt_array($ch, array(
@@ -57,6 +58,8 @@ function _linkit_external_path_info($path_info, $settings) {
         $class = 'status-warning';
       }
       if ($settings['fetch_document']) {
+        // TODO: Maybe document should be shortened, for performance reasons
+        // TODO: Title should definitely be shortened if too long
         // Try retrieve title attribute
         preg_match('~<title>(.+)</title>~', $document, $matches);
         $title = $matches[1];

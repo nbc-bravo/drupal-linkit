@@ -257,8 +257,8 @@ function _linkit_autocomplete_search($search) {
 /**
  * Get information about an url, whether it is internal or external,
  * the system path, in case there is any, etc.
- * 
- * @todo Flag for allowing relative paths, to scan absolute only.
+ *
+ * @todo Flag for allowing relative paths, to scan absolute only, if necessary.
  *
  * @param $url
  *   The url that should be scanned. 
@@ -284,7 +284,6 @@ function _linkit_scan_url($url) {
     $path_info['absolute'] = TRUE;
     $path_info['target'] = 'internal';
     // Look for path, construct result and send back
-    // TODO: One line?
     // TODO: Does this work when Drupal is installed in a subdir? At another port?
     $path = trim($path_info['parts']['path'], '/');
 
@@ -332,7 +331,7 @@ function _linkit_scan_url($url) {
  *   - title: The title of the result
  *   - description: The description of the result (may contain HTML)
  *   - path: The target path which will be inserted as the href in the link
- *   - alias: (optional) The alias to an internal path
+ *   - alias: (optional) The alias to an internal path TODO: Still needed?
  *   - addClass: A CSS class that will be added to the DOM result div
  *
  * @todo Implement the non absolute URL feature
