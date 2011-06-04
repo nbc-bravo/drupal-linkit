@@ -62,6 +62,10 @@ function linkit_admin_settings($form, &$form_state, $profile) {
 
   $form['#tree'] = TRUE;
 
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'linkit') . '/css/linkit.css',
+  );
+
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
@@ -137,7 +141,10 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     
     $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['status'] = array(
       '#type' => 'select',
-      '#options' => array(LINKIT_ATTR_ENABLED => t('Enabled'), LINKIT_ATTR_DISABLED => t('Disabled')),
+      '#options' => array(
+        LINKIT_ATTR_ENABLED => t('Enabled'),
+        LINKIT_ATTR_DISABLED => t('Disabled'),
+      ),
       '#title' => t('Status for @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['enabled_attributes'][$name]['status']) ? $profile['enabled_attributes'][$name]['status'] : 0,
@@ -295,22 +302,34 @@ function linkit_admin_settings_submit($form, &$form_state) {
  * @see linkit_admin_settings()
  */
 function template_preprocess_linkit_admin_settings(&$variables) {
-  $form = $variables['form'];
+  $variables['linkit_attr_status'] = array(
+    LINKIT_ATTR_ENABLED => t('Enabled'),
+    LINKIT_ATTR_DISABLED => t('Disabled'),
+  );
 
-  $attributes_listing = array();
-  
-  foreach (element_children($form['enabled_attributes_fieldset']['enabled_attributes']) as $name) {
-    $form_elem = $form['enabled_attributes_fieldset']['enabled_attributes'][$name];
+  $variables['linkit_attr_listing'] = array(
+    LINKIT_ATTR_ENABLED => array(),
+    LINKIT_ATTR_DISABLED => array(),
+  );
+
+   // Add each attribute in the form to the appropriate place in the attribute listing.
+  foreach (element_children($variables['form']['enabled_attributes_fieldset']['enabled_attributes']) as $i) {
+    $attr = &$variables['form']['enabled_attributes_fieldset']['enabled_attributes'][$i];
+ 
+    // Fetch the status for the current attribute.
+    $status = (isset($attr['status']['#default_value']) ? $attr['status']['#default_value'] : LINKIT_ATTR_DISABLED);
+
+    // Set special classes needed for table drag and drop.
+    $attr['status']['#attributes']['class'] = array('attribute-status-select', 'attribute-status-' . $status);
+    $attr['weight']['#attributes']['class'] = array('attribute-weight', 'attribute-weight-' . $status);
     
-    $status = $form_elem['status']['#default_value'];
-    
-    $form_elem['weight']['#attributes']['class'] = array('attribute-weight', 'attribute-weight-' . $status);
-    $form_elem['status']['#attributes']['class'] = array('attribute-status', 'attribute-status-' . $status);
-    
-    $attributes_listing[$status][$name] = $form_elem;
+    $variables['linkit_attr_listing'][$status][$i] = new stdClass();
+    $variables['linkit_attr_listing'][$status][$i]->row_class = !empty($attr['#attributes']['class']) ? implode(' ', $attr['#attributes']['class']) : '';
+    $variables['linkit_attr_listing'][$status][$i]->title = drupal_render($attr['name']);
+    $variables['linkit_attr_listing'][$status][$i]->status_select = drupal_render($attr['status']);
+    $variables['linkit_attr_listing'][$status][$i]->weight_select = drupal_render($attr['weight']);
+    $variables['linkit_attr_listing'][$status][$i]->printed = FALSE;
   }
-  
-  $variables['linkit_attributes_listing'] = $attributes_listing;
 }
 
 /**
@@ -323,53 +342,45 @@ function template_preprocess_linkit_admin_settings(&$variables) {
  * @ingroup themeable
  */
 function theme_linkit_admin_settings($variables) {
-  $form = $variables['form'];
+  $form = &$variables['form'];
+  $output = '';
+
+  $header = array(
+    t('Name'),
+    t('Weight'),
+    t('Status')
+  );
+
   $rows = array();
-  dsm($variables['linkit_attributes_listing']);
-  
-  /*
-  foreach (element_children($form['enabled_attributes_fieldset']['enabled_attributes']) as $name) {
-    $form_elem = $form['enabled_attributes_fieldset']['enabled_attributes'][$name];
-    $form_elem['weight']['#attributes']['class'] = array('linkit-enabled-attributes-weight');
+  foreach ($variables['linkit_attr_status'] as $status => $title) {
+    // Build status headers.
     $rows[] = array(
       'data' => array(
-        drupal_render($form_elem['name']),
-        drupal_render($form_elem['weight']),
-        drupal_render($form_elem['status']),
+        array(
+          'data' => $title,
+          'colspan' => '3',
+        ),
       ),
-      'class' => array('draggable', 'linkit_attr_' . $form_elem['status']['#default_value']),
+      'class' => array('linkit-status-header'),
     );
-  }
-  */
-  
-  foreach ($variables['linkit_attributes_listing'] AS $status => $attrs) {
-    $rows[] = array(
-      'data' => array(array('data' => t($status), 'colspan' => '4')),
-      'class' => array(),
-    );
-    
-    foreach ($attrs AS $attr) {
-       $rows[] = array(
+
+    foreach($variables['linkit_attr_listing'][$status] as $delta => $attr) {
+      $rows[] = array(
         'data' => array(
-          drupal_render($attr['name']),
-          drupal_render($attr['weight']),
-          drupal_render($attr['status']),
-            
+          $attr->title,
+          $attr->weight_select,
+          $attr->status_select,
         ),
         'class' => array('draggable'),
       );
     }
-    //drupal_add_tabledrag('linkit-enabled-attributes', 'match', 'sibling', 'attribute-select', 'attribute-select-' . $status, NULL, FALSE);
-    drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'sibling', 'attribute-weight', 'attribute-weight-' . $status);
+
+    drupal_add_tabledrag('linkit-attributes', 'order', 'sibling', 'attribute-weight', 'attribute-weight-' . $status);
   }
-  
-  $header = array(t('Name'), t('Weight'), t('Status'));
-  // Add the table iinto the fieldset.
-  $form['enabled_attributes_fieldset']['enabled_attributes']['#markup'] = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-enabled-attributes')));
+
+  $table =  theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-attributes')));
+  $form['enabled_attributes_fieldset']['enabled_attributes']['#markup'] = $table;
   $output = drupal_render_children($form);
-
-  //drupal_add_tabledrag('linkit-enabled-attributes', 'order', 'group', 'linkit-enabled-attributes-weight');
-
 
   return $output;
 }

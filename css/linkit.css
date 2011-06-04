@@ -120,3 +120,8 @@ input#edit-link.with_imce {
 	float: left;
 	margin: 0 5px 5px 0;
 }
+
+
+table tr.linkit-status-header td {
+  font-weight:bold;
+}
