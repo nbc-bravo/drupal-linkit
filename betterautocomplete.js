@@ -78,7 +78,6 @@
  *     A typical use case for this limit is to reduce server load.
  *   - wait: (default=250) The time in ms between last keypress and AJAX call.
  *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
- *     TODO: Make a generic "construct URL callback" instead.
  *   - ajaxTimeout: (default=5000) Timeout on AJAX calls.
  *
  * @param callbacks
@@ -176,6 +175,9 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       // TODO: Bug when search containing '&' or '/', e.g. " / &", error in jQuery core.
       // It has nothing to do with not using $.ajax data property, same error.
       return path + '?s=' + encodeURIComponent(search);
+    },
+    processResults: function(data) { // Return array of results
+      return data;
     }
   }, callbacks);
 
@@ -301,10 +303,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       // TODO: If local objects, i.e. options.wait == 0, execute immidiately
       timer = setTimeout(function() {
         // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
-        fetchResults($input.val(), function(data, search) {
-          results[search] = data;
-          parseResults();
-        });
+        fetchResults($input.val());
         timer = null;
       }, options.wait);
     }
@@ -381,7 +380,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   /**
    * Fetch results asynchronously via AJAX.
-   * Errors are ignored. TODO: Disable enter and tab while fetching
+   * Errors are ignored.
    *
    * @param search
    *   The search string
@@ -392,18 +391,19 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    *   - data (array of results)
    *   - search string
    */
-  var fetchResults = function(search, callback) {
+  var fetchResults = function(search) {
     activeAJAXCalls++;
     callbacks.beginFetching();
     var xhr = $.ajax({
       url: callbacks.constructURL(path, search),
+      // TODO: Datatype json? Really?
       dataType: 'json',
       // Self-invoking function needed to create an object with a dynamic key
       context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
         activeAJAXCalls--;
-        callback(data, this);
+        results[search] = callbacks.processResults(data);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         // TODO: A callback for when an error occurs?
@@ -414,6 +414,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
         if (activeAJAXCalls == 0) {
           callbacks.finishFetching();
         }
+        parseResults();
       }
     });
   };
