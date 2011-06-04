@@ -54,7 +54,6 @@
  *
  * @param inputElement
  *   The text input element.
- *   // TODO: If it's made a jQuery plugin, it should be multiple elements?
  *
  * @param path
  *   A path which provides JSON objects upon an HTTP request. This path should
@@ -149,7 +148,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   options = $.extend({
     charLimit: 3,
     wait: 250,
-    getParam: 's',
     ajaxTimeout: 5000,
     selectKeys: [9, 13] // [tab, enter]
   }, options);
@@ -173,6 +171,11 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     },
     finishFetching: function() {
       $input.removeClass('fetching');
+    },
+    constructURL: function(path, search) {
+      // TODO: Bug when search containing '&' or '/', e.g. " / &", error in jQuery core.
+      // It has nothing to do with not using $.ajax data property, same error.
+      return path + '?s=' + encodeURIComponent(search);
     }
   }, callbacks);
 
@@ -390,18 +393,12 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    *   - search string
    */
   var fetchResults = function(search, callback) {
-    // TODO: That class name is not generic?
     activeAJAXCalls++;
     callbacks.beginFetching();
     var xhr = $.ajax({
-      url: path,
+      url: callbacks.constructURL(path, search),
       dataType: 'json',
       // Self-invoking function needed to create an object with a dynamic key
-      data: (function() {
-        var o = new Object();
-        o[options.getParam] = search;
-        return o;
-      }()),
       context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
