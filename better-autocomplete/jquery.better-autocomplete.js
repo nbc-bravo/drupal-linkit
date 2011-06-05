@@ -92,40 +92,41 @@
  */
 $.fn.betterAutocomplete = function(method) {
 
-  // TODO: Cleanup dupe code.
+  var $inputs = this.filter(':input[type=text]');
+
   var methods = {
-      init: function(path, options, callbacks) {
-        this.filter(':input[type=text]').each(function() {
-          $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
-        });
-      },
-      enable: function() {
-        this.filter(':input[type=text]').each(function() {
-          var bac = $(this).data('betterAutocomplete');
-          if (bac instanceof BetterAutocomplete) {
-            bac.enable();
-          }
-        });
-      },
-      disable: function() {
-        this.filter(':input[type=text]').each(function() {
-          var bac = $(this).data('betterAutocomplete');
-          if (bac instanceof BetterAutocomplete) {
-            bac.disable();
-          }
-        });
-      },
-      destroy: function() {
-        this.filter(':input[type=text]').each(function() {
-          var bac = $(this).data('betterAutocomplete');
-          if (bac instanceof BetterAutocomplete) {
-            bac.destroy();
-          }
-        });
-      }
+    init: function(path, options, callbacks) {
+      $inputs.each(function() {
+        $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+      });
+    },
+    enable: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.enable();
+        }
+      });
+    },
+    disable: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.disable();
+        }
+      });
+    },
+    destroy: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.destroy();
+        }
+      });
+    }
   };
 
-  //Method calling logic
+  // Method calling logic
   if (methods[method]) {
     return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
   }
@@ -133,7 +134,7 @@ $.fn.betterAutocomplete = function(method) {
     return methods.init.apply(this, arguments);
   }
   else {
-    $.error('Method ' +  method + ' does not exist on jQuery.betterAutocomplete');
+    $.error('Method ' +  method + ' does not exist in jQuery.betterAutocomplete.');
   }
 
   return this;
