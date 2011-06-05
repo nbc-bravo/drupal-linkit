@@ -213,9 +213,9 @@ function _linkit_autocomplete($search = NULL) {
 
   $url = parse_url($search);
 
-  // Absolute URI
-  if ($path_info = _linkit_path_info($search)) {
-    $results = array($path_info);
+  // Absolute URL
+  if ($result = _linkit_result_from_url($search)) {
+    $results = array($result);
   }
   else {
     $results = _linkit_autocomplete_search($search);
@@ -326,37 +326,29 @@ function linkit_scan_url($url) {
 }
 
 /**
- * Retrieve information about a path. This method will iterate over Linkit
- * plugins to look for information about that path. Both internal and
- * external paths work.
- * 
- * @param $path
- *   The path, either like <http://example.com/path> or <path>
+ * Retrieve the result object from an absolute URL. This function calls the
+ * enabled plugins' "path info callback" to look for a result object. Both
+ * internal and external paths work.
  *
- * @param $absolute
- * 	 True if $path is an absolute URL, false if relative to the Drupal root.
+ * @param $url
+ *   An absolute URL.
  *
  * @return
- *   An array with information about the path. It is intended to be passed
- *   directly to the autocomplete function, so that it can be rendered
- *   instantly upon the AJAX success. The array consists of:
+ *   A result object. This is an associative array which consists of:
  *   - title: The title of the result
- *   - description: The description of the result (may contain HTML)
- *   - path: The target path which will be inserted as the href in the link
- *   - alias: (optional) The alias to an internal path TODO: Still needed?
- *   - addClass: A CSS class that will be added to the DOM result div
- *
- * @todo Implement the non absolute URL feature
+ *   - description: The description of the result (may contain HTML).
+ *   - path: The target path which will be inserted as the href in the link.
+ *   - alias: (optional) The alias to an internal path. TODO: Add to tokens for all plugins except files.
+ *   - addClass: A CSS class that will be added to the DOM result item.
  */
-function _linkit_path_info($path, $absolute = TRUE) {
-  if (!$path_info = linkit_scan_url($path)) {
+function _linkit_result_from_url($url) {
+  if (!$path_info = linkit_scan_url($url)) {
     return FALSE;
   }
 
   // Let plugins review the path and optionally return a result
   $settings = _linkit_load_profile_settings();
   foreach (linkit_load_plugins(TRUE) as $name => $plugin) {
-    // TODO: Well, plugins should be able to give info about external paths as well?
     if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
       break;
     }
