@@ -107,7 +107,7 @@ function _linkit_file_path_info($path_info, $settings) {
   $public_path = variable_get('file_public_path', conf_path() . '/files');
 
   // TODO: In path info, this variable should already exist, to avoid duplication
-  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['relative_path'], $matches);
+  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['requested_path'], $matches);
   $filepath = $matches[1];
   if ($filepath) {
 
