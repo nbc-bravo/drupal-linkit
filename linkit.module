@@ -296,6 +296,7 @@ function linkit_scan_url($url) {
     $path_info['query_fragment'] = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
     if ($matches[1]) {
       $path_info['requested_path'] =  $matches[1];
+      $path_info['requested_path'] = trim($matches[1], '/');
     }
     else {
       $path_info['frontpage'] = TRUE;
