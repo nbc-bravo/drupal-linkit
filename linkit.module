@@ -258,7 +258,7 @@ function _linkit_autocomplete_search($search) {
  * Retrieve relevant information about a URL. Specifically this function is
  * usable for internal (absolute) URL:s, but it also works for external URL:s.
  *
- * @todo Flag for allowing relative paths, to scan absolute only, if necessary.
+ * @todo Flag for allowing relative paths, if necessary.
  * @todo Does it work with i18n?
  *
  * @param $url
@@ -283,7 +283,7 @@ function _linkit_autocomplete_search($search) {
  *     dangerous. E.g. "http://user:pass@example.org/settings?evilaction=true"
  *     will become "http://example.org/settings".
  */
-function _linkit_scan_url($url) {
+function linkit_scan_url($url) {
   $parts = parse_url($url);
   if (!$parts['scheme'] || !$parts['host']) {
     // Not an absolute URL.
@@ -352,7 +352,7 @@ function _linkit_scan_url($url) {
  * @todo Implement the non absolute URL feature
  */
 function _linkit_path_info($path, $absolute = TRUE) {
-  if (!$path_info = _linkit_scan_url($path)) {
+  if (!$path_info = linkit_scan_url($path)) {
     return;
   }
 
