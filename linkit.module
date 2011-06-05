@@ -7,6 +7,17 @@
  */
 
 /**
+ * This attribute is enabled.
+ */
+define('LINKIT_ATTR_ENABLED', 1);
+
+/**
+ * This attribute is disabled.
+ */
+define('LINKIT_ATTR_DISABLED', 0);
+
+
+/**
  * Implements hook_menu().
  * 
  * @todo Strings should be wrapped in t()

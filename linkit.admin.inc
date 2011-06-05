@@ -5,16 +5,6 @@
  */
 
 /**
- * 
- */
-define('LINKIT_ATTR_ENABLED', 1);
-
-/**
- * 
- */
-define('LINKIT_ATTR_DISABLED', 0);
-
-/**
  * Menu callback; Displays a list of all profiles.
  */
 function linkit_admin_page() {
@@ -35,7 +25,7 @@ function linkit_admin_page() {
   $output = '<h2>' . t('Profiles') . '</h2>';
   $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
   $linkit_profile_assignment = drupal_get_form('linkit_profile_assignment');
-  $output .= drupal_render($linkit_profile_assignment );
+  $output .= drupal_render($linkit_profile_assignment);
   return $output;
 }
 
@@ -64,6 +54,10 @@ function linkit_admin_settings($form, &$form_state, $profile) {
 
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'linkit') . '/css/linkit.css',
+  );
+
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'linkit') . '/linkit.admin.js',
   );
 
   $form['name'] = array(
@@ -138,7 +132,9 @@ function linkit_admin_settings($form, &$form_state, $profile) {
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['enabled_attributes'][$name]['weight']) ? $profile['enabled_attributes'][$name]['weight'] : $enabled_attributes_weight,
     );
-    
+
+    $enabled_attributes_weight++;
+
     $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['status'] = array(
       '#type' => 'select',
       '#options' => array(
@@ -149,7 +145,6 @@ function linkit_admin_settings($form, &$form_state, $profile) {
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['enabled_attributes'][$name]['status']) ? $profile['enabled_attributes'][$name]['status'] : 0,
     );
-    $enabled_attributes_weight++;
   }
 
   $form['node'] = array(
@@ -272,7 +267,6 @@ function linkit_admin_settings_validate($form, &$form_state) {
  * Process profile form submissions.
  */
 function linkit_admin_settings_submit($form, &$form_state) {
-
   // Exclude unnecessary elements.
   _linkit_form_state_values_clean($form_state);
 
@@ -302,7 +296,7 @@ function linkit_admin_settings_submit($form, &$form_state) {
  * @see linkit_admin_settings()
  */
 function template_preprocess_linkit_admin_settings(&$variables) {
-  $variables['linkit_attr_status'] = array(
+  $variables['linkit_attr_status_groups'] = array(
     LINKIT_ATTR_ENABLED => t('Enabled'),
     LINKIT_ATTR_DISABLED => t('Disabled'),
   );
@@ -324,7 +318,6 @@ function template_preprocess_linkit_admin_settings(&$variables) {
     $attr['weight']['#attributes']['class'] = array('attribute-weight', 'attribute-weight-' . $status);
     
     $variables['linkit_attr_listing'][$status][$i] = new stdClass();
-    $variables['linkit_attr_listing'][$status][$i]->row_class = !empty($attr['#attributes']['class']) ? implode(' ', $attr['#attributes']['class']) : '';
     $variables['linkit_attr_listing'][$status][$i]->title = drupal_render($attr['name']);
     $variables['linkit_attr_listing'][$status][$i]->status_select = drupal_render($attr['status']);
     $variables['linkit_attr_listing'][$status][$i]->weight_select = drupal_render($attr['weight']);
@@ -343,17 +336,20 @@ function template_preprocess_linkit_admin_settings(&$variables) {
  */
 function theme_linkit_admin_settings($variables) {
   $form = &$variables['form'];
-  $output = '';
 
   $header = array(
     t('Name'),
     t('Weight'),
-    t('Status')
+    array(
+      'data' => t('Status group'),
+      'class' => array('status-group'),
+    )
+    
   );
 
   $rows = array();
-  foreach ($variables['linkit_attr_status'] as $status => $title) {
-    // Build status headers.
+  foreach ($variables['linkit_attr_status_groups'] as $status => $title) {
+    // Build status group headers.
     $rows[] = array(
       'data' => array(
         array(
@@ -361,21 +357,42 @@ function theme_linkit_admin_settings($variables) {
           'colspan' => '3',
         ),
       ),
-      'class' => array('linkit-status-header'),
+      'class' => array('linkit-status-group-header'),
     );
 
-    foreach($variables['linkit_attr_listing'][$status] as $delta => $attr) {
+    // Adding status group message.
+    $empty_text = ($status == LINKIT_ATTR_ENABLED) ? t('No attributes enabled.') : t('No attributes disabled.');
+    $classes = array('linkit-status-group-header-message', 'linkit-status-' . $status . '-group');
+    $classes[] = !count($variables['linkit_attr_listing'][$status]) ? 'linkit-status-group-empty' : 'linkit-status-group-populated';
+
+    $rows[] = array(
+      'data' => array(
+        array(
+          'data' => $empty_text,
+          'colspan' => '3',
+        ),
+      ),
+      'class' => $classes,
+    );
+
+    // Build attributes rows.
+    foreach ($variables['linkit_attr_listing'][$status] as $delta => $attr) {
       $rows[] = array(
         'data' => array(
           $attr->title,
           $attr->weight_select,
-          $attr->status_select,
+          array( 
+            'data' => $attr->status_select,
+            'class' => array('status-group'),
+          ),
         ),
-        'class' => array('draggable'),
+        'class' => array('draggable', 'tabledrag-leaf'),
       );
     }
-
+    
+    drupal_add_tabledrag('linkit-attributes', 'match', 'sibling', 'attribute-status-select', 'attribute-status-' . $status);
     drupal_add_tabledrag('linkit-attributes', 'order', 'sibling', 'attribute-weight', 'attribute-weight-' . $status);
+    
   }
 
   $table =  theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-attributes')));
