@@ -269,7 +269,7 @@ function _linkit_autocomplete_search($search) {
  *   - target: Either "internal" or "external".
  *   - system_path: The drupal system path, e.g. "node/23" if target is
  *     internal and the path is valid.
- *   - relative_path: If internal, the path requested relative to Drupal root. TODO: Won't work now if subdir installation?
+ *   - relative_path: If internal, the path requested relative to Drupal root.
  *   - alias: The alias to the path, if the system path has an alias.
  *   - query_fragment: The query and fragment of the url, often not needed for
  *     searching, it's just appended back when everything is done. This string
@@ -277,31 +277,31 @@ function _linkit_autocomplete_search($search) {
  */
 function _linkit_scan_url($url) {
   $path_info['url'] = $url;
+  $parts = parse_url($url);
   $path_info['query_fragment'] = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
   // Build the full URL, then take it apart
-  $parts = parse_url($url);
-  // URL to frontpage
+  // URL to frontpage, without trailing slash
   $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
-  if ($parts['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '($|/|\?|#)~', $url)) {
+  if ($parts['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '(?:/(.*))?(?:$|\?|#)~', $url, $matches)) {
     $path_info['target'] = 'internal';
-    $path_info['relative_path'] = substr($parts['path'], 1);
-    // Look for path, construct result and send back
-    // TODO: Does this work when Drupal is installed in a subdir? At another port?
-    $path = trim($parts['path'], '/');
-
-    // Frontpage check
-    if (empty($path)) {
-      $path = variable_get('site_frontpage', 'node');
+    if ($matches[1]) {
+      $path_info['relative_path'] =  $matches[1];
+    }
+    else {
+      $path_info['relative_path'] = variable_get('site_frontpage', 'node');
       $path_info['frontpage'] = TRUE;
     }
-    $system_path = drupal_lookup_path('source', $path);
-    $system_path = $system_path ? $system_path : $path;
+    // Look for path, construct result and send back
+    // TODO: Does this work when Drupal is installed at another port?
+
+    $system_path = drupal_lookup_path('source', $path_info['relative_path']);
+    $system_path = $system_path ? $system_path : $path_info['relative_path'];
 
     if ($system_path !== FALSE && drupal_valid_path($system_path)) {
       $path_info['system_path'] = $system_path;
-      $path_info['alias'] = drupal_lookup_path('alias', $path);
+      $path_info['alias'] = drupal_lookup_path('alias', $path_info['relative_path']);
     }
   }
   // External URL
