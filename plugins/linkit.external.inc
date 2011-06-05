@@ -14,7 +14,6 @@ function _linkit_external_path_info($path_info, $settings) {
   $settings['fetch_document'] = TRUE;
   // Check if path is referring to an http resource
   if (!function_exists('curl_init') || !$path_info['safe_url']) {
-    die();
     return FALSE;
   }
   $ch = curl_init($path_info['safe_url']);

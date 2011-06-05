@@ -310,7 +310,7 @@ function _linkit_scan_url($url) {
     // Check if the path already is an alias
     if (!$processed_path = drupal_lookup_path('source', $path_info['requested_path'])) {
       // Not an alias, so keep the original value
-      $processed_path = $path_info['relative_path'];
+      $processed_path = $path_info['requested_path'];
     }
 
     if (drupal_valid_path($processed_path)) {
@@ -399,7 +399,7 @@ function _linkit_path_info($path, $absolute = TRUE) {
   // No plugin results, internal, doesn't exist
   elseif ($path_info['target'] == 'internal') {
     $result = array(
-      'path' => $path_info['relative_path'] . $path_info['query_fragment'],
+      'path' => $path_info['requested_path'] . $path_info['query_fragment'],
       'title' => 'Page not found',
       'description' => 'This page does not exist or you do not have access to it.',
       'addClass' => 'status-warning',

@@ -177,7 +177,6 @@ function _linkit_node_path_info($path_info, $settings) {
       ->fetchObject();
 
     if ($db_result) {
-      $parts = $path_info['parts'];
       // TODO: Use tokens instead
       $result = array(
         'title' => check_plain($db_result->title),
