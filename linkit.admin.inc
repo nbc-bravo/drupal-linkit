@@ -537,11 +537,9 @@ function _linkit_theme_settings_table($variables, $type) {
     $fields = array(
       $element->title,
       $element->weight_select,
-      array(
-        'data' => $element->status,
-        'class' => array('status-group'),
-      ),
+      $element->status
     );
+
     if (isset($element->description)) {
        $hasDescription = TRUE;
       $fields[] = $element->description;
