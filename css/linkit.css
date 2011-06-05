@@ -120,20 +120,3 @@ input#edit-link.with_imce {
 	float: left;
 	margin: 0 5px 5px 0;
 }
-
-
-table tr.linkit-status-group-header td {
-  font-weight:bold;
-}
-
-table tr.linkit-status-group-empty td {
-  font-style: italic;
-}
-
-table tr.linkit-status-group-populated {
-  display:none;
-}
-
-.js table .status-group {
-  display:none;
-}

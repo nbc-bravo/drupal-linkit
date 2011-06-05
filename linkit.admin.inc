@@ -26,6 +26,7 @@ function linkit_admin_page() {
   $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profiles')));
   $linkit_profile_assignment = drupal_get_form('linkit_profile_assignment');
   $output .= drupal_render($linkit_profile_assignment);
+
   return $output;
 }
 
@@ -78,74 +79,8 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#disabled' => !empty($profile['machine_name']),
   );
 
-  $form['enabled_plugins_fieldset'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Enabled plugins'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#tree' => FALSE,
-  );
-
-  $plugins = array();
-  foreach (linkit_load_plugins() AS $name => $plugin) {
-    $plugins[$name]['name'] =  $plugin['title'];
-    $plugins[$name]['desc'] =  $plugin['description'];
-  }
-
-  $form['enabled_plugins_fieldset']['enabled_plugins'] = array(
-    '#type' => 'tableselect', 
-    '#header' => array(
-      'name' => array('data' => t('Name')),
-      'desc' => array('data' => t('Description')),
-    ), 
-    '#options' => $plugins, 
-    '#empty' => t('No plugins available'),
-    '#default_value' => isset($profile['enabled_plugins']) ? $profile['enabled_plugins'] : array(),
-    '#js_select' => FALSE,
-  );
-
-  $form['enabled_attributes_fieldset'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Enabled attributes'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#tree' => FALSE,
-  );
-
-  $form['enabled_attributes_fieldset']['enabled_attributes'] = array(
-    '#markup' => '',
-    '#tree' => TRUE,
-  );
-
-  $enabled_attributes_weight = 0;
-  $attrs = _linkit_get_attributes(isset($profile['machine_name']) ? $profile['machine_name'] : NULL);
-
-  // Sort by #weight.
-  uasort($attrs, "_linkit_sort_attributes");
-
-  foreach ($attrs as $name => $attr) {
-    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
-    
-    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['weight'] = array(
-      '#type' => 'weight',
-      '#title' => t('Weight for @title', array('@title' => $attr['#title'])),
-      '#title_display' => 'invisible',
-      '#default_value' => isset($profile['enabled_attributes'][$name]['weight']) ? $profile['enabled_attributes'][$name]['weight'] : $enabled_attributes_weight,
-    );
-
-    $enabled_attributes_weight++;
-
-    $form['enabled_attributes_fieldset']['enabled_attributes'][$name]['status'] = array(
-      '#type' => 'select',
-      '#options' => array(
-        LINKIT_ATTR_ENABLED => t('Enabled'),
-        LINKIT_ATTR_DISABLED => t('Disabled'),
-      ),
-      '#title' => t('Status for @title', array('@title' => $attr['#title'])),
-      '#title_display' => 'invisible',
-      '#default_value' => isset($profile['enabled_attributes'][$name]['status']) ? $profile['enabled_attributes'][$name]['status'] : 0,
-    );
-  }
+  // Append plugin form element to the setttings form.
+  _linkit_build_plugin_form_fields($form, $profile);
 
   $form['node'] = array(
     '#type' => 'fieldset',
@@ -155,7 +90,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="enabled_plugins[node]"]' => array('checked' =>FALSE),
+        'input[name="plugins[node][status]"]' => array('checked' =>FALSE),
       ),
     ),
   );
@@ -186,7 +121,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="enabled_plugins[user]"]' => array('checked' =>FALSE),
+        'input[name="plugins[user][status]"]' => array('checked' =>FALSE),
       ),
     ),
   );
@@ -208,7 +143,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="enabled_plugins[taxonomy]"]' => array('checked' =>FALSE),
+        'input[name="plugins[taxonomy][status]"]' => array('checked' =>FALSE),
       ),
     ),
   );
@@ -230,7 +165,7 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="enabled_plugins[file]"]' => array('checked' =>FALSE),
+        'input[name="plugins[file][status]"]' => array('checked' =>FALSE),
       ),
     ),
   );
@@ -243,6 +178,9 @@ function linkit_admin_settings($form, &$form_state, $profile) {
     '#maxlength' => 255, 
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
+  
+  // Append attributes form element to the setttings form.
+  _linkit_build_attribute_form_fields($form, $profile);
 
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
@@ -296,33 +234,8 @@ function linkit_admin_settings_submit($form, &$form_state) {
  * @see linkit_admin_settings()
  */
 function template_preprocess_linkit_admin_settings(&$variables) {
-  $variables['linkit_attr_status_groups'] = array(
-    LINKIT_ATTR_ENABLED => t('Enabled'),
-    LINKIT_ATTR_DISABLED => t('Disabled'),
-  );
-
-  $variables['linkit_attr_listing'] = array(
-    LINKIT_ATTR_ENABLED => array(),
-    LINKIT_ATTR_DISABLED => array(),
-  );
-
-   // Add each attribute in the form to the appropriate place in the attribute listing.
-  foreach (element_children($variables['form']['enabled_attributes_fieldset']['enabled_attributes']) as $i) {
-    $attr = &$variables['form']['enabled_attributes_fieldset']['enabled_attributes'][$i];
- 
-    // Fetch the status for the current attribute.
-    $status = (isset($attr['status']['#default_value']) ? $attr['status']['#default_value'] : LINKIT_ATTR_DISABLED);
-
-    // Set special classes needed for table drag and drop.
-    $attr['status']['#attributes']['class'] = array('attribute-status-select', 'attribute-status-' . $status);
-    $attr['weight']['#attributes']['class'] = array('attribute-weight', 'attribute-weight-' . $status);
-    
-    $variables['linkit_attr_listing'][$status][$i] = new stdClass();
-    $variables['linkit_attr_listing'][$status][$i]->title = drupal_render($attr['name']);
-    $variables['linkit_attr_listing'][$status][$i]->status_select = drupal_render($attr['status']);
-    $variables['linkit_attr_listing'][$status][$i]->weight_select = drupal_render($attr['weight']);
-    $variables['linkit_attr_listing'][$status][$i]->printed = FALSE;
-  }
+  _linkit_preprocess_tabledrag_variables($variables, 'plugins');
+  _linkit_preprocess_tabledrag_variables($variables, 'attributes');
 }
 
 /**
@@ -337,68 +250,13 @@ function template_preprocess_linkit_admin_settings(&$variables) {
 function theme_linkit_admin_settings($variables) {
   $form = &$variables['form'];
 
-  $header = array(
-    t('Name'),
-    t('Weight'),
-    array(
-      'data' => t('Status group'),
-      'class' => array('status-group'),
-    )
-    
-  );
+  $plugin_table = _linkit_theme_settings_table($variables, 'plugins');
+  $form['plugins_fieldset']['plugins']['#markup'] = $plugin_table;
 
-  $rows = array();
-  foreach ($variables['linkit_attr_status_groups'] as $status => $title) {
-    // Build status group headers.
-    $rows[] = array(
-      'data' => array(
-        array(
-          'data' => $title,
-          'colspan' => '3',
-        ),
-      ),
-      'class' => array('linkit-status-group-header'),
-    );
+  $attribute_table = _linkit_theme_settings_table($variables, 'attributes');
+  $form['attributes_fieldset']['attributes']['#markup'] = $attribute_table;
 
-    // Adding status group message.
-    $empty_text = ($status == LINKIT_ATTR_ENABLED) ? t('No attributes enabled.') : t('No attributes disabled.');
-    $classes = array('linkit-status-group-header-message', 'linkit-status-' . $status . '-group');
-    $classes[] = !count($variables['linkit_attr_listing'][$status]) ? 'linkit-status-group-empty' : 'linkit-status-group-populated';
-
-    $rows[] = array(
-      'data' => array(
-        array(
-          'data' => $empty_text,
-          'colspan' => '3',
-        ),
-      ),
-      'class' => $classes,
-    );
-
-    // Build attributes rows.
-    foreach ($variables['linkit_attr_listing'][$status] as $delta => $attr) {
-      $rows[] = array(
-        'data' => array(
-          $attr->title,
-          $attr->weight_select,
-          array( 
-            'data' => $attr->status_select,
-            'class' => array('status-group'),
-          ),
-        ),
-        'class' => array('draggable', 'tabledrag-leaf'),
-      );
-    }
-    
-    drupal_add_tabledrag('linkit-attributes', 'match', 'sibling', 'attribute-status-select', 'attribute-status-' . $status);
-    drupal_add_tabledrag('linkit-attributes', 'order', 'sibling', 'attribute-weight', 'attribute-weight-' . $status);
-    
-  }
-
-  $table =  theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-attributes')));
-  $form['enabled_attributes_fieldset']['enabled_attributes']['#markup'] = $table;
   $output = drupal_render_children($form);
-
   return $output;
 }
 
@@ -549,4 +407,161 @@ function _linkit_form_state_values_clean(&$form_state) {
  */
 function _linkit_sort_attributes($a, $b) {
   return $a["#weight"] >= $b["#weight"];
+}
+
+/**
+ * Append plugin form element to the setttings form.
+ */
+function _linkit_build_plugin_form_fields(&$form, $profile) {
+  $form['plugins_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Plugins'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => FALSE,
+  );
+
+  $form['plugins_fieldset']['plugins'] = array(
+    '#markup' => '',
+    '#tree' => TRUE,
+  );
+  
+  $plugins = linkit_load_plugins();
+
+  foreach ($plugins AS $name => $plugin) {
+    $form['plugins_fieldset']['plugins'][$name]['name'] = array('#markup' => check_plain($plugin['title']));
+
+    $form['plugins_fieldset']['plugins'][$name]['description'] = array('#markup' => check_plain($plugin['description']));
+
+    $form['plugins_fieldset']['plugins'][$name]['weight'] = array(
+      '#type' => 'weight',
+      '#title' => t('Weight for @title', array('@title' => $plugin['title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['plugins'][$name]['weight']) ? $profile['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
+    );
+
+    $form['plugins_fieldset']['plugins'][$name]['status'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable @title', array('@title' => $plugin['title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED,
+    );
+  }
+}
+
+/**
+ * Append attributes form element to the setttings form.
+ */
+function _linkit_build_attribute_form_fields(&$form, $profile) {
+
+  $form['attributes_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Attributes'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#tree' => FALSE,
+  );
+
+  $form['attributes_fieldset']['attributes'] = array(
+    '#markup' => '',
+    '#tree' => TRUE,
+  );
+
+  $attrs = _linkit_get_attributes(isset($profile['machine_name']) ? $profile['machine_name'] : NULL);
+
+  // Sort by #weight.
+  uasort($attrs, "_linkit_sort_attributes");
+
+  foreach ($attrs as $name => $attr) {
+    $form['attributes_fieldset']['attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
+
+    $form['attributes_fieldset']['attributes'][$name]['weight'] = array(
+      '#type' => 'weight',
+      '#title' => t('Weight for @title', array('@title' => $attr['#title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['attributes'][$name]['weight']) ? $profile['attributes'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
+    );
+
+    $form['attributes_fieldset']['attributes'][$name]['status'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable ', array('@title' => $attr['#title'])),
+      '#title_display' => 'invisible',
+      '#default_value' => isset($profile['attributes'][$name]['status']) ? $profile['attributes'][$name]['status'] : LINKIT_DISABLED,
+    );
+  }
+}
+
+/**
+ * Preprocess tabledrag variables
+ *
+ * @param $variables
+ * @param $type
+ *   "plugin" or "attribute"
+ */
+function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
+  // Add each attribute in the form to the appropriate place in the attribute listing.
+  foreach (element_children($variables['form'][$type . '_fieldset'][$type]) as $i) {
+    $element = &$variables['form'][$type . '_fieldset'][$type][$i];
+
+    // Set special classes needed for table drag and drop.
+    $element['weight']['#attributes']['class'] = array('weight');
+
+    $variables['linkit_' . $type . '_listing'][$i] = new stdClass();
+    $variables['linkit_' . $type . '_listing'][$i]->title = drupal_render($element['name']);
+    $variables['linkit_' . $type . '_listing'][$i]->status = drupal_render($element['status']);
+    $variables['linkit_' . $type . '_listing'][$i]->weight_select = drupal_render($element['weight']);
+    $variables['linkit_' . $type . '_listing'][$i]->printed = FALSE;
+
+    // Add description if it extists.
+    if (isset($element['description'])) {
+      $variables['linkit_' . $type . '_listing'][$i]->description = drupal_render($element['description']);
+    }
+  }
+}
+
+/**
+ * Helper function to render settings tables.
+ *
+ * @param $variables.
+ * @param $type
+ *   "plugin" or "attribute".
+ *
+ * @see theme_linkit_admin_settings().
+ */
+function _linkit_theme_settings_table($variables, $type) {
+  $rows = array();
+  $hasDescription = FALSE;
+
+  // Build table rows.
+  foreach ($variables['linkit_' . $type . '_listing'] as $delta => $element) {
+    $fields = array(
+      $element->title,
+      $element->weight_select,
+      array(
+        'data' => $element->status,
+        'class' => array('status-group'),
+      ),
+    );
+    if (isset($element->description)) {
+       $hasDescription = TRUE;
+      $fields[] = $element->description;
+    }
+
+   $rows[$delta]['data'] = $fields;
+   $rows[$delta]['class'] = array('draggable', 'tabledrag-leaf');
+  }
+
+  drupal_add_tabledrag('linkit-' . $type, 'order', 'sibling', 'weight');
+
+  $header = array(
+    t('Name'),
+    t('Weight'),
+    t('Enabled'),
+  );
+
+  if ($hasDescription) {
+    $header[] = t('Description');
+  }
+
+  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type, 'class' => array('linkit-drag-table')), 'sticky' => FALSE));
 }

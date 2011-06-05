@@ -7,14 +7,19 @@
  */
 
 /**
- * This attribute is enabled.
+ * This attribute or plugin is enabled.
  */
-define('LINKIT_ATTR_ENABLED', 1);
+define('LINKIT_ENABLED', 1);
 
 /**
- * This attribute is disabled.
+ * This attribute or plugin is disabled.
  */
-define('LINKIT_ATTR_DISABLED', 0);
+define('LINKIT_DISABLED', 0);
+
+/**
+ * The default weight for attributes and plugins.
+ */
+define('LINKIT_DEFAULT_WEIGHT', 0);
 
 
 /**
