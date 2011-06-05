@@ -239,7 +239,7 @@ function _linkit_autocomplete_search($search) {
       // Only call callbacks for plugins that is enabled in the profile for this user.
       if ($settings['enabled_plugins'][$name]) {
         // The function should exist, maybe it's better to just throw the error?
-        if (function_exists($plugin['autocomplete callback'])) {
+        if (isset($plugin['autocomplete callback'])) {
           $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
           // TODO: Maybe validate the result?
           $matches = array_merge($matches, $results);
@@ -293,9 +293,8 @@ function linkit_scan_url($url) {
   if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(.*))?(?:$|\?|#)~', $url, $matches)) {
     $path_info['target'] = 'internal';
     // The "?foo=bar#anchor" trailing part of the URL
-    $path_info['query_fragment'] = ($parts['query'] ? '?' . $parts['query'] : '') . ($parts['fragment'] ? '#' . $parts['fragment'] : '');
-    if ($matches[1]) {
-      $path_info['requested_path'] =  $matches[1];
+    $path_info['query_fragment'] = (isset($parts['query']) ? '?' . $parts['query'] : '') . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+    if (!empty($matches[1])) {
       $path_info['requested_path'] = trim($matches[1], '/');
     }
     else {
@@ -311,7 +310,9 @@ function linkit_scan_url($url) {
 
     if (drupal_valid_path($processed_path)) {
       $path_info['system_path'] = $processed_path;
-      $path_info['alias'] = drupal_lookup_path('alias', $path_info['requested_path']);
+      if ($alias = drupal_lookup_path('alias', $path_info['requested_path'])) {
+        $path_info['alias'] = $alias;
+      }
     }
   }
   // External URL
@@ -356,41 +357,43 @@ function _linkit_path_info($path, $absolute = TRUE) {
   $settings = _linkit_load_profile_settings();
   foreach (linkit_load_plugins(TRUE) as $name => $plugin) {
     // TODO: Well, plugins should be able to give info about external paths as well?
-    if ($plugin['path info callback'] && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
+    if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
       break;
     }
   }
   // A plugin gave a result
   if ($result) {
-    if (!$result['addClass']) {
+    if (!isset($result['addClass'])) {
       $result['addClass'] = 'status-ok';
     }
-    if (!$result['path'] && $path_info['target'] == 'internal') {
+    if (!isset($result['path']) && $path_info['target'] == 'internal') {
       // This is default target path for internal links, can be overridden by plugins.
       $result['path'] = $path_info['system_path'] . $path_info['query_fragment'];
     }
-    elseif (!$result['path'] && $path_info['target'] == 'external') {
+    elseif (!isset($result['path']) && $path_info['target'] == 'external') {
       // This is default target path for external links, can be overridden by plugins.
       $result['path'] = $path_info['url'];
     }
-    if ($path_info['frontpage']) {
+    if (isset($path_info['frontpage']) && $path_info['frontpage'] === TRUE) {
       $result['path'] = '<front>' . $path_info['query_fragment'];
     }
     // There is no alias for front, and alias shouldn't be altered by plugins
-    elseif ($path_info['alias']) {
+    elseif (isset($path_info['alias'])) {
       $result['alias'] = $path_info['alias'];
     }
   }
   // No plugin results, internal, exists
-  elseif ($path_info['system_path']) {
+  elseif (!empty($path_info['system_path'])) {
     $menu_item = menu_get_item($path_info['system_path']);
     $result = array(
       'path' => $path_info['system_path'],
-      'alias' => $path_info['alias'],
       'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path_info['system_path']),
       'description' => 'This is an internal path.',
       'addClass' => 'status-ok',
     );
+    if (isset($path_info['alias'])) {
+      $result['alias'] = $path_info['alias'];
+    }
   }
   // No plugin results, internal, doesn't exist
   elseif ($path_info['target'] == 'internal') {

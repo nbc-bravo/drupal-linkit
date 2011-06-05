@@ -13,7 +13,7 @@ function _linkit_external_path_info($path_info, $settings) {
   // TODO: Should not default to true, since scraping can be sensitive
   $settings['fetch_document'] = TRUE;
   // Check if path is referring to an http resource
-  if (!function_exists('curl_init') || !$path_info['safe_url']) {
+  if (!function_exists('curl_init') || !isset($path_info['safe_url'])) {
     return FALSE;
   }
   $ch = curl_init($path_info['safe_url']);

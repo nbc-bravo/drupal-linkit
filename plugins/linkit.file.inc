@@ -33,8 +33,8 @@ function _linkit_file_autocomplete($string, $settings) {
   // [file:size]
   // [file:timestamp] (short, medium, long, since, raw, custom, [default : medium])
   // [file:owner] (Can use the user tokens, [default : name])
-  
-  foreach ($result_tokens['file'] AS $token => $token_value) {
+  // TODO: Getting an invalid argument on this foreach, with E_NOTICE. Why?
+  foreach ($result_tokens['file'] as $token => $token_value) {
     switch ($token) {
       case 'fid':
         $query->addField('f', 'fid');
@@ -72,7 +72,7 @@ function _linkit_file_autocomplete($string, $settings) {
   $result = $query->execute();
 
   $public_path = variable_get('file_public_path', conf_path() . '/files');
-  foreach ($result AS $file) {
+  foreach ($result as $file) {
   
     $imageinfo = image_get_info($file->uri);
     $image = $imageinfo ? theme_image_style(array(
@@ -109,7 +109,7 @@ function _linkit_file_path_info($path_info, $settings) {
   // TODO: In path info, this variable should already exist, to avoid duplication
   preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['requested_path'], $matches);
   $filepath = $matches[1];
-  if ($filepath) {
+  if (!empty($filepath)) {
 
     $query = db_select('file_managed', 'f')
       ->fields('f', array('uri', 'filename'))

@@ -37,7 +37,7 @@ function _linkit_node_autocomplete($string, $settings) {
   // [node:changed] (short, medium, long, since, raw, custom, [default : medium])
   // [node:author]  (Can use the user tokens, [default : name])
 
-  foreach ($result_tokens['node'] AS $token => $token_value) {
+  foreach ($result_tokens['node'] as $token => $token_value) {
     switch ($token) {
       case 'vid':
         $query->addField('n', 'vid');
@@ -99,7 +99,7 @@ function _linkit_node_autocomplete($string, $settings) {
   */
   $result = $query->execute();
 
-  foreach ($result AS $node) {
+  foreach ($result as $node) {
     $matches[] = array(
       'title' => $node->title,
       'description' => token_replace($result_description, array(
