@@ -285,7 +285,6 @@ function _linkit_scan_url($url) {
 
   // Internal URL
   if ($parts['scheme'] && preg_match('~^' . preg_quote($root_url, '~') . '($|/|\?|#)~', $url)) {
-    $path_info['absolute'] = TRUE;
     $path_info['target'] = 'internal';
     $path_info['relative_path'] = substr($parts['path'], 1);
     // Look for path, construct result and send back
@@ -307,7 +306,6 @@ function _linkit_scan_url($url) {
   }
   // External URL
   elseif ($parts['scheme']) {
-    $path_info['absolute'] = TRUE;
     $path_info['target'] = 'external';
   }
   // Internal path? No absolute URL given
