@@ -385,12 +385,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    *
    * @param search
    *   The search string
-   *
-   * @param callback
-   *   The callback function on success. Takes two arguments:
-   *   TODO: Naming "data" and "callback"?
-   *   - data (array of results)
-   *   - search string
    */
   var fetchResults = function(search) {
     activeAJAXCalls++;
