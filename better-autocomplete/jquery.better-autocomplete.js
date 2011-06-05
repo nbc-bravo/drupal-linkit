@@ -223,11 +223,11 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   // TODO: Change specific id:s to generic classnames
   var $wrapper = $('<div />')
-    .attr('id', 'linkit-autocomplete-wrapper')
+    .addClass('better-autocomplete')
     .insertAfter($input);
 
   var $resultsList = $('<ul />')
-    .attr('id', 'linkit-autocomplete-results')
+    .addClass('results')
     .width($input.innerWidth())
     .appendTo($wrapper);
 

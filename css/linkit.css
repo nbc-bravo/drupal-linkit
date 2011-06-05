@@ -15,3 +15,35 @@ input#edit-link.with_imce {
 #linkit #edit-search.throbbing {
   background-image: url(../throbber-active.gif);
 }
+
+/* Better Autocomplete */
+
+
+
+.better-autocomplete > .results > .result img {
+  float: left;
+  margin: 0 5px 5px 0;
+}
+
+
+.better-autocomplete > .results > .result.status-ok {
+  background: green;
+}
+
+.better-autocomplete > .results > .result.status-warning {
+  background: orange;
+}
+
+/**
+ * Clearfix
+ * TODO: Clearfix in IE7 may need *:first-child + html .clearfix {
+ */
+
+.better-autocomplete > .results > .result > p:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  font-size: 0;
+}
