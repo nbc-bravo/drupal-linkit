@@ -301,7 +301,6 @@ function linkit_scan_url($url) {
       $path_info['frontpage'] = TRUE;
       $path_info['requested_path'] = variable_get('site_frontpage', 'node');
     }
-    // TODO: Does this work when Drupal is installed at another port?
 
     // Check if the path already is an alias
     if (!$processed_path = drupal_lookup_path('source', $path_info['requested_path'])) {
