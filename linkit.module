@@ -214,8 +214,8 @@ function _linkit_autocomplete($search = NULL) {
   $url = parse_url($search);
 
   // Absolute URI
-  if ($url['scheme']) {
-    $results = array(_linkit_path_info($search));
+  if ($path_info = _linkit_path_info($search)) {
+    $results = array($path_info);
   }
   else {
     $results = _linkit_autocomplete_search($search);
@@ -348,7 +348,7 @@ function linkit_scan_url($url) {
  */
 function _linkit_path_info($path, $absolute = TRUE) {
   if (!$path_info = linkit_scan_url($path)) {
-    return;
+    return FALSE;
   }
 
   // Let plugins review the path and optionally return a result
