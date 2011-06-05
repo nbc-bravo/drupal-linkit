@@ -756,7 +756,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#maxlength' => 255,  
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($settings['enabled_attributes']['accesskey']['weight']) ? $settings['enabled_attributes']['accesskey']['weight'] : 0,
+    '#weight' => isset($settings['attributes']['accesskey']['weight']) ? $settings['attributes']['accesskey']['weight'] : 0,
   );
 
   $attrs['class'] = array(
@@ -765,7 +765,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#maxlength' => 255,  
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($settings['enabled_attributes']['class']['weight']) ? $settings['enabled_attributes']['class']['weight'] : 0,
+    '#weight' => isset($settings['attributes']['class']['weight']) ? $settings['attributes']['class']['weight'] : 0,
   );
 
   $attrs['id'] = array(
@@ -774,7 +774,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#maxlength' => 255,  
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($settings['enabled_attributes']['id']['weight']) ? $settings['enabled_attributes']['id']['weight'] : 0,
+    '#weight' => isset($settings['attributes']['id']['weight']) ? $settings['attributes']['id']['weight'] : 0,
   );
 
   $attrs['rel'] = array(
@@ -783,7 +783,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#maxlength' => 255,  
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($settings['enabled_attributes']['rel']['weight']) ? $settings['enabled_attributes']['rel']['weight'] : 0,
+    '#weight' => isset($settings['attributes']['rel']['weight']) ? $settings['attributes']['rel']['weight'] : 0,
   );
 
   $attrs['title'] = array(
@@ -792,7 +792,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#maxlength' => 255,  
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($settings['enabled_attributes']['title']['weight']) ? $settings['enabled_attributes']['title']['weight'] : 0,
+    '#weight' => isset($settings['attributes']['title']['weight']) ? $settings['attributes']['title']['weight'] : 0,
   );
 
   return $attrs;
