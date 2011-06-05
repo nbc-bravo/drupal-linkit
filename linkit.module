@@ -221,10 +221,6 @@ function _linkit_autocomplete($search = NULL) {
     $results = _linkit_autocomplete_search($search);
   }
 
-  // TODO: This hook should be removed, right?
-  // hook_linkit_load_plugins_alter() , let other modules change the results array
-  drupal_alter('linkit_load_plugins', $results);
-
   drupal_json_output($results);
 }
 
