@@ -5,23 +5,31 @@
   position: relative;
   clear: both;
   top: -2px;
-  left: 0;
+  left: 1px;
   width: 0;
   height: 0;
+  text-align: left;
   font-family: 'Lucida Grande', Helvetica, Arial, Verdana, sans-serif;
+}
+
+/* Reset styles for lists */
+
+.better-autocomplete ul,
+.better-autocomplete li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: none;
 }
 
 .better-autocomplete > .results {
   position: relative;
   overflow: auto;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   cursor: default;
 }
+
+/* Groups */
 
 .better-autocomplete > .results > .group {
   position: relative;
@@ -36,8 +44,11 @@
 .better-autocomplete > .results > .group > h3 {
   font-size: 11px;
   color: #555;
+  padding: 0;
   margin: 0;
 }
+
+/* Results */
 
 .better-autocomplete > .results > .result {
   position: relative;
@@ -46,12 +57,12 @@
   border-color: #bfbfbf;
   border-width: 1px 1px 0 1px;
   border-style: solid;
-  clear: both;
 }
 
 .better-autocomplete > .results > .result > h4 {
   font-size: 12px;
   color: #3c3c3c;
+  padding: 0;
   margin: 0 0 2px 0;
 }
 
@@ -59,12 +70,15 @@
   font-size: 11px;
   line-height: 1.3;
   color: #6f6f6f;
+  padding: 0;
   margin: 0;
 }
 
 .better-autocomplete > .results > .result:last-child {
   border-bottom: 1px solid #bfbfbf;
 }
+
+/* Highlighting */
 
 .better-autocomplete > .results > .result.highlight {
   background: #0075ba;

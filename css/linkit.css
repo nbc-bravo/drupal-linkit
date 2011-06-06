@@ -18,20 +18,9 @@ input#edit-link.with_imce {
 
 /* Better Autocomplete */
 
-
-
 .better-autocomplete > .results > .result img {
   float: left;
   margin: 0 5px 5px 0;
-}
-
-
-.better-autocomplete > .results > .result.status-ok {
-  background: green;
-}
-
-.better-autocomplete > .results > .result.status-warning {
-  background: orange;
 }
 
 /**
@@ -46,4 +35,21 @@ input#edit-link.with_imce {
   clear: both;
   visibility: hidden;
   font-size: 0;
+}
+
+/* Additional status types */
+
+.better-autocomplete > .results > .result.status-ok {
+  background: #397928;
+  border-top-color: #6ba15d;
+}
+
+.better-autocomplete > .results > .result.status-warning {
+  background: #8a3131;
+  border-top-color: #b77878;
+}
+
+.better-autocomplete > .results > .result.status-notice {
+	border-top-width: 0;
+  background: #575757;
 }
