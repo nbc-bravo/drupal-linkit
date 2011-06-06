@@ -311,7 +311,7 @@ function linkit_profile_assignment($form, &$form_state) {
     $form['roles'][$rid] = array(
       '#type' => 'select', 
       '#title' => '', 
-      '#default_value' => isset($roles_profiles[$rid]) ? isset($roles_profiles[$rid]) : '',
+      '#default_value' => isset($roles_profiles[$rid]) ? $roles_profiles[$rid] : '',
       '#options' => _linkit_get_profile_names(),
       '#empty_option' => t('- None -'),
     );
