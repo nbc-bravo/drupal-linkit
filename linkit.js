@@ -12,6 +12,9 @@ Drupal.behaviors.linkit = {
       { // Callbacks
       select: function(linkObject) {
         // Only change the link text if it is empty
+        if (typeof linkObject.disabled != 'undefined' && linkObject.disabled) {
+          return false;
+        }
         Drupal.linkit.populateLink(linkObject.title, linkObject.path);
       },
       beginFetching: function() {
