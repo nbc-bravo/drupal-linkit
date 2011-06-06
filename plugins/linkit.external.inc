@@ -8,70 +8,73 @@
  * @see linkit.api.php
  */
 function _linkit_external_path_info($path_info, $settings) {
-
   $settings['timeout'] = 5;
-  // TODO: Should not default to true, since scraping can be sensitive
   // TODO: Scraping should perhaps respect robots.txt?
+  // TODO: Should not default to true, since scraping can be sensitive
   $settings['fetch_document'] = TRUE;
   // Check if path is referring to an http resource
-  // TODO: Add ftp?
-  if ($path_info['target'] == 'external' && function_exists('curl_init') && preg_match('~^https?$~', $path_info['parts']['scheme'])) {
-    $ch = curl_init(preg_replace('~#.+$~', '', $path_info['url']));
-    curl_setopt_array($ch, array(
-      CURLOPT_RETURNTRANSFER => TRUE,
-      CURLOPT_FOLLOWLOCATION => TRUE,
-      CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-      CURLOPT_TIMEOUT => $settings['timeout'],
-      CURLOPT_MAXREDIRS => 5,
-      CURLOPT_USERAGENT => 'Linkit/2.x Drupal/7.x',
-    ));
-    if (!$settings['fetch_document']) {
-      curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+  if (!function_exists('curl_init') || !isset($path_info['safe_url'])) {
+    return FALSE;
+  }
+  $ch = curl_init($path_info['safe_url']);
+  // TODO: More help on what options should be set
+  // E.g. is there a gurantee for that redirects won't add unsafe data, like passwords?
+  // And what happens when it's a huge file? A binary file? Maybe it's the best without body...
+  curl_setopt_array($ch, array(
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_FOLLOWLOCATION => TRUE,
+    CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+    CURLOPT_TIMEOUT => $settings['timeout'],
+    CURLOPT_MAXREDIRS => 5,
+    CURLOPT_USERAGENT => 'Linkit/2.x Drupal/7.x',
+  ));
+  if (!$settings['fetch_document']) {
+    curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+  }
+  $document = curl_exec($ch);
+  $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $curl_errno = curl_errno($ch);
+  // CURL error
+  if ($curl_errno) {
+    switch ($curl_errno) {
+      case CURLE_COULDNT_RESOLVE_HOST:
+        $status = 'Can not resolve host name ' . $path_info['host'];
+        break;
+      case CURLE_COULDNT_CONNECT:
+        $status = 'Can not connect to host ' . $path_info['host'];
+        break;
+      case CURLE_OPERATION_TIMEDOUT:
+        $status = 'Operation timed out after ' . $settings['timeout'] . ' seconds';
+        break;
+      default:
+        $status = 'An internal error occured.';
     }
-    $document = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_errno = curl_errno($ch);
-    // CURL error
-    if ($curl_errno) {
-      switch ($curl_errno) {
-        case CURLE_COULDNT_RESOLVE_HOST:
-          $status = 'Can not resolve host name ' . $path_info['host'];
-          break;
-        case CURLE_COULDNT_CONNECT:
-          $status = 'Can not connect to host ' . $path_info['host'];
-          break;
-        case CURLE_OPERATION_TIMEDOUT:
-          $status = 'Operation timed out after ' . $settings['timeout'] . ' seconds';
-          break;
-        default:
-          $status = 'An internal error occured.';
-      }
-      $class = 'status-warning';
+    $class = 'status-warning';
+  }
+  else {
+    $status = _linkit_external_http_status($http_code);
+    if ($http_code >= 200 && $http_code < 300) {
+      $class = 'status-ok';
     }
     else {
-      $status = _linkit_external_http_status($http_code);
-      if ($http_code >= 200 && $http_code < 300) {
-        $class = 'status-ok';
-      }
-      else {
-        $class = 'status-warning';
-      }
-      if ($settings['fetch_document']) {
-        // Try retrieve title attribute
-        preg_match('~<title>(.+)</title>~', $document, $matches);
-        $title = $matches[1];
-      }
+      $class = 'status-warning';
     }
-    $result = array(
-      'path' => $path_info['url'],
-      'title' => check_plain($title ? $title : $path_info['url']),
-      'description' => $status,
-      'class' => $class,
-    );
-    curl_close($ch);
-    return $result;
+    if ($settings['fetch_document']) {
+      // TODO: Maybe document should be shortened, for performance reasons
+      // TODO: Title should definitely be shortened if too long
+      // Try retrieve title attribute
+      preg_match('~<title>(.+)</title>~', $document, $matches);
+      $title = $matches[1];
+    }
   }
-  return FALSE;
+  $result = array(
+    'path' => $path_info['url'],
+    'title' => check_plain($title ? $title : $path_info['url']),
+    'description' => $status,
+    'addClass' => $class,
+  );
+  curl_close($ch);
+  return $result;
 }
 
 /**

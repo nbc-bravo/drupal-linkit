@@ -6,12 +6,14 @@ Drupal.behaviors.linkit = {
 
     var $searchInput = $('#linkit #edit-search', context);
 
-    // Create a better autocomplete objects, see betterautocomplete.js
-    // TODO: Retrieve an absolute path through the Drupal.settings
-    var bac = new BetterAutocomplete($searchInput, Drupal.settings.linkit.autocompletePath, function(linkObject) {
-      // Select callback is executed when an object is chosen
-      // Only change the link text if it is empty
-      Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+    // Create a "Better Autocomplete" object, see betterautocomplete.js
+    var bac = new BetterAutocomplete($searchInput, Drupal.settings.linkit.autocompletePath,
+      {}, // Options
+      { // Callbacks
+      select: function(linkObject) {
+        // Only change the link text if it is empty
+        Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+      }
     });
 
     if (context === window.document) {
