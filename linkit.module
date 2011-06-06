@@ -182,7 +182,7 @@ function _linkit_dashboard($editor) {
   // Better Autocomplete
   drupal_add_js(drupal_get_path('module', 'linkit') . '/better-autocomplete/jquery.better-autocomplete.js', array('group' => JS_LIBRARY));
   drupal_add_css(drupal_get_path('module', 'linkit') . '/better-autocomplete/better-autocomplete.css');
-  
+
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
 
   static $defualt_settings_added = FALSE;
@@ -246,8 +246,12 @@ function _linkit_autocomplete($search = NULL) {
   if ($result = _linkit_result_from_url($search)) {
     $results = array($result);
   }
-  else {
-    $results = _linkit_autocomplete_search($search);
+  elseif (!$results = _linkit_autocomplete_search($search)) {
+    $results = array(array(
+      'title' => 'No results',
+      'addClass' => 'status-notice',
+      'disabled' => TRUE,
+    ));
   }
 
   drupal_json_output($results);
@@ -276,7 +280,10 @@ function _linkit_autocomplete_search($search) {
       }
     }
   }
-  return $matches;
+  if (!empty($matches)) {
+    return $matches;
+  }
+  return FALSE;
 }
 
 /**
