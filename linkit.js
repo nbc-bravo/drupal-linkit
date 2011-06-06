@@ -55,43 +55,10 @@ Drupal.linkit.populateLink = function(text, path, silent) {
 };
 
 /**
- * Makes an AJAX request when a link is about to be edited with Linkit
- * 
- * @todo Major rewrite!
- */
-Drupal.linkit.fetchPathInfo = function(string) {
-  $('#linkit .form-item-link input').hide();
-  $('#linkit .form-item-link label').after($('<span></span>').addClass('throbber').html('<strong>' + Drupal.t('Loading path...') + '</strong>'));
-  // DO AJAX!
-  var result = $.get(Drupal.settings.linkit.ajaxcall, { string: string } , function(data) {
-    if(data) {
-      $('#linkit #edit-link--2').val(data);
-      $('#linkit .form-item-link .throbber').remove();
-      $('#linkit .form-item-link input').show();
-    } else {
-      $('#linkit #edit-link--2').val(string);
-      $('#linkit .form-item-link .throbber').remove();
-      $('#linkit .form-item-link input').show();
-    }
-  });
-};
-
-/**
  * Open the IMCE file browser
  */
 Drupal.linkit.openFileBrowser = function () {
   window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
-};
-
-/**
- * Find and return the #anchor from the path field
- * 
- * @return
- *   The anchor name, without the # or null if no anchor
- */
-Drupal.linkit.getAnchor = function(href) {
-  var matches = href.match(/#(.*)$/i);
-  return (matches == null) ? null : matches[1];
 };
 
 /**
