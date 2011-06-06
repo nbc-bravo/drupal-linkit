@@ -178,11 +178,13 @@ function template_preprocess_linkit_dashboard(&$variables) {
  */
 function _linkit_dashboard($editor) {
   module_invoke('admin_menu', 'suppress');
-  // Add CSS.
+  
+  // Better Autocomplete
+  drupal_add_js(drupal_get_path('module', 'linkit') . '/better-autocomplete/jquery.better-autocomplete.js', array('group' => JS_LIBRARY));
+  drupal_add_css(drupal_get_path('module', 'linkit') . '/better-autocomplete/better-autocomplete.css');
+  
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
-  drupal_add_js(drupal_get_path('module', 'linkit') . '/betterautocomplete.js', array('group' => JS_LIBRARY));
 
-  // Add JS
   static $defualt_settings_added = FALSE;
 
   // Add default settings

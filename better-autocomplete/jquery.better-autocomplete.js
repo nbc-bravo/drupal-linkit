@@ -3,15 +3,14 @@
  * Better Autocomplete
  * ===================
  *
- * Provides an object for fetching autocomplete results via XMLHttpRequest
- * from a JSON resource path.
+ * Provides a jQuery plugin for fetching autocomplete results via
+ * XMLHttpRequest from a JSON resource path.
  *
  * For usage, see below
- * 
+ *
  * @author Didrik Nordström, http://betamos.se/
- * 
+ *
  * Requirements:
- * 
  * - jQuery 1.4+
  * - A modern web browser
  */
@@ -39,20 +38,22 @@
  *
  * The DOM tree will look like this:
  *
- * - input (text input field, provided as the $input argument)
+ * - input (text input field) Per default the input will have the class
+ *   "fetching" while AJAX requests are made.
  * - div#linkit-autocomplete-wrapper (no width/height, position relative)
  *   - ul#linkit-autocomplete-results (fixed width, variable height)
  *     - li.result (variable height)
- *       - h4.title (contains the title)
- *       - p.description (contains the description)
+ *       - Customizable output.
  *     - li.result (more results...)
  *
  * Note that everything within li.result can be altered by the user,
  * @see callbacks.renderResult(). The default rendering function outputs:
+ * - h4.title (contains the title)
+ * - p.description (contains the description)
+ * Note that no sanitization of title/description occurs client side.
  *
  * @param inputElement
  *   The text input element.
- *   // TODO: If it's made a jQuery plugin, it should be multiple elements?
  *
  * @param path
  *   A path which provides JSON objects upon an HTTP request. This path should
@@ -60,12 +61,13 @@
  *   should contain these properties:
  *   - title: (optional) Per default, this will be rendered as an h4 tag in the
  *     list item. To alter, @see callbacks.renderResult().
- *   - description: (optional) Per default, this will be rendered as an p tag
+ *   - description: (optional) Per default, this will be rendered as a p tag
  *     in the list item.
- *   - group: (optional) Add groups to the results. Will render nice group headings.
- *     Remember to put the results grouped together in the JSON array,
- *     otherwise they will be rendered as multiple groups.
- *   - addClass: (optional) Add CSS classes to the result object separated by spaces. TODO: Rename, reserved in ECMAScript
+ *   - group: (optional) Add groups to the results. Will render nice group
+ *     headings. Remember to put the results grouped together in the JSON
+ *     array, otherwise they will be rendered as multiple groups.
+ *   - addClass: (optional) Add CSS classes to the result object separated by
+ *     spaces.
  *
  *   Feel free to add more properties. They will be returned with the callbacks
  *   just like the other properties.
@@ -88,16 +90,67 @@
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
  */
-window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
-  var self = this;
+$.fn.betterAutocomplete = function(method) {
 
-  var $input = $(inputElement).filter(':input[type=text]');
+  var $inputs = this.filter(':input[type=text]');
+
+  var methods = {
+    init: function(path, options, callbacks) {
+      $inputs.each(function() {
+        $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+      });
+    },
+    enable: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.enable();
+        }
+      });
+    },
+    disable: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.disable();
+        }
+      });
+    },
+    destroy: function() {
+      $inputs.each(function() {
+        var bac = $(this).data('betterAutocomplete');
+        if (bac instanceof BetterAutocomplete) {
+          bac.destroy();
+        }
+      });
+    }
+  };
+
+  // Method calling logic
+  if (methods[method]) {
+    return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+  }
+  else if (typeof method === 'object' || ! method) {
+    return methods.init.apply(this, arguments);
+  }
+  else {
+    $.error('Method ' +  method + ' does not exist in jQuery.betterAutocomplete.');
+  }
+
+  return this;
+};
+
+/**
+ * The BetterAutocomplete constructor function
+ */
+var BetterAutocomplete = function($input, path, options, callbacks) {
 
   options = $.extend({
     charLimit: 3,
-    wait: 250,
-    getParam: 's',
-    ajaxTimeout: 5000
+    wait: 250, // milliseconds
+    maxHeight: 330, // px
+    ajaxTimeout: 5000, // milliseconds
+    selectKeys: [9, 13] // [tab, enter]
   }, options);
 
   callbacks = $.extend({
@@ -113,8 +166,41 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
         output += '<p>' + result.description + '</p>';
       }
       return output;
+    },
+    beginFetching: function() {
+      $input.addClass('fetching');
+    },
+    finishFetching: function() {
+      $input.removeClass('fetching');
+    },
+    constructURL: function(path, search) {
+      // TODO: Bug when search containing '&' or '/', e.g. " / &", error in jQuery core.
+      // It has nothing to do with not using $.ajax data property, same error.
+      return path + '?s=' + encodeURIComponent(search);
+    },
+    processResults: function(data) { // Return array of results
+      return data;
     }
   }, callbacks);
+
+  var self = this;
+
+  // TODO: Add init
+  // TODO: Think carefully through what should be part of init, enable, disable
+  self.enable = function() {
+    $input.bind(inputEvents);
+  };
+
+  self.disable = function() {
+    $wrapper.hide();
+    $input.unbind(inputEvents);
+  };
+
+  self.destroy = function() {
+    $wrapper.remove();
+    $input.unbind(inputEvents);
+    $input.removeData('betterAutocomplete');
+  };
 
   var lastRenderedSearch = '';
 
@@ -126,7 +212,9 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
   var userString = $input.val();
 
   var timer;
-  
+
+  var activeAJAXCalls = 0;
+
   var disableMouseHighlight = false;
 
   // Turn off the browser's autocompletion
@@ -134,29 +222,31 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
     .attr('autocomplete', 'OFF')
     .attr('aria-autocomplete', 'none');
 
-  // TODO: Change specific id:s to generic classnames
   var $wrapper = $('<div />')
-    .attr('id', 'linkit-autocomplete-wrapper')
+    .addClass('better-autocomplete')
     .insertAfter($input);
 
   var $resultsList = $('<ul />')
-    .attr('id', 'linkit-autocomplete-results')
-    .width($input.innerWidth())
+    .addClass('results')
+    .width($input.outerWidth() - 2) // Subtract border width.
+    .css('max-height', options.maxHeight + 'px')
     .appendTo($wrapper);
 
-  // Just toggle visibility of the results on focus/blur
-  $input.bind({
-    focus: function() {
-      self.parseResults();
-      $wrapper.show();
-    },
-    blur: function() {
-      $wrapper.hide();
-    }
-  });
+  // By using an object for all events, $(...).bind() can be used.
+  var inputEvents = {};
 
-  $input.keydown(function(event) {
-    var index = self.getHighlighted();
+  inputEvents.focus = function() {
+    // Parse results to be sure, the input value may have changed
+    parseResults();
+    $wrapper.show();
+  };
+
+  inputEvents.blur = function() {
+    $wrapper.hide();
+  },
+
+  inputEvents.keydown = function(event) {
+    var index = getHighlighted();
     var newIndex;
     var size = $('.result', $resultsList).length;
     switch (event.keyCode) {
@@ -166,10 +256,15 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       case 40: // Down arrow
         newIndex = Math.min(size-1, index+1);
         break;
-      case 9: // Tab
-      case 13: // Enter
-        self.select();
+    }
+    if (options.selectKeys.indexOf(event.keyCode) >= 0) {
+      // Only hijack the event if selecting is possible or pending action.
+      if (select() || activeAJAXCalls >= 1 || timer !== null) {
         return false;
+      }
+      else {
+        return true;
+      }
     }
     // Index have changed so update highlighted element, then cancel the event.
     if (typeof newIndex == 'number') {
@@ -177,10 +272,10 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       // Disable the auto-triggered mouseover event
       disableMouseHighlight = true;
 
-      self.setHighlighted(newIndex);
+      setHighlighted(newIndex);
 
       // Automatic scrolling to the highlighted result
-      var $scrollTo = $('.result', $resultsList).eq(self.getHighlighted());
+      var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
 
       // Scrolling up, then show the group title
       if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
@@ -196,22 +291,28 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       }
       return false;
     }
-  });
+  };
 
-  $input.keyup(function() {
+  inputEvents.keyup = function() {
     clearTimeout(timer);
+    // Indicate that timer is inactive
+    timer = null;
     // Parse always!
-    self.parseResults();
+    parseResults();
     // If the results can't be displayed we must fetch them, then display
-    if (self.needsFetching()) {
+    if (needsFetching()) {
+      $resultsList.empty();
+      // TODO: If local objects, i.e. options.wait == 0, execute immidiately
       timer = setTimeout(function() {
-        self.fetchResults($input.val(), function(data, search) {
-          results[search] = data;
-          self.parseResults();
-        });
+        // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
+        fetchResults($input.val());
+        timer = null;
       }, options.wait);
     }
-  });
+  };
+
+  // Just toggle visibility of the results on focus/blur
+  $input.bind(inputEvents);
 
   $('.result', $resultsList[0]).live({
     // When the user hovers a result with the mouse, highlight it.
@@ -219,15 +320,14 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       if (disableMouseHighlight) {
         return;
       }
-      self.setHighlighted($(this).data('index'));
+      setHighlighted($(this).data('index'));
     },
     mousemove: function() {
       // Enable mouseover again.
       disableMouseHighlight = false;
     },
     mousedown: function() {
-      self.select();
-      // TODO: Do everything look good when the blur event is not invoked?
+      select();
       return false;
     }
   });
@@ -244,8 +344,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
    * @param index
    *   The result's index, starting on 0
    */
-  self.setHighlighted = function(index) {
-    // TODO: Check that it's not out of bounds
+  var setHighlighted = function(index) {
     $('.result', $resultsList)
       .removeClass('highlight')
       .eq(index).addClass('highlight');
@@ -257,24 +356,28 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
    * @return
    *   The result's index or -1 if no result is highlighted
    */
-  self.getHighlighted = function() {
+  var getHighlighted = function() {
     return $('.result', $resultsList).index($('.result.highlight', $resultsList));
   };
 
   /**
-   * Select the current highlighted element and call the selection callback
+   * Select the current highlighted element
+   *
+   * @return
+   *   True if a selection was possible
    */
-  self.select = function() {
-    var $result = $('.result', $resultsList).eq(self.getHighlighted());
+  var select = function() {
+    var $result = $('.result', $resultsList).eq(getHighlighted());
     if ($result.length == 0) {
-      return;
+      return false;
     }
     var result = $result.data('result');
 
     callbacks.select(result);
 
     // Parse once more, if the callback changed focus or content
-    self.parseResults();
+    parseResults();
+    return true;
   };
 
   /**
@@ -283,34 +386,31 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
    *
    * @param search
    *   The search string
-   *
-   * @param callback
-   *   The callback function on success. Takes two arguments:
-   *   TODO: Naming "data"?
-   *   - data (array of results)
-   *   - search string
    */
-  self.fetchResults = function(search, callback) {
-    $input.addClass('throbbing');
+  var fetchResults = function(search) {
+    activeAJAXCalls++;
+    callbacks.beginFetching();
     var xhr = $.ajax({
-      url: path,
+      url: callbacks.constructURL(path, search),
+      // TODO: Datatype json? Really?
       dataType: 'json',
       // Self-invoking function needed to create an object with a dynamic key
-      data: (function() {
-        var o = new Object();
-        o[options.getParam] = search;
-        return o;
-      }()),
       context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
-        // TODO: Keep count of how many calls are active, when 0 remove throbber
-        $input.removeClass('throbbing');
-        callback(data, this);
+        activeAJAXCalls--;
+        results[search] = callbacks.processResults(data);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        // TODO: Maybe alert the user that an error occured?
-        $input.removeClass('throbbing');
+        // TODO: A callback for when an error occurs?
+        activeAJAXCalls--;
+      },
+      complete: function() {
+        // Complete runs after success or error
+        if (activeAJAXCalls == 0) {
+          callbacks.finishFetching();
+        }
+        parseResults();
       }
     });
   };
@@ -318,10 +418,10 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
   /**
    * Does the current user string need fetching?
    * Checks character limit and cache.
-   * 
+   *
    * @returns {Boolean} true if fetching is required
    */
-  self.needsFetching = function() {
+  var needsFetching = function() {
     var userString = $input.val();
 
     if (userString.length < options.charLimit) {
@@ -338,7 +438,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
   /**
    * Checks if needed to re-render etc
    */
-  self.parseResults = function() {
+  var parseResults = function() {
     // TODO: Logical statements here, cleanup?
     if (!$input.is(':focus')) {
       $wrapper.hide();
@@ -350,14 +450,14 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
       return;
     }
     $wrapper.hide();
-    if (self.needsFetching()) {
+    if (needsFetching()) {
       return;
     }
     lastRenderedSearch = $input.val();
 
     // Not in cache
-    if (self.renderResults() >= 1) {
-      self.setHighlighted(0);
+    if (renderResults() >= 1) {
+      setHighlighted(0);
       $wrapper.show();
     }
   };
@@ -372,7 +472,7 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
    * Another option is to inform the developers that they should sanitize
    * server-side.
    */
-  self.renderResults = function() {
+  var renderResults = function() {
 
     // Update user string
     userString = $input.val();
@@ -418,7 +518,11 @@ window.BetterAutocomplete = function(inputElement, path, options, callbacks) {
 };
 
 /**
- * Focus selector, required by BetterAutoComplete
+ * Focus selector, required by BetterAutocomplete
+ *
+ * @see http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus
+ *
+ * @todo Check if focus selector already exists? jQuery 1.6 has it built-in.
  */
 $.expr[':'].focus = function( elem ) {
   return elem === document.activeElement && ( elem.type || elem.href );

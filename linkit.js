@@ -7,12 +7,21 @@ Drupal.behaviors.linkit = {
     var $searchInput = $('#linkit #edit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
-    var bac = new BetterAutocomplete($searchInput, Drupal.settings.linkit.autocompletePath,
+    $searchInput.betterAutocomplete('init', Drupal.settings.linkit.autocompletePath,
       {}, // Options
       { // Callbacks
-      select: function(linkObject) {
+      select: function(result) {
         // Only change the link text if it is empty
-        Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+        if (typeof result.disabled != 'undefined' && result.disabled) {
+          return false;
+        }
+        Drupal.linkit.populateLink(result.title, result.path);
+      },
+      beginFetching: function() {
+        $searchInput.addClass('throbbing');
+      },
+      finishFetching: function() {
+        $searchInput.removeClass('throbbing');
       }
     });
 
