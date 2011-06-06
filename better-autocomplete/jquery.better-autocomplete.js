@@ -147,8 +147,9 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
   options = $.extend({
     charLimit: 3,
-    wait: 250,
-    ajaxTimeout: 5000,
+    wait: 250, // milliseconds
+    maxHeight: 330, // px
+    ajaxTimeout: 5000, // milliseconds
     selectKeys: [9, 13] // [tab, enter]
   }, options);
 
@@ -221,14 +222,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     .attr('autocomplete', 'OFF')
     .attr('aria-autocomplete', 'none');
 
-  // TODO: Change specific id:s to generic classnames
   var $wrapper = $('<div />')
     .addClass('better-autocomplete')
     .insertAfter($input);
 
   var $resultsList = $('<ul />')
     .addClass('results')
-    .width($input.innerWidth())
+    .width($input.outerWidth() - 2) // Subtract border width.
+    .css('max-height', options.maxHeight + 'px')
     .appendTo($wrapper);
 
   // By using an object for all events, $(...).bind() can be used.
