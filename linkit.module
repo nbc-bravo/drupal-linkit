@@ -264,7 +264,7 @@ function _linkit_autocomplete_search($search) {
     $settings = _linkit_load_profile_settings();
     foreach (linkit_load_plugins(TRUE) AS $name => $plugin) {
       // Only call callbacks for plugins that is enabled in the profile for this user.
-      if ($settings['enabled_plugins'][$name]) {
+      if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
         // The function should exist, maybe it's better to just throw the error?
         if (isset($plugin['autocomplete callback'])) {
           $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
@@ -630,7 +630,7 @@ function _linkit_include_plugins($plugins) {
 
   foreach ($plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
-    if ($settings['enabled_plugins'][$name]) {
+    if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
       if ($plugin['file']) {
         if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
           require_once DRUPAL_ROOT . '/' . $plugin['file'];
