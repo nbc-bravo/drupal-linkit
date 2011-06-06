@@ -577,5 +577,5 @@ function _linkit_theme_settings_table($variables, $type) {
     $header[] = t('Description');
   }
 
-  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type, 'class' => array('linkit-drag-table')), 'sticky' => FALSE));
+  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type), 'sticky' => FALSE));
 }
