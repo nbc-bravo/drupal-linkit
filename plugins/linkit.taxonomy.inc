@@ -30,17 +30,16 @@ function _linkit_taxonomy_autocomplete($string, $settings) {
   // [term:name]
   // [term:vocabulary] (vid, name, [default : name])
   // [term:parent]
-
-  foreach ($result_tokens['term'] AS $token => $token_value) {
-    switch ($token) {
-      case 'vocabulary':
-        $query->addField('t', 'vid');
-        break;
+  if (isset($result_tokens['term'])) {
+    foreach ($result_tokens['term'] AS $token => $token_value) {
+      switch ($token) {
+        case 'vocabulary':
+          $query->addField('t', 'vid');
+          break;
+      }
     }
-  }
 
-  // There can be tokens that is chained so we will not find them in the switch statement above.
-  if(count($result_tokens['term'])) {
+    // There can be tokens that is chained so we will not find them in the switch statement above.
     if (token_find_with_prefix($result_tokens['term'], 'vocabulary')) {
       $query->addField('t', 'vid');
     }

@@ -33,33 +33,33 @@ function _linkit_file_autocomplete($string, $settings) {
   // [file:size]
   // [file:timestamp] (short, medium, long, since, raw, custom, [default : medium])
   // [file:owner] (Can use the user tokens, [default : name])
-  // TODO: Getting an invalid argument on this foreach, with E_NOTICE. Why?
-  foreach ($result_tokens['file'] as $token => $token_value) {
-    switch ($token) {
-      case 'fid':
-        $query->addField('f', 'fid');
-        break;
+  
+  if (isset($result_tokens['file'])) {
+    foreach ($result_tokens['file'] as $token => $token_value) {
+      switch ($token) {
+        case 'fid':
+          $query->addField('f', 'fid');
+          break;
 
-      case 'mime':
-        $query->addField('f', 'filemime');
-        break;
+        case 'mime':
+          $query->addField('f', 'filemime');
+          break;
 
-      case 'size':
-        $query->addField('f', 'filesize');
-        break;
+        case 'size':
+          $query->addField('f', 'filesize');
+          break;
 
-      case 'timestamp':
-        $query->addField('f', 'timestamp');
-        break;
+        case 'timestamp':
+          $query->addField('f', 'timestamp');
+          break;
 
-      case 'owner':
-        $query->addField('f', 'uid');
-        break;
+        case 'owner':
+          $query->addField('f', 'uid');
+          break;
+      }
     }
-  }
 
-  // There can be tokens that is chained so we will not find them in the switch statement above.
-  if(count($result_tokens['file'])) {
+    // There can be tokens that is chained so we will not find them in the switch statement above.
     if (token_find_with_prefix($result_tokens['file'], 'timestamp')) {
       $query->addField('f', 'timestamp');
     }

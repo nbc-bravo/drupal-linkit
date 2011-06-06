@@ -29,25 +29,24 @@ function _linkit_user_autocomplete($string, $settings) {
   // [user:mail]
   // [user:last-login] (short, medium, long, since, raw, custom, [default : medium])
   // [user:created] (short, medium, long, since, raw, custom, [default : medium])
+  if (isset($result_tokens['user'])) {
+    foreach ($result_tokens['user'] AS $token => $token_value) {
+      switch ($token) {
+        case 'mail':
+          $query->addField('u', 'mail');
+          break;
 
-  foreach ($result_tokens['user'] AS $token => $token_value) {
-    switch ($token) {
-      case 'mail':
-        $query->addField('u', 'mail');
-        break;
+        case 'last-login':
+          $query->addField('u', 'login');
+          break;
 
-      case 'last-login':
-        $query->addField('u', 'login');
-        break;
-
-      case 'created':
-        $query->addField('u', 'created');
-        break;
+        case 'created':
+          $query->addField('u', 'created');
+          break;
+      }
     }
-  }
 
-  // There can be tokens that is chained so we will not find them in the switch statement above.
-  if(count($result_tokens['user'])) {
+    // There can be tokens that is chained so we will not find them in the switch statement above.
     if (token_find_with_prefix($result_tokens['user'], 'last-login')) {
       $query->addField('u', 'login');
     }

@@ -37,36 +37,36 @@ function _linkit_node_autocomplete($string, $settings) {
   // [node:changed] (short, medium, long, since, raw, custom, [default : medium])
   // [node:author]  (Can use the user tokens, [default : name])
 
-  foreach ($result_tokens['node'] as $token => $token_value) {
-    switch ($token) {
-      case 'vid':
-        $query->addField('n', 'vid');
-        break;
-      case 'tnid':
-        $query->addField('n', 'tnid');
-        break;
-      case 'type':
-      case 'type-name';
-        $query->addField('n', 'type');
-        break;
-      case 'language':
-        $query->addField('n', 'language');
-        break;
-      case 'author':
-        $query->addField('n', 'uid'); // @todo: kolla på detta!
-        $query->addField('u', 'name', 'name');
-        $query->leftJoin('users', 'u', 'u.uid = n.uid');
-        break;
-      case 'created':
-        $query->addField('n', 'created');
-        break;
-      case 'changed':
-        $query->addField('n', 'changed');
-        break;
+  if (isset($result_tokens['node'])) {
+    foreach ($result_tokens['node'] as $token => $token_value) {
+      switch ($token) {
+        case 'vid':
+          $query->addField('n', 'vid');
+          break;
+        case 'tnid':
+          $query->addField('n', 'tnid');
+          break;
+        case 'type':
+        case 'type-name';
+          $query->addField('n', 'type');
+          break;
+        case 'language':
+          $query->addField('n', 'language');
+          break;
+        case 'author':
+          $query->addField('n', 'uid'); // @todo: kolla på detta!
+          $query->addField('u', 'name', 'name');
+          $query->leftJoin('users', 'u', 'u.uid = n.uid');
+          break;
+        case 'created':
+          $query->addField('n', 'created');
+          break;
+        case 'changed':
+          $query->addField('n', 'changed');
+          break;
+      }
     }
-  }
-  
-  if(count($result_tokens['node'])) {
+    
     // This tokens can be chained so we cant use them in the foreach loop above.
     if (token_find_with_prefix($result_tokens['node'], 'author')) {
       $query->addField('n', 'uid');
