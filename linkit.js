@@ -10,12 +10,12 @@ Drupal.behaviors.linkit = {
     $searchInput.betterAutocomplete('init', Drupal.settings.linkit.autocompletePath,
       {}, // Options
       { // Callbacks
-      select: function(linkObject) {
+      select: function(result) {
         // Only change the link text if it is empty
-        if (typeof linkObject.disabled != 'undefined' && linkObject.disabled) {
+        if (typeof result.disabled != 'undefined' && result.disabled) {
           return false;
         }
-        Drupal.linkit.populateLink(linkObject.title, linkObject.path);
+        Drupal.linkit.populateLink(result.title, result.path);
       },
       beginFetching: function() {
         $searchInput.addClass('throbbing');
