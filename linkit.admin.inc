@@ -403,11 +403,19 @@ function _linkit_form_state_values_clean(&$form_state) {
 }
 
 /**
- * Sort attributes by weight.
+ * Sort plugins by weight.
  */
-function _linkit_sort_attributes($a, $b) {
+function _linkit_sort_plugins_by_weight($a, $b) {
+  return $a["weight"]['#default_value'] >= $b["weight"]['#default_value'];
+}
+
+/**
+ * Sort attribute by weight.
+ */
+function _linkit_sort_attributes_by_weight($a, $b) {
   return $a["#weight"] >= $b["#weight"];
 }
+
 
 /**
  * Append plugin form element to the setttings form.
@@ -428,25 +436,33 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
   
   $plugins = linkit_load_plugins();
 
+  // Used to store plugin form elements temporary so we can use this to sort by weight.
+  $tmp_plugins = array();
+
   foreach ($plugins AS $name => $plugin) {
-    $form['plugins_fieldset']['plugins'][$name]['name'] = array('#markup' => check_plain($plugin['title']));
-
-    $form['plugins_fieldset']['plugins'][$name]['description'] = array('#markup' => check_plain($plugin['description']));
-
-    $form['plugins_fieldset']['plugins'][$name]['weight'] = array(
+    $tmp_plugins[$name]['name'] = array('#markup' => check_plain($plugin['title']));
+    $tmp_plugins[$name]['description'] = array('#markup' => check_plain($plugin['description']));
+    $tmp_plugins[$name]['weight'] = array(
       '#type' => 'weight',
       '#title' => t('Weight for @title', array('@title' => $plugin['title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['plugins'][$name]['weight']) ? $profile['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
-
-    $form['plugins_fieldset']['plugins'][$name]['status'] = array(
+    $tmp_plugins[$name]['status'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => $plugin['title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED,
     );
   }
+  
+  // Sort by #weight.
+  uasort($tmp_plugins, '_linkit_sort_plugins_by_weight');
+  
+  foreach($tmp_plugins AS $name => $plugin) {
+    $form['plugins_fieldset']['plugins'][$name] = $plugin;
+  }
+
 }
 
 /**
@@ -470,7 +486,7 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
   $attrs = _linkit_get_attributes(isset($profile['machine_name']) ? $profile['machine_name'] : NULL);
 
   // Sort by #weight.
-  uasort($attrs, "_linkit_sort_attributes");
+  uasort($attrs, '_linkit_sort_attributes_by_weight');
 
   foreach ($attrs as $name => $attr) {
     $form['attributes_fieldset']['attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
