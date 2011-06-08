@@ -6,6 +6,7 @@
 var LinkitDialog = {};
 
 (function ($) {
+
 LinkitDialog = {
   init : function() {
     //Get CKEDITOR and current instance name
@@ -27,27 +28,25 @@ LinkitDialog = {
     // If we have selected an element, grab that elemes attributes
     if(element) {
       // Set values from selection (not href)
-      $('fieldset input[type=text]').each(function() {
+      $('#edit-attributes input[type=text]').each(function() {
         // element.getAttribute doent seems to like first arg to be empty.
         $(this).val(element.getAttribute($(this).attr('name')));
       });
-           
-      // To prevent dubble anchors
-      var anchor = linkit_helper.seek_for_anchor(element.getAttribute('href'));
-      // Delete the anchor from the URL, this will be added later on anyway
-      var href = element.getAttribute('href').replace('#' + anchor, '');
 
-      // Anchor isnt really an attribute, and we have to find it in the URL to inster it into the textfield.
-      $('#edit-anchor').val(anchor);
+      $('#edit-path').val(element.getAttribute('href'));
+      $('#edit-text').val(selection);
 
       // href is set here
       if(href.length > 0) {
-			  linkit_helper.search_styled_link(href);
-			} 
+        // populate field
+        //linkit_helper.search_styled_link(href);
+      } 
     } else if(selection.getNative().isCollapsed) {
+      
       // Show help text when there is no selection element
-      linkit_helper.show_no_selection_text();
+      //linkit_helper.show_no_selection_text();
     }
+    console.log(selection._.cache.nativeSel);
   },
 
   insertLink : function() {   
