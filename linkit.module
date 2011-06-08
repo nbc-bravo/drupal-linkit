@@ -445,6 +445,8 @@ function _linkit_result_from_url($url) {
 }
 
 function _linkit_dashboard_form() {
+  $settings = _linkit_load_profile_settings();
+
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
 
@@ -489,13 +491,31 @@ function _linkit_dashboard_form() {
     '#default_value' => '',
     '#weight' => -1,
   );
-  $form['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title'),
-    '#description' => t('The title attribute provides advisory information and appears as a tooltip when hovering the link. Not required.'),
-    '#size' => 60,
-    '#default_value' => '',
-  );
+
+  $enabled_attributes = array();
+  // Loop thru all attributes and build an array with all that is enabled.
+  foreach (_linkit_get_attributes() as $name => $attribute) {
+    if ($settings['attributes'][$name]['status'] == LINKIT_ENABLED) {
+      $enabled_attributes[$name] = $attribute;
+    }
+  }
+
+  // If we have enabled attributes, lets put them inside a fieldset.
+  if (count($enabled_attributes)) {
+    // Create the container fieldset.
+    $form['attributes'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Attributes'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 10,
+    );
+    // Append the attributes info the fieldset.
+    foreach ($enabled_attributes AS $name => $attribute) {
+      $form['attributes'][$name] = $attribute;
+    }
+  }
+
   $form['insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert link'),
@@ -806,6 +826,8 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#default_value' => '',
     '#weight' => isset($settings['attributes']['title']['weight']) ? $settings['attributes']['title']['weight'] : 0,
   );
+
+  // @TODO: Implement a hook here?
 
   return $attrs;
 }

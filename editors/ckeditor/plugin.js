@@ -60,7 +60,7 @@
     }
     
     // Record down the selected element in the dialog.
-		this._.selectedElement = element;
+    this._.selectedElement = element;
     
     if ( !this._.selectedElement ) {
       // Create element if current selection is collapsed.
