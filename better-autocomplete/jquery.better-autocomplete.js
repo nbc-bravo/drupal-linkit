@@ -76,7 +76,7 @@
  *   An object with configurable options:
  *   - charLimit: (default=3) The minimum number of chars to do an AJAX call.
  *     A typical use case for this limit is to reduce server load.
- *   - wait: (default=250) The time in ms between last keypress and AJAX call.
+ *   - delay: (default=250) The time in ms between last keypress and AJAX call.
  *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
  *   - ajaxTimeout: (default=5000) Timeout on AJAX calls.
  *
@@ -95,11 +95,14 @@ $.fn.betterAutocomplete = function(method) {
   /*
    * Each method expects the "this" object to be a valid DOM text input node.
    * The methods "enable", "disable" and "destroy" expects an instance of a
-   * BetterAutocomplete object.
+   * BetterAutocomplete object as their first argument.
    */
   var methods = {
     init: function(path, options, callbacks) {
-      $(this).data('better-autocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+      var $input = $(this),
+        bac = new BetterAutocomplete($input, path, options, callbacks);
+      $input.data('better-autocomplete', bac);
+      bac.enable();
     },
     enable: function(bac) {
       bac.enable();
@@ -124,8 +127,8 @@ $.fn.betterAutocomplete = function(method) {
     case 'disable':
     case 'destroy':
       var bac = $(this).data('better-autocomplete');
-      if (bac instanceof BetterAutoComplete) {
-        methods[method].apply(this, bac);
+      if (bac instanceof BetterAutocomplete) {
+        methods[method].call(this, bac);
       }
       break;
     default:
@@ -138,13 +141,14 @@ $.fn.betterAutocomplete = function(method) {
 };
 
 /**
- * The BetterAutocomplete constructor function
+ * The BetterAutocomplete constructor function. Returns a BetterAutocomplete
+ * instance object.
  */
 var BetterAutocomplete = function($input, path, options, callbacks) {
 
   options = $.extend({
     charLimit: 3,
-    wait: 250, // milliseconds
+    delay: 250, // milliseconds
     maxHeight: 330, // px
     ajaxTimeout: 5000, // milliseconds
     selectKeys: [9, 13] // [tab, enter]
@@ -180,44 +184,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     }
   }, callbacks);
 
-  var self = this;
-
-  // TODO: Add init
-  // TODO: Think carefully through what should be part of init, enable, disable
-  self.enable = function() {
-    $input.bind(inputEvents);
-  };
-
-  self.disable = function() {
-    $wrapper.hide();
-    $input.unbind(inputEvents);
-  };
-
-  self.destroy = function() {
-    $wrapper.remove();
-    $input.unbind(inputEvents);
-    $input.removeData('better-autocomplete');
-  };
-
-  var lastRenderedSearch = '';
-
-  // Caching of search results
-  // A key-value object, key is search string, value is a result object
-  var results = {};
-
-  // The user's current string input
-  var userString = $input.val();
-
-  var timer;
-
-  var activeAJAXCalls = 0;
-
-  var disableMouseHighlight = false;
-
-  // Turn off the browser's autocompletion
-  $input
-    .attr('autocomplete', 'OFF')
-    .attr('aria-autocomplete', 'none');
+  var self = this,
+    lastRenderedSearch = '',
+    results = {}, // Caching dababase of search results.
+    userString = $input.val(), // Current input string,
+    timer, // Used for options.delay
+    activeAJAXCalls = 0,
+    disableMouseHighlight = false,
+    inputEvents = {};
 
   var $wrapper = $('<div />')
     .addClass('better-autocomplete')
@@ -228,9 +202,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     .width($input.outerWidth() - 2) // Subtract border width.
     .css('max-height', options.maxHeight + 'px')
     .appendTo($wrapper);
-
-  // By using an object for all events, $(...).bind() can be used.
-  var inputEvents = {};
 
   inputEvents.focus = function() {
     // Parse results to be sure, the input value may have changed
@@ -299,17 +270,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     // If the results can't be displayed we must fetch them, then display
     if (needsFetching()) {
       $resultsList.empty();
-      // TODO: If local objects, i.e. options.wait == 0, execute immidiately
+      // TODO: If local objects, i.e. options.delay == 0, execute immidiately
       timer = setTimeout(function() {
         // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
         fetchResults($input.val());
         timer = null;
-      }, options.wait);
+      }, options.delay);
     }
   };
-
-  // Just toggle visibility of the results on focus/blur
-  $input.bind(inputEvents);
 
   $('.result', $resultsList[0]).live({
     // When the user hovers a result with the mouse, highlight it.
@@ -334,6 +302,45 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   $resultsList.mousedown(function() {
     return false;
   });
+
+  /*
+   * PUBLIC METHODS
+   */
+
+  /**
+   * Enable this instance.
+   */
+  this.enable = function() {
+    // Turn off the browser's autocompletion
+    $input
+      .attr('autocomplete', 'OFF')
+      .attr('aria-autocomplete', 'none');
+    $input.bind(inputEvents);
+  };
+
+  /**
+   * Disable this instance.
+   */
+  this.disable = function() {
+    $input
+      .removeAttr('autocomplete')
+      .removeAttr('aria-autocomplete');
+    $wrapper.hide();
+    $input.unbind(inputEvents);
+  };
+
+  /**
+   * Disable and remove this instance. This instance should not be reused.
+   */
+  this.destroy = function() {
+    $wrapper.remove();
+    $input.unbind(inputEvents);
+    $input.removeData('better-autocomplete');
+  };
+
+  /*
+   * PRIVATE METHODS
+   */
 
   /**
    * Set highlight to a specific result item
@@ -514,7 +521,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   };
 };
 
-/**
+/*
  * jQuery focus selector, required by Better Autocomplete.
  *
  * @see http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus/2684561#2684561
