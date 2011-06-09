@@ -92,51 +92,48 @@
  */
 $.fn.betterAutocomplete = function(method) {
 
-  var $inputs = this.filter(':input[type=text]');
-
+  /*
+   * Each method expects the "this" object to be a valid DOM text input node.
+   * The methods "enable", "disable" and "destroy" expects an instance of a
+   * BetterAutocomplete object.
+   */
   var methods = {
     init: function(path, options, callbacks) {
-      $inputs.each(function() {
-        $(this).data('better-autocomplete', new BetterAutocomplete($(this), path, options, callbacks));
-      });
+      $(this).data('better-autocomplete', new BetterAutocomplete($(this), path, options, callbacks));
     },
-    enable: function() {
-      $inputs.each(function() {
-        var bac = $(this).data('better-autocomplete');
-        if (bac instanceof BetterAutocomplete) {
-          bac.enable();
-        }
-      });
+    enable: function(bac) {
+      bac.enable();
     },
-    disable: function() {
-      $inputs.each(function() {
-        var bac = $(this).data('better-autocomplete');
-        if (bac instanceof BetterAutocomplete) {
-          bac.disable();
-        }
-      });
+    disable: function(bac) {
+      bac.disable();
     },
-    destroy: function() {
-      $inputs.each(function() {
-        var bac = $(this).data('better-autocomplete');
-        if (bac instanceof BetterAutocomplete) {
-          bac.destroy();
-        }
-      });
+    destroy: function(bac) {
+      bac.destroy();
     }
   };
 
-  // Method calling logic
-  if (methods[method]) {
-    return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-  }
-  else if (typeof method === 'object' || ! method) {
-    return methods.init.apply(this, arguments);
-  }
-  else {
-    $.error('Method ' +  method + ' does not exist in jQuery.betterAutocomplete.');
-  }
+  var args = Array.prototype.slice.call(arguments, 1);
 
+  // Method calling logic
+  this.filter(':input[type=text]').each(function() {
+    switch (method) {
+    case 'init':
+      methods[method].apply(this, args);
+      break;
+    case 'enable':
+    case 'disable':
+    case 'destroy':
+      var bac = $(this).data('better-autocomplete');
+      if (bac instanceof BetterAutoComplete) {
+        methods[method].apply(this, bac);
+      }
+      break;
+    default:
+      $.error('Method ' +  method + ' does not exist in jQuery.betterAutocomplete.');
+    }
+  });
+
+  // Maintain chainability
   return this;
 };
 
