@@ -47,13 +47,6 @@ function linkit_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['linkit/geteditresult'] = array(
-    'title' => 'Get search result styled link',
-    'page callback' => 'linkit_search_styled_link',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-
   $items['admin/config/content/linkit'] = array(
     'title' => 'Linkit profiles',
     'description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
@@ -244,7 +237,7 @@ function _linkit_dashboard($editor) {
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
       break;
   }
-  $form = drupal_get_form('_linkit_dashboard_form');
+  $form = drupal_get_form('linkit_dashboard_form');
   print theme('linkit_dashboard', array('form' => render($form)));
 }
 
@@ -460,7 +453,10 @@ function _linkit_result_from_url($url) {
   return $result;
 }
 
-function _linkit_dashboard_form() {
+/**
+ * Implementation of hook_form
+ */
+function linkit_dashboard_form() {
   $settings = _linkit_load_profile_settings();
 
   // Check if we have IMCE and access to it.
@@ -477,6 +473,7 @@ function _linkit_dashboard_form() {
   );
 
   // TODO: Add to condition that file plugin should be enabled
+  // TODO: Imce button hijacks the JS submit event for the form
   if ($imce) {
     $form['file_browser'] = array(
       '#type' => 'button',
