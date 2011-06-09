@@ -47,13 +47,6 @@ function linkit_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['linkit/geteditresult'] = array(
-    'title' => 'Get search result styled link',
-    'page callback' => 'linkit_search_styled_link',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-
   $items['admin/config/content/linkit'] = array(
     'title' => 'Linkit profiles',
     'description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
