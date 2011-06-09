@@ -33,7 +33,7 @@ function linkit_requirements($phase) {
         'title' => t('Linkit'),
         'severity' => $severity,
         'value' => $value,
-        'description' =>  t('To parse "internal:" links <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> most be installed.', array(
+        'description' =>  t('To parse "internal:" links <a href="@pathfilter">pathfilter</a> <strong>OR</strong> <a href="@pathologic">pathologic</a> must be installed.', array(
           '@pathfilter' => 'http://drupal.org/project/pathfilter',
           '@pathologic' => 'http://drupal.org/project/pathologic'
         )),

@@ -25,7 +25,7 @@ function linkit_admin_settings() {
     );
     
     if (module_exists('book')) {
-      $node_display_settings_options += array('show_books' => t('Display the book a node belong to'));
+      $node_display_settings_options += array('show_books' => t('Display the book a node belongs to'));
     }
     
     $form['linkit_node'] = array(
@@ -45,7 +45,7 @@ function linkit_admin_settings() {
     );
 
     $form['linkit_node']['content_types'] = array(
-      '#title' => t('Include this content types in the search result'),
+      '#title' => t('Include these content types in the search result'),
       '#type' => 'checkboxes',
       '#options' => node_get_types('names'),
       '#default_value' => $node_settings['content_types'], 
@@ -86,8 +86,8 @@ function linkit_admin_settings() {
     // Print a message about this
     $form['error_msg'] = array(
       '#type' => 'item',
-      '#title' => t("No Linkit plugins is enabled that uses settings"),
-      '#value' => t("No Linkit plugins is enabled that uses settings"),
+      '#title' => t("No Linkit plugins are enabled that use settings"),
+      '#value' => t("No Linkit plugins are enabled that use settings"),
     );
   }
 
