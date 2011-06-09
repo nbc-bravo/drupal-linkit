@@ -518,14 +518,15 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 };
 
 /**
- * Focus selector, required by BetterAutocomplete
+ * jQuery focus selector, required by Better Autocomplete.
  *
- * @see http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus
- *
- * @todo Check if focus selector already exists? jQuery 1.6 has it built-in.
+ * @see http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus/2684561#2684561
  */
-$.expr[':'].focus = function( elem ) {
-  return elem === document.activeElement && ( elem.type || elem.href );
-};
+var filters = $.expr[':'];
+if (!filters.focus) {
+  filters.focus = function(elem) {
+    return elem === document.activeElement && (elem.type || elem.href);
+  };
+}
 
 })(jQuery);
