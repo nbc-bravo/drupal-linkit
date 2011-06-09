@@ -14,12 +14,12 @@ See http://drupal.org/project/linkit for more information
 -- INSTALLATION --
 
  1. Install and enable linkit and at least one of linkit_node,
-    linkit_views, linkit_taxonomy or linkit_user
- 2. Enable the Linkit button in your WYSIWYG editor's settings
- 3. If you are using stand alone CKEditor or stand alone FCKeditor, there is 
-    some more installation information in each editor dir. 
-      * CKEditor (/sites/all/modules/linkit/editors/ckeditor/README.txt)
-      * FCKeditor (/sites/all/modules/linkit/editors/fckeditor/README.txt)
+    linkit_views, linkit_taxonomy or linkit_user.
+ 2 a. Enable the Linkit button in your WYSIWYG editor's settings.
+ 2 b. Enable the Linkit button in your CKEditor profile settings.
+ 2 c. If you are using stand alone FCKeditor, there is
+    some more installation information the editor dir.
+    (/sites/all/modules/linkit/editors/fckeditor/README.txt)
 
 
 -- DEPENDENCIES --
