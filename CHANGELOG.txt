@@ -2,6 +2,7 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.10, xxxx-xx-xx
 ------------------------------
+Issue #1182494 by batigolix, anon: Fixed some typos.
 Issue #1160054 by betamos: IMCE window disables browser.
 #1127790 by skylord, anon: Fixed error in Opera browser.
 
