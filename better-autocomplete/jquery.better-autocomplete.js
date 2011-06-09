@@ -97,12 +97,12 @@ $.fn.betterAutocomplete = function(method) {
   var methods = {
     init: function(path, options, callbacks) {
       $inputs.each(function() {
-        $(this).data('betterAutocomplete', new BetterAutocomplete($(this), path, options, callbacks));
+        $(this).data('better-autocomplete', new BetterAutocomplete($(this), path, options, callbacks));
       });
     },
     enable: function() {
       $inputs.each(function() {
-        var bac = $(this).data('betterAutocomplete');
+        var bac = $(this).data('better-autocomplete');
         if (bac instanceof BetterAutocomplete) {
           bac.enable();
         }
@@ -110,7 +110,7 @@ $.fn.betterAutocomplete = function(method) {
     },
     disable: function() {
       $inputs.each(function() {
-        var bac = $(this).data('betterAutocomplete');
+        var bac = $(this).data('better-autocomplete');
         if (bac instanceof BetterAutocomplete) {
           bac.disable();
         }
@@ -118,7 +118,7 @@ $.fn.betterAutocomplete = function(method) {
     },
     destroy: function() {
       $inputs.each(function() {
-        var bac = $(this).data('betterAutocomplete');
+        var bac = $(this).data('better-autocomplete');
         if (bac instanceof BetterAutocomplete) {
           bac.destroy();
         }
@@ -199,7 +199,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
   self.destroy = function() {
     $wrapper.remove();
     $input.unbind(inputEvents);
-    $input.removeData('betterAutocomplete');
+    $input.removeData('better-autocomplete');
   };
 
   var lastRenderedSearch = '';
