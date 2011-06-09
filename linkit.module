@@ -464,6 +464,7 @@ function linkit_dashboard_form() {
   );
 
   // TODO: Add to condition that file plugin should be enabled
+  // TODO: Imce button hijacks the JS submit event for the form
   if ($imce) {
     $form['file_browser'] = array(
       '#type' => 'button',
