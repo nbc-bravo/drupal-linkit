@@ -151,7 +151,8 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     delay: 250, // milliseconds
     maxHeight: 330, // px
     ajaxTimeout: 5000, // milliseconds
-    selectKeys: [9, 13] // [tab, enter]
+    selectKeys: [9, 13], // [tab, enter]
+    errorReporting: true // Report AJAX errors using jQuery.error()
   }, options);
 
   callbacks = $.extend({
@@ -393,28 +394,33 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    */
   var fetchResults = function(search) {
     activeAJAXCalls++;
-    callbacks.beginFetching();
+    var url = callbacks.constructURL(path, search);
+    callbacks.beginFetching(url);
+    var errorMessage;
     var xhr = $.ajax({
-      url: callbacks.constructURL(path, search),
-      // TODO: Datatype json? Really?
+      url: url,
       dataType: 'json',
-      // Self-invoking function needed to create an object with a dynamic key
-      context: search,
       timeout: options.ajaxTimeout,
       success: function(data, textStatus) {
-        activeAJAXCalls--;
         results[search] = callbacks.processResults(data);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        // TODO: A callback for when an error occurs?
-        activeAJAXCalls--;
+        textStatus = textStatus || 'unknownerror';
+        if (textStatus != 'timeout' && options.errorReporting) {
+          // Can't call jQuery.error() here because then complete won't be called
+          errorMessage = 'Failed fetching data from ' + path + '. (' + textStatus + ')';
+        }
       },
       complete: function() {
+        activeAJAXCalls--;
         // Complete runs after success or error
         if (activeAJAXCalls == 0) {
-          callbacks.finishFetching();
+          callbacks.finishFetching(url);
         }
         parseResults();
+        if (errorMessage) {
+          $.error(errorMessage);
+        }
       }
     });
   };
