@@ -493,17 +493,13 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     if (!(results[userString] instanceof Array)) {
       return -1;
     }
-    var index = -1;
-    var lastGroup;
+    var index = -1,
+      lastGroup,
+      output;
     for (index in results[userString]) {
       // Shortname for this result
       var result = results[userString][index];
       if (!(result instanceof Object)) {
-        continue;
-      }
-
-      // If we don't have title or description, we don't have much to display
-      if (typeof result.title == 'undefined' && typeof result.description == 'undefined') {
         continue;
       }
 
@@ -515,12 +511,14 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       }
       lastGroup = result.group;
 
-      var $result = $('<li />').addClass('result')
-        .append(callbacks.renderResult(result))
-        .data('result', result) // Store the result object on this DOM element
-        .data('index', index) // For quick determination of index on events
-        .addClass(result.addClass)
-        .appendTo($resultsList);
+      if (output = callbacks.renderResult(result)) {
+        $('<li />').addClass('result')
+          .append(output)
+          .data('result', result) // Store the result object on this DOM element
+          .data('index', index) // For quick determination of index on events
+          .addClass(result.addClass)
+          .appendTo($resultsList);
+      }
     }
     index++;
     return index;
