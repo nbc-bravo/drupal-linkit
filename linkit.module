@@ -24,8 +24,6 @@ define('LINKIT_DEFAULT_WEIGHT', 0);
 
 /**
  * Implements hook_menu().
- * 
- * @todo Strings should be wrapped in t()
  */
 function linkit_menu() {
   $items = array();
@@ -201,8 +199,6 @@ function _linkit_dashboard($editor) {
     $defualt_settings_added = TRUE;
 
     $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
-
-    // TODO: Btw, should there not be a plugin "init dashboard" callback so they can add their JS and stuff like that? Or should it be done via hook_init or something?
 
     // TODO: Condition: if files plugin is enabled
     // Check if IMCE is enbled and accessable
@@ -544,7 +540,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
   _linkit_add_settings('wysiwyg_' . $editor);
 
   switch ($editor) {
-    case 'tinymce':      
+    case 'tinymce':
       $plugins['linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce',
         'filename' => 'editor_plugin.js',
@@ -553,7 +549,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
         'load' => TRUE,
       );
       break;
-    case 'ckeditor':      
+    case 'ckeditor':
       // notice: Big "L" in the name here! important
       $plugins['Linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor',
@@ -562,7 +558,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
         'load' => TRUE,
       );
       break;
-    case 'fckeditor':      
+    case 'fckeditor':
       $plugins['linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor',
         'buttons' => array('linkit' => t('Linkit')),
@@ -634,28 +630,30 @@ function linkit_profile_exists($profile_name) {
  * Generate a page title.
  */
 function linkit_admin_profile_title($op, $profile) {
-  return $op . ' Linkit profile - ' . $profile['name']; // @TODO: Översättning här?
+  return $op . ' Linkit profile - ' . $profile['name'];
 }
 
 /**
  * Loads plugin files and returns active plugins for this user.
  *
- * @return An array with plugins enabled
+ * @return An array with plugins enabled.
  *
  * @todo Add parameter profile
- * @todo Add static flag variable since it only needs to be called once
  */
 function linkit_load_plugins($include = FALSE) {
-  static $installed_plugins;
+  static $installed_plugins = array();
 
-  if (isset($installed_plugins)) {
+  if (isset($installed_plugins) && !$include) {
     return $installed_plugins;
   }
-  
+  elseif (isset($installed_plugins) && $include) {
+    _linkit_include_plugins($installed_plugins);
+  }
+
   foreach (module_invoke_all('linkit_plugins') as $name => $plugin) {
     $installed_plugins[$name] = $plugin;
   }
-  
+
   // Include plugin file.
   if ($include) {
     _linkit_include_plugins($installed_plugins);
@@ -689,42 +687,40 @@ function _linkit_include_plugins($plugins) {
  * Implements hook_linkit_plugins().
  */
 function linkit_linkit_plugins() {
-  // TODO: Wrap in t(), make awesome strings
-  // TODO: Maybe settings form callback can be added here?
   $plugins['node'] = array(
-    'title' => 'Node linking',
-    'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search',
+    'title' => t('Node linking'),
+    'description' => t('Extends Linkit with the ability to find nodes in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
     'path info callback' => '_linkit_node_path_info'
   );
 
   $plugins['user'] = array(
-    'title' => 'User linking',
-    'description' => 'Extends Linkit with the ability to find users in the autocomplete search',
+    'title' => t('User linking'),
+    'description' => t('Extends Linkit with the ability to find users in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
     'autocomplete callback' => '_linkit_user_autocomplete',
   );
 
   // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
   $plugins['file'] = array(
-    'title' => 'File linking',
-    'description' => 'Extends Linkit with the ability to find files in the autocomplete search',
+    'title' => t('File linking'),
+    'description' => t('Extends Linkit with the ability to find files in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
     'autocomplete callback' => '_linkit_file_autocomplete',
     'path info callback' => '_linkit_file_path_info',
   );
 
   $plugins['taxonomy'] = array(
-    'title' => 'Taxonomy linking',
-    'description' => 'Extends Linkit with the ability to find terms in the autocomplete search',
+    'title' => t('Taxonomy linking'),
+    'description' => t('Extends Linkit with the ability to find terms in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
   );
 
   $plugins['external'] = array(
-    'title' => 'External linking',
-    'description' => 'Extends Linkit with the ability to ping and retrieve information about external sites',
+    'title' => t('External linking'),
+    'description' => t('Extends Linkit with the ability to ping and retrieve information about external sites.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
     'path info callback' => '_linkit_external_path_info'
   );
@@ -733,8 +729,9 @@ function linkit_linkit_plugins() {
 }
 
 /**
- * Implementation of hook_image_default_styles
- * Enter description here ...
+ * Implementation of hook_image_default_styles().
+ *
+ * @return An array of image styles, keyed by the style name.
  */
 function linkit_image_default_styles() {
   $styles = array();
@@ -763,10 +760,10 @@ function _linkit_load_profile_settings() {
     return $settings;
   }
 
-  // Get the role -> profile configuration
+  // Get the role -> profile configuration.
   $role_profile = variable_get('linkit_roles_profiles', array());
 
-  // Get the profile settings
+  // Get the profile settings.
   $profile_settings = variable_get('linkit_profiles', array());
 
   $role_profile = array_reverse(array_filter($role_profile), TRUE);

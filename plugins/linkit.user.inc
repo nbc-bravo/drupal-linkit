@@ -99,15 +99,3 @@ function linkit_user_linkit_get_search_styled_link($string) {
 
   return check_plain($result->name) . ' [path:' . $escaped_string . ']';
 }
-
-/**
- * Implements hook_linkit_info_plugins().
- * 
- * This is used by linkit_permissions
- */
-function linkit_user_linkit_info_plugins() {
-  $return['linkit_user'] = array(
-    'type' => 'user',
-  );
-  return $return;
-}

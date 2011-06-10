@@ -6,7 +6,6 @@
  * @todo Rename to just term?
  */
 
-
 /**
  * Implements hook_linkit_load_plugins().
  */
@@ -86,16 +85,4 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
     return;
   }
   return check_plain($result->name) . ' [path:' . $escaped_string . ']';
-}
-
-/**
- * Implements hook_linkit_info_plugins().
- * 
- * This is used by linkit_permissions
- */
-function linkit_taxonomy_linkit_info_plugins() {
-  $return['linkit_taxonomy'] = array(
-    'type' => 'taxonomy',
-  );
-  return $return;
 }
