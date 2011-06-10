@@ -247,15 +247,17 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
 
   inputEvents.keydown = function(event) {
     var index = getHighlighted();
-    var newIndex;
-    var size = $('.result', $resultsList).length;
-    switch (event.keyCode) {
-      case 38: // Up arrow
-        newIndex = Math.max(0, index-1);
-        break;
-      case 40: // Down arrow
-        newIndex = Math.min(size-1, index+1);
-        break;
+    if (index != -1) {
+      var newIndex,
+        size = $('.result', $resultsList).length;
+      switch (event.keyCode) {
+        case 38: // Up arrow
+          newIndex = Math.max(0, index-1);
+          break;
+        case 40: // Down arrow
+          newIndex = Math.min(size-1, index+1);
+          break;
+      }
     }
     if (options.selectKeys.indexOf(event.keyCode) >= 0) {
       // Only hijack the event if selecting is possible or pending action.
@@ -267,6 +269,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       }
     }
     // Index have changed so update highlighted element, then cancel the event.
+    // TODO: Shouldn't this if-clause be moved up where it belongs?
     if (typeof newIndex == 'number') {
 
       // Disable the auto-triggered mouseover event
