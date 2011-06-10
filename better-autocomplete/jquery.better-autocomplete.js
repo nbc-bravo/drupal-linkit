@@ -26,7 +26,7 @@
  *   var bac = new BetterAutocomplete($('#find'), '/ajaxcall', {
  *     // Options
  *     getParam: 'keywords',
- *     ajaxTimeout: 10000
+ *     remoteTimeout: 10000
  *   }, {
  *     // Callbacks
  *     select: function(result) {
@@ -78,7 +78,7 @@
  *     A typical use case for this limit is to reduce server load.
  *   - delay: (default=250) The time in ms between last keypress and AJAX call.
  *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
- *   - ajaxTimeout: (default=5000) Timeout on AJAX calls.
+ *   - remoteTimeout: (default=5000) Timeout on AJAX calls.
  *
  * @param callbacks
  *   An object containing optional callback functions on certain events:
@@ -90,6 +90,7 @@
  *     object which will be inserted into the list item. Arguments:
  *     - result: The result object that should be rendered.
  */
+// TODO: Update documentation
 $.fn.betterAutocomplete = function(method) {
 
   /*
@@ -98,9 +99,9 @@ $.fn.betterAutocomplete = function(method) {
    * BetterAutocomplete object as their first argument.
    */
   var methods = {
-    init: function(path, options, callbacks) {
+    init: function(resource, options, callbacks) {
       var $input = $(this),
-        bac = new BetterAutocomplete($input, path, options, callbacks);
+        bac = new BetterAutocomplete($input, resource, options, callbacks);
       $input.data('better-autocomplete', bac);
       bac.enable();
     },
@@ -144,15 +145,16 @@ $.fn.betterAutocomplete = function(method) {
  * The BetterAutocomplete constructor function. Returns a BetterAutocomplete
  * instance object.
  */
-var BetterAutocomplete = function($input, path, options, callbacks) {
+var BetterAutocomplete = function($input, resource, options, callbacks) {
 
   options = $.extend({
     charLimit: 3,
     delay: 250, // milliseconds
     maxHeight: 330, // px
-    ajaxTimeout: 5000, // milliseconds
+    remoteTimeout: 5000, // milliseconds
     selectKeys: [9, 13], // [tab, enter]
-    errorReporting: true // Report AJAX errors using jQuery.error()
+    errorReporting: true, // Report AJAX errors using jQuery.error()
+    local: (typeof resource != 'string') // A local resource
   }, options);
 
   callbacks = $.extend({
@@ -169,6 +171,40 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       }
       return output;
     },
+    // Local results, should return the results array synchronously
+    fetchLocalResults: function(search, resource) {
+      var results = [];
+      if (resource instanceof Array) {
+        // Escape search string to use in regex.
+        search = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        $.each(resource, function(i, value) {
+          if (typeof value != 'string') {
+            return; // continue
+          }
+          // Match found
+          if (new RegExp(search, 'i').test(value)) {
+            results.push({ title: value });
+          }
+        });
+      }
+      return results;
+    },
+    // Remote results, should call completeCallback (even on error)
+    // Must be asynchronous to not freeze BAC
+    // Should respect the timeout
+    fetchRemoteResults: function(url, completeCallback, timeout) {
+      var xhr = $.ajax({
+        url: url,
+        dataType: 'json',
+        timeout: timeout,
+        success: function(data, textStatus) {
+          completeCallback(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          completeCallback();
+        }
+      });
+    },
     beginFetching: function() {
       $input.addClass('fetching');
     },
@@ -177,9 +213,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     },
     constructURL: function(path, search) {
       return path + '?s=' + encodeURIComponent(search);
-    },
-    processResults: function(data) { // Return array of results
-      return data;
     }
   }, callbacks);
 
@@ -188,7 +221,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     results = {}, // Caching dababase of search results.
     userString = $input.val(), // Current input string,
     timer, // Used for options.delay
-    activeAJAXCalls = 0,
+    activeSearchCount = 0,
     disableMouseHighlight = false,
     inputEvents = {};
 
@@ -226,7 +259,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     }
     if (options.selectKeys.indexOf(event.keyCode) >= 0) {
       // Only hijack the event if selecting is possible or pending action.
-      if (select() || activeAJAXCalls >= 1 || timer !== null) {
+      if (select() || activeSearchCount >= 1 || timer !== null) {
         return false;
       }
       else {
@@ -269,12 +302,15 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     // If the results can't be displayed we must fetch them, then display
     if (needsFetching()) {
       $resultsList.empty();
-      // TODO: If local objects, i.e. options.delay == 0, execute immidiately
-      timer = setTimeout(function() {
-        // TODO: For ultimate portability, provide callback for storing result objects so that even non JSON sources can be used?
+      if (options.local) {
         fetchResults($input.val());
-        timer = null;
-      }, options.delay);
+      }
+      else {
+        timer = setTimeout(function() {
+          fetchResults($input.val());
+          timer = null;
+        }, options.delay);
+      }
     }
   };
 
@@ -391,36 +427,27 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
    *   The search string
    */
   var fetchResults = function(search) {
-    activeAJAXCalls++;
-    var url = callbacks.constructURL(path, search);
-    callbacks.beginFetching(url);
-    var errorMessage;
-    var xhr = $.ajax({
-      url: url,
-      dataType: 'json',
-      timeout: options.ajaxTimeout,
-      success: function(data, textStatus) {
-        results[search] = callbacks.processResults(data);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        textStatus = textStatus || 'unknownerror';
-        if (textStatus != 'timeout' && options.errorReporting) {
-          // Can't call jQuery.error() here because then complete won't be called
-          errorMessage = 'Failed fetching data from ' + path + '. (' + textStatus + ')';
+    // Synchronously fetch local data
+    if (options.local) {
+      results[search] = callbacks.fetchLocalResults(search, resource);
+      parseResults();
+    }
+    else {
+      activeSearchCount++;
+      var url = callbacks.constructURL(resource, search);
+      callbacks.beginFetching();
+      callbacks.fetchRemoteResults(url, function(searchResults) {
+        if (typeof searchResults == 'undefined' || !(searchResults instanceof Array)) {
+          searchResults = [];
         }
-      },
-      complete: function() {
-        activeAJAXCalls--;
-        // Complete runs after success or error
-        if (activeAJAXCalls == 0) {
-          callbacks.finishFetching(url);
+        results[search] = searchResults;
+        activeSearchCount--;
+        if (activeSearchCount == 0) {
+          callbacks.finishFetching();
         }
         parseResults();
-        if (errorMessage) {
-          $.error(errorMessage);
-        }
-      }
-    });
+      }, options.remoteTimeout);
+    }
   };
 
   /**
@@ -435,7 +462,7 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
     if (userString.length < options.charLimit) {
       return false;
     }
-    else if (results[userString] instanceof Array) {
+    else if (typeof results[userString] != 'undefined') {
       return false;
     }
     else {
@@ -487,13 +514,13 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
 
     $resultsList.empty();
 
+    var index = -1;
     // The result is not in cache, so there is nothing to display right now
     if (!(results[userString] instanceof Array)) {
-      return -1;
+      return index;
     }
-    var index = -1,
-      lastGroup,
-      output;
+    var lastGroup, output;
+    // TODO: Change to $.each for consistency
     for (index in results[userString]) {
       // Shortname for this result
       var result = results[userString][index];
