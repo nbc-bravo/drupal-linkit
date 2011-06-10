@@ -176,8 +176,6 @@ var BetterAutocomplete = function($input, path, options, callbacks) {
       $input.removeClass('fetching');
     },
     constructURL: function(path, search) {
-      // TODO: Bug when search containing '&' or '/', e.g. " / &", error in jQuery core.
-      // It has nothing to do with not using $.ajax data property, same error.
       return path + '?s=' + encodeURIComponent(search);
     },
     processResults: function(data) { // Return array of results
