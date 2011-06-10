@@ -246,20 +246,46 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
   },
 
   inputEvents.keydown = function(event) {
-    var index = getHighlighted();
-    if (index != -1) {
+    var index;
+    // If an arrow key is pressed and a result is highlighted
+    if ([38, 40].indexOf(event.keyCode) >= 0 && (index = getHighlighted()) >= 0) {
       var newIndex,
         size = $('.result', $resultsList).length;
       switch (event.keyCode) {
-        case 38: // Up arrow
-          newIndex = Math.max(0, index-1);
-          break;
-        case 40: // Down arrow
-          newIndex = Math.min(size-1, index+1);
-          break;
+      case 38: // Up arrow
+        newIndex = Math.max(0, index-1);
+        break;
+      case 40: // Down arrow
+        newIndex = Math.min(size-1, index+1);
+        break;
+      }
+      // Index have changed so update highlighted element, then cancel the event.
+      if (typeof newIndex == 'number') {
+
+        // Disable the auto-triggered mouseover event
+        disableMouseHighlight = true;
+
+        setHighlighted(newIndex);
+
+        // Automatic scrolling to the highlighted result
+        var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
+
+        // Scrolling up, then show the group title
+        if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
+          $scrollTo = $scrollTo.prev();
+        }
+        // Is the result above the visible region?
+        if ($scrollTo.position().top < 0) {
+          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
+        }
+        // Or is it below the visible region?
+        else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
+          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
+        }
+        return false;
       }
     }
-    if (options.selectKeys.indexOf(event.keyCode) >= 0) {
+    else if (options.selectKeys.indexOf(event.keyCode) >= 0) {
       // Only hijack the event if selecting is possible or pending action.
       if (select() || activeSearchCount >= 1 || timer !== null) {
         return false;
@@ -267,32 +293,6 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       else {
         return true;
       }
-    }
-    // Index have changed so update highlighted element, then cancel the event.
-    // TODO: Shouldn't this if-clause be moved up where it belongs?
-    if (typeof newIndex == 'number') {
-
-      // Disable the auto-triggered mouseover event
-      disableMouseHighlight = true;
-
-      setHighlighted(newIndex);
-
-      // Automatic scrolling to the highlighted result
-      var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
-
-      // Scrolling up, then show the group title
-      if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
-        $scrollTo = $scrollTo.prev();
-      }
-      // Is the result above the visible region?
-      if ($scrollTo.position().top < 0) {
-        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
-      }
-      // Or is it below the visible region?
-      else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
-        $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
-      }
-      return false;
     }
   };
 
