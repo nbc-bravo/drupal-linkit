@@ -493,8 +493,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     }
     lastRenderedSearch = $input.val();
 
-    // Not in cache
-    if (renderResults() >= 1) {
+    if (renderResults()) {
       setHighlighted(0);
       $wrapper.show();
     }
@@ -517,18 +516,15 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
 
     $resultsList.empty();
 
-    var index = -1;
     // The result is not in cache, so there is nothing to display right now
     if (!(results[userString] instanceof Array)) {
-      return index;
+      return false;
     }
-    var lastGroup, output;
+    var lastGroup, output, count = 0;
     // TODO: Change to $.each for consistency
-    for (index in results[userString]) {
-      // Shortname for this result
-      var result = results[userString][index];
+    $.each(results[userString], function(index, result) {
       if (!(result instanceof Object)) {
-        continue;
+        return;
       }
 
       // Grouping
@@ -547,9 +543,9 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
           .addClass(result.addClass)
           .appendTo($resultsList);
       }
-    }
-    index++;
-    return index;
+      count++;
+    });
+    return !!count; // Only true if there were elements
   };
 };
 
