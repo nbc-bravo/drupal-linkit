@@ -89,14 +89,13 @@ function linkit_menu() {
  *   The profile ID.
  */
 function linkit_profile_load($profile_name) {
-  static $profile;
+  $profile = &drupal_static(__FUNCTION__);
 
-  if (isset($profile[$profile_name])) {
-    return $profile[$profile_name];
+  if (!isset($profile[$profile_name])) {
+    $linkit_profiles = variable_get('linkit_profiles', array());
+    $profile[$profile_name] = isset($linkit_profiles[$profile_name]) ? $linkit_profiles[$profile_name] : FALSE;
   }
 
-  $linkit_profiles = variable_get('linkit_profiles', array());
-  $profile[$profile_name] = isset($linkit_profiles[$profile_name]) ? $linkit_profiles[$profile_name] : FALSE;
   return $profile[$profile_name];
 }
 
@@ -185,33 +184,26 @@ function template_preprocess_linkit_dashboard(&$variables) {
  */
 function _linkit_dashboard($editor) {
   module_invoke('admin_menu', 'suppress');
-  
+
   // Better Autocomplete
   drupal_add_js(drupal_get_path('module', 'linkit') . '/better-autocomplete/jquery.better-autocomplete.js', array('group' => JS_LIBRARY));
   drupal_add_css(drupal_get_path('module', 'linkit') . '/better-autocomplete/better-autocomplete.css');
 
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
 
-  static $defualt_settings_added = FALSE;
+  $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
 
-  // Add default settings
-  if (!$defualt_settings_added) {
-    $defualt_settings_added = TRUE;
-
-    $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
-
-    // TODO: Condition: if files plugin is enabled
-    // Check if IMCE is enbled and accessable
-    if(module_invoke('imce', 'access')) {
-      $settings['IMCEurl'] = url('imce', array('query' => array(
-        'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
-        'absolute' => TRUE,
-      )));
-      $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
-    }
-
-    drupal_add_js(array('linkit' => $settings), 'setting');
+  // TODO: Condition: if files plugin is enabled
+  // Check if IMCE is enbled and accessable
+  if(module_invoke('imce', 'access')) {
+    $settings['IMCEurl'] = url('imce', array('query' => array(
+      'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
+      'absolute' => TRUE,
+    )));
+    $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
+
+  drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
 
   switch ($editor) {
@@ -273,7 +265,7 @@ function _linkit_autocomplete_search($search) {
   if ($search) {
     // Load all plugins for this user from active profile
     $settings = _linkit_load_profile_settings();
-    foreach (linkit_load_plugins(TRUE) AS $name => $plugin) {
+    foreach (linkit_load_plugins() AS $name => $plugin) {
       // Only call callbacks for plugins that is enabled in the profile for this user.
       if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
         // The function should exist, maybe it's better to just throw the error?
@@ -389,7 +381,7 @@ function _linkit_result_from_url($url) {
 
   // Let plugins review the path and optionally return a result
   $settings = _linkit_load_profile_settings();
-  foreach (linkit_load_plugins(TRUE) as $name => $plugin) {
+  foreach (linkit_load_plugins() as $name => $plugin) {
     if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
       break;
     }
@@ -572,8 +564,8 @@ function linkit_wysiwyg_plugin($editor, $version) {
 }
 
 function _linkit_add_settings($editor) {
-  static $editor_settings_added = array();
-  static $global_settings_added = FALSE;
+  $editor_settings_added = &drupal_static(__FUNCTION__ . ':editor_settings_added', array());
+  $global_settings_added = &drupal_static(__FUNCTION__ . ':global_settings_added', FALSE);
 
   if (!isset($editor_settings_added[$editor])) {
     $editor_settings_added[$editor] = TRUE;
@@ -639,22 +631,14 @@ function linkit_admin_profile_title($op, $profile) {
  * @return An array with plugins enabled.
  *
  * @todo Add parameter profile
- * @todo Se över hur vi kan göra argumentet $include bättre.
  */
-function linkit_load_plugins($include = FALSE) {
-  static $installed_plugins;
+function linkit_load_plugins() {
+  $installed_plugins = &drupal_static(__FUNCTION__);
 
-  if (isset($installed_plugins) && !$include) {
-    return $installed_plugins;
-  }
-  elseif (isset($installed_plugins) && $include) {
-    _linkit_include_plugins($installed_plugins);
-  }
-  
-  $installed_plugins = module_invoke_all('linkit_plugins');
+  if (!isset($installed_plugins)) {
+    $installed_plugins = module_invoke_all('linkit_plugins');
 
-  // Include plugin file.
-  if ($include) {
+    // Include plugin file.
     _linkit_include_plugins($installed_plugins);
   }
 
@@ -670,7 +654,7 @@ function _linkit_include_plugins($plugins) {
   foreach ($plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
     if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
-      if ($plugin['file']) {
+      if (isset($plugin['file'])) {
         if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
           require_once DRUPAL_ROOT . '/' . $plugin['file'];
         }
@@ -752,27 +736,28 @@ function linkit_image_default_styles() {
  * Get the "best" Linkit profile based on the users roles.
  */
 function _linkit_load_profile_settings() {
-  static $settings;
+  $settings = &drupal_static(__FUNCTION__);
   global $user;
-  
-  if(isset($settings)) {
-    return $settings;
-  }
 
-  // Get the role -> profile configuration.
-  $role_profile = variable_get('linkit_roles_profiles', array());
+  if(!isset($settings)) {
+    // Get the role -> profile configuration.
+    $role_profile = variable_get('linkit_roles_profiles', array());
 
-  // Get the profile settings.
-  $profile_settings = variable_get('linkit_profiles', array());
+    // Get the profile settings.
+    $profile_settings = variable_get('linkit_profiles', array());
 
-  $role_profile = array_reverse(array_filter($role_profile), TRUE);
-  
-  foreach($role_profile AS $rid => $profile_name) {
-    if(isset($user->roles[$rid])) {
-      $settings = $profile_settings[$profile_name];
-      return $settings;
+    $role_profile = array_reverse(array_filter($role_profile), TRUE);
+
+    foreach($role_profile AS $rid => $profile_name) {
+      if(isset($user->roles[$rid])) {
+        $settings = $profile_settings[$profile_name];
+        return $settings;
+      }
     }
   }
+
+  return $settings;
+
 }
 
 /**
