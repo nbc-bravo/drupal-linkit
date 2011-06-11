@@ -792,7 +792,9 @@ function _linkit_get_attributes($profile_name = NULL) {
     $settings = _linkit_load_profile_settings();
   }
 
-  $attrs['accesskey'] = array(
+  $attributes = array();
+
+  $attributes['accesskey'] = array(
     '#type' => 'textfield',
     '#title' => t('Accesskey'),
     '#maxlength' => 255,  
@@ -801,7 +803,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#weight' => isset($settings['attributes']['accesskey']['weight']) ? $settings['attributes']['accesskey']['weight'] : 0,
   );
 
-  $attrs['class'] = array(
+  $attributes['class'] = array(
     '#type' => 'textfield',
     '#title' => t('Class'),
     '#maxlength' => 255,  
@@ -810,7 +812,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#weight' => isset($settings['attributes']['class']['weight']) ? $settings['attributes']['class']['weight'] : 0,
   );
 
-  $attrs['id'] = array(
+  $attributes['id'] = array(
     '#type' => 'textfield',
     '#title' => t('ID'),
     '#maxlength' => 255,  
@@ -819,7 +821,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#weight' => isset($settings['attributes']['id']['weight']) ? $settings['attributes']['id']['weight'] : 0,
   );
 
-  $attrs['rel'] = array(
+  $attributes['rel'] = array(
     '#type' => 'textfield',
     '#title' => t('Rel'),
     '#maxlength' => 255,  
@@ -828,7 +830,7 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#weight' => isset($settings['attributes']['rel']['weight']) ? $settings['attributes']['rel']['weight'] : 0,
   );
 
-  $attrs['title'] = array(
+  $attributes['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
     '#maxlength' => 255,  
@@ -837,7 +839,11 @@ function _linkit_get_attributes($profile_name = NULL) {
     '#weight' => isset($settings['attributes']['title']['weight']) ? $settings['attributes']['title']['weight'] : 0,
   );
 
-  // @TODO: Implement a hook here?
+  // Let other modules implement thier own attributes.
+  $attributes += module_invoke_all('linkit_attributes', $settings);
 
-  return $attrs;
+  // Let other modules alter the attributes.
+  drupal_alter('linkit_attributes', $attributes);
+
+  return $attributes;
 }
