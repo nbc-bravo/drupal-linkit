@@ -253,7 +253,7 @@ function _linkit_autocomplete($search = NULL) {
   }
   elseif (!$results = _linkit_autocomplete_search($search)) {
     $results = array(array(
-      'title' => 'No results',
+      'title' => t('No results'),
       'addClass' => 'status-notice',
       'disabled' => TRUE,
     ));
