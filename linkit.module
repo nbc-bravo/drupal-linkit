@@ -89,7 +89,7 @@ function linkit_menu() {
  *   The profile ID.
  */
 function linkit_profile_load($profile_name) {
-  static $profile = array();
+  static $profile;
 
   if (isset($profile[$profile_name])) {
     return $profile[$profile_name];
@@ -639,9 +639,10 @@ function linkit_admin_profile_title($op, $profile) {
  * @return An array with plugins enabled.
  *
  * @todo Add parameter profile
+ * @todo Se över hur vi kan göra argumentet $include bättre.
  */
 function linkit_load_plugins($include = FALSE) {
-  static $installed_plugins = array();
+  static $installed_plugins;
 
   if (isset($installed_plugins) && !$include) {
     return $installed_plugins;
@@ -649,10 +650,8 @@ function linkit_load_plugins($include = FALSE) {
   elseif (isset($installed_plugins) && $include) {
     _linkit_include_plugins($installed_plugins);
   }
-
-  foreach (module_invoke_all('linkit_plugins') as $name => $plugin) {
-    $installed_plugins[$name] = $plugin;
-  }
+  
+  $installed_plugins = module_invoke_all('linkit_plugins');
 
   // Include plugin file.
   if ($include) {
