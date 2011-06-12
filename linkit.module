@@ -74,29 +74,12 @@ function linkit_menu() {
   $items['admin/config/content/linkit/profile/%linkit_profile/delete'] = array(
     'title' => 'Delete Linkit profile',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('linkit_admin_profile_delete', 5),
+    'page arguments' => array('linkit_profile_delete_form', 5),
     'access arguments' => array('administer linkit'),
     'file' => 'linkit.admin.inc',
   );
 
   return $items;
-}
-
-/**
- * Load the profile object from the variable table in the database.
- *
- * @param $profile_name
- *   The profile ID.
- */
-function linkit_profile_load($profile_name) {
-  $profile = &drupal_static(__FUNCTION__);
-
-  if (!isset($profile[$profile_name])) {
-    $linkit_profiles = variable_get('linkit_profiles', array());
-    $profile[$profile_name] = isset($linkit_profiles[$profile_name]) ? $linkit_profiles[$profile_name] : FALSE;
-  }
-
-  return $profile[$profile_name];
 }
 
 /**
@@ -129,7 +112,7 @@ function linkit_theme($existing, $type, $theme, $path) {
     'linkit_profile_assignment' => array(
       'render element' => 'form',
     ),
-    'linkit_admin_settings' => array(
+    'linkit_profile_form' => array(
       'render element' => 'form',
       'file' => 'linkit.admin.inc',
     ),
@@ -250,7 +233,6 @@ function _linkit_autocomplete($search = NULL) {
       'disabled' => TRUE,
     ));
   }
-
   drupal_json_output($results);
 }
 
@@ -263,17 +245,13 @@ function _linkit_autocomplete($search = NULL) {
 function _linkit_autocomplete_search($search) {
   $matches = array();
   if ($search) {
-    // Load all plugins for this user from active profile
-    $settings = _linkit_load_profile_settings();
-    foreach (linkit_load_plugins() AS $name => $plugin) {
-      // Only call callbacks for plugins that is enabled in the profile for this user.
-      if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
-        // The function should exist, maybe it's better to just throw the error?
-        if (isset($plugin['autocomplete callback'])) {
-          $results = call_user_func($plugin['autocomplete callback'], $search, $settings);
-          // TODO: Maybe validate the result?
-          $matches = array_merge($matches, $results);
-        }
+    $profile = linkit_get_dashboard_profile();
+    foreach (linkit_get_profile_plugins() AS $name => $plugin) {
+      // The function should exist, maybe it's better to just throw the error?
+      if (isset($plugin['autocomplete callback'])) {
+        $results = call_user_func($plugin['autocomplete callback'], $search, $profile);
+        // TODO: Maybe validate the result?
+        $matches = array_merge($matches, $results);
       }
     }
   }
@@ -445,8 +423,6 @@ function _linkit_result_from_url($url) {
  * Implementation of hook_form
  */
 function linkit_dashboard_form() {
-  $settings = _linkit_load_profile_settings();
-
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access');
 
@@ -493,13 +469,7 @@ function linkit_dashboard_form() {
     '#weight' => -1,
   );
 
-  $enabled_attributes = array();
-  // Loop thru all attributes and build an array with all that is enabled.
-  foreach (_linkit_get_attributes() as $name => $attribute) {
-    if ($settings['attributes'][$name]['status'] == LINKIT_ENABLED) {
-      $enabled_attributes[$name] = $attribute;
-    }
-  }
+  $enabled_attributes = linkit_get_profile_attributes();
 
   // If we have enabled attributes, lets put them inside a fieldset.
   if (count($enabled_attributes)) {
@@ -626,44 +596,95 @@ function linkit_admin_profile_title($op, $profile) {
 }
 
 /**
- * Loads plugin files and returns active plugins for this user.
+ * Implementation of hook_image_default_styles().
  *
- * @return An array with plugins enabled.
- *
- * @todo Add parameter profile
+ * @return An array of image styles, keyed by the style name.
  */
-function linkit_load_plugins() {
-  $installed_plugins = &drupal_static(__FUNCTION__);
+function linkit_image_default_styles() {
+  $styles = array();
 
-  if (!isset($installed_plugins)) {
-    $installed_plugins = module_invoke_all('linkit_plugins');
+  $styles['linkit_thumb'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array('width' => 50, 'height' => 50, 'upscale' => 0),
+        'weight' => 0,
+      ),
+    ),
+  );
 
-    // Include plugin file.
-    _linkit_include_plugins($installed_plugins);
-  }
-
-  return $installed_plugins;
+  return $styles;
 }
 
 /**
- * Includes all plugin files that are actived for the profile.
- */ 
-function _linkit_include_plugins($plugins) {
-  $settings = _linkit_load_profile_settings();
-
-  foreach ($plugins AS $name => $plugin) {
-    // Only include files for plugins that is enabled in the profile for this user.
-    if ($settings['plugins'][$name]['status'] == LINKIT_ENABLED) {
-      if (isset($plugin['file'])) {
-        if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
-          require_once DRUPAL_ROOT . '/' . $plugin['file'];
-        }
-        else {
-          drupal_set_message(t('The Linkit plugin %plugin could not be loaded because the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
-        }
-      }
-    }
+ *
+ */
+function linkit_get_attributes($profile = NULL) {
+  if (is_null($profile)) {
+    $profile = linkit_get_dashboard_profile();
   }
+
+  // Let other modules implement thier own attributes.
+  $attributes = module_invoke_all('linkit_attributes', $profile);
+
+  // Let other modules alter the attributes.
+  drupal_alter('linkit_attributes', $attributes);
+
+  return $attributes;
+}
+
+/**
+ * Implements hook_linkit_attributes().
+ *
+ * Define them like form elements.
+ */
+function linkit_linkit_attributes($profile) {
+  $attributes['accesskey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Accesskey'),
+    '#maxlength' => 255,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($profile['attributes']['accesskey']['weight']) ? $profile['attributes']['accesskey']['weight'] : 0,
+  );
+
+  $attributes['class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Class'),
+    '#maxlength' => 255,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($profile['attributes']['class']['weight']) ? $profile['attributes']['class']['weight'] : 0,
+  );
+
+  $attributes['id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('ID'),
+    '#maxlength' => 255,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($profile['attributes']['id']['weight']) ? $profile['attributes']['id']['weight'] : 0,
+  );
+
+  $attributes['rel'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Rel'),
+    '#maxlength' => 255,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($profile['attributes']['rel']['weight']) ? $profile['attributes']['rel']['weight'] : 0,
+  );
+
+  $attributes['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#maxlength' => 255,
+    '#size' => 40,
+    '#default_value' => '',
+    '#weight' => isset($profile['attributes']['title']['weight']) ? $profile['attributes']['title']['weight'] : 0,
+  );
+
+  return $attributes;
 }
 
 /**
@@ -683,6 +704,7 @@ function linkit_linkit_plugins() {
     'description' => t('Extends Linkit with the ability to find users in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
     'autocomplete callback' => '_linkit_user_autocomplete',
+    'path info callback' => '_linkit_user_path_info'
   );
 
   // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
@@ -712,122 +734,112 @@ function linkit_linkit_plugins() {
 }
 
 /**
- * Implementation of hook_image_default_styles().
- *
- * @return An array of image styles, keyed by the style name.
+ * Get all Linkit profiles.
  */
-function linkit_image_default_styles() {
-  $styles = array();
-
-  $styles['linkit_thumb'] = array(
-    'effects' => array(
-      array(
-        'name' => 'image_scale',
-        'data' => array('width' => 50, 'height' => 50, 'upscale' => 0),
-        'weight' => 0,
-      ),
-    ),
-  );
-
-  return $styles;
+function linkit_get_profiles() {
+  return variable_get('linkit_profiles', array());
 }
 
 /**
- * Get the "best" Linkit profile based on the users roles.
+ * Get one Linkit profile.
+ *
+ * @param $profile_name
+ *   The profile machine name.
  */
-function _linkit_load_profile_settings() {
-  $settings = &drupal_static(__FUNCTION__);
-  global $user;
+function linkit_get_profile($profile_name) {
+  $profile = &drupal_static(__FUNCTION__);
 
-  if(!isset($settings)) {
+  if (!isset($profile[$profile_name])) {
+    $profiles = linkit_get_profiles();
+    $profile[$profile_name] = isset($profiles[$profile_name]) ? $profiles[$profile_name] : array();
+  }
+
+  return $profile[$profile_name];
+}
+
+/**
+ * Menu load callback;
+ *
+ * @param $profile_name
+ *   The profile ID.
+ */
+function linkit_profile_load($profile_name) {
+  return linkit_get_profile($profile_name);
+}
+
+/**
+ * Get all enabled attributes for the profiles used on the dashboard.
+ */
+function linkit_get_profile_attributes() {
+  $profile = linkit_get_dashboard_profile();
+  $enabled_attributes = array();
+  // Loop thru all attributes and build an array with all that is enabled.
+  foreach (linkit_get_attributes($profile) as $name => $attribute) {
+    if ($profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
+      $enabled_attributes[$name] = $attribute;
+    }
+  }
+  return $enabled_attributes;
+}
+
+/**
+ * Get all enabled plugins for the profiles used on the dashboard.
+ */
+function linkit_get_profile_plugins() {
+  $installed_plugins = linkit_get_plugins();
+  $profile = linkit_get_dashboard_profile();
+
+  $enabled_plugins = array();
+
+  // Include plugin file.
+  foreach ($installed_plugins AS $name => $plugin) {
+    // Only include files for plugins that is enabled in the profile for this user.
+    if ($profile['plugins'][$name]['status'] == LINKIT_ENABLED) {
+      $enabled_plugins[] = $plugin;
+      if (isset($plugin['file'])) {
+        if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
+          require_once DRUPAL_ROOT . '/' . $plugin['file'];
+        }
+        else {
+          drupal_set_message(t('The Linkit plugin %plugin could not be loaded because the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
+        }
+      }
+    }
+  }
+  return $enabled_plugins;
+}
+
+/**
+ * Get all Linkit plugins.
+ */
+function linkit_get_plugins() {
+  $plugins = module_invoke_all('linkit_plugins');
+  return $plugins;
+}
+
+/**
+ * Get the "best" Linkit profile based on the users roles to use on the dashboard.
+ */
+function linkit_get_dashboard_profile() {
+  global $user;
+  $best_profile = &drupal_static(__FUNCTION__);
+
+  if(!isset($best_profile)) {
     // Get the role -> profile configuration.
     $role_profile = variable_get('linkit_roles_profiles', array());
 
-    // Get the profile settings.
-    $profile_settings = variable_get('linkit_profiles', array());
+    // Get the profiles.
+    $profiles = linkit_get_profiles();
 
     $role_profile = array_reverse(array_filter($role_profile), TRUE);
 
     foreach($role_profile AS $rid => $profile_name) {
       if(isset($user->roles[$rid])) {
-        $settings = $profile_settings[$profile_name];
-        return $settings;
+        $best_profile = $profiles[$profile_name];
+        break;
       }
     }
   }
 
-  return $settings;
-
-}
-
-/**
- * Define attribures to use.
- *
- * Define them like form elements.
- */
-function _linkit_get_attributes($profile_name = NULL) {
-  
-  // Get a specific profile (Used by settings form).
-  if (!is_null($profile_name)) {
-    $settings = linkit_profile_load($profile_name);
-  }
-  // Get the "best" Linkit profile based on the users roles (Used when the dashboard is generated).
-  else {
-    $settings = _linkit_load_profile_settings();
-  }
-
-  $attributes = array();
-
-  $attributes['accesskey'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Accesskey'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($settings['attributes']['accesskey']['weight']) ? $settings['attributes']['accesskey']['weight'] : 0,
-  );
-
-  $attributes['class'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Class'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($settings['attributes']['class']['weight']) ? $settings['attributes']['class']['weight'] : 0,
-  );
-
-  $attributes['id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('ID'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($settings['attributes']['id']['weight']) ? $settings['attributes']['id']['weight'] : 0,
-  );
-
-  $attributes['rel'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Rel'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($settings['attributes']['rel']['weight']) ? $settings['attributes']['rel']['weight'] : 0,
-  );
-
-  $attributes['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title'),
-    '#maxlength' => 255,  
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($settings['attributes']['title']['weight']) ? $settings['attributes']['title']['weight'] : 0,
-  );
-
-  // Let other modules implement thier own attributes.
-  $attributes += module_invoke_all('linkit_attributes', $settings);
-
-  // Let other modules alter the attributes.
-  drupal_alter('linkit_attributes', $attributes);
-
-  return $attributes;
+  return $best_profile;
 }

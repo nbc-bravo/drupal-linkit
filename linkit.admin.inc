@@ -10,11 +10,11 @@
 function linkit_admin_page() {
   $header = array(t('Profile name'), array('data' => t('Operations'), 'colspan' => 2));
 
-  // Get the current profile settings variable.
-  $profile_settings = variable_get('linkit_profiles', array());
+  // Get all created profiles.
+  $profiles = linkit_get_profiles();
 
   $rows = array();
-  foreach ($profile_settings AS $profile) {
+  foreach ($profiles AS $profile) {
     $rows[] = array(
       check_plain($profile['name']),
       l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']), 
@@ -33,22 +33,17 @@ function linkit_admin_page() {
  /**
  * Menu callback; Display a text format form.
  */
-function linkit_admin_profile_page($profile = NULL) {
+function linkit_admin_profile_page($profile = array()) {
   if (!isset($profile['name'])) {
     drupal_set_title(t('Add new linkit profile'));
-    $profile = array();
   }
-  return drupal_get_form('linkit_admin_settings', $profile);
+  return drupal_get_form('linkit_profile_form', $profile);
 }
 
 /**
  * Generate a profile form.
- *
- * @ingroup forms.
- * @see linkit_admin_settings_validate().
- * @see linkit_admin_settings_submit().
  */
-function linkit_admin_settings($form, &$form_state, $profile) {
+function linkit_profile_form($form, &$form_state, $profile) {
   $form = array();
 
   $form['#tree'] = TRUE;
@@ -198,28 +193,28 @@ function linkit_admin_settings($form, &$form_state, $profile) {
 /**
  * Validate profile form submissions.
  */
-function linkit_admin_settings_validate($form, &$form_state) {
+function linkit_profile_form_validate($form, &$form_state) {
 }
 
 /**
  * Process profile form submissions.
  */
-function linkit_admin_settings_submit($form, &$form_state) {
+function linkit_profile_form_submit($form, &$form_state) {
   // Exclude unnecessary elements.
   _linkit_form_state_values_clean($form_state);
 
   // Get the current profile settings variable.
-  $profile_settings = variable_get('linkit_profiles', array());
+  $profiles = linkit_get_profiles();
 
   // Save all vaules into the variable.
   // This so other modules can preform hook_gform_alter here and get there
   // variables saved aswell.
   foreach ($form_state['values'] as $key => $value) {
-    $profile_settings[$form_state['values']['machine_name']][$key] = $value;
+    $profiles[$form_state['values']['machine_name']][$key] = $value;
   }
 
   // Save the hole settings array. Note: This includes ALL profiles.
-  variable_set('linkit_profiles', $profile_settings);
+  variable_set('linkit_profiles', $profiles);
 
   drupal_set_message(t('The configuration options have been saved.'));
   $form_state['redirect'] = 'admin/config/content/linkit';
@@ -231,15 +226,15 @@ function linkit_admin_settings_submit($form, &$form_state) {
  * The $variables array contains the following arguments:
  * - $form
  *
- * @see linkit_admin_settings()
+ * @see linkit_profile_form()
  */
-function template_preprocess_linkit_admin_settings(&$variables) {
+function template_preprocess_linkit_profile_form(&$variables) {
   _linkit_preprocess_tabledrag_variables($variables, 'plugins');
   _linkit_preprocess_tabledrag_variables($variables, 'attributes');
 }
 
 /**
- * Returns HTML for the linkit_admin_settings form.
+ * Returns HTML for the linkit_profile_form form.
  *
  * @param $variables
  *   An associative array containing:
@@ -247,13 +242,13 @@ function template_preprocess_linkit_admin_settings(&$variables) {
  *
  * @ingroup themeable
  */
-function theme_linkit_admin_settings($variables) {
+function theme_linkit_profile_form($variables) {
   $form = &$variables['form'];
 
-  $plugin_table = _linkit_theme_settings_table($variables, 'plugins');
+  $plugin_table = _linkit_theme_profile_form_table($variables, 'plugins');
   $form['plugins_fieldset']['plugins']['#markup'] = $plugin_table;
 
-  $attribute_table = _linkit_theme_settings_table($variables, 'attributes');
+  $attribute_table = _linkit_theme_profile_form_table($variables, 'attributes');
   $form['attributes_fieldset']['attributes']['#markup'] = $attribute_table;
 
   $output = drupal_render_children($form);
@@ -266,7 +261,7 @@ function theme_linkit_admin_settings($variables) {
  * @ingroup forms.
  * @see linkit_admin_profile_delete_submit().
  */
-function linkit_admin_profile_delete($form, &$form_state, $profile) {
+function linkit_profile_delete_form($form, &$form_state, $profile) {
   $form['#profile'] = $profile;
 
   return confirm_form($form,
@@ -280,17 +275,17 @@ function linkit_admin_profile_delete($form, &$form_state, $profile) {
 /**
  * Process Linkit profile removal form submission.
  */
-function linkit_admin_profile_delete_submit($form, &$form_state) {
+function linkit_profile_delete_form_submit($form, &$form_state) {
   $profile = $form['#profile'];
 
   // Get the current profile settings variable.
-  $profile_settings = variable_get('linkit_profiles', array());
+  $profiles = linkit_get_profiles();
 
   // Delete the profile from the variable.
-  unset($profile_settings[$profile['machine_name']]);
+  unset($profiles[$profile['machine_name']]);
 
   // Save the hole settings array. Note: This includes ALL profiles.
-  variable_set('linkit_profiles', $profile_settings);
+  variable_set('linkit_profiles', $profiles);
 
   drupal_set_message(t('Deleted Linkit profile %profile.', array('%profile' => $profile['name'])));
   $form_state['redirect'] = 'admin/config/content/linkit';
@@ -316,9 +311,7 @@ function linkit_profile_assignment($form, &$form_state) {
       '#empty_option' => t('- None -'),
     );
   }
-
   $form['#theme'] = 'linkit_profile_assignment';
-
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -336,15 +329,12 @@ function linkit_profile_assignment($form, &$form_state) {
  * Get all Linkit profiles and return there names.
  */
 function _linkit_get_profile_names() {
-  // Get all profiles.
-  $profile_settings = variable_get('linkit_profiles', array());
-  $profiles = array();
-
-  foreach ($profile_settings AS $profile) {
-    $profiles[$profile['machine_name']] = $profile['name'];
+  $profiles = linkit_get_profiles();
+  $profile_names= array();
+  foreach ($profiles AS $profile) {
+    $profile_names[$profile['machine_name']] = $profile['name'];
   }
-
-  return $profiles;
+  return $profile_names;
 }
 
 /**
@@ -433,8 +423,9 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
     '#markup' => '',
     '#tree' => TRUE,
   );
-  
-  $plugins = linkit_load_plugins();
+
+  // Get all plugins.
+  $plugins = linkit_get_plugins();
 
   // Used to store plugin form elements temporary so we can use this to sort by weight.
   $tmp_plugins = array();
@@ -483,7 +474,7 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
     '#tree' => TRUE,
   );
 
-  $attrs = _linkit_get_attributes(isset($profile['machine_name']) ? $profile['machine_name'] : NULL);
+  $attrs = linkit_get_attributes($profile);
 
   // Sort by #weight.
   uasort($attrs, '_linkit_sort_attributes_by_weight');
@@ -542,9 +533,9 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
  * @param $type
  *   "plugin" or "attribute".
  *
- * @see theme_linkit_admin_settings().
+ * @see theme_linkit_profile_form().
  */
-function _linkit_theme_settings_table($variables, $type) {
+function _linkit_theme_profile_form_table($variables, $type) {
   $rows = array();
   $hasDescription = FALSE;
 
