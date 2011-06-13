@@ -2,7 +2,6 @@
 
 /**
  * @file
- * @todo Message when JS is off that Linkit doesn't work?
  * @todo Is it possible to use the theme's html.tpl.php template instead?
  * Linkit dashboard template file.
  */
