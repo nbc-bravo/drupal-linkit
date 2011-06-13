@@ -99,7 +99,6 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
-  // @TODO: Change this to exclude?
   $form['node']['content_types'] = array(
     '#title' => t('Include this content types in the search result'),
     '#type' => 'checkboxes',

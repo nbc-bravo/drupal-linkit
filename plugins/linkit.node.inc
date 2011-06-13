@@ -8,10 +8,10 @@
 /**
  * Implements hook_linkit_load_plugins().
  */
-function _linkit_node_autocomplete($string, $settings) {
+function _linkit_node_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($settings['node']['result_description']);
+  $result_description = check_plain($profile['node']['result_description']);
   
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
@@ -79,12 +79,11 @@ function _linkit_node_autocomplete($string, $settings) {
     }
   }
 
-  /*
   // Content type check
-  if ($allowed_content_types = array_filter($settings['content_types'])) {
+  if ($allowed_content_types = array_filter($profile['node']['content_types'])) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
-  */
+  
   $result = $query->execute();
 
   foreach ($result as $node) {
@@ -118,7 +117,7 @@ function _linkit_node_autocomplete($string, $settings) {
  * they want a new token "node image" which fetches an image field file ref
  * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
-function _linkit_node_path_info($path_info, $settings) {
+function _linkit_node_path_info($path_info, $profile) {
   // TODO: Move to linkit.module:
   // Backwards compatible with internal: links
   // $escaped_string = str_replace('internal:', '', $string)
