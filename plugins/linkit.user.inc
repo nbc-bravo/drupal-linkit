@@ -72,30 +72,3 @@ function _linkit_user_autocomplete($string, $settings) {
 
   return $matches;
 }
-
-/**
- * Implements hook_linkit_get_search_styled_link().
- */
-function linkit_user_linkit_get_search_styled_link($string) {
-  // Check to see that the link really is a user link
-  // Backwards compatible with internal: links
-  $escaped_string = str_replace('internal:', '', $string);
-  $splitted_string = explode('/', $escaped_string);
-  if ($splitted_string[0] != 'user') {
-    return;
-  }
-
-  // This is a node link created with Linkit, try to grab the title and path now.
-  $result = db_select('users', 'u')
-    ->fields('u', array('name'))
-    ->condition('u.uid', $splitted_string[1])
-    ->execute()
-    ->fetchObject();
-
-  // No reault was found
-  if (!$result) {
-    return;
-  }
-
-  return check_plain($result->name) . ' [path:' . $escaped_string . ']';
-}

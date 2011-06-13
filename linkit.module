@@ -704,7 +704,6 @@ function linkit_linkit_plugins() {
     'description' => t('Extends Linkit with the ability to find users in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
     'autocomplete callback' => '_linkit_user_autocomplete',
-    'path info callback' => '_linkit_user_path_info'
   );
 
   // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
