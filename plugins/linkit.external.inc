@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * @TODO: File info text!.
+ */
+
+
+/**
  * Implements hook_linkit_plugins "path info callback".
  *
  * If the path given is an absolute URL, then return information about it.

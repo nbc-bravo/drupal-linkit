@@ -12,7 +12,7 @@ function _linkit_user_autocomplete($string, $settings) {
   $matches = array();
 
   $result_description = check_plain($settings['user']['result_description']);
-  
+
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * @file
@@ -95,7 +95,7 @@ function _linkit_dashboard_theme() {
 function linkit_permission() {
   return array(
     'administer linkit' => array(
-      'title' => t('Administer Linkit'), 
+      'title' => t('Administer Linkit'),
     ),
   );
 }
@@ -125,13 +125,13 @@ function linkit_theme($existing, $type, $theme, $path) {
 function linkit_element_info_alter(&$types) {
   if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
-      _linkit_add_settings('ckeditor');  
+      _linkit_add_settings('ckeditor');
     }
   }
 }
 
 /**
- * Implementation of hook_ckeditor_plugin().
+ * Implements hook_ckeditor_plugin().
  */
 function linkit_ckeditor_plugin() {
   return array(
@@ -178,7 +178,7 @@ function _linkit_dashboard($editor) {
 
   // TODO: Condition: if files plugin is enabled
   // Check if IMCE is enbled and accessable
-  if(module_invoke('imce', 'access')) {
+  if (module_invoke('imce', 'access')) {
     $settings['IMCEurl'] = url('imce', array('query' => array(
       'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
       'absolute' => TRUE,
@@ -269,7 +269,7 @@ function _linkit_autocomplete_search($search) {
  * @todo Does it work with i18n?
  *
  * @param $url
- *   The url that should be scanned. 
+ *   The url that should be scanned.
  *
  * @return $path_info
  *   An associative array containing:
@@ -298,7 +298,7 @@ function linkit_scan_url($url) {
   }
   $path_info['url'] = $url;
   // URL to frontpage, without trailing slash
-  $root_url = substr(url('<front>', array('absolute' => TRUE)), 0, -1);
+  $root_url = drupal_substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
   if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(.*?))?(?:$|\?|#)~', $url, $matches)) {
@@ -420,7 +420,7 @@ function _linkit_result_from_url($url) {
 }
 
 /**
- * Implementation of hook_form
+ * Implements hook_form().
  */
 function linkit_dashboard_form() {
   // Check if we have IMCE and access to it.
@@ -429,7 +429,7 @@ function linkit_dashboard_form() {
   $form['search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search content'),
-    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.') .'<br />'. t('You can also paste an URL here.'),
+    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.') . '<br />' . t('You can also paste an URL here.'),
     '#maxlength' => 255,
     '#size' => 60,
     '#default_value' => '',
@@ -539,7 +539,7 @@ function _linkit_add_settings($editor) {
 
   if (!isset($editor_settings_added[$editor])) {
     $editor_settings_added[$editor] = TRUE;
-    
+
     // Add popup url
     $settings = array(
       'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
@@ -596,7 +596,7 @@ function linkit_admin_profile_title($op, $profile) {
 }
 
 /**
- * Implementation of hook_image_default_styles().
+ * Implements hook_image_default_styles().
  *
  * @return An array of image styles, keyed by the style name.
  */
@@ -823,7 +823,7 @@ function linkit_get_dashboard_profile() {
   global $user;
   $best_profile = &drupal_static(__FUNCTION__);
 
-  if(!isset($best_profile)) {
+  if (!isset($best_profile)) {
     // Get the role -> profile configuration.
     $role_profile = variable_get('linkit_roles_profiles', array());
 
@@ -832,8 +832,8 @@ function linkit_get_dashboard_profile() {
 
     $role_profile = array_reverse(array_filter($role_profile), TRUE);
 
-    foreach($role_profile AS $rid => $profile_name) {
-      if(isset($user->roles[$rid])) {
+    foreach ($role_profile AS $rid => $profile_name) {
+      if (isset($user->roles[$rid])) {
         $best_profile = $profiles[$profile_name];
         break;
       }

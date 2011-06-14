@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * @file
@@ -12,16 +12,16 @@ function _linkit_node_autocomplete($string, $profile) {
   $matches = array();
 
   $result_description = check_plain($profile['node']['result_description']);
-  
+
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
-  
+
   // Build default query
   $query = db_select('node', 'n')
     ->fields('n', array('nid', 'title'))
     ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
     ->addTag('node_access');
-  
+
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
   // [node:nid]
@@ -64,7 +64,7 @@ function _linkit_node_autocomplete($string, $profile) {
           break;
       }
     }
-    
+
     // This tokens can be chained so we cant use them in the foreach loop above.
     if (token_find_with_prefix($result_tokens['node'], 'author')) {
       $query->addField('n', 'uid');
@@ -83,7 +83,7 @@ function _linkit_node_autocomplete($string, $profile) {
   if ($allowed_content_types = array_filter($profile['node']['content_types'])) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
-  
+
   $result = $query->execute();
 
   foreach ($result as $node) {

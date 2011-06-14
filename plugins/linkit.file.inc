@@ -15,7 +15,7 @@ function _linkit_file_autocomplete($string, $settings) {
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
-  
+
   // Get files.
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
@@ -33,7 +33,7 @@ function _linkit_file_autocomplete($string, $settings) {
   // [file:size]
   // [file:timestamp] (short, medium, long, since, raw, custom, [default : medium])
   // [file:owner] (Can use the user tokens, [default : name])
-  
+
   if (isset($result_tokens['file'])) {
     foreach ($result_tokens['file'] as $token => $token_value) {
       switch ($token) {
@@ -73,13 +73,12 @@ function _linkit_file_autocomplete($string, $settings) {
 
   $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result as $file) {
-  
+
     $imageinfo = image_get_info($file->uri);
     $image = $imageinfo ? theme_image_style(array(
       'style_name' => 'linkit_thumb',
       'path' => $file->uri,
     )) : '';
-    
 
 // 'description' => $image . $file->filemime . ' · ' . format_size($file->filesize) . ($imageinfo ? ' · ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px' : '') .
 // 								 '<br />' . $public_path . '/' . file_uri_target($file->uri),

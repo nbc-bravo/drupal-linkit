@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * @file
@@ -71,7 +71,7 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
   if ($splitted_string[0] != 'taxonomy' && $splitted_string[0] != 'forum') {
     return;
   }
-  
+
   // This is a term link created with Linkit, try to grab the title and path now.
   $result = db_select('taxonomy_term_data', 't')
     ->fields('t', array('name'))
@@ -79,7 +79,7 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
     ->addTag('term_access')
     ->execute()
     ->fetchObject();
-  
+
   // No reault was found
   if (!$result) {
     return;

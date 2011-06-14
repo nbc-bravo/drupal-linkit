@@ -17,7 +17,7 @@ function linkit_admin_page() {
   foreach ($profiles AS $profile) {
     $rows[] = array(
       check_plain($profile['name']),
-      l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']), 
+      l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']),
       l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
     );
   }
@@ -85,7 +85,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[node][status]"]' => array('checked' =>FALSE),
+        'input[name="plugins[node][status]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -94,8 +94,8 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => isset($profile['node']['result_description']) ? $profile['node']['result_description'] : '',
-    '#size' => 120, 
-    '#maxlength' => 255, 
+    '#size' => 120,
+    '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
@@ -103,7 +103,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('Include this content types in the search result'),
     '#type' => 'checkboxes',
     '#options' => node_type_get_names(),
-    '#default_value' => isset($profile['node']['content_types']) ? $profile['node']['content_types'] : array(), 
+    '#default_value' => isset($profile['node']['content_types']) ? $profile['node']['content_types'] : array(),
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
 
@@ -115,7 +115,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[user][status]"]' => array('checked' =>FALSE),
+        'input[name="plugins[user][status]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -124,8 +124,8 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => isset($profile['user']['result_description']) ? $profile['user']['result_description'] : '',
-    '#size' => 120, 
-    '#maxlength' => 255, 
+    '#size' => 120,
+    '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
   );
 
@@ -137,7 +137,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[taxonomy][status]"]' => array('checked' =>FALSE),
+        'input[name="plugins[taxonomy][status]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -146,8 +146,8 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => isset($profile['taxonomy']['result_description']) ? $profile['taxonomy']['result_description'] : '',
-    '#size' => 120, 
-    '#maxlength' => 255, 
+    '#size' => 120,
+    '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
@@ -159,7 +159,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[file][status]"]' => array('checked' =>FALSE),
+        'input[name="plugins[file][status]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -168,11 +168,11 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
     '#default_value' => isset($profile['file']['result_description']) ? $profile['file']['result_description'] : '',
-    '#size' => 120, 
-    '#maxlength' => 255, 
+    '#size' => 120,
+    '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
-  
+
   // Append attributes form element to the setttings form.
   _linkit_build_attribute_form_fields($form, $profile);
 
@@ -220,7 +220,7 @@ function linkit_profile_form_submit($form, &$form_state) {
 }
 
 /**
- * Processes variables 
+ * Processes variables
  *
  * The $variables array contains the following arguments:
  * - $form
@@ -258,7 +258,7 @@ function theme_linkit_profile_form($variables) {
  * Menu callback; confirm removal of a Linkit profile.
  *
  * @ingroup forms.
- * @see linkit_admin_profile_delete_submit().
+ * @see linkit_admin_profile_delete_submit()
  */
 function linkit_profile_delete_form($form, &$form_state, $profile) {
   $form['#profile'] = $profile;
@@ -303,8 +303,8 @@ function linkit_profile_assignment($form, &$form_state) {
   $roles_profiles = variable_get('linkit_roles_profiles', array());
   foreach ($drupal_roles AS $rid => $role_name) {
     $form['roles'][$rid] = array(
-      '#type' => 'select', 
-      '#title' => '', 
+      '#type' => 'select',
+      '#title' => '',
       '#default_value' => isset($roles_profiles[$rid]) ? $roles_profiles[$rid] : '',
       '#options' => _linkit_get_profile_names(),
       '#empty_option' => t('- None -'),
@@ -382,7 +382,7 @@ function linkit_profile_assignment_submit($form, &$form_state) {
 /**
  * Extended form_state_values_clean.
  *
- * @see form_state_values_clean().
+ * @see form_state_values_clean()
  */
 function _linkit_form_state_values_clean(&$form_state) {
   // Exclude unnecessary elements.
@@ -445,11 +445,11 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
       '#default_value' => isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED,
     );
   }
-  
+
   // Sort by #weight.
   uasort($tmp_plugins, '_linkit_sort_plugins_by_weight');
-  
-  foreach($tmp_plugins AS $name => $plugin) {
+
+  foreach ($tmp_plugins AS $name => $plugin) {
     $form['plugins_fieldset']['plugins'][$name] = $plugin;
   }
 
@@ -490,7 +490,7 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 
     $form['attributes_fieldset']['attributes'][$name]['status'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable ', array('@title' => $attr['#title'])),
+      '#title' => t('Enable @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['attributes'][$name]['status']) ? $profile['attributes'][$name]['status'] : LINKIT_DISABLED,
     );
@@ -532,11 +532,11 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
  * @param $type
  *   "plugin" or "attribute".
  *
- * @see theme_linkit_profile_form().
+ * @see theme_linkit_profile_form()
  */
 function _linkit_theme_profile_form_table($variables, $type) {
   $rows = array();
-  $hasDescription = FALSE;
+  $has_description = FALSE;
 
   // Build table rows.
   foreach ($variables['linkit_' . $type . '_listing'] as $delta => $element) {
@@ -547,12 +547,12 @@ function _linkit_theme_profile_form_table($variables, $type) {
     );
 
     if (isset($element->description)) {
-       $hasDescription = TRUE;
+      $has_description = TRUE;
       $fields[] = $element->description;
     }
 
-   $rows[$delta]['data'] = $fields;
-   $rows[$delta]['class'] = array('draggable', 'tabledrag-leaf');
+    $rows[$delta]['data'] = $fields;
+    $rows[$delta]['class'] = array('draggable', 'tabledrag-leaf');
   }
 
   drupal_add_tabledrag('linkit-' . $type, 'order', 'sibling', 'weight');
@@ -563,7 +563,7 @@ function _linkit_theme_profile_form_table($variables, $type) {
     t('Enabled'),
   );
 
-  if ($hasDescription) {
+  if ($has_description) {
     $header[] = t('Description');
   }
 
