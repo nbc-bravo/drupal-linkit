@@ -216,9 +216,7 @@ function _linkit_dashboard($editor) {
  * Autocomplete callback function.
  */
 function _linkit_autocomplete($search = NULL) {
-
-  // TODO: Security!
-  $search = $_GET['s'];
+  $search = check_url($_GET['s']);
 
   $url = parse_url($search);
 
