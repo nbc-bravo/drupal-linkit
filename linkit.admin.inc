@@ -173,10 +173,56 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
 
+  $form['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+    '#weight' => 100,
+  );
+
+  $form['advanced']['charlimit'] = array(
+    '#title' => t('The minimum number of chars to do an AJAX call'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : 3,
+    '#size' => 5,
+    '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
+  );
+
+  $form['advanced']['wait'] = array(
+    '#title' => t('TThe time in ms between last keypress and AJAX call'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : 250,
+    '#size' => 5,
+    '#description' => t('(Default : 250)'),
+  );
+
+  $form['advanced']['getparam'] = array(
+    '#title' => t(' The get parameter for AJAX calls: "?param=".'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile['advanced']['getparam']) ? $profile['advanced']['getparam'] : 's',
+    '#size' => 20,
+    '#description' => t('(Default : "s")'),
+  );
+
+  $form['advanced']['ajaxtimtout'] = array(
+    '#title' => t('Timeout on AJAX calls'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile['advanced']['ajaxtimtout']) ? $profile['advanced']['ajaxtimtout'] : 5000,
+    '#size' => 5,
+    '#description' => t('(Default : 5000)'),
+  );
+
   // Append attributes form element to the setttings form.
   _linkit_build_attribute_form_fields($form, $profile);
 
-  $form['actions']['#type'] = 'actions';
+ 
+  $form['actions'] = array(
+    '#type' => 'actions',
+    '#weight' => 101,
+  );
+  
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
