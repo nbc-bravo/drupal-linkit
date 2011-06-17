@@ -230,7 +230,7 @@ function _linkit_autocomplete($search = NULL) {
   if ($result = _linkit_result_from_url($search, $enabled_plugins)) {
     $results = array($result);
   }
-  elseif (!$results = _linkit_autocomplete_search($search)) {
+  elseif (!$results = _linkit_autocomplete_search($search, $enabled_plugins)) {
     $results = array(array(
       'title' => t('No results'),
       'addClass' => 'status-notice',
@@ -798,7 +798,7 @@ function linkit_get_profile_plugins() {
   foreach ($installed_plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
     if ($profile['plugins'][$name]['status'] == LINKIT_ENABLED) {
-      $enabled_plugins[] = $plugin;
+      $enabled_plugins[$name] = $plugin;
       if (isset($plugin['file'])) {
         if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
           require_once DRUPAL_ROOT . '/' . $plugin['file'];
