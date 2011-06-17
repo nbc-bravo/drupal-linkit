@@ -185,7 +185,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['advanced']['charlimit'] = array(
     '#title' => t('The minimum number of chars to do an AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : 3,
+    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
   );
@@ -193,25 +193,29 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['advanced']['wait'] = array(
     '#title' => t('TThe time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : 250,
+    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '',
     '#size' => 5,
     '#description' => t('(Default : 250)'),
+    '#field_suffix' => t('milliseconds'),
   );
 
   $form['advanced']['getparam'] = array(
-    '#title' => t(' The get parameter for AJAX calls: "?param=".'),
+    '#title' => t(' The get parameter for AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['getparam']) ? $profile['advanced']['getparam'] : 's',
+    '#default_value' => isset($profile['advanced']['getparam']) ? $profile['advanced']['getparam'] : '',
     '#size' => 20,
     '#description' => t('(Default : "s")'),
+    '#field_prefix' => t('?'),
+    '#field_suffix' => t('=[Searchstring]'),
   );
 
   $form['advanced']['ajaxtimtout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['ajaxtimtout']) ? $profile['advanced']['ajaxtimtout'] : 5000,
+    '#default_value' => isset($profile['advanced']['ajaxtimtout']) ? $profile['advanced']['ajaxtimtout'] : '',
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
+    '#field_suffix' => t('milliseconds'),
   );
 
   // Append attributes form element to the setttings form.
