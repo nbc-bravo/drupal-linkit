@@ -7,8 +7,13 @@ Drupal.behaviors.linkit = {
     var $searchInput = $('#linkit #edit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
-    $searchInput.betterAutocomplete('init', Drupal.settings.linkit.autocompletePath,
-      {}, // Options
+    $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
+      { // Options
+        charLimit : settings.linkit.advanced.charlimit,
+        wait : settings.linkit.advanced.wait,
+        getParam : settings.linkit.advanced.getParam,
+        ajaxTimeout : settings.linkit.advanced.ajaxtimeout
+      },
       { // Callbacks
       select: function(result) {
         // Only change the link text if it is empty

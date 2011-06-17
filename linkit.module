@@ -186,6 +186,11 @@ function _linkit_dashboard($editor) {
     $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
 
+  $profile = linkit_get_dashboard_profile();
+  if (isset($profile['advanced'])) {
+    $settings['advanced'] = array_filter($profile['advanced']);
+  }
+
   drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
 
