@@ -224,9 +224,10 @@ function _linkit_autocomplete($search = NULL) {
   $search = check_url($_GET['s']);
 
   $url = parse_url($search);
+  $enabled_plugins = linkit_get_profile_plugins();
 
   // Absolute URL
-  if ($result = _linkit_result_from_url($search)) {
+  if ($result = _linkit_result_from_url($search, $enabled_plugins)) {
     $results = array($result);
   }
   elseif (!$results = _linkit_autocomplete_search($search)) {
@@ -245,11 +246,11 @@ function _linkit_autocomplete($search = NULL) {
  * @param $search The search string
  * @return $results An array with the result objects
  */
-function _linkit_autocomplete_search($search) {
+function _linkit_autocomplete_search($search, $enabled_plugins) {
   $matches = array();
   if ($search) {
     $profile = linkit_get_dashboard_profile();
-    foreach (linkit_get_profile_plugins() AS $name => $plugin) {
+    foreach ($enabled_plugins AS $name => $plugin) {
       // The function should exist, maybe it's better to just throw the error?
       if (isset($plugin['autocomplete callback'])) {
         $results = call_user_func($plugin['autocomplete callback'], $search, $profile);
@@ -355,15 +356,15 @@ function linkit_scan_url($url) {
  *   - alias: (optional) The alias to an internal path. TODO: Add to tokens for all plugins except files.
  *   - addClass: A CSS class that will be added to the DOM result item.
  */
-function _linkit_result_from_url($url) {
+function _linkit_result_from_url($url, $enabled_plugins) {
   if (!$path_info = linkit_scan_url($url)) {
     return FALSE;
   }
 
   // Let plugins review the path and optionally return a result
-  $settings = _linkit_load_profile_settings();
-  foreach (linkit_load_plugins() as $name => $plugin) {
-    if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $settings)) {
+  $profile = linkit_get_dashboard_profile();
+  foreach ($enabled_plugins as $name => $plugin) {
+    if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $profile)) {
       break;
     }
   }
