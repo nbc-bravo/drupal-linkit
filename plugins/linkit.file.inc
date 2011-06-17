@@ -16,6 +16,10 @@ function _linkit_file_autocomplete($string, $settings) {
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
 
+  if (!user_access('view uploaded files')) {
+    return array();
+  }
+
   // Get files.
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
@@ -23,8 +27,9 @@ function _linkit_file_autocomplete($string, $settings) {
     ->condition('f.status' , '1')
     ->condition('f.uri', 'public://%', 'LIKE');
 
-  // @todo Kolla rättigheter här??
-
+  // TODO: Check permissions here....
+  // Users chould only have access to files that are related to nodes (and maybe other stuff?)??
+    
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
   // [file:fid]
