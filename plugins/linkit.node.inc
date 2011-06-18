@@ -6,20 +6,12 @@
  */
 
 /**
- * Implements hook_linkit_load_plugins().
+ * Build the default node query.
  */
-function _linkit_node_autocomplete($string, $profile) {
-  $matches = array();
-
-  $result_description = check_plain($profile['node']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
+function _linkit_node_create_base_query($profile, $result_tokens) {
   // Build default query
   $query = db_select('node', 'n')
     ->fields('n', array('nid', 'title'))
-    ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
     ->addTag('node_access');
 
   // Not all tokens are supported by Linkit.
@@ -84,6 +76,24 @@ function _linkit_node_autocomplete($string, $profile) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
 
+  return $query;
+}
+
+
+/**
+ * Implements hook_linkit_load_plugins().
+ */
+function _linkit_node_autocomplete($string, $profile) {
+  $matches = array();
+
+  $result_description = check_plain($profile['node']['result_description']);
+
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
+
+  // Build the base query.
+  $query = _linkit_node_create_base_query($profile, $result_tokens);
+  $query->condition('n.title', '%' . db_like($string) . '%', 'LIKE');
   $result = $query->execute();
 
   foreach ($result as $node) {
@@ -107,10 +117,6 @@ function _linkit_node_autocomplete($string, $profile) {
  *
  * @see linkit.api.php
  *
- * @todo the query will almost be equal to autocomplete search.
- * Perhaps create a new function that constructs the first part of the query
- * to avoid duplicate code?
- *
  * @todo Perhaps non core plugins should be able to alter the appearance of
  * title and description by for example adding tokens and having a way to
  * alter the query so their particular field can be loaded. For example if
@@ -124,18 +130,22 @@ function _linkit_node_path_info($path_info, $profile) {
 
   // Check if path is referring to a node
   if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
-    $db_result = db_select('node', 'n')
-      ->fields('n', array('title', 'type', 'nid'))
-      ->condition('n.nid', arg(1, $path_info['system_path']))
-      ->addTag('node_access')
-      ->execute()
-      ->fetchObject();
+    $result_description = check_plain($profile['node']['result_description']);
 
-    if ($db_result) {
-      // TODO: Use tokens instead
+    // Build a list of all token-like patterns that appear in the text.
+    $result_tokens = token_scan($result_description);
+
+    // Build the base query.
+    $query = _linkit_node_create_base_query($profile, $result_tokens);
+    $query->condition('n.nid', arg(1, $path_info['system_path']));
+    $query_result = $query->execute()->fetch();
+
+    if ($query_result) {
       $result = array(
-        'title' => check_plain($db_result->title),
-        'description' => check_plain('id: ' . $db_result->nid . ' · type: ' . $db_result->type),
+        'title' => check_plain($query_result->title),
+        'description' => token_replace($result_description, array(
+          'node' => $query_result,
+        )),
       );
       return $result;
     }
