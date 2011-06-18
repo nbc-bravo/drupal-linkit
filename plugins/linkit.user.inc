@@ -5,21 +5,13 @@
  * Extend Linkit with user links.
  */
 
-/**
- * Implements hook_linkit_load_plugins().
+ /**
+ * Build the default node query.
  */
-function _linkit_user_autocomplete($string, $settings) {
-  $matches = array();
-
-  $result_description = check_plain($settings['user']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
+function _linkit_user_create_base_query($profile, $result_tokens) {
   // Get users
   $query = db_select('users', 'u')
     ->fields('u', array('uid', 'name'))
-    ->condition('u.name', '%' . db_like($string) . '%', 'LIKE')
     ->condition('u.status' , '1');
 
   // Not all tokens are supported by Linkit.
@@ -55,7 +47,22 @@ function _linkit_user_autocomplete($string, $settings) {
       $query->addField('u', 'created');
     }
   }
+  return $query;
+}
 
+/**
+ * Implements hook_linkit_load_plugins().
+ */
+function _linkit_user_autocomplete($string, $settings) {
+  $matches = array();
+
+  $result_description = check_plain($settings['user']['result_description']);
+
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
+
+  $query = _linkit_user_create_base_query($profile, $result_tokens);
+  $query ->condition('u.name', '%' . db_like($string) . '%', 'LIKE');
   $result = $query->execute();
 
   foreach ($result AS $user) {
@@ -67,8 +74,44 @@ function _linkit_user_autocomplete($string, $settings) {
       'path' => 'user/' . $user->uid,
       'group' => t('Users'),
     );
-
   }
 
   return $matches;
+}
+
+/**
+ * Implements hook_linkit_plugins "path info callback".
+ *
+ * If the path given is a user, then return information about that user.
+ *
+ * @see linkit.api.php
+ */
+function _linkit_user_path_info($path_info, $profile) {
+  // TODO: Move to linkit.module:
+  // Backwards compatible with internal: links
+  // $escaped_string = str_replace('internal:', '', $string)
+
+  // Check if path is referring to a node
+  if (arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
+    $result_description = check_plain($profile['user']['result_description']);
+
+    // Build a list of all token-like patterns that appear in the text.
+    $result_tokens = token_scan($result_description);
+
+    // Build the base query.
+    $query = _linkit_user_create_base_query($profile, $result_tokens);
+    $query->condition('u.uid', arg(1, $path_info['system_path']));
+    $query_result = $query->execute()->fetch();
+
+    if ($query_result) {
+      $result = array(
+        'title' => check_plain($query_result->name),
+        'description' => token_replace($result_description, array(
+          'user' => $query_result,
+        )),
+      );
+      return $result;
+    }
+  }
+  return FALSE;
 }
