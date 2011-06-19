@@ -11,7 +11,6 @@ Drupal.behaviors.linkit = {
       { // Options
         charLimit : settings.linkit.advanced.charlimit,
         wait : settings.linkit.advanced.wait,
-        getParam : settings.linkit.advanced.getParam,
         ajaxTimeout : settings.linkit.advanced.ajaxtimeout
       },
       { // Callbacks

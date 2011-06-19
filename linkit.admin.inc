@@ -199,16 +199,6 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#field_suffix' => t('milliseconds'),
   );
 
-  $form['advanced']['getparam'] = array(
-    '#title' => t(' The get parameter for AJAX calls'),
-    '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['getparam']) ? $profile['advanced']['getparam'] : '',
-    '#size' => 20,
-    '#description' => t('(Default : "s")'),
-    '#field_prefix' => t('?'),
-    '#field_suffix' => t('=[Searchstring]'),
-  );
-
   $form['advanced']['ajaxtimtout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
