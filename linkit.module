@@ -725,6 +725,7 @@ function linkit_linkit_plugins() {
     'description' => t('Extends Linkit with the ability to find terms in the autocomplete search.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
+    'path info callback' => '_linkit_taxonomy_path_info'
   );
 
   $plugins['external'] = array(

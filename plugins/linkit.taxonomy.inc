@@ -7,20 +7,12 @@
  */
 
 /**
- * Implements hook_linkit_load_plugins().
+ * Build the default node query.
  */
-function _linkit_taxonomy_autocomplete($string, $settings) {
-  $matches = array();
-
-  $result_description = check_plain($settings['taxonomy']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
+function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
   // Build default query
   $query = db_select('taxonomy_term_data', 't')
     ->fields('t', array('tid', 'name'))
-    ->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE')
     ->addTag('term_access');
 
   // Not all tokens are supported by Linkit.
@@ -43,9 +35,24 @@ function _linkit_taxonomy_autocomplete($string, $settings) {
       $query->addField('t', 'vid');
     }
   }
+  return $query;
+}
 
-  // Get terms
+/**
+ * Implements hook_linkit_load_plugins().
+ */
+function _linkit_taxonomy_autocomplete($string, $profile) {
+  $matches = array();
+
+  $result_description = check_plain($profile['taxonomy']['result_description']);
+
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
+
+  $query = _linkit_taxonomy_create_base_query($profile, $result_tokens);
+  $query->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE');
   $result = $query->execute();
+
   foreach ($result as $term) {
     $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
     $matches[] = array(
@@ -61,28 +68,54 @@ function _linkit_taxonomy_autocomplete($string, $settings) {
 }
 
 /**
- * Implements hook_linkit_get_search_styled_link().
+ * Implements hook_linkit_plugins "path info callback".
+ *
+ * If the path given is a taxonomy term, then return information about that term.
+ *
+ * @see linkit.api.php
  */
-function linkit_taxonomy_linkit_get_search_styled_link($string) {
-  // Check to see that the link really is a term link
+function _linkit_taxonomy_path_info($path_info, $profile) {
+  // TODO: Move to linkit.module:
   // Backwards compatible with internal: links
-  $escaped_string = str_replace('internal:', '', $string);
-  $splitted_string = explode('/', $escaped_string);
-  if ($splitted_string[0] != 'taxonomy' && $splitted_string[0] != 'forum') {
-    return;
-  }
+  // $escaped_string = str_replace('internal:', '', $string)
 
-  // This is a term link created with Linkit, try to grab the title and path now.
-  $result = db_select('taxonomy_term_data', 't')
-    ->fields('t', array('name'))
-    ->condition('t.tid', $splitted_string[count($splitted_string)-1])
-    ->addTag('term_access')
-    ->execute()
-    ->fetchObject();
+  // Define the default taxonomy URI's first argument (arg(0)).
+  $taxonomy_uri_array = array('taxonomy', 'forum');
 
-  // No reault was found
-  if (!$result) {
-    return;
+  // Check if path is referring to a taxonomy
+  if (in_array(arg(0, $path_info['system_path']), $taxonomy_uri_array)) {
+    $result_description = check_plain($profile['taxonomy']['result_description']);
+
+    // Build a list of all token-like patterns that appear in the text.
+    $result_tokens = token_scan($result_description);
+
+    // We need to know where the tid is.
+    switch ($path_info['system_path']) {
+      case 'taxonomy':
+        // URI = taxonomy/term/[tid]
+        $arg_i = 2;
+        break;
+      case 'forum':
+        // URI = forum/[tid]
+        $arg_i = 1;
+        break;
+    }
+
+    // Build the base query.
+    $query = _linkit_taxonomy_create_base_query($profile, $result_tokens);
+    $query->condition('t.tid', arg($arg_i, $path_info['system_path']));
+    $query_result = $query->execute()->fetch();
+
+    if ($query_result) {
+      $result = array(
+        'title' => check_plain($query_result->name),
+        'description' => token_replace($result_description, array(
+          'term' => $query_result,
+        )),
+      );
+      return $result;
+    }
+
   }
-  return check_plain($result->name) . ' [path:' . $escaped_string . ']';
+  return FALSE;
 }
