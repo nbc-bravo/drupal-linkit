@@ -5,7 +5,7 @@
  * Extend Linkit with user links.
  */
 
- /**
+/**
  * Build the default node query.
  */
 function _linkit_user_create_base_query($profile, $result_tokens) {
@@ -53,10 +53,10 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
 /**
  * Implements hook_linkit_load_plugins().
  */
-function _linkit_user_autocomplete($string, $settings) {
+function _linkit_user_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($settings['user']['result_description']);
+  $result_description = check_plain($profile['user']['result_description']);
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
@@ -91,7 +91,7 @@ function _linkit_user_path_info($path_info, $profile) {
   // Backwards compatible with internal: links
   // $escaped_string = str_replace('internal:', '', $string)
 
-  // Check if path is referring to a node
+  // Check if path is referring to a user
   if (arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
     $result_description = check_plain($profile['user']['result_description']);
 
