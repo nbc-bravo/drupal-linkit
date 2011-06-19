@@ -191,7 +191,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   );
 
   $form['advanced']['wait'] = array(
-    '#title' => t('TThe time in ms between last keypress and AJAX call'),
+    '#title' => t('The time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
     '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '',
     '#size' => 5,
