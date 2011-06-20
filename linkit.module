@@ -184,6 +184,7 @@ function _linkit_dashboard($editor) {
   if (!$defualt_settings_added) {
     $defualt_settings_added = TRUE;
 
+    //TODO: IMPORTANT! Make sure path works with non clean URL:s.
     $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
 
     // TODO: Btw, should there not be a plugin "init dashboard" callback so they can add their JS and stuff like that? Or should it be done via hook_init or something?
@@ -308,6 +309,7 @@ function _linkit_autocomplete_search($search) {
  *     dangerous. E.g. "http://user:pass@example.org/settings?evilaction=true"
  *     will become "http://example.org/settings".
  */
+//TODO: IMPORTANT! Make sure path works with non clean URL:s.
 function linkit_scan_url($url) {
   $parts = parse_url($url);
   if (!$parts['scheme'] || !$parts['host']) {

@@ -1,96 +1,73 @@
-
 /**
- * Better Autocomplete
- * ===================
- *
- * Provides a jQuery plugin for fetching autocomplete results via
- * XMLHttpRequest from a JSON resource path.
- *
- * For usage, see below
+ * Better Autocomplete jQuery plugin.
+ * Create or alter an autocomplete object instance to every text input
+ * element in the selection.
  *
  * @author Didrik Nordström, http://betamos.se/
  *
- * Requirements:
- * - jQuery 1.4+
- * - A modern web browser
+ * @requires
+ *   <ul><li>
+ *   jQuery 1.4+
+ *   </li><li>
+ *   a modern web browser (not tested in IE)
+ *   </li></ul>
+ *
+ * @constructor
+ *
+ * @name jQuery.betterAutocomplete
+ *
+ * @param {String} method
+ *   Should be one of the following:
+ *   <ul><li>
+ *     init: Initiate Better Autocomplete instances on the text input elements
+ *     in the current jQuery selection. They are enabled by default. The other
+ *     parameters are then required.
+ *   </li><li>
+ *     enable: In this jQuery selection, reenable the Better Autocomplete
+ *     instances.
+ *   </li><li>
+ *     disable: In this jQuery selection, disable the Better Autocomplete
+ *     instances.
+ *   </li><li>
+ *     destroy: In this jQuery selection, destroy the Better Autocomplete
+ *     instances. It will not be possible to reenable them after this.
+ *   </li></ul>
+ *
+ * @param {String|Object} [resource]
+ *   If String, it will become the path for a remote resource. If not, it will
+ *   be treated like a local resource. The path should provide JSON objects
+ *   upon HTTP requests.
+ *
+ * @param {Object} [options]
+ *   An object with configurable options:
+ *   <ul><li>
+ *     charLimit: (default=3) The minimum number of chars to do an AJAX call.
+ *     A typical use case for this limit is to reduce server load.
+ *   </li><li>
+ *     delay: (default=250) The time in ms between last keypress and AJAX call.
+ *     Typically used to prevent looking up irrelevant strings while the user
+ *     is still typing.
+ *   </li><li>
+ *     maxHeight: (default=330) The maximum height in pixels for the
+ *     autocomplete list.
+ *   </li><li>
+ *     remoteTimeout: (default=5000) The timeout for remote (AJAX) calls.
+ *   </li><li>
+ *     selectKeys: (default=[9, 13]) The key codes for keys which will select
+ *     the current highlighted element. The defaults are tab, enter.
+ *   </li></ul>
+ *
+ * @param {Object} [callbacks]
+ *   An object containing optional callback functions on certain events. See
+ *   {@link callbacks} for details. These callbacks should be used when
+ *   customization of the default behavior of Better Autocomplete is required.
+ *
+ * @returns {Object}
+ *   The jQuery object with the same element selection, for chaining.
  */
 
 (function ($) {
 
-/**
- * Create an autocomplete object instance from a DOM input element by
- * providing a JSON path
- *
- * Example usage:
- * @code
- *   var bac = new BetterAutocomplete($('#find'), '/ajaxcall', {
- *     // Options
- *     getParam: 'keywords',
- *     remoteTimeout: 10000
- *   }, {
- *     // Callbacks
- *     select: function(result) {
- *       $('#title').val(result.title);
- *       $('#myoption').val(result.myOption);
- *     }
- *   });
- * @endcode
- *
- * The DOM tree will look like this:
- *
- * - input (text input field) Per default the input will have the class
- *   "fetching" while AJAX requests are made.
- * - div#linkit-autocomplete-wrapper (no width/height, position relative)
- *   - ul#linkit-autocomplete-results (fixed width, variable height)
- *     - li.result (variable height)
- *       - Customizable output.
- *     - li.result (more results...)
- *
- * Note that everything within li.result can be altered by the user,
- * @see callbacks.renderResult(). The default rendering function outputs:
- * - h4.title (contains the title)
- * - p.description (contains the description)
- * Note that no sanitization of title/description occurs client side.
- *
- * @param inputElement
- *   The text input element.
- *
- * @param path
- *   A path which provides JSON objects upon an HTTP request. This path should
- *   print a JSON-encoded array containing result objects. Each result object
- *   should contain these properties:
- *   - title: (optional) Per default, this will be rendered as an h4 tag in the
- *     list item. To alter, @see callbacks.renderResult().
- *   - description: (optional) Per default, this will be rendered as a p tag
- *     in the list item.
- *   - group: (optional) Add groups to the results. Will render nice group
- *     headings. Remember to put the results grouped together in the JSON
- *     array, otherwise they will be rendered as multiple groups.
- *   - addClass: (optional) Add CSS classes to the result object separated by
- *     spaces.
- *
- *   Feel free to add more properties. They will be returned with the callbacks
- *   just like the other properties.
- *
- * @param options
- *   An object with configurable options:
- *   - charLimit: (default=3) The minimum number of chars to do an AJAX call.
- *     A typical use case for this limit is to reduce server load.
- *   - delay: (default=250) The time in ms between last keypress and AJAX call.
- *   - getParam: (default="s") The get parameter for AJAX calls: "?param=".
- *   - remoteTimeout: (default=5000) Timeout on AJAX calls.
- *
- * @param callbacks
- *   An object containing optional callback functions on certain events:
- *   - select: Gets executed when a result gets selected (clicked) by the user.
- *     Arguments:
- *     - result: The result object that was selected.
- *   - renderResult: Gets executed when results has been fetched and needs to
- *     be rendered. It should return a DOM element, an HTML string, or a jQuery
- *     object which will be inserted into the list item. Arguments:
- *     - result: The result object that should be rendered.
- */
-// TODO: Update documentation
 $.fn.betterAutocomplete = function(method) {
 
   /*
@@ -144,6 +121,12 @@ $.fn.betterAutocomplete = function(method) {
 /**
  * The BetterAutocomplete constructor function. Returns a BetterAutocomplete
  * instance object.
+ *
+ * @private @constructor
+ * @name BetterAutocomplete
+ *
+ * @param $input
+ *   A single input element wrapped in jQuery
  */
 var BetterAutocomplete = function($input, resource, options, callbacks) {
 
@@ -152,15 +135,51 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     delay: 250, // milliseconds
     maxHeight: 330, // px
     remoteTimeout: 5000, // milliseconds
-    selectKeys: [9, 13], // [tab, enter]
-    errorReporting: true, // Report AJAX errors using jQuery.error()
-    local: (typeof resource != 'string') // A local resource
+    selectKeys: [9, 13] // [tab, enter]
   }, options);
 
-  callbacks = $.extend({
+  /**
+   * These callbacks are supposed to be overridden by you when you need
+   * customization of the default behavior. When you are overriding a callback
+   * function, it is a good idea to copy the source code from the default
+   * callback function, as a skeleton.
+   *
+   * @name callbacks
+   * @namespace
+   */
+  callbacks = $.extend(
+  /**
+   * @lends callbacks.prototype
+   */
+  {
+
+    /**
+     * Gets fired when the user selects a result by clicking or using the
+     * keyboard to select an element.
+     *
+     * <br /><br /><em>Default behavior: Simply blurs the input field.</em>
+     *
+     * @param {Result} result
+     *   The result object that was selected.
+     */
     select: function(result) {
       $input.blur();
     },
+
+    /**
+     * Given a result object, render it to HTML. This callback can be viewed as
+     * a theming function.
+     *
+     * <br /><br /><em>Default behavior: Wraps result.title in an h4 tag, and
+     * result.description in a p tag. Note that no sanitization of malicious
+     * scripts is done here. Whatever is within the title/description is just
+     * printed out. May contain HTML.</em>
+     *
+     * @param {Object} result
+     *   The result object that should be rendered.
+     *
+     * @returns {String} HTML output, will be wrapped in a list element.
+     */
     renderResult: function(result) {
       var output = '';
       if (typeof result.title != 'undefined') {
@@ -171,29 +190,77 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       }
       return output;
     },
-    // Local results, should return the results array synchronously
-    fetchLocalResults: function(search, resource) {
+
+    /**
+     * Retrieve local results from the local resource by providing a query
+     * string.
+     *
+     * <br /><br /><em>Default behavior: Automatically handles arrays, if the
+     * data inside each element is either a plain string or a result object.
+     * If it is a result object, it will match the query string against the
+     * title and description property. Search is not case sensitive.</em>
+     *
+     * @param {String} query
+     *   The query string, unescaped. May contain any UTF-8 character.
+     *
+     * @param {Object} resource
+     *   The resource provided in the {@link jQuery.betterAutocomplete} init
+     *   constructor.
+     *
+     * @return {Array}
+     *   A flat array containing pure result objects.
+     */
+    queryLocalResults: function(query, resource) {
+      if (!(resource instanceof Array)) {
+        // Per default Better Autocomplete only handles arrays of data
+        return;
+      }
+      query = query.toLowerCase();
       var results = [];
-      if (resource instanceof Array) {
-        // Escape search string to use in regex.
-        search = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-        $.each(resource, function(i, value) {
-          if (typeof value != 'string') {
-            return; // continue
-          }
-          // Match found
-          if (new RegExp(search, 'i').test(value)) {
+      $.each(resource, function(i, value) {
+        switch (typeof value) {
+        case 'string': // Flat array of strings
+          if (value.toLowerCase().indexOf(query) >= 0) {
+            // Match found
             results.push({ title: value });
           }
-        });
-      }
+          break;
+        case 'object': // Array of result objects
+          if (typeof value.title != 'undefined' && value.title.toLowerCase().indexOf(query) >= 0) {
+            // Match found in title field
+            results.push(value);
+          }
+          else if (typeof value.description != 'undefined' && value.description.toLowerCase().indexOf(query) >= 0) {
+            // Match found in description field
+            results.push(value);
+          }
+          break;
+        }
+      });
       return results;
     },
-    // Remote results, should call completeCallback (even on error)
-    // Must be asynchronous to not freeze BAC
-    // Should respect the timeout
-    fetchRemoteResults: function(url, completeCallback, timeout) {
-      var xhr = $.ajax({
+
+    /**
+     * Fetch remote result data and return it using completeCallback when
+     * fetching is finished. Must be asynchronous in order to not freeze the
+     * Better Autocomplete instance.
+     *
+     * <br /><br /><em>Default behavior: Fetches JSON data from the url, using
+     * the jQuery.ajax() method. Errors are ignored.</em>
+     *
+     * @param {String} url
+     *   The URL to fetch data from.
+     *
+     * @param {Function} completeCallback
+     *   This function must be called, even if an error occurs. It takes zero
+     *   or one parameter: the data that was fetched.
+     *
+     * @param {Number} timeout
+     *   The preferred timeout for the request. This callback should respect
+     *   the timeout.
+     */
+    fetchRemoteData: function(url, completeCallback, timeout) {
+      $.ajax({
         url: url,
         dataType: 'json',
         timeout: timeout,
@@ -205,25 +272,80 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
         }
       });
     },
+
+    /**
+     * Process remote fetched data by extracting an array of result objects
+     * from it. This callback is useful if the fetched data is not the plain
+     * results array, but a more complicated object which does contain results.
+     *
+     * <br /><br /><em>Default behavior: If the data is defined and is an
+     * array, return it. Otherwise return an empty array.</em>
+     *
+     * @param {mixed} data
+     *   The raw data recieved from the server. Can be undefined.
+     *
+     * @returns {Array[Object]}
+     *   A flat array containing result objects. Must return an array.
+     */
+    processRemoteData: function(data) {
+      if (typeof data != 'undefined' && data instanceof Array) {
+        return data;
+      }
+      else {
+        return [];
+      }
+    },
+
+    /**
+     * Called when remote fetching begins.
+     *
+     * <br /><br /><em>Default behavior: Adds the CSS class "fetching" to the
+     * input field, for styling purposes.</em>
+     */
     beginFetching: function() {
       $input.addClass('fetching');
     },
+
+    /**
+     * Called when fetching is finished. All active requests must finish before
+     * this function is called.
+     *
+     * <br /><br /><em>Default behavior: Removes the "fetching" class.</em>
+     */
     finishFetching: function() {
       $input.removeClass('fetching');
     },
-    constructURL: function(path, search) {
-      return path + '?s=' + encodeURIComponent(search);
+
+    /**
+     * Construct the remote fetching URL.
+     *
+     * <br /><br /><em>Default behavior: Adds "?q=query" to the path. The query
+     * string is URL encoded.</em>
+     *
+     * @param {String} path
+     *   The path given in the {@link jQuery.betterAutocomplete} constructor.
+     *
+     * @param {String} query
+     *   The raw query string. Remember to URL encode this to prevent illegal
+     *   character errors.
+     *
+     * @returns {String}
+     *   The URL, ready for fetching.
+     */
+    constructURL: function(path, query) {
+      return path + '?q=' + encodeURIComponent(query);
     }
   }, callbacks);
 
   var self = this,
-    lastRenderedSearch = '',
+    lastRenderedQuery = '',
     results = {}, // Caching dababase of search results.
     userString = $input.val(), // Current input string,
     timer, // Used for options.delay
-    activeSearchCount = 0,
+    activeRemoteCalls = 0,
     disableMouseHighlight = false,
-    inputEvents = {};
+    inputEvents = {},
+    isLocal = (typeof resource != 'string');
 
   var $wrapper = $('<div />')
     .addClass('better-autocomplete')
@@ -287,7 +409,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     }
     else if (options.selectKeys.indexOf(event.keyCode) >= 0) {
       // Only hijack the event if selecting is possible or pending action.
-      if (select() || activeSearchCount >= 1 || timer !== null) {
+      if (select() || activeRemoteCalls >= 1 || timer !== null) {
         return false;
       }
       else {
@@ -305,7 +427,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     // If the results can't be displayed we must fetch them, then display
     if (needsFetching()) {
       $resultsList.empty();
-      if (options.local) {
+      if (isLocal) {
         fetchResults($input.val());
       }
       else {
@@ -426,26 +548,27 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
    * Fetch results asynchronously via AJAX.
    * Errors are ignored.
    *
-   * @param search
-   *   The search string
+   * @param query
+   *   The query string
    */
-  var fetchResults = function(search) {
+  var fetchResults = function(query) {
     // Synchronously fetch local data
-    if (options.local) {
-      results[search] = callbacks.fetchLocalResults(search, resource);
+    if (isLocal) {
+      results[query] = callbacks.queryLocalResults(query, resource);
       parseResults();
     }
     else {
-      activeSearchCount++;
-      var url = callbacks.constructURL(resource, search);
+      activeRemoteCalls++;
+      var url = callbacks.constructURL(resource, query);
       callbacks.beginFetching();
-      callbacks.fetchRemoteResults(url, function(searchResults) {
+      callbacks.fetchRemoteData(url, function(data) {
+        var searchResults = callbacks.processRemoteData(data);
         if (typeof searchResults == 'undefined' || !(searchResults instanceof Array)) {
           searchResults = [];
         }
-        results[search] = searchResults;
-        activeSearchCount--;
-        if (activeSearchCount == 0) {
+        results[query] = searchResults;
+        activeRemoteCalls--;
+        if (activeRemoteCalls == 0) {
           callbacks.finishFetching();
         }
         parseResults();
@@ -483,7 +606,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       return;
     }
     // Check if already rendered
-    if (lastRenderedSearch == $input.val()) {
+    if (lastRenderedQuery == $input.val()) {
       $wrapper.show();
       return;
     }
@@ -491,7 +614,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     if (needsFetching()) {
       return;
     }
-    lastRenderedSearch = $input.val();
+    lastRenderedQuery = $input.val();
 
     if (renderResults()) {
       setHighlighted(0);
@@ -500,14 +623,9 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
   };
 
   /**
-   * Generate DOM result items from the current search using the results cache
+   * Generate DOM result items from the current query using the results cache
    * 
    * @todo Grouping of items even if they are recieved in an arbitrary order?
-   *
-   * @todo Sanitization of title/description? Something that just filters XSS
-   * would be necessary, I think. Maybe a list of allowed HTML tags.
-   * Another option is to inform the developers that they should sanitize
-   * server-side.
    */
   var renderResults = function() {
 
@@ -521,7 +639,6 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       return false;
     }
     var lastGroup, output, count = 0;
-    // TODO: Change to $.each for consistency
     $.each(results[userString], function(index, result) {
       if (!(result instanceof Object)) {
         return;
