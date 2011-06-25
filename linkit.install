@@ -14,6 +14,33 @@ function linkit_uninstall() {
 }
 
 /**
+ * Implements hook_install().
+ */
+function linkit_install() {
+  // Build a default profile.
+  $default_profile['default_profile'] = array(
+    'name' => 'Default',
+    'machine_name' => 'default',
+    'plugins' => array(
+      'node' => array(
+        'weight' => 0,
+        'status' => 1,
+      )
+    ),
+    'node' => array(
+      'result_description' => '[node:author] - [node:created:short]',
+    ),
+  );
+  
+  // Save the default profile.
+  variable_set('linkit_profiles', $default_profile);
+
+  // Assign the default profile to authenticated users.
+  variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => 'default'));
+}
+
+
+/**
  * Update Linkit permission names.
  */
 function linkit_update_7100() {
