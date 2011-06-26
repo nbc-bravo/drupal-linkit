@@ -326,6 +326,8 @@ function linkit_profile_delete_form_submit($form, &$form_state) {
   // Save the hole settings array. Note: This includes ALL profiles.
   variable_set('linkit_profiles', $profiles);
 
+  _linkit_rebuild_role_assign_settings();
+
   drupal_set_message(t('Deleted Linkit profile %profile.', array('%profile' => $profile['name'])));
   $form_state['redirect'] = 'admin/config/content/linkit';
 }

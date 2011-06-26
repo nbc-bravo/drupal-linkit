@@ -864,3 +864,37 @@ function linkit_get_dashboard_profile() {
 
   return $best_profile;
 }
+
+/**
+ * Rebuild all role assignments to avoid conflicts.4
+ */
+function _linkit_rebuild_role_assign_settings() {
+  $profiles = linkit_get_profiles();
+  $drupal_roles = user_roles();
+  $roles_profiles = variable_get('linkit_roles_profiles', array());
+
+  $role_diff = array_diff_key($roles_profiles, $drupal_roles);
+
+ // Unset all roles that does not exists.
+  foreach ($role_diff AS $rid => $profile_name) {
+    unset($roles_profiles[$rid]);
+  }
+
+  // Check that profiles that is assign to roles really exists.
+  // If not, set the to blank (- None -).
+  foreach ($roles_profiles AS $rid => $profile_name) {
+    if(!isset($profiles[$profile_name])) {
+      $roles_profiles[$rid] = '';
+    }
+  }
+
+  // Save this.
+  variable_set('linkit_roles_profiles', $roles_profiles);
+}
+
+/**
+ * Implements hook_user_role_delete().
+ */
+function linkit_user_role_delete ($role) {
+  _linkit_rebuild_role_assign_settings();
+}
