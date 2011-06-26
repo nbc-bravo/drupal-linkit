@@ -9,8 +9,8 @@
  * Implements hook_uninstall().
  */
 function linkit_uninstall() {
-  variable_del('linkit_node');
-  variable_del('linkit_term');
+  variable_del('linkit_profiles');
+  variable_del('linkit_roles_profiles');
 }
 
 /**
@@ -31,7 +31,7 @@ function linkit_install() {
       'result_description' => '[node:author] - [node:created:short]',
     ),
   );
-  
+
   // Save the default profile.
   variable_set('linkit_profiles', $default_profile);
 
@@ -46,7 +46,7 @@ function linkit_install() {
 function linkit_update_7100() {
   // See http://drupal.org/node/1050444
   $plugins = array('file', 'node', 'taxonomy', 'user');
-  
+
   foreach($plugins AS $plugin) {
     db_update('role_permission')
       ->fields(array('permission' => 'use linkit ' . $plugin . ' plugin'))
@@ -60,10 +60,9 @@ function linkit_update_7100() {
       ->condition('permission', 'create all links')
       ->condition('module', 'linkit_permissions')
       ->execute();
-  
+
   return t('Linkit permission was successfully updated.');
 
   // In case of an error, simply throw an exception with an error message.
-  throw new DrupalUpdateException('Something went wrong; Please go to admin/people/permissions and update your Linkit permossions manually.');
-
+  throw new DrupalUpdateException(t('Something went wrong; Please go to admin/people/permissions and update your Linkit permissions manually.'));
 }
