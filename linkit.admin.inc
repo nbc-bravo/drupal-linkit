@@ -14,11 +14,11 @@ function linkit_admin_page() {
   $profiles = linkit_get_profiles();
 
   $rows = array();
-  foreach ($profiles AS $profile) {
+  foreach ($profiles AS $machine_name => $profile) {
     $rows[] = array(
       check_plain($profile['name']),
       l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']),
-      l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
+      $machine_name == LINKIT_DEFAULT_PRFOLE_MACHINE_NAME ? '' : l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
     );
   }
 

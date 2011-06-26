@@ -21,6 +21,11 @@ define('LINKIT_DISABLED', 0);
  */
 define('LINKIT_DEFAULT_WEIGHT', 0);
 
+/**
+ * The default profile machine name
+ */
+define('LINKIT_DEFAULT_PRFOLE_MACHINE_NAME', 'default');
+
 
 /**
  * Implements hook_menu().
@@ -75,7 +80,8 @@ function linkit_menu() {
     'title' => 'Delete Linkit profile',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('linkit_profile_delete_form', 5),
-    'access arguments' => array('administer linkit'),
+    'access callback' => 'linkit_admin_profile_delete_access',
+    'access arguments' => array(5),
     'file' => 'linkit.admin.inc',
   );
 
@@ -98,6 +104,16 @@ function linkit_permission() {
       'title' => t('Administer Linkit'),
     ),
   );
+}
+
+/**
+ * Menu access callback; Make the default profile undeletable.
+ */
+function linkit_admin_profile_delete_access($profile) {
+  if(user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PRFOLE_MACHINE_NAME) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
