@@ -21,9 +21,8 @@ INSTALLATION
     You need to enable the Pathologic input filter on the text formats you intend to use Linkit on.
  2. Install and enable the linkit module and at least one of linkit_node,
     linkit_views, linkit_taxonomy or linkit_user.
- 3. Enable the Linkit button in your WYSIWYG editor's settings.
-
-If you are using standalone CKEditor, see editors/ckeditor/README.txt for additional install information.
+ 3 a). Enable the Linkit button in your WYSIWYG editor's settings.
+ 3 b). Enable the Linkit button in your CKEditor profile settings.
 
 
 DEPENDENCIES
