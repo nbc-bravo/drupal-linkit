@@ -91,6 +91,22 @@ function linkit_element_info_alter(&$types) {
 }
 
 /**
+ * Implementation of hook_ckeditor_plugin().
+ */
+function linkit_ckeditor_plugin() {
+  return array(
+    'linkit' => array(
+      // Name of the plugin used to write it
+      'name' => 'Linkit',
+      // Description of plugin - it would appear in plugins managment of profile settings
+      'desc' => t('Support for Linkit module'),
+      // The full path to the CKEditor plugin directory, with trailing slash.
+      'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
+    )
+  );
+}
+
+/**
  * Template preprocess function for theme_linkit_dashboard().
  */
 function template_preprocess_linkit_dashboard(&$variables) {
