@@ -79,7 +79,7 @@ LinkitDialog = {
     }
     else if(this.selection.getNative().isCollapsed) {
       // No text and no element is selected.
-        // @TODO: Insert title if no text or element is selected?
+      // @TODO: Insert title if no text or element is selected?
     }
     else {
      // Text is selected.
