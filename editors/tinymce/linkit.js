@@ -15,7 +15,7 @@ linkitDialog = {
       $('#edit-class').val($(e).attr('class'));
       $('#edit-rel').val($(e).attr('rel'));
       $('#edit-accesskey').val($(e).attr('accesskey'));
-      console.log(e);
+
       Drupal.linkit.populateLink($(e).html(), $(e).attr('href'), true);
     }
     else {
