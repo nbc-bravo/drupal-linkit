@@ -1,4 +1,3 @@
-
 /**
  * @file Plugin for inserting links with Linkit
  */
@@ -33,17 +32,15 @@
     
   });
 
-  function insertLink(params, editor) {
+  function insertLink(data, editor) {
     this.fakeObj = false;
-    var link_text = params.link_text;
-    delete  params.link_text;
+
     var selection = editor.getSelection(),
     ranges = selection.getRanges(),
     element = null;
 
     // Fill in all the relevant fields if there's already one link selected.
     if (ranges.length == 1) {
-      
       var rangeRoot = ranges[0].getCommonAncestor(true);
       element = rangeRoot.getAscendant('a', true);
       
@@ -58,7 +55,7 @@
       else
         element = null;
     }
-    
+
     // Record down the selected element in the dialog.
     this._.selectedElement = element;
     
@@ -67,45 +64,32 @@
       var selection = editor.getSelection(), ranges = selection.getRanges();
       
       if ( ranges.length == 1 && ranges[0].collapsed ) {
-        var text = new CKEDITOR.dom.text( link_text, editor.document );
+        var text = new CKEDITOR.dom.text( data.text, editor.document );
         ranges[0].insertNode( text );
         ranges[0].selectNodeContents( text );
         selection.selectRanges( ranges );
       }
 
       // Insert into editor
-      var style = new CKEDITOR.style( { element : 'a', attributes : params } );
+      var style = new CKEDITOR.style( { element : 'a', attributes : data.attributes } );
       style.type = CKEDITOR.STYLE_INLINE;
       style.apply( editor.document );
     }
     else {
-      
       // We're only editing an existing link, so just overwrite the attributes.
       var element = this._.selectedElement;
 
-      // IE BUG: Setting the name attribute to an existing link doesn't work.
-      // Must re-create the link from weired syntax to workaround.
-      if (CKEDITOR.env.ie && params.name != element.getAttribute('name')) {
+      var removeAttributes = [];
 
-        var newElement = new CKEDITOR.dom.element('<a name="' + CKEDITOR.tools.htmlEncode( params.name ) + '">', editor.document);
-
-        selection = editor.getSelection();
-
-        element.moveChildren(newElement);
-        element.copyAttributes(newElement, { name : 1 });
-        newElement.replace(element);
-        element = newElement;
-
-        selection.selectElement(element);
+      for ( var i = 0 ; i < element.$.attributes.length ; i++ ) {
+        removeAttributes.push(element.$.attributes[i].localName);
       }
-
-      var removeAttributes = ['target', '_cke_pa_onclick', '_cke_saved_href', 'onclick', 'title', 'id', 'class', 'rel', 'accesskey'];
 
       // Remove all attributes so we can update them
       element.removeAttributes(removeAttributes);
 
       // Set params from form
-      element.setAttributes(params);
+      element.setAttributes(data.attributes);
      
       if (this.fakeObj) {
         editor.createFakeElement(element, 'cke_anchor', 'anchor').replace(this.fakeObj);
