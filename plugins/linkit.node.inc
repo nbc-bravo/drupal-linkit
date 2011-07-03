@@ -76,6 +76,11 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
 
+  // Status condition.
+  if (!isset($profile['node']['include_unpublished'])) {
+    $query->condition('n.status', 1);
+  }
+
   return $query;
 }
 

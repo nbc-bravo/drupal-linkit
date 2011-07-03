@@ -107,6 +107,12 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
 
+  $form['node']['include_unpublished'] = array(
+    '#title' => t('Include unpublished nodes in the result'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile['node']['include_unpublished']) ? $profile['node']['include_unpublished'] : array(),
+  );
+
   $form['user'] = array(
     '#type' => 'fieldset',
     '#title' => t('User settings'),
