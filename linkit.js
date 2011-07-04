@@ -26,6 +26,9 @@ Drupal.behaviors.linkit = {
       },
       finishFetching: function() {
         $searchInput.removeClass('throbbing');
+      },
+      constructURL: function(path, search) {
+        return path + encodeURIComponent(search);
       }
     });
 

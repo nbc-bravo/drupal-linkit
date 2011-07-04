@@ -190,7 +190,7 @@ function _linkit_dashboard($editor) {
 
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
 
-  $settings['autocompletePath'] = url('linkit/autocomplete', array('absolute' => TRUE));
+  $settings['autocompletePath'] = url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE));
 
   // TODO: Condition: if files plugin is enabled
   // Check if IMCE is enbled and accessable
