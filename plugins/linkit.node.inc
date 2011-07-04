@@ -107,7 +107,7 @@ function _linkit_node_autocomplete($string, $profile) {
       'description' => token_replace($result_description, array(
         'node' => $node,
       )),
-      'path' => 'node/' . $node->nid,
+      'path' => url('node/' . $node->nid, array('alias' => TRUE)),
       'group' => t('Content'),
     );
   }

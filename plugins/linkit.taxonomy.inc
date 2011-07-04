@@ -60,7 +60,7 @@ function _linkit_taxonomy_autocomplete($string, $profile) {
       'description' => token_replace($result_description, array(
         'term' => $term,
       )),
-      'path' => $uri['path'],
+      'path' => url($uri['path'], array('alias' => TRUE)),
       'group' => t('Terms'),
     );
   }

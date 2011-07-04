@@ -71,7 +71,7 @@ function _linkit_user_autocomplete($string, $profile) {
       'description' => token_replace($result_description, array(
         'user' => $user,
       )),
-      'path' => 'user/' . $user->uid,
+      'path' => url('user/' . $user->uid, array('alias' => TRUE)),
       'group' => t('Users'),
     );
   }
