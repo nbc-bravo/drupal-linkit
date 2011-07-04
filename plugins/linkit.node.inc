@@ -44,7 +44,7 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
           $query->addField('n', 'language');
           break;
         case 'author':
-          $query->addField('n', 'uid'); // @todo: kolla på detta!
+          $query->addField('n', 'uid');
           $query->addField('u', 'name', 'name');
           $query->leftJoin('users', 'u', 'u.uid = n.uid');
           break;
