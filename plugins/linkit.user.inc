@@ -87,10 +87,6 @@ function _linkit_user_autocomplete($string, $profile) {
  * @see linkit.api.php
  */
 function _linkit_user_path_info($path_info, $profile) {
-  // TODO: Move to linkit.module:
-  // Backwards compatible with internal: links
-  // $escaped_string = str_replace('internal:', '', $string)
-
   // Check if path is referring to a user
   if (arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
     $result_description = check_plain($profile['user']['result_description']);

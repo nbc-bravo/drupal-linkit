@@ -75,10 +75,6 @@ function _linkit_taxonomy_autocomplete($string, $profile) {
  * @see linkit.api.php
  */
 function _linkit_taxonomy_path_info($path_info, $profile) {
-  // TODO: Move to linkit.module:
-  // Backwards compatible with internal: links
-  // $escaped_string = str_replace('internal:', '', $string)
-
   // Define the default taxonomy URI's first argument (arg(0)).
   $taxonomy_uri_array = array('taxonomy', 'forum');
 

@@ -129,10 +129,6 @@ function _linkit_node_autocomplete($string, $profile) {
  * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
 function _linkit_node_path_info($path_info, $profile) {
-  // TODO: Move to linkit.module:
-  // Backwards compatible with internal: links
-  // $escaped_string = str_replace('internal:', '', $string)
-
   // Check if path is referring to a node
   if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
     $result_description = check_plain($profile['node']['result_description']);
