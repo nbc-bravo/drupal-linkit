@@ -2,10 +2,13 @@ Linkit x.x-x.x, xxxx-xx-xx
 
 Linkit 6.x-1.10, xxxx-xx-xx
 ------------------------------
-Issue #1179926 by dczepierga, anon: Added new hook for integration with CKEditor module.
+Issue #1179926 by dczepierga, anon: Added new hook for integration with 
+  CKEditor module.
 Issue #1182494 by batigolix, anon: Fixed some typos.
 Issue #1160054 by betamos: IMCE window disables browser.
 #1127790 by skylord, anon: Fixed error in Opera browser.
+Issue #1209124 by patrick.davey, anon: Show unpublished node settings works 
+  backwards to what should be expected.
 
 Linkit 6.x-1.9, 2011-02-07
 ------------------------------

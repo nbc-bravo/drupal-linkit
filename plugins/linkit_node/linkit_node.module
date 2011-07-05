@@ -41,7 +41,7 @@ function linkit_node_linkit_load_plugins($string) {
     $from[] = 'LEFT JOIN {book} b ON b.nid = n.nid';
     $fields[] = 'b.bid';
   }
-  if ($settings['display_settings']['show_unpublished']) {
+  if (!$settings['display_settings']['show_unpublished']) {
     $where[] = "AND n.status = 1";
   }
 
