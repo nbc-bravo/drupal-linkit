@@ -43,7 +43,7 @@ function linkit_node_linkit_load_plugins($string) {
     $query->leftJoin('book', 'b', 'b.nid = n.nid');
     $query->addField('b', 'bid');
   }
-  if ($settings['display_settings']['show_unpublished']) {
+  if (!$settings['display_settings']['show_unpublished']) {
     $query->condition('n.status', '1', '=');
   }
   

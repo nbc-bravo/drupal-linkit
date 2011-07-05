@@ -4,6 +4,8 @@ Linkit 7.x-1.3, xxxx-xx-xx
 ------------------------------
 Issue #1160054 by betamos: IMCE window disables browser.
 #1127790 by skylord, anon: Fixed error in Opera browser.
+Issue #1209124 by patrick.davey, anon: Show unpublished node settings works 
+  backwards to what should be expected.
 
 Linkit 7.x-1.2, 2011-03-25
 ------------------------------
