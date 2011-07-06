@@ -60,14 +60,10 @@ Drupal.linkit = Drupal.linkit || {};
  * @todo Create another function which populates by field name since
  * other fields may be populated by the editor.
  */
-Drupal.linkit.populateLink = function(text, path, silent) {
-  var silent = silent || false;
-  // Only change the link text if it is empty
-  $('#linkit #edit-text:text[value=""]').val(text);
+Drupal.linkit.populateLink = function(text, path) {
+  $('#linkit').data('text', text);
   $('#linkit #edit-path').val(path);
-  if (!silent) {
-    $('#linkit #edit-text').focus().select();
-  }
+  $('#linkit #edit-search').blur();
 };
 
 /**
@@ -90,6 +86,14 @@ Drupal.linkit.IMCECallback = function(file, win) {
   // TODO: Retrieve public files path by adding it to Drupal.settings
   Drupal.linkit.populateLink(file.name, win.imce.decode(Drupal.settings.linkit.publicFilesDirectory + '/' + file.relpath));
   win.close();
+};
+
+/**
+ * Show a message if there is no selection.
+ */
+Drupal.linkit.noselection = function() {
+  var info_text = Drupal.t('<em class="notice">Notice: No selection was found, your link text will appear as the item title you are linking to.</em>');
+  $('#linkit-dashboard-form').prepend(info_text);
 };
 
 })(jQuery);

@@ -45,10 +45,11 @@ if(oEditor.FCK.EditorDocument.selection != null) {
       $('#edit-rel').val($(oLink).attr('rel'));
       $('#edit-accesskey').val($(oLink).attr('accesskey'));
     } else if(selection == "") {
-      // Show help text when there is no selection element
+      // No text and no element is selected.
+      Drupal.linkit.noselection();
     } 
     else {
-      $('#edit-text').val(selection);
+      // Text is selected.
     }
   });
 })(jQuery);
@@ -62,7 +63,8 @@ function Ok() {
     var link_text = $('#edit-text').val();
 
     if ( link_path.length == 0 ) {
-      alert(Drupal.t('No URL'));
+      alert(Drupal.t('There is no path.'));
+      $('#edit-search').focus();
       return false ;
     }
 
@@ -75,9 +77,7 @@ function Ok() {
     var aHasSelection = ( aLinks.length > 0 ) ;
     if ( !aHasSelection )
     {
-      if (link_text)
-        sInnerHtml = link_text;  // use matched path
-
+      sInnerHtml =  $('#linkit').data('text');
       // Create a new (empty) anchor.
       aLinks = [ oEditor.FCK.InsertElement( 'a' ) ] ;
     }

@@ -79,7 +79,7 @@ LinkitDialog = {
     }
     else if(this.selection.getNative().isCollapsed) {
       // No text and no element is selected.
-      // @TODO: Insert title if no text or element is selected?
+      Drupal.linkit.noselection();
     }
     else {
      // Text is selected.
@@ -118,9 +118,9 @@ LinkitDialog = {
         data.attributes[$(this).attr('name')] = $(this).val();
       }
     });
-    
+
     data.attributes['href'] = $("#edit-path").val();
-    data.text = this.selectedText;
+    data.text = this.selection.getNative().isCollapsed ? $('#linkit').data('text') : this.selectedText;
 
     this.data = data;
   }

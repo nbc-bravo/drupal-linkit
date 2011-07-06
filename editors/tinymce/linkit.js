@@ -15,13 +15,13 @@ linkitDialog = {
       $('#edit-class').val($(e).attr('class'));
       $('#edit-rel').val($(e).attr('rel'));
       $('#edit-accesskey').val($(e).attr('accesskey'));
-
-      Drupal.linkit.populateLink($(e).html(), $(e).attr('href'), true);
+      $('#edit-path').val($(e).attr('href'));
+    } else if(ed.selection.isCollapsed()) {
+      // No text and no element is selected.
+      Drupal.linkit.noselection();
     }
     else {
-      // TODO: Change all linkitHelper references to
-      // Drupal.linkit.<new_function_name>
-      Drupal.linkit.populateLink(ed.selection.getContent(), $(e).attr('href'), true);
+      // Text is selected.
     }
   },
 
@@ -40,24 +40,25 @@ linkitDialog = {
         tinyMCEPopup.close();
         return;
       }
-      tinyMCEPopup.close();
+      alert(Drupal.t('There is no path.'));
+      $('#edit-search').focus();
+      //tinyMCEPopup.close();
       return;
     }
     
     tinyMCEPopup.execCommand("mceBeginUndoLevel");
 
     var link_path = $('#edit-path').val();
-    var link_text = $('#edit-text').val();
 
     // Create new anchor elements
     if (e == null) {
-      
+
       if (ed.selection.isCollapsed()) {
-        tinyMCEPopup.execCommand("mceInsertContent", false, '<a href="#linkit-href#">' + link_text + '</a>');
+        tinyMCEPopup.execCommand("mceInsertContent", false, '<a href="#linkit-href#">' + $('#linkit').data('text') + '</a>');
       } else {
         tinyMCEPopup.execCommand("createlink", false, '#linkit-href#', {skip_undo : 1});
       }
-        
+
       tinymce.each(ed.dom.select("a"), function(n) {
         if (ed.dom.getAttrib(n, 'href') == '#linkit-href#') {
           e = n;
