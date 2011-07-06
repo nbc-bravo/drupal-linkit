@@ -93,7 +93,8 @@ function Ok() {
 
       oLink.innerHTML = sInnerHtml ;    // Set (or restore) the innerHTML
       
-      // @TODO: Remove all attributes before we insert new ones.
+      // Remove all attributes before we insert new ones.
+      FCKTools.ClearElementAttributes(oLink);
 
       // Advances Attributes
       $("#edit-attributes .linkit-attribute").each(function() {
