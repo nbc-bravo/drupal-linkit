@@ -9,9 +9,9 @@ Drupal.behaviors.linkit = {
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
       { // Options
-        charLimit : settings.linkit.advanced.charlimit,
-        wait : settings.linkit.advanced.wait,
-        ajaxTimeout : settings.linkit.advanced.ajaxtimeout
+        charLimit : typeof settings.linkit.advanced.charlimit != 'undefined' ? settings.linkit.advanced.charlimit : 3,
+        wait : typeof settings.linkit.advanced.wait != 'undefined' ? settings.linkit.advanced.wait : 250,
+        ajaxTimeout : typeof settings.linkit.advanced.ajaxtimeout != 'undefined' ? settings.linkit.advanced.ajaxtimeout : 5000
       },
       { // Callbacks
       select: function(result) {

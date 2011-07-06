@@ -203,9 +203,8 @@ function _linkit_dashboard($editor) {
   }
 
   $profile = linkit_get_dashboard_profile();
-  if (isset($profile['advanced'])) {
-    $settings['advanced'] = array_filter($profile['advanced']);
-  }
+
+  $settings['advanced'] = array_filter($profile['advanced']);
 
   drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
@@ -787,10 +786,13 @@ function linkit_profile_load($profile_name) {
 function linkit_get_profile_attributes() {
   $profile = linkit_get_dashboard_profile();
   $enabled_attributes = array();
-  // Loop thru all attributes and build an array with all that is enabled.
-  foreach (linkit_get_attributes($profile) as $name => $attribute) {
-    if ($profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
-      $enabled_attributes[$name] = $attribute;
+
+  if (isset($profile['attributes'])) {
+    // Loop thru all attributes and build an array with all that is enabled.
+    foreach (linkit_get_attributes($profile) as $name => $attribute) {
+      if ($profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
+        $enabled_attributes[$name] = $attribute;
+      }
     }
   }
   return $enabled_attributes;
@@ -854,7 +856,6 @@ function linkit_get_dashboard_profile() {
       }
     }
   }
-
   return $best_profile;
 }
 

@@ -30,6 +30,8 @@ function linkit_install() {
     'node' => array(
       'result_description' => '[node:author] - [node:created:short]',
     ),
+    'attributes' => array(),
+    'advanced' => array(),
   );
 
   // Save the default profile.
