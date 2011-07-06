@@ -73,7 +73,7 @@ LinkitDialog = {
       $('#edit-path').val(this.selectedElement.getAttribute('href'));
       var selectedElement = this.selectedElement;
       // Set values from selection.
-      $('#edit-attributes input').each(function() {
+      $('#edit-attributes .linkit-attribute').each(function() {
         $(this).val(selectedElement.getAttribute($(this).attr('name')));
       });
     }
@@ -113,7 +113,7 @@ LinkitDialog = {
     var data = {};
     data.attributes = {};
 
-    $("#edit-attributes input").each(function() {
+    $("#edit-attributes .linkit-attribute").each(function() {
       if($(this).val() != "") {
         data.attributes[$(this).attr('name')] = $(this).val();
       }
