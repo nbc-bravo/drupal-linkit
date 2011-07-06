@@ -25,7 +25,7 @@ if(oEditor.FCK.EditorDocument.selection != null) {
 (function ($) {
   $(document).ready(function() {
     // Hide the form buttons as FCK provide us with thier owns.
-    $('#edit-cancel, #edit-insert').hide();
+    $('#cancel, #edit-insert').hide();
 
     $('*', document).keydown(function(ev) {
       if (ev.keyCode == 13) {
