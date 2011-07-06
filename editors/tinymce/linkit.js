@@ -10,11 +10,12 @@ linkitDialog = {
     var ed = tinyMCEPopup.editor;
 
     if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
-      $('#edit-title').val($(e).attr('title'));
-      $('#edit-id').val($(e).attr('id'));
-      $('#edit-class').val($(e).attr('class'));
-      $('#edit-rel').val($(e).attr('rel'));
-      $('#edit-accesskey').val($(e).attr('accesskey'));
+      
+      // Set values from selection.
+      $('#edit-attributes .linkit-attribute').each(function() {
+        $(this).val($(e).attr($(this).attr('name')));
+      });
+
       $('#edit-path').val($(e).attr('href'));
     } else if(ed.selection.isCollapsed()) {
       // No text and no element is selected.
@@ -62,26 +63,28 @@ linkitDialog = {
       tinymce.each(ed.dom.select("a"), function(n) {
         if (ed.dom.getAttrib(n, 'href') == '#linkit-href#') {
           e = n;
+          // @TODO: Remove all attributes before we insert new ones. (ed.dom.removeAllAttribs(e);)
 
-          ed.dom.setAttribs(e, {
-            'href'      : link_path,
-            'title'     : $('#edit-title').val(),
-            'id'        : $('#edit-id').val(),
-            'class'     : $('#edit-class').val(),
-            'rel'       : $('#edit-rel').val(),
-            'accesskey' : $('#edit-accesskey').val()
+          $("#edit-attributes .linkit-attribute").each(function() {
+            if($(this).val() != "") {
+              ed.dom.setAttrib(e, $(this).attr('name'), $(this).val());
+            }
           });
+
+          // Set href explicit.
+          ed.dom.setAttrib(e, 'href', link_path);
         }
       });
     } else {
-      ed.dom.setAttribs(e, {
-        'href'      : link_path,
-        'title'     : $('#edit-title').val(),
-        'id'        : $('#edit-id').val(),
-        'class'     : $('#edit-class').val(),
-        'rel'       : $('#edit-rel').val(),
-        'accesskey' : $('#edit-accesskey').val()
+
+      $("#edit-attributes .linkit-attribute").each(function() {
+        if($(this).val() != "") {
+          ed.dom.setAttrib(e, $(this).attr('name'), $(this).val());
+        }
       });
+
+      // Set href explicit.
+      ed.dom.setAttrib(e, 'href', link_path);
     }
     // Don't move caret if selection was image
     if(e != null) {
