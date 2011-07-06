@@ -471,14 +471,7 @@ function linkit_dashboard_form() {
     // Add the imce buttom
     //$form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
-  $form['text'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Link text'),
-    '#required' => TRUE,
-    '#size' => 60,
-    '#default_value' => '',
-    '#weight' => -5,
-  );
+
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Target path'),
