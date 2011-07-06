@@ -37,13 +37,13 @@ if(oEditor.FCK.EditorDocument.selection != null) {
 
     if ( oLink ) {
       FCK.Selection.SelectNode( oLink ) ;
-      $('#edit-text').val($(oLink).html());
+
+      // Set values from selection.
+      $('#edit-attributes .linkit-attribute').each(function() {
+        $(this).val($(oLink).attr($(this).attr('name')));
+      });
+
       $('#edit-path').val($(oLink).attr('href'));
-      $('#edit-title').val($(oLink).attr('title'));
-      $('#edit-id').val($(oLink).attr('id'));
-      $('#edit-class').val($(oLink).attr('class'));
-      $('#edit-rel').val($(oLink).attr('rel'));
-      $('#edit-accesskey').val($(oLink).attr('accesskey'));
     } else if(selection == "") {
       // No text and no element is selected.
       Drupal.linkit.noselection();
@@ -60,7 +60,6 @@ function Ok() {
 
   (function ($) {
     var link_path = $('#edit-path').val();
-    var link_text = $('#edit-text').val();
 
     if ( link_path.length == 0 ) {
       alert(Drupal.t('There is no path.'));
@@ -93,16 +92,15 @@ function Ok() {
       SetAttribute( oLink, '_fcksavedurl', link_path ) ;
 
       oLink.innerHTML = sInnerHtml ;    // Set (or restore) the innerHTML
-
-      // Let's set the "id" only for the first link to avoid duplication.
-      if ( i == 0 )
-        SetAttribute( oLink, 'id', $('#edit-id').val() ) ;
+      
+      // @TODO: Remove all attributes before we insert new ones.
 
       // Advances Attributes
-      SetAttribute( oLink, 'title', $('#edit-title').val() ) ;
-      SetAttribute( oLink, 'rel', $('#edit-rel').val() ) ;
-      SetAttribute( oLink, 'accesskey', $('#edit-accesskey').val() ) ;
-      SetAttribute( oLink, 'class', $('#edit-class').val() ) ;
+      $("#edit-attributes .linkit-attribute").each(function() {
+        if($(this).val() != "") {
+          SetAttribute( oLink, $(this).attr('name'), $(this).val());
+        }
+      });
     }
 
     // Select the (first) link.
