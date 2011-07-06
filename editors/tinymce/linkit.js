@@ -63,8 +63,8 @@ linkitDialog = {
       tinymce.each(ed.dom.select("a"), function(n) {
         if (ed.dom.getAttrib(n, 'href') == '#linkit-href#') {
           e = n;
-          // @TODO: Remove all attributes before we insert new ones. (ed.dom.removeAllAttribs(e);)
-
+          // Remove all attributes before we insert new ones.
+          ed.dom.removeAllAttribs(e);
           $("#edit-attributes .linkit-attribute").each(function() {
             if($(this).val() != "") {
               ed.dom.setAttrib(e, $(this).attr('name'), $(this).val());
