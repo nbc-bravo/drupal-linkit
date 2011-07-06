@@ -791,6 +791,8 @@ function linkit_get_profile_attributes() {
     // Loop thru all attributes and build an array with all that is enabled.
     foreach (linkit_get_attributes($profile) as $name => $attribute) {
       if ($profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
+        // Add Linkit specific class, this is used by the editor JS scripts. 
+        $attribute['#attributes']['class'][] = 'linkit-attribute';
         $enabled_attributes[$name] = $attribute;
       }
     }
