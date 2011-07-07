@@ -12,7 +12,7 @@ function linkit_admin_page() {
 
   // Get all created profiles.
   $profiles = linkit_get_profiles();
-
+  
   $rows = array();
   foreach ($profiles AS $machine_name => $profile) {
     $rows[] = array(
@@ -252,8 +252,9 @@ function linkit_profile_form_submit($form, &$form_state) {
   $profiles = linkit_get_profiles();
 
   // Save all vaules into the variable.
-  // This so other modules can preform hook_gform_alter here and get there
+  // This so other modules can preform hook_form_alter here and get there
   // variables saved aswell.
+  $form_state['values']['name'] = trim($form_state['values']['name']);
   foreach ($form_state['values'] as $key => $value) {
     $profiles[$form_state['values']['machine_name']][$key] = $value;
   }
