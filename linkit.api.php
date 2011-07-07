@@ -8,7 +8,7 @@
 /**
  * Defines one or more attributes to use with Linkit.
  *
- * All attributes is defined as form elements, and it used both in the Linkit 
+ * All attributes is defined as form elements, and it used both in the Linkit
  * profile form and in the Linkit dashboard.
  *
  * See Drupal FAPI for more info.
@@ -17,14 +17,14 @@
  * @param string $profile
  *   The profile settings the user calling this function has.
  * @return string
- *   An associative array with form elements with the key being the HTML 
+ *   An associative array with form elements with the key being the HTML
  *   attribute name (my_attribute = <a my_attribute="value"></a>).
  */
 function hook_linkit_attributes($profile) {
   $attributes['my_attribute'] = array(
     '#type' => 'textfield',
     '#title' => t('My attribute'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => isset($profile['attributes']['my_attribute']['weight']) ? $profile['attributes']['my_attribute']['weight'] : 0,
@@ -48,9 +48,9 @@ function hook_linkit_attributes_alter(&$attributes) {
   $attributes['rel']['#type'] = 'select';
   $attributes['rel']['#title'] = t('Rel select');
   $attributes['rel']['#options'] = array(
-    '' => t('None'), 
-    'now-follow' => t('No follow'), 
-    'other-rel' =>t('Other rel'),
+    '' => t('None'),
+    'now-follow' => t('No follow'),
+    'other-rel' => t('Other rel'),
   );
 }
 
@@ -62,7 +62,7 @@ function hook_linkit_attributes_alter(&$attributes) {
  *   implementation and the values being an array with the following keys:
  *     - "title": The untranslated human readable name for the plugin.
  *     - "description": Short untranslated description for the plugin.
- *     - "file": (optional) A file that will be included before the 
+ *     - "file": (optional) A file that will be included before the
  *       autocomplete callback function is called.
  *     - "autocomplete callback": The function to call when the users search
  *       for something.
@@ -90,7 +90,7 @@ function hook_linkit_plugins() {
  * @param $profile
  *   The profile settings the user calling this function has.
  * @return
- *   An array of search results. Each search result is an associative array 
+ *   An array of search results. Each search result is an associative array
  *   that may contain the following key-value pairs:
  *     - "title": The untranslated title for the item.
  *     - "description": (optional) The untranslated description that will be
@@ -98,7 +98,7 @@ function hook_linkit_plugins() {
  *     - "path": The path for the item.
  *     - "group": (optional) The untranslated group name. This is used to group
  *       results into different groups, like Content, user, term and so on.
- */ 
+ */
 function mymodule_autocomplete_function($string, $profile) {
 }
 
@@ -115,7 +115,7 @@ function mymodule_autocomplete_function($string, $profile) {
  * @param $profile
  *   The profile settings the user calling this function has.
  * @return
- *   An array of search results. Each search result is an associative array 
+ *   An array of search results. Each search result is an associative array
  *   that may contain the following key-value pairs:
  *     - "title": The untranslated title for the item.
  *     - "description": (optional) The untranslated description that will be
@@ -123,6 +123,6 @@ function mymodule_autocomplete_function($string, $profile) {
  *     - "path": The path for the item.
  *     - "group": (optional) The untranslated group name. This is used to group
  *       results into different groups, like Content, user, term and so on.
- */ 
+ */
 function mymodule_path_info_function($path_info, $profile) {
 }

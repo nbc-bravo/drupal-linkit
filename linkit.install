@@ -49,19 +49,19 @@ function linkit_update_7100() {
   // See http://drupal.org/node/1050444
   $plugins = array('file', 'node', 'taxonomy', 'user');
 
-  foreach($plugins AS $plugin) {
+  foreach ($plugins AS $plugin) {
     db_update('role_permission')
       ->fields(array('permission' => 'use linkit ' . $plugin . ' plugin'))
       ->condition('permission', 'create ' . $plugin . ' links')
       ->condition('module', 'linkit_permissions')
       ->execute();
   }
-  
-   db_update('role_permission')
-      ->fields(array('permission' => 'use all linkit plugins'))
-      ->condition('permission', 'create all links')
-      ->condition('module', 'linkit_permissions')
-      ->execute();
+
+  db_update('role_permission')
+    ->fields(array('permission' => 'use all linkit plugins'))
+    ->condition('permission', 'create all links')
+    ->condition('module', 'linkit_permissions')
+    ->execute();
 
   return t('Linkit permission was successfully updated.');
 

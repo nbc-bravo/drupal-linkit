@@ -110,7 +110,7 @@ function linkit_permission() {
  * Menu access callback; Make the default profile undeletable.
  */
 function linkit_admin_profile_delete_access($profile) {
-  if(user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PRFOLE_MACHINE_NAME) {
+  if (user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PRFOLE_MACHINE_NAME) {
     return TRUE;
   }
   return FALSE;
@@ -312,6 +312,8 @@ function _linkit_autocomplete_search($search, $enabled_plugins) {
  *     will become "http://example.org/settings".
  */
 function linkit_scan_url($url) {
+  // @TODO: Document why we use "parse_url" instead of the Drupal PHP wrapper
+  // function "drupal_parse_url"
   $parts = parse_url($url);
   if (!$parts['scheme'] || !$parts['host']) {
     // Not an absolute URL.
@@ -465,7 +467,7 @@ function linkit_dashboard_form() {
       '#value' => t('Open file browser'),
       '#name' => 'linkit-imce',
       '#id' => 'linkit-imce',
-    '#weight' => -8,
+      '#weight' => -8,
     );
     // Add extra class to edit-link field when we can use IMCE
     $form['search']['#attributes'] = array('class' => array('with_imce'));
@@ -799,7 +801,7 @@ function linkit_get_profile_attributes() {
     // Loop thru all attributes and build an array with all that is enabled.
     foreach (linkit_get_attributes($profile) as $name => $attribute) {
       if ($profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
-        // Add Linkit specific class, this is used by the editor JS scripts. 
+        // Add Linkit specific class, this is used by the editor JS scripts.
         $attribute['#attributes']['class'][] = 'linkit-attribute';
         $enabled_attributes[$name] = $attribute;
       }
@@ -887,7 +889,7 @@ function _linkit_rebuild_role_assign_settings() {
   // Check that profiles that is assign to roles really exists.
   // If not, set the to blank (- None -).
   foreach ($roles_profiles AS $rid => $profile_name) {
-    if(!isset($profiles[$profile_name])) {
+    if (!isset($profiles[$profile_name])) {
       $roles_profiles[$rid] = '';
     }
   }
@@ -899,6 +901,6 @@ function _linkit_rebuild_role_assign_settings() {
 /**
  * Implements hook_user_role_delete().
  */
-function linkit_user_role_delete ($role) {
+function linkit_user_role_delete($role) {
   _linkit_rebuild_role_assign_settings();
 }

@@ -29,7 +29,7 @@ function _linkit_file_autocomplete($string, $settings) {
 
   // TODO: Check permissions here....
   // Users chould only have access to files that are related to nodes (and maybe other stuff?)??
-    
+
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
   // [file:fid]
