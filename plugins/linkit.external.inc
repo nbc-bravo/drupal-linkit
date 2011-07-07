@@ -7,7 +7,7 @@
 
 
 /**
- * Implements hook_linkit_plugins "path info callback".
+ * The path info callback function for the Linkit external plugin.
  *
  * If the path given is an absolute URL, then return information about it.
  *

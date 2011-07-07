@@ -86,7 +86,7 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
 
 
 /**
- * Implements hook_linkit_load_plugins().
+ * The autocomplete callback function for the Linkit node plugin.
  */
 function _linkit_node_autocomplete($string, $profile) {
   $matches = array();
@@ -116,17 +116,11 @@ function _linkit_node_autocomplete($string, $profile) {
 }
 
 /**
- * Implements hook_linkit_plugins "path info callback".
+ * The path info callback function for the Linkit node plugin.
  *
  * If the path given is a node item, then return information about that node.
  *
  * @see linkit.api.php
- *
- * @todo Perhaps non core plugins should be able to alter the appearance of
- * title and description by for example adding tokens and having a way to
- * alter the query so their particular field can be loaded. For example if
- * they want a new token "node image" which fetches an image field file ref
- * that inserts a thumbnail for that image. Maybe it's a little too much :)
  */
 function _linkit_node_path_info($path_info, $profile) {
   // Check if path is referring to a node

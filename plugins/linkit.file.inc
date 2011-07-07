@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_linkit_load_plugins().
+ * The autocomplete callback function for the Linkit file plugin.
  */
 function _linkit_file_autocomplete($string, $settings) {
   $matches = array();
@@ -101,7 +101,7 @@ function _linkit_file_autocomplete($string, $settings) {
 }
 
 /**
- * Implements hook_linkit_plugins "path info callback".
+ * The path info callback function for the Linkit file plugin.
  *
  * If the path given is a public file, then return information about that file.
  *

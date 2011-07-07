@@ -51,7 +51,7 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
 }
 
 /**
- * Implements hook_linkit_load_plugins().
+ * The autocomplete callback function for the Linkit user plugin.
  */
 function _linkit_user_autocomplete($string, $profile) {
   $matches = array();
@@ -80,7 +80,7 @@ function _linkit_user_autocomplete($string, $profile) {
 }
 
 /**
- * Implements hook_linkit_plugins "path info callback".
+ * The path info callback function for the Linkit user plugin.
  *
  * If the path given is a user, then return information about that user.
  *

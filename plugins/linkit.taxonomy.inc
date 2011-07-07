@@ -39,7 +39,7 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
 }
 
 /**
- * Implements hook_linkit_load_plugins().
+ * The autocomplete callback function for the Linkit taxonomy plugin.
  */
 function _linkit_taxonomy_autocomplete($string, $profile) {
   $matches = array();
@@ -68,7 +68,7 @@ function _linkit_taxonomy_autocomplete($string, $profile) {
 }
 
 /**
- * Implements hook_linkit_plugins "path info callback".
+ * The path info callback function for the Linkit taxonomy plugin.
  *
  * If the path given is a taxonomy term, then return information about that term.
  *
