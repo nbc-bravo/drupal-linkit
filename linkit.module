@@ -257,9 +257,11 @@ function _linkit_autocomplete($search = NULL) {
 
 /**
  * Perform internal autocomplete search
- * Enter description here ...
- * @param $search The search string
- * @return $results An array with the result objects
+ *
+ * @param $search
+ *   The search string
+ * @return $results
+ *   An array with the result objects
  */
 function _linkit_autocomplete_search($search, $enabled_plugins) {
   $matches = array();
@@ -509,6 +511,9 @@ function linkit_dashboard_form() {
   return $form;
 }
 
+/**
+ * Implements hook_wysiwyg_plugin().
+ */
 function linkit_wysiwyg_plugin($editor, $version) {
   $plugins = array();
   _linkit_add_settings('wysiwyg_' . $editor);
@@ -545,6 +550,9 @@ function linkit_wysiwyg_plugin($editor, $version) {
   return $plugins;
 }
 
+/**
+ * Add necessary settings to the Drupal.settings array.
+ */
 function _linkit_add_settings($editor) {
   $editor_settings_added = &drupal_static(__FUNCTION__ . ':editor_settings_added', array());
   $global_settings_added = &drupal_static(__FUNCTION__ . ':global_settings_added', FALSE);
@@ -589,7 +597,6 @@ function linkit_help($path, $arg) {
  *
  * @param $profile_name
  *   The ID of the profile check.
- *
  * @return
  *   TRUE if the profile exists, FALSE otherwise.
  *
@@ -610,7 +617,8 @@ function linkit_admin_profile_title($op, $profile) {
 /**
  * Implements hook_image_default_styles().
  *
- * @return An array of image styles, keyed by the style name.
+ * @return
+ *   An array of image styles, keyed by the style name.
  */
 function linkit_image_default_styles() {
   $styles = array();
@@ -629,7 +637,7 @@ function linkit_image_default_styles() {
 }
 
 /**
- *
+ * Get all attributes defined by hook_linkit_attributes().
  */
 function linkit_get_attributes($profile = NULL) {
   if (is_null($profile)) {
