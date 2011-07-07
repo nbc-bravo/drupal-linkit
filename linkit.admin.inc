@@ -483,17 +483,17 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
   $tmp_plugins = array();
 
   foreach ($plugins AS $name => $plugin) {
-    $tmp_plugins[$name]['name'] = array('#markup' => check_plain($plugin['title']));
-    $tmp_plugins[$name]['description'] = array('#markup' => check_plain($plugin['description']));
+    $tmp_plugins[$name]['name'] = array('#markup' => t($plugin['title']));
+    $tmp_plugins[$name]['description'] = array('#markup' => t($plugin['description']));
     $tmp_plugins[$name]['weight'] = array(
       '#type' => 'weight',
-      '#title' => t('Weight for @title', array('@title' => $plugin['title'])),
+      '#title' => t('Weight for @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['plugins'][$name]['weight']) ? $profile['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
     $tmp_plugins[$name]['status'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable @title', array('@title' => $plugin['title'])),
+      '#title' => t('Enable @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED,
     );

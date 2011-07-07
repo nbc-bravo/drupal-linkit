@@ -712,16 +712,16 @@ function linkit_linkit_attributes($profile) {
  */
 function linkit_linkit_plugins() {
   $plugins['node'] = array(
-    'title' => t('Node linking'),
-    'description' => t('Extends Linkit with the ability to find nodes in the autocomplete search.'),
+    'title' => 'Node linking',
+    'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search.',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
     'path info callback' => '_linkit_node_path_info'
   );
 
   $plugins['user'] = array(
-    'title' => t('User linking'),
-    'description' => t('Extends Linkit with the ability to find users in the autocomplete search.'),
+    'title' => 'User linking',
+    'description' => 'Extends Linkit with the ability to find users in the autocomplete search.',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
     'autocomplete callback' => '_linkit_user_autocomplete',
     'path info callback' => '_linkit_user_path_info'
@@ -729,24 +729,24 @@ function linkit_linkit_plugins() {
 
   // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
   $plugins['file'] = array(
-    'title' => t('File linking'),
-    'description' => t('Extends Linkit with the ability to find files in the autocomplete search.'),
+    'title' => 'File linking',
+    'description' => 'Extends Linkit with the ability to find files in the autocomplete search.',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
     'autocomplete callback' => '_linkit_file_autocomplete',
     'path info callback' => '_linkit_file_path_info',
   );
 
   $plugins['taxonomy'] = array(
-    'title' => t('Taxonomy linking'),
-    'description' => t('Extends Linkit with the ability to find terms in the autocomplete search.'),
+    'title' => 'Taxonomy linking',
+    'description' => 'Extends Linkit with the ability to find terms in the autocomplete search.',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
     'path info callback' => '_linkit_taxonomy_path_info'
   );
 
   $plugins['external'] = array(
-    'title' => t('External linking'),
-    'description' => t('Extends Linkit with the ability to ping and retrieve information about external sites.'),
+    'title' => 'External linking',
+    'description' => 'Extends Linkit with the ability to ping and retrieve information about external sites.',
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
     'path info callback' => '_linkit_external_path_info'
   );
