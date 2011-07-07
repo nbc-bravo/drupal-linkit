@@ -239,7 +239,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
  */
 function linkit_profile_form_validate($form, &$form_state) {
   foreach ($form_state['values']['advanced'] as $advanced_key => $advanced_value) {
-    if(!is_numeric($advanced_value)) {
+    if(!empty($advanced_value) && !is_numeric($advanced_value)) {
       form_set_error('advanced][' . $advanced_key, $form['advanced'][$advanced_key]['#title'] . ' should only contains numbers.');
     }
   }
