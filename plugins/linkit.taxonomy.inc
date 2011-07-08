@@ -3,7 +3,6 @@
 /**
  * @file
  * Extend Linkit with taxonomy links.
- * @todo Rename to just term?
  */
 
 /**
