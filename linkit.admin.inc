@@ -178,6 +178,20 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
   );
 
+  $image_extra_info_options = array(
+    // Coder is saying "$text argument to l() should be enclosed within t() so that it is translatable." but image styles is not translatable.
+    'thumbnail' => t('Image thumbnail (Uses the image style named !linkit_thumb_link)', array('!linkit_thumb_link' => l('linkit_thumb', 'admin/config/media/image-styles/edit/linkit_thumb'))),
+    'dimensions' => t('Full images dimensions (width and height)'),
+  );
+
+  $form['file']['image_extra_info'] = array(
+    '#title' => t('If the file is an image, include this in the search result description.'),
+    '#type' => 'checkboxes',
+    '#options' => $image_extra_info_options,
+    '#default_value' => isset($profile['file']['image_extra_info']) ? $profile['file']['image_extra_info'] : array(),
+    '#description' => t('This will be added before the "Information to display in the autocomplete field".'),
+  );
+
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),

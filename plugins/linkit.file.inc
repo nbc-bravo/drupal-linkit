@@ -6,20 +6,12 @@
  */
 
 /**
- * The autocomplete callback function for the Linkit file plugin.
+ * Build the default node query.
  */
-function _linkit_file_autocomplete($string, $settings) {
-  $matches = array();
-
-  $result_description = check_plain($settings['file']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
+function _linkit_file_create_base_query($profile, $result_tokens) {
   // Get files.
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
-    ->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
     ->condition('f.status' , FILE_STATUS_PERMANENT);
 
   // Not all tokens are supported by Linkit.
@@ -66,25 +58,60 @@ function _linkit_file_autocomplete($string, $settings) {
     }
   }
 
+  return $query;
+}
+
+/**
+ * Build the description string for the file.
+ */
+function _linkit_file_build_description($profile, $result_description, $file) {
+  $description = '';
+  if ($profile['file']['image_extra_info']['thumbnail'] || $profile['file']['image_extra_info']['dimensions']) {
+    $imageinfo = image_get_info($file->uri);
+  }
+
+  if ($profile['file']['image_extra_info']['thumbnail']) {
+    $image = $imageinfo ? theme_image_style(array(
+      'style_name' => 'linkit_thumb',
+      'path' => $file->uri,
+    )) : '';
+    $description .= $image;
+  }
+
+  if ($profile['file']['image_extra_info']['dimensions']) {
+    $description .= ($imageinfo ? ' ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px ' : '');
+  }
+
+  $description .= token_replace($result_description, array(
+    'file' => $file,
+  ));
+
+  return $description;
+}
+
+/**
+ * The autocomplete callback function for the Linkit file plugin.
+ */
+function _linkit_file_autocomplete($string, $profile) {
+  $matches = array();
+
+  $result_description = check_plain($profile['file']['result_description']);
+
+  // Build a list of all token-like patterns that appear in the text.
+  $result_tokens = token_scan($result_description);
+
+  // Build the base query.
+  $query = _linkit_file_create_base_query($profile, $result_tokens);
+  $query->condition('f.filename', '%' . db_like($string) . '%', 'LIKE');
   $result = $query->execute();
 
   $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result as $file) {
     if (_linkit_file_access($file->uri)) {
-      $imageinfo = image_get_info($file->uri);
-      $image = $imageinfo ? theme_image_style(array(
-        'style_name' => 'linkit_thumb',
-        'path' => $file->uri,
-      )) : '';
-/*
-// 'description' => $image . $file->filemime . ' · ' . format_size($file->filesize) . ($imageinfo ? ' · ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px' : '') .
-// '<br />' . $public_path . '/' . file_uri_target($file->uri),
-*/
       $matches[] = array(
         'title' => $file->filename,
-        'description' => token_replace($result_description, array(
-          'file' => $file,
-        )),
+        'description' => _linkit_file_build_description($profile, $result_description, $file),
+        // @TODO: Make this work with other schemas.
         'path' => $public_path . '/' . file_uri_target($file->uri),
         'group' => t('Files'),
       );
@@ -101,28 +128,31 @@ function _linkit_file_autocomplete($string, $settings) {
  *
  * @see linkit.api.php
  */
-function _linkit_file_path_info($path_info, $settings) {
+function _linkit_file_path_info($path_info, $profile) {
   $public_path = variable_get('file_public_path', conf_path() . '/files');
 
   // TODO: In path info, this variable should already exist, to avoid duplication
   preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['requested_path'], $matches);
   $filepath = $matches[1];
   if (!empty($filepath)) {
+    $result_description = check_plain($profile['file']['result_description']);
 
-    $query = db_select('file_managed', 'f')
-      ->fields('f', array('uri', 'filename'))
-      ->condition('f.status' , '1')
-      ->condition('f.uri', 'public://' . $filepath);
+    // Build a list of all token-like patterns that appear in the text.
+    $result_tokens = token_scan($result_description);
 
-    $db_result = $query->execute();
+    // Build the base query.
+    $query = _linkit_file_create_base_query($profile, $result_tokens);
+    // @TODO: Make this work with other schemas.
+    $query->condition('f.uri', 'public://' . $filepath);
+    $query_result = $query->execute()->fetch();
 
-    if ($file = $db_result->fetch()) {
-      if (_linkit_file_access($file->uri)) {
-        // TODO: Use tokens instead, by sharing functionalty with _linkit_file_autocomplete
+    if ($query_result) {
+      if (_linkit_file_access($query_result->uri)) {
         $result = array(
-          'title' => check_plain($file->filename),
-          'description' => check_plain('herro'),
-          'path' => $public_path . '/' . file_uri_target($file->uri),
+          'title' => check_plain($query_result->filename),
+          'description' => _linkit_file_build_description($profile, $result_description, $query_result),
+          // @TODO: Make this work with other schemas.
+          'path' => $public_path . '/' . file_uri_target($query_result->uri),
         );
         return $result;
       }
