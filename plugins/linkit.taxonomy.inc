@@ -12,6 +12,7 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
   // Build default query
   $query = db_select('taxonomy_term_data', 't')
     ->fields('t', array('tid', 'name'))
+    ->addTag('linkit_taxonomy')
     ->addTag('term_access');
 
   // Not all tokens are supported by Linkit.

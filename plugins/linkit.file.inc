@@ -12,7 +12,8 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
   // Get files.
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
-    ->condition('f.status' , FILE_STATUS_PERMANENT);
+    ->condition('f.status' , FILE_STATUS_PERMANENT)
+    ->addTag('linkit_file');
     // @todo: Make sure we dont include files that are temporary://.
 
   // Not all tokens are supported by Linkit.

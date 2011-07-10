@@ -12,6 +12,7 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   // Build default query
   $query = db_select('node', 'n')
     ->fields('n', array('nid', 'title'))
+    ->addTag('linkit_node')
     ->addTag('node_access');
 
   // Not all tokens are supported by Linkit.

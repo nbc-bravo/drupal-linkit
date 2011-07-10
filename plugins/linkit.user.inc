@@ -12,7 +12,8 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
   // Get users
   $query = db_select('users', 'u')
     ->fields('u', array('uid', 'name'))
-    ->condition('u.status' , '1');
+    ->condition('u.status' , '1')
+    ->addTag('linkit_user');
 
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
