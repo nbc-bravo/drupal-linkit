@@ -69,10 +69,6 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
     if (token_find_with_prefix($result_tokens['node'], 'changed')) {
       $query->addField('n', 'changed');
     }
-
-    if ($profile['node']['group_by_content_type']) {
-      $query->addField('n', 'type');
-    }
   }
 
   // Content type check
@@ -83,6 +79,15 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   // Status condition.
   if (!isset($profile['node']['include_unpublished'])) {
     $query->condition('n.status', 1);
+  }
+
+  if ($profile['node']['group_by_content_type']) {
+    $fields = $query->getFields();
+    // We need the type to sort on, if its not yet included in the query, we
+    // have to inlcude it.
+    if (!isset($fields['type'])) {
+      $query->addField('n', 'type');
+    }
     $query->orderBy('n.type', 'ASC');
   }
 
