@@ -87,6 +87,10 @@ function _linkit_file_build_description($profile, $result_description, $file) {
     'file' => $file,
   ));
 
+  if ($profile['file']['show_scheme']) {
+    $description_array[] = file_uri_scheme($file->uri) . '://';
+  }
+
   $description = (isset($image) ? $image : '') . implode(' - ' , $description_array);
 
   return $description;
