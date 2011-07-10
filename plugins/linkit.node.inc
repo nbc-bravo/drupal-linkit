@@ -83,7 +83,11 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   // Status condition.
   if (!isset($profile['node']['include_unpublished'])) {
     $query->condition('n.status', 1);
+    $query->orderBy('n.type', 'ASC');
   }
+
+  // Add the default sort.
+  $query->orderBy('n.title', 'ASC');
 
   return $query;
 }

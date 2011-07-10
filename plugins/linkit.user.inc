@@ -47,6 +47,10 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
       $query->addField('u', 'created');
     }
   }
+
+  // Add the default sort.
+  $query->orderBy('u.name', 'ASC');
+
   return $query;
 }
 

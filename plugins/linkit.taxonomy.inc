@@ -34,6 +34,10 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
       $query->addField('t', 'vid');
     }
   }
+
+  // Add the default sort.
+  $query->orderBy('t.name', 'ASC');
+
   return $query;
 }
 

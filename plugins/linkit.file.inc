@@ -13,7 +13,7 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
     ->condition('f.status' , FILE_STATUS_PERMANENT);
-    // @todo: Do not include files that are temporary.
+    // @todo: Make sure we dont include files that are temporary://.
 
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
@@ -58,6 +58,13 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
       $query->addField('f', 'uid');
     }
   }
+
+  if ($profile['file']['group_by_scheme']) {
+    $query->orderBy('f.uri', 'ASC');
+  }
+
+  // Add the default sort.
+  $query->orderBy('f.filename', 'ASC');
 
   return $query;
 }
