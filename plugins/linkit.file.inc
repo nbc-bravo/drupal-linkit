@@ -12,8 +12,7 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
   // Get files.
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
-    ->condition('f.status' , FILE_STATUS_PERMANENT)
-    ->addTag('linkit_file');
+    ->condition('f.status' , FILE_STATUS_PERMANENT);
     // @todo: Make sure we dont include files that are temporary://.
 
   // Not all tokens are supported by Linkit.
@@ -131,7 +130,8 @@ function _linkit_file_autocomplete($string, $profile) {
 
   // Build the base query.
   $query = _linkit_file_create_base_query($profile, $result_tokens);
-  $query->condition('f.filename', '%' . db_like($string) . '%', 'LIKE');
+  $query->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
+        ->addTag('linkit_file_autocomplete');
   $result = $query->execute();
 
   foreach ($result as $file) {

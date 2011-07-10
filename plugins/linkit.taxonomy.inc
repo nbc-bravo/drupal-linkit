@@ -12,7 +12,6 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
   // Build default query
   $query = db_select('taxonomy_term_data', 't')
     ->fields('t', array('tid', 'name'))
-    ->addTag('linkit_taxonomy')
     ->addTag('term_access');
 
   // Not all tokens are supported by Linkit.
@@ -77,7 +76,8 @@ function _linkit_taxonomy_autocomplete($string, $profile) {
   $result_tokens = token_scan($result_description);
 
   $query = _linkit_taxonomy_create_base_query($profile, $result_tokens);
-  $query->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE');
+  $query->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE')
+        ->addTag('linkit_taxonomy_autocomplete');
   $result = $query->execute();
 
   foreach ($result as $term) {

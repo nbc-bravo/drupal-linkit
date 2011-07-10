@@ -12,8 +12,7 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
   // Get users
   $query = db_select('users', 'u')
     ->fields('u', array('uid', 'name'))
-    ->condition('u.status' , '1')
-    ->addTag('linkit_user');
+    ->condition('u.status' , '1');
 
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
@@ -67,7 +66,8 @@ function _linkit_user_autocomplete($string, $profile) {
   $result_tokens = token_scan($result_description);
 
   $query = _linkit_user_create_base_query($profile, $result_tokens);
-  $query ->condition('u.name', '%' . db_like($string) . '%', 'LIKE');
+  $query ->condition('u.name', '%' . db_like($string) . '%', 'LIKE')
+         ->addTag('linkit_user_autocomplete');
   $result = $query->execute();
 
   foreach ($result AS $user) {
