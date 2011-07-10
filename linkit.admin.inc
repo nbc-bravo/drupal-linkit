@@ -199,6 +199,12 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('This will be added after the "Information to display in the autocomplete field".'),
   );
 
+  $form['file']['group_by_scheme'] = array(
+    '#title' => t('Group the files by the scheme.'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile['file']['group_by_scheme']) ? $profile['file']['group_by_scheme'] : array(),
+  );
+
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),

@@ -97,6 +97,20 @@ function _linkit_file_build_description($profile, $result_description, $file) {
 }
 
 /**
+ * Build the group string for the file.
+ */
+function _linkit_file_build_group($profile, $file) {
+  if ($profile['file']['group_by_scheme']) {
+    // Get all stream wrappers.
+    $stream_wrapper = file_get_stream_wrappers();
+    return t('Files (%stream_wrapper)', array('%stream_wrapper' => t($stream_wrapper[file_uri_scheme($file->uri)]['name'])));
+  }
+  else {
+    return t('Files');
+  }
+}
+
+/**
  * The autocomplete callback function for the Linkit file plugin.
  */
 function _linkit_file_autocomplete($string, $profile) {
@@ -118,7 +132,7 @@ function _linkit_file_autocomplete($string, $profile) {
         'title' => $file->filename,
         'description' => _linkit_file_build_description($profile, $result_description, $file),
         'path' => _linkit_file_get_url($file->uri),
-        'group' => t('Files'),
+        'group' => _linkit_file_build_group($profile, $file),
       );
     }
   }
