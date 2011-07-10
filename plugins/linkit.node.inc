@@ -69,6 +69,10 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
     if (token_find_with_prefix($result_tokens['node'], 'changed')) {
       $query->addField('n', 'changed');
     }
+
+    if ($profile['node']['group_by_content_type']) {
+      $query->addField('n', 'type');
+    }
   }
 
   // Content type check
@@ -84,6 +88,18 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   return $query;
 }
 
+/**
+ * Build the group string for the node.
+ */
+function _linkit_node_build_group($profile, $node) {
+  if ($profile['node']['group_by_content_type']) {
+    $type_name = node_type_get_name($node);
+    return t('Content (%type_name)', array('%type_name' => check_plain($type_name)));
+  }
+  else {
+    return t('Content');
+  }
+}
 
 /**
  * The autocomplete callback function for the Linkit node plugin.
@@ -108,7 +124,7 @@ function _linkit_node_autocomplete($string, $profile) {
         'node' => $node,
       )),
       'path' => url('node/' . $node->nid, array('alias' => TRUE)),
-      'group' => t('Content'),
+      'group' => _linkit_node_build_group($profile, $node),
     );
   }
 

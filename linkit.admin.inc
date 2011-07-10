@@ -112,6 +112,12 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#default_value' => isset($profile['node']['include_unpublished']) ? $profile['node']['include_unpublished'] : array(),
   );
 
+  $form['node']['group_by_content_type'] = array(
+    '#title' => t('Group the nodes by the content type.'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile['node']['group_by_content_type']) ? $profile['node']['group_by_content_type'] : array(),
+  );
+
   $form['user'] = array(
     '#type' => 'fieldset',
     '#title' => t('User settings'),
