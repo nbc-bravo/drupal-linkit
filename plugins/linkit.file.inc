@@ -13,6 +13,7 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
     ->condition('f.status' , FILE_STATUS_PERMANENT);
+    // @todo: Do not include files that are temporary.
 
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
@@ -65,7 +66,8 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
  * Build the description string for the file.
  */
 function _linkit_file_build_description($profile, $result_description, $file) {
-  $description = '';
+  $description_array = array();
+
   if ($profile['file']['image_extra_info']['thumbnail'] || $profile['file']['image_extra_info']['dimensions']) {
     $imageinfo = image_get_info($file->uri);
   }
@@ -75,16 +77,17 @@ function _linkit_file_build_description($profile, $result_description, $file) {
       'style_name' => 'linkit_thumb',
       'path' => $file->uri,
     )) : '';
-    $description .= $image;
   }
 
   if ($profile['file']['image_extra_info']['dimensions']) {
-    $description .= ($imageinfo ? ' ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px ' : '');
+    $description_array[] = ($imageinfo ? ' ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px ' : '');
   }
 
-  $description .= token_replace($result_description, array(
+  $description_array[] = token_replace($result_description, array(
     'file' => $file,
   ));
+
+  $description = (isset($image) ? $image : '') . implode(' - ' , $description_array);
 
   return $description;
 }
@@ -105,14 +108,12 @@ function _linkit_file_autocomplete($string, $profile) {
   $query->condition('f.filename', '%' . db_like($string) . '%', 'LIKE');
   $result = $query->execute();
 
-  $public_path = variable_get('file_public_path', conf_path() . '/files');
   foreach ($result as $file) {
     if (_linkit_file_access($file->uri)) {
       $matches[] = array(
         'title' => $file->filename,
         'description' => _linkit_file_build_description($profile, $result_description, $file),
-        // @TODO: Make this work with other schemas.
-        'path' => $public_path . '/' . file_uri_target($file->uri),
+        'path' => _linkit_file_get_url($file->uri),
         'group' => t('Files'),
       );
     }
@@ -193,4 +194,42 @@ function _linkit_file_access($uri) {
     }
   }
   return FALSE;
+}
+
+
+/**
+ * Get an relative url to the file.
+ *
+ * We don't want to use the "getExternalUrl()" provided by the stream wrappers
+ * as this functions return an absolute paths.
+ *
+ * @param $uri
+ *   The URI of the file.
+ * @return
+ *   A relative URL to the file.
+ */
+function _linkit_file_get_url($uri) {
+  $scheme = file_uri_scheme($uri);
+  $target = file_uri_target($uri);
+  $url = module_invoke_all('linkit_get_url', $scheme, $target);
+  return $url;
+}
+
+/**
+ * Implements hook_linkit_get_url().
+ */
+function linkit_linkit_get_url($scheme, $target) {
+  switch ($scheme) {
+    case 'public':
+      $directory = variable_get('file_public_path', conf_path() . '/files');
+      $path = str_replace('\\', '/', $target);
+      return base_path() . $directory . '/asdasdasd' . drupal_encode_path($path);
+      break;
+
+    case 'private':
+      $directory = variable_get('file_private_path', '');
+      $path = str_replace('\\', '/', $target);
+      return url('system/files/' . $path);
+      break;
+  }
 }

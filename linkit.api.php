@@ -126,3 +126,30 @@ function mymodule_autocomplete_function($string, $profile) {
  */
 function mymodule_path_info_function($path_info, $profile) {
 }
+
+
+/**
+ * If you have a custom scheme, you can define how the relative URL, used by
+ * Linkit file plugin will look.
+ *
+ * public:// and private:// is implemented by Linkit core.
+ *
+ * @param $scheme
+ *   The scheme for the file.
+ * @param $target
+ *   The target for the file.
+ * @return
+ *   A string with the relative or absolute URL to your file. We use relative
+ *   for all Drupal internal paths.
+ *
+ * @see file_uri_scheme()
+ * @see file_uri_target()
+ * @see _linkit_file_get_url()
+ */
+function mymodule_linkit_get_url($scheme, $target) {
+  switch ($scheme) {
+    case 'mycustomscheme':
+      // Get some fancy url to my custom scheme and return it as a string.
+      break;
+  }
+}
