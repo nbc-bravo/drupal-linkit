@@ -35,10 +35,33 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
     }
   }
 
+  if ($profile['taxonomy']['group_by_vocabulary']) {
+    $fields = $query->getFields();
+    // We need the vid to sort on, if its not yet included in the query, we
+    // have to inlcude it.
+    if (!isset($fields['vid'])) {
+      $query->addField('t', 'vid');
+    }
+    $query->orderBy('t.vid', 'ASC');
+  }
+
   // Add the default sort.
   $query->orderBy('t.name', 'ASC');
 
   return $query;
+}
+
+/**
+ * Build the group string for the term.
+ */
+function _linkit_taxonomy_build_group($profile, $term) {
+  if ($profile['taxonomy']['group_by_vocabulary']) {
+    $vocabulary = taxonomy_vocabulary_load($term->vid);
+    return t('Terms (%vocabulary_name)', array('%vocabulary_name' => check_plain($vocabulary->name)));
+  }
+  else {
+    return t('Terms');
+  }
 }
 
 /**
@@ -64,7 +87,7 @@ function _linkit_taxonomy_autocomplete($string, $profile) {
         'term' => $term,
       )),
       'path' => url($uri['path'], array('alias' => TRUE)),
-      'group' => t('Terms'),
+      'group' => _linkit_taxonomy_build_group($profile, $term),
     );
   }
   return  $matches;

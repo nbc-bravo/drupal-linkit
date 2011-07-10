@@ -162,6 +162,12 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
+  $form['taxonomy']['group_by_vocabulary'] = array(
+    '#title' => t('Group the terms by the vocabulary.'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile['taxonomy']['group_by_vocabulary']) ? $profile['taxonomy']['group_by_vocabulary'] : array(),
+  );
+
   $form['file'] = array(
     '#type' => 'fieldset',
     '#title' => t('File settings'),
