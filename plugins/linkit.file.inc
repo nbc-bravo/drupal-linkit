@@ -249,7 +249,7 @@ function linkit_linkit_get_url($scheme, $target) {
     case 'public':
       $directory = variable_get('file_public_path', conf_path() . '/files');
       $path = str_replace('\\', '/', $target);
-      return base_path() . $directory . '/asdasdasd' . drupal_encode_path($path);
+      return base_path() . $directory . '/' . drupal_encode_path($path);
       break;
 
     case 'private':
