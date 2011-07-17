@@ -1,7 +1,5 @@
 /**
- * Better Autocomplete jQuery plugin.
- * Create or alter an autocomplete object instance to every text input
- * element in the selection.
+ * Better Autocomplete is a jQuery plugin.
  *
  * @author Didrik Nordström, http://betamos.se/
  *
@@ -15,6 +13,10 @@
  * @constructor
  *
  * @name jQuery.betterAutocomplete
+ *
+ * @description Create or alter an autocomplete object instance that belongs to
+ * the elements in the selection. Make sure there are only text field elements
+ * in the selection.
  *
  * @param {String} method
  *   Should be one of the following:
@@ -41,17 +43,23 @@
  * @param {Object} [options]
  *   An object with configurable options:
  *   <ul><li>
- *     charLimit: (default=3) The minimum number of chars to do an AJAX call.
- *     A typical use case for this limit is to reduce server load.
+ *     charLimit: (default=3 for remote or 1 for local resource) The minimum
+ *     number of chars to do an AJAX call. A typical use case for this limit is
+ *     to reduce server load.
  *   </li><li>
- *     delay: (default=250) The time in ms between last keypress and AJAX call.
+ *     delay: (default=350) The time in ms between last keypress and AJAX call.
  *     Typically used to prevent looking up irrelevant strings while the user
- *     is still typing.
+ *     is still typing. Only relevant for remote resources.
  *   </li><li>
- *     maxHeight: (default=330) The maximum height in pixels for the
- *     autocomplete list.
+ *     caseSensitive: (default=false) If the search should be case sensitive.
+ *     If false, query strings will be converted to lowercase.
  *   </li><li>
- *     remoteTimeout: (default=5000) The timeout for remote (AJAX) calls.
+ *     cacheLimit: (default=256 for remote or 0 for local resource) The maximum
+ *     number of result objects to store in the cache. This option reduces
+ *     server load if the user deletes characters to check back on previous
+ *     results. To disable caching of previous results, set this option to 0.
+ *   </li><li>
+ *     remoteTimeout: (default=10000) The timeout for remote (AJAX) calls.
  *   </li><li>
  *     selectKeys: (default=[9, 13]) The key codes for keys which will select
  *     the current highlighted element. The defaults are tab, enter.
@@ -66,7 +74,7 @@
  *   The jQuery object with the same element selection, for chaining.
  */
 
-(function ($) {
+(function($) {
 
 $.fn.betterAutocomplete = function(method) {
 
@@ -96,7 +104,7 @@ $.fn.betterAutocomplete = function(method) {
   var args = Array.prototype.slice.call(arguments, 1);
 
   // Method calling logic
-  this.filter(':input[type=text]').each(function() {
+  this.each(function() {
     switch (method) {
     case 'init':
       methods[method].apply(this, args);
@@ -110,7 +118,8 @@ $.fn.betterAutocomplete = function(method) {
       }
       break;
     default:
-      $.error('Method ' +  method + ' does not exist in jQuery.betterAutocomplete.');
+      $.error(['Method', method,
+          'does not exist in jQuery.betterAutocomplete.'].join(' '));
     }
   });
 
@@ -125,327 +134,106 @@ $.fn.betterAutocomplete = function(method) {
  * @private @constructor
  * @name BetterAutocomplete
  *
- * @param $input
- *   A single input element wrapped in jQuery
+ * @param {Object} $input
+ *   A single input element wrapped in jQuery.
  */
 var BetterAutocomplete = function($input, resource, options, callbacks) {
 
+  var lastRenderedQuery = '',
+    cache = {}, // Key-valued caching of search results
+    cacheOrder = [], // Array of query strings, in the order they are added
+    cacheSize = 0, // Keep count of the cache's size
+    timer, // Used for options.delay
+    activeRemoteCalls = [], // A flat array of query strings that are pending
+    disableMouseHighlight = false, // Suppress the autotriggered mouseover event
+    inputEvents = {},
+    isLocal = ($.type(resource) != 'string');
+
   options = $.extend({
-    charLimit: 3,
-    delay: 250, // milliseconds
-    maxHeight: 330, // px
-    remoteTimeout: 5000, // milliseconds
+    charLimit: isLocal ? 1 : 3,
+    delay: 350, // milliseconds
+    caseSensitive: false,
+    cacheLimit: isLocal ? 0 : 256, // Number of result objects
+    remoteTimeout: 10000, // milliseconds
     selectKeys: [9, 13] // [tab, enter]
   }, options);
 
-  /**
-   * These callbacks are supposed to be overridden by you when you need
-   * customization of the default behavior. When you are overriding a callback
-   * function, it is a good idea to copy the source code from the default
-   * callback function, as a skeleton.
-   *
-   * @name callbacks
-   * @namespace
-   */
-  callbacks = $.extend(
-  /**
-   * @lends callbacks.prototype
-   */
-  {
+  callbacks = $.extend({}, defaultCallbacks, callbacks);
 
-    /**
-     * Gets fired when the user selects a result by clicking or using the
-     * keyboard to select an element.
-     *
-     * <br /><br /><em>Default behavior: Simply blurs the input field.</em>
-     *
-     * @param {Result} result
-     *   The result object that was selected.
-     */
-    select: function(result) {
-      $input.blur();
-    },
+  var $results = $('<ul />')
+    .addClass('better-autocomplete');
 
-    /**
-     * Given a result object, render it to HTML. This callback can be viewed as
-     * a theming function.
-     *
-     * <br /><br /><em>Default behavior: Wraps result.title in an h4 tag, and
-     * result.description in a p tag. Note that no sanitization of malicious
-     * scripts is done here. Whatever is within the title/description is just
-     * printed out. May contain HTML.</em>
-     *
-     * @param {Object} result
-     *   The result object that should be rendered.
-     *
-     * @returns {String} HTML output, will be wrapped in a list element.
-     */
-    renderResult: function(result) {
-      var output = '';
-      if (typeof result.title != 'undefined') {
-        output += '<h4>' + result.title + '</h4>';
-      }
-      if (typeof result.description != 'undefined') {
-        output += '<p>' + result.description + '</p>';
-      }
-      return output;
-    },
-
-    /**
-     * Retrieve local results from the local resource by providing a query
-     * string.
-     *
-     * <br /><br /><em>Default behavior: Automatically handles arrays, if the
-     * data inside each element is either a plain string or a result object.
-     * If it is a result object, it will match the query string against the
-     * title and description property. Search is not case sensitive.</em>
-     *
-     * @param {String} query
-     *   The query string, unescaped. May contain any UTF-8 character.
-     *
-     * @param {Object} resource
-     *   The resource provided in the {@link jQuery.betterAutocomplete} init
-     *   constructor.
-     *
-     * @return {Array}
-     *   A flat array containing pure result objects.
-     */
-    queryLocalResults: function(query, resource) {
-      if (!(resource instanceof Array)) {
-        // Per default Better Autocomplete only handles arrays of data
-        return;
-      }
-      query = query.toLowerCase();
-      var results = [];
-      $.each(resource, function(i, value) {
-        switch (typeof value) {
-        case 'string': // Flat array of strings
-          if (value.toLowerCase().indexOf(query) >= 0) {
-            // Match found
-            results.push({ title: value });
-          }
-          break;
-        case 'object': // Array of result objects
-          if (typeof value.title != 'undefined' && value.title.toLowerCase().indexOf(query) >= 0) {
-            // Match found in title field
-            results.push(value);
-          }
-          else if (typeof value.description != 'undefined' && value.description.toLowerCase().indexOf(query) >= 0) {
-            // Match found in description field
-            results.push(value);
-          }
-          break;
-        }
-      });
-      return results;
-    },
-
-    /**
-     * Fetch remote result data and return it using completeCallback when
-     * fetching is finished. Must be asynchronous in order to not freeze the
-     * Better Autocomplete instance.
-     *
-     * <br /><br /><em>Default behavior: Fetches JSON data from the url, using
-     * the jQuery.ajax() method. Errors are ignored.</em>
-     *
-     * @param {String} url
-     *   The URL to fetch data from.
-     *
-     * @param {Function} completeCallback
-     *   This function must be called, even if an error occurs. It takes zero
-     *   or one parameter: the data that was fetched.
-     *
-     * @param {Number} timeout
-     *   The preferred timeout for the request. This callback should respect
-     *   the timeout.
-     */
-    fetchRemoteData: function(url, completeCallback, timeout) {
-      $.ajax({
-        url: url,
-        dataType: 'json',
-        timeout: timeout,
-        success: function(data, textStatus) {
-          completeCallback(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          completeCallback();
-        }
-      });
-    },
-
-    /**
-     * Process remote fetched data by extracting an array of result objects
-     * from it. This callback is useful if the fetched data is not the plain
-     * results array, but a more complicated object which does contain results.
-     *
-     * <br /><br /><em>Default behavior: If the data is defined and is an
-     * array, return it. Otherwise return an empty array.</em>
-     *
-     * @param {mixed} data
-     *   The raw data recieved from the server. Can be undefined.
-     *
-     * @returns {Array[Object]}
-     *   A flat array containing result objects. Must return an array.
-     */
-    processRemoteData: function(data) {
-      if (typeof data != 'undefined' && data instanceof Array) {
-        return data;
-      }
-      else {
-        return [];
-      }
-    },
-
-    /**
-     * Called when remote fetching begins.
-     *
-     * <br /><br /><em>Default behavior: Adds the CSS class "fetching" to the
-     * input field, for styling purposes.</em>
-     */
-    beginFetching: function() {
-      $input.addClass('fetching');
-    },
-
-    /**
-     * Called when fetching is finished. All active requests must finish before
-     * this function is called.
-     *
-     * <br /><br /><em>Default behavior: Removes the "fetching" class.</em>
-     */
-    finishFetching: function() {
-      $input.removeClass('fetching');
-    },
-
-    /**
-     * Construct the remote fetching URL.
-     *
-     * <br /><br /><em>Default behavior: Adds "?q=query" to the path. The query
-     * string is URL encoded.</em>
-     *
-     * @param {String} path
-     *   The path given in the {@link jQuery.betterAutocomplete} constructor.
-     *
-     * @param {String} query
-     *   The raw query string. Remember to URL encode this to prevent illegal
-     *   character errors.
-     *
-     * @returns {String}
-     *   The URL, ready for fetching.
-     */
-    constructURL: function(path, query) {
-      return path + '?q=' + encodeURIComponent(query);
-    }
-  }, callbacks);
-
-  var self = this,
-    lastRenderedQuery = '',
-    results = {}, // Caching dababase of search results.
-    userString = $input.val(), // Current input string,
-    timer, // Used for options.delay
-    activeRemoteCalls = 0,
-    disableMouseHighlight = false,
-    inputEvents = {},
-    isLocal = (typeof resource != 'string');
-
-  var $wrapper = $('<div />')
-    .addClass('better-autocomplete')
-    .insertAfter($input);
-
-  var $resultsList = $('<ul />')
-    .addClass('results')
-    .width($input.outerWidth() - 2) // Subtract border width.
-    .css('max-height', options.maxHeight + 'px')
-    .appendTo($wrapper);
+  callbacks.insertSuggestionList($results, $input, options.maxHeight);
 
   inputEvents.focus = function() {
-    // Parse results to be sure, the input value may have changed
-    parseResults();
-    $wrapper.show();
+    redraw(true);
   };
 
   inputEvents.blur = function() {
-    $wrapper.hide();
-  },
+    redraw();
+  };
 
   inputEvents.keydown = function(event) {
-    var index;
+    var index = getHighlighted();
     // If an arrow key is pressed and a result is highlighted
-    if ([38, 40].indexOf(event.keyCode) >= 0 && (index = getHighlighted()) >= 0) {
+    if ($.inArray(event.keyCode, [38, 40]) >= 0 && index >= 0) {
       var newIndex,
-        size = $('.result', $resultsList).length;
+        size = $('.result', $results).length;
       switch (event.keyCode) {
       case 38: // Up arrow
-        newIndex = Math.max(0, index-1);
+        newIndex = Math.max(0, index - 1);
         break;
       case 40: // Down arrow
-        newIndex = Math.min(size-1, index+1);
+        newIndex = Math.min(size - 1, index + 1);
         break;
       }
-      // Index have changed so update highlighted element, then cancel the event.
-      if (typeof newIndex == 'number') {
-
-        // Disable the auto-triggered mouseover event
-        disableMouseHighlight = true;
-
-        setHighlighted(newIndex);
-
-        // Automatic scrolling to the highlighted result
-        var $scrollTo = $('.result', $resultsList).eq(getHighlighted());
-
-        // Scrolling up, then show the group title
-        if ($scrollTo.prev().is('.group') && event.keyCode == 38) {
-          $scrollTo = $scrollTo.prev();
-        }
-        // Is the result above the visible region?
-        if ($scrollTo.position().top < 0) {
-          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop());
-        }
-        // Or is it below the visible region?
-        else if (($scrollTo.position().top + $scrollTo.outerHeight()) > $resultsList.height()) {
-          $resultsList.scrollTop($scrollTo.position().top + $resultsList.scrollTop() + $scrollTo.outerHeight() - $resultsList.height());
-        }
-        return false;
-      }
+      disableMouseHighlight = true;
+      setHighlighted(newIndex, true);
+      return false;
     }
-    else if (options.selectKeys.indexOf(event.keyCode) >= 0) {
-      // Only hijack the event if selecting is possible or pending action.
-      if (select() || activeRemoteCalls >= 1 || timer !== null) {
-        return false;
-      }
-      else {
-        return true;
-      }
+    // A select key has been pressed
+    else if ($.inArray(event.keyCode, options.selectKeys) >= 0 &&
+             !event.shiftKey && !event.ctrlKey && !event.altKey &&
+             !event.metaKey) {
+      select();
+      return event.keyCode == 9; // Never cancel tab
     }
   };
 
   inputEvents.keyup = function() {
+    var query = callbacks.canonicalQuery($input.val(), options.caseSensitive);
     clearTimeout(timer);
     // Indicate that timer is inactive
     timer = null;
-    // Parse always!
-    parseResults();
-    // If the results can't be displayed we must fetch them, then display
-    if (needsFetching()) {
-      $resultsList.empty();
+    redraw();
+    if (query.length >= options.charLimit && !$.isArray(cache[query]) &&
+        $.inArray(query, activeRemoteCalls) == -1) {
+      // Fetching is required
+      $results.empty();
       if (isLocal) {
-        fetchResults($input.val());
+        fetchResults(query);
       }
       else {
         timer = setTimeout(function() {
-          fetchResults($input.val());
+          fetchResults(query);
           timer = null;
         }, options.delay);
       }
     }
   };
 
-  $('.result', $resultsList[0]).live({
+  // Input with type="search" have a clickable X which clears the input field.
+  inputEvents.click = function() {
+    redraw();
+  };
+
+  $('.result', $results[0]).live({
     // When the user hovers a result with the mouse, highlight it.
     mouseover: function() {
       if (disableMouseHighlight) {
         return;
       }
-      setHighlighted($(this).data('index'));
+      setHighlighted($('.result', $results).index($(this)));
     },
     mousemove: function() {
       // Enable mouseover again.
@@ -459,7 +247,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
 
   // Prevent blur when clicking on group titles, scrollbars etc.,
   // This event is triggered after the others' because of bubbling order.
-  $resultsList.mousedown(function() {
+  $results.mousedown(function() {
     return false;
   });
 
@@ -474,7 +262,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     // Turn off the browser's autocompletion
     $input
       .attr('autocomplete', 'OFF')
-      .attr('aria-autocomplete', 'none');
+      .attr('aria-autocomplete', 'list');
     $input.bind(inputEvents);
   };
 
@@ -485,7 +273,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     $input
       .removeAttr('autocomplete')
       .removeAttr('aria-autocomplete');
-    $wrapper.hide();
+    $results.hide();
     $input.unbind(inputEvents);
   };
 
@@ -493,7 +281,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
    * Disable and remove this instance. This instance should not be reused.
    */
   this.destroy = function() {
-    $wrapper.remove();
+    $results.remove();
     $input.unbind(inputEvents);
     $input.removeData('better-autocomplete');
   };
@@ -503,167 +291,494 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
    */
 
   /**
+   * Add an array of results to the cache. Internal methods always reads from
+   * the cache, so this method must be invoked even when caching is not used,
+   * e.g. when using local results. This method automatically clears as much of
+   * the cache as required to fit within the cache limit.
+   *
+   * @param {String} query
+   *   The query to set the results to.
+   *
+   * @param {Array[Object]} results
+   *   The array of results for this query.
+   */
+  var cacheResults = function(query, results) {
+    cacheSize += results.length;
+    // Now reduce size until it fits
+    while (cacheSize > options.cacheLimit && cacheOrder.length) {
+      var key = cacheOrder.shift();
+      cacheSize -= cache[key].length;
+      delete cache[key];
+    }
+    cacheOrder.push(query);
+    cache[query] = results;
+  };
+
+  /**
    * Set highlight to a specific result item
    *
-   * @param index
-   *   The result's index, starting on 0
+   * @param {Number} index
+   *   The result's index, starting at 0.
+   *
+   * @param {Boolean} [autoScroll]
+   *   (default=false) If scrolling of the results list should be automated.
    */
-  var setHighlighted = function(index) {
-    $('.result', $resultsList)
+  var setHighlighted = function(index, autoScroll) {
+    // Scrolling upwards
+    var up = index == 0 || index < getHighlighted();
+    var $scrollTo = $('.result', $results)
       .removeClass('highlight')
       .eq(index).addClass('highlight');
+
+    if (!autoScroll) {
+      return;
+    }
+    // Scrolling up, then make sure to show the group title
+    if ($scrollTo.prev().is('.group') && up) {
+      $scrollTo = $scrollTo.prev();
+    }
+    // Is $scrollTo partly above the visible region?
+    if ($scrollTo.position().top < 0) {
+      $results.scrollTop($scrollTo.position().top + $results.scrollTop());
+    }
+    // Or is it partly below the visible region?
+    else if (($scrollTo.position().top + $scrollTo.outerHeight()) >
+              $results.height()) {
+      $results.scrollTop($scrollTo.position().top + $results.scrollTop() +
+          $scrollTo.outerHeight() - $results.height());
+    }
   };
 
   /**
    * Retrieve the index of the currently highlighted result item
    *
-   * @return
-   *   The result's index or -1 if no result is highlighted
+   * @returns {Number}
+   *   The result's index or -1 if no result is highlighted.
    */
   var getHighlighted = function() {
-    return $('.result', $resultsList).index($('.result.highlight', $resultsList));
+    return $('.result', $results).index($('.result.highlight', $results));
   };
 
   /**
-   * Select the current highlighted element
-   *
-   * @return
-   *   True if a selection was possible
+   * Select the current highlighted element, if any.
    */
   var select = function() {
-    var $result = $('.result', $resultsList).eq(getHighlighted());
-    if ($result.length == 0) {
-      return false;
+    var $result = $('.result', $results).eq(getHighlighted());
+    if (!$result.length) {
+      return; // No selectable element
     }
     var result = $result.data('result');
-
-    callbacks.select(result);
-
-    // Parse once more, if the callback changed focus or content
-    parseResults();
-    return true;
+    callbacks.select(result, $input);
+    // Redraw again, if the callback changed focus or content
+    redraw();
   };
 
   /**
    * Fetch results asynchronously via AJAX.
    * Errors are ignored.
    *
-   * @param query
-   *   The query string
+   * @param {String} query
+   *   The query string.
    */
   var fetchResults = function(query) {
     // Synchronously fetch local data
     if (isLocal) {
-      results[query] = callbacks.queryLocalResults(query, resource);
-      parseResults();
+      cacheResults(query, callbacks.queryLocalResults(query, resource,
+                                                      options.caseSensitive));
+      redraw();
     }
+    // Asynchronously fetch remote data
     else {
-      activeRemoteCalls++;
+      activeRemoteCalls.push(query);
       var url = callbacks.constructURL(resource, query);
-      callbacks.beginFetching();
+      callbacks.beginFetching($input);
       callbacks.fetchRemoteData(url, function(data) {
         var searchResults = callbacks.processRemoteData(data);
-        if (typeof searchResults == 'undefined' || !(searchResults instanceof Array)) {
+        if (!$.isArray(searchResults)) {
           searchResults = [];
         }
-        results[query] = searchResults;
-        activeRemoteCalls--;
-        if (activeRemoteCalls == 0) {
-          callbacks.finishFetching();
+        cacheResults(query, searchResults);
+        // Remove the query from active remote calls, since it's finished
+        activeRemoteCalls = $.grep(activeRemoteCalls, function(value) {
+          return value != query;
+        });
+        if (!activeRemoteCalls.length) {
+          callbacks.finishFetching($input);
         }
-        parseResults();
+        redraw();
       }, options.remoteTimeout);
     }
   };
 
   /**
-   * Does the current user string need fetching?
-   * Checks character limit and cache.
+   * Redraws the autocomplete list based on current query and focus.
    *
-   * @returns {Boolean} true if fetching is required
+   * @param {Boolean} [focus]
+   *   (default=false) Force to treat the input element like it's focused.
    */
-  var needsFetching = function() {
-    var userString = $input.val();
+  var redraw = function(focus) {
+    var query = callbacks.canonicalQuery($input.val(), options.caseSensitive);
 
-    if (userString.length < options.charLimit) {
-      return false;
+    // The query does not exist in db
+    if (!$.isArray(cache[query])) {
+      lastRenderedQuery = null;
+      $results.empty();
     }
-    else if (typeof results[userString] != 'undefined') {
-      return false;
+    // The query exists and is not already rendered
+    else if (lastRenderedQuery !== query) {
+      lastRenderedQuery = query;
+      renderResults(cache[query]);
+      setHighlighted(0);
+    }
+    // Finally show/hide based on focus and emptiness
+    if (($input.is(':focus') || focus) && !$results.is(':empty')) {
+      $results.filter(':hidden').show() // Show if hidden
+        .scrollTop($results.data('scroll-top')); // Reset the lost scrolling
+    }
+    else if ($results.is(':visible')) {
+      // Store the scrolling position for later
+      $results.data('scroll-top', $results.scrollTop())
+        .hide(); // Hiding it resets it's scrollTop
+    }
+  };
+
+  /**
+   * Regenerate the DOM content within the results list for a given set of
+   * results. Heavy method, use only when necessary.
+   *
+   * @param {Array[Object]} results
+   *   An array of result objects to render.
+   */
+  var renderResults = function(results) {
+    $results.empty();
+    var groups = {}; // Key is the group name, value is the heading element.
+
+    $.each(results, function(index, result) {
+      if ($.type(result) != 'object') {
+        return; // Continue
+      }
+
+      var output = callbacks.themeResult(result);
+      if ($.type(output) != 'string') {
+        return; // Continue
+      }
+
+      // Add the group if it doesn't exist
+      var group = callbacks.getGroup(result);
+      if ($.type(group) == 'string' && !groups[group]) {
+        var $groupHeading = $('<li />').addClass('group')
+          .append($('<h3 />').text(group))
+          .appendTo($results);
+        groups[group] = $groupHeading;
+      }
+
+      var $result = $('<li />').addClass('result')
+        .append(output)
+        .data('result', result) // Store the result object on this DOM element
+        .addClass(result.addClass);
+
+      // First groupless item
+      if ($.type(group) != 'string' &&
+          !$results.children().first().is('.result')) {
+        $results.prepend($result);
+        return; // Continue
+      }
+      var $traverseFrom = ($.type(group) == 'string') ?
+                          groups[group] : $results.children().first();
+      var $target = $traverseFrom.nextUntil('.group').last();
+      $result.insertAfter($target.length ? $target : $traverseFrom);
+    });
+  };
+};
+
+/*
+ * CALLBACK METHODS
+ */
+
+/**
+ * These callbacks are supposed to be overridden by you when you need
+ * customization of the default behavior. When you are overriding a callback
+ * function, it is a good idea to copy the source code from the default
+ * callback function, as a skeleton.
+ *
+ * @name callbacks
+ * @namespace
+ */
+var defaultCallbacks = {
+  /**
+   * @lends callbacks.prototype
+   */
+
+  /**
+   * Gets fired when the user selects a result by clicking or using the
+   * keyboard to select an element.
+   *
+   * <br /><br /><em>Default behavior: Inserts the result's title into the
+   * input field.</em>
+   *
+   * @param {Object} result
+   *   The result object that was selected.
+   *
+   * @param {Object} $input
+   *   The input DOM element, wrapped in jQuery.
+   */
+  select: function(result, $input) {
+    $input.val(result.title);
+  },
+
+  /**
+   * Given a result object, theme it to HTML.
+   *
+   * <br /><br /><em>Default behavior: Wraps result.title in an h4 tag, and
+   * result.description in a p tag. Note that no sanitization of malicious
+   * scripts is done here. Whatever is within the title/description is just
+   * printed out. May contain HTML.</em>
+   *
+   * @param {Object} result
+   *   The result object that should be rendered.
+   *
+   * @returns {String}
+   *   HTML output, will be wrapped in a list element.
+   */
+  themeResult: function(result) {
+    var output = [];
+    if ($.type(result.title) == 'string') {
+      output.push('<h4>', result.title, '</h4>');
+    }
+    if ($.type(result.description) == 'string') {
+      output.push('<p>', result.description, '</p>');
+    }
+    return output.join('');
+  },
+
+  /**
+   * Retrieve local results from the local resource by providing a query
+   * string.
+   *
+   * <br /><br /><em>Default behavior: Automatically handles arrays, if the
+   * data inside each element is either a plain string or a result object.
+   * If it is a result object, it will match the query string against the
+   * title and description property. Search is not case sensitive.</em>
+   *
+   * @param {String} query
+   *   The query string, unescaped. May contain any UTF-8 character.
+   *   If case insensitive, it already is lowercased.
+   *
+   * @param {Object} resource
+   *   The resource provided in the {@link jQuery.betterAutocomplete} init
+   *   constructor.
+   *
+   * @param {Boolean} caseSensitive
+   *   From options.caseSensitive, the searching should be case sensitive.
+   *
+   * @returns {Array[Object]}
+   *   A flat array containing pure result objects. Must return an array.
+   */
+  queryLocalResults: function(query, resource, caseSensitive) {
+    if (!$.isArray(resource)) {
+      // Per default Better Autocomplete only handles arrays
+      return [];
+    }
+    var results = [];
+    $.each(resource, function(i, value) {
+      switch ($.type(value)) {
+      case 'string': // Flat array of strings
+        if ((caseSensitive ? value : value.toLowerCase())
+            .indexOf(query) >= 0) {
+          // Match found
+          results.push({ title: value });
+        }
+        break;
+      case 'object': // Array of result objects
+        if ($.type(value.title) == 'string' &&
+            (caseSensitive ? value.title : value.title.toLowerCase())
+            .indexOf(query) >= 0) {
+          // Match found in title field
+          results.push(value);
+        }
+        else if ($.type(value.description) == 'string' &&
+                 (caseSensitive ? value.description :
+                 value.description.toLowerCase()).indexOf(query) >= 0) {
+          // Match found in description field
+          results.push(value);
+        }
+        break;
+      }
+    });
+    return results;
+  },
+
+  /**
+   * Fetch remote result data and return it using completeCallback when
+   * fetching is finished. Must be asynchronous in order to not freeze the
+   * Better Autocomplete instance.
+   *
+   * <br /><br /><em>Default behavior: Fetches JSON data from the url, using
+   * the jQuery.ajax() method. Errors are ignored.</em>
+   *
+   * @param {String} url
+   *   The URL to fetch data from.
+   *
+   * @param {Function} completeCallback
+   *   This function must be called, even if an error occurs. It takes zero
+   *   or one parameter: the data that was fetched.
+   *
+   * @param {Number} timeout
+   *   The preferred timeout for the request. This callback should respect
+   *   the timeout.
+   */
+  fetchRemoteData: function(url, completeCallback, timeout) {
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      timeout: timeout,
+      success: function(data, textStatus) {
+        completeCallback(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        completeCallback();
+      }
+    });
+  },
+
+  /**
+   * Process remote fetched data by extracting an array of result objects
+   * from it. This callback is useful if the fetched data is not the plain
+   * results array, but a more complicated object which does contain results.
+   *
+   * <br /><br /><em>Default behavior: If the data is defined and is an
+   * array, return it. Otherwise return an empty array.</em>
+   *
+   * @param {mixed} data
+   *   The raw data recieved from the server. Can be undefined.
+   *
+   * @returns {Array[Object]}
+   *   A flat array containing result objects. Must return an array.
+   */
+  processRemoteData: function(data) {
+    if ($.isArray(data)) {
+      return data;
     }
     else {
-      return true;
+      return [];
     }
-  };
+  },
 
   /**
-   * Checks if needed to re-render etc
+   * From a given result object, return it's group name (if any). Used for
+   * grouping results together.
+   *
+   * <br /><br /><em>Default behavior: If the result has a "group" property
+   * defined, return it.</em>
+   *
+   * @param {Object} result
+   *   The result object.
+   *
+   * @returns {String}
+   *   The group name. If no group, don't return anything.
    */
-  var parseResults = function() {
-    // TODO: Logical statements here, cleanup?
-    if (!$input.is(':focus')) {
-      $wrapper.hide();
-      return;
+  getGroup: function(result) {
+    if ($.type(result.group) == 'string') {
+      return result.group;
     }
-    // Check if already rendered
-    if (lastRenderedQuery == $input.val()) {
-      $wrapper.show();
-      return;
-    }
-    $wrapper.hide();
-    if (needsFetching()) {
-      return;
-    }
-    lastRenderedQuery = $input.val();
-
-    if (renderResults()) {
-      setHighlighted(0);
-      $wrapper.show();
-    }
-  };
+  },
 
   /**
-   * Generate DOM result items from the current query using the results cache
-   * 
-   * @todo Grouping of items even if they are recieved in an arbitrary order?
+   * Called when remote fetching begins.
+   *
+   * <br /><br /><em>Default behavior: Adds the CSS class "fetching" to the
+   * input field, for styling purposes.</em>
+   *
+   * @param {Object} $input
+   *   The input DOM element, wrapped in jQuery.
    */
-  var renderResults = function() {
+  beginFetching: function($input) {
+    $input.addClass('fetching');
+  },
 
-    // Update user string
-    userString = $input.val();
+  /**
+   * Called when fetching is finished. All active requests must finish before
+   * this function is called.
+   *
+   * <br /><br /><em>Default behavior: Removes the "fetching" class.</em>
+   *
+   * @param {Object} $input
+   *   The input DOM element, wrapped in jQuery.
+   */
+  finishFetching: function($input) {
+    $input.removeClass('fetching');
+  },
 
-    $resultsList.empty();
+  /**
+   * Construct the remote fetching URL.
+   *
+   * <br /><br /><em>Default behavior: Adds "?q=query" to the path. The query
+   * string is URL encoded.</em>
+   *
+   * @param {String} path
+   *   The path given in the {@link jQuery.betterAutocomplete} constructor.
+   *
+   * @param {String} query
+   *   The raw query string. Remember to URL encode this to prevent illegal
+   *   character errors.
+   *
+   * @returns {String}
+   *   The URL, ready for fetching.
+   */
+  constructURL: function(path, query) {
+    return path + '?q=' + encodeURIComponent(query);
+  },
 
-    // The result is not in cache, so there is nothing to display right now
-    if (!(results[userString] instanceof Array)) {
-      return false;
+  /**
+   * To ease up on server load, treat similar strings the same.
+   *
+   * <br /><br /><em>Default behavior: Trims the query from leading and
+   * trailing whitespace.</em>
+   *
+   * @param {String} rawQuery
+   *   The user's raw input.
+   *
+   * @param {Boolean} caseSensitive
+   *   Case sensitive. Will convert to lowercase if false.
+   *
+   * @returns {String}
+   *   The canonical query associated with this string.
+   */
+  canonicalQuery: function(rawQuery, caseSensitive) {
+    var query = $.trim(rawQuery);
+    if (!caseSensitive) {
+      query = query.toLowerCase();
     }
-    var lastGroup, output, count = 0;
-    $.each(results[userString], function(index, result) {
-      if (!(result instanceof Object)) {
-        return;
-      }
+    return query;
+  },
 
-      // Grouping
-      if (typeof result.group != 'undefined' && result.group !== lastGroup) {
-        var $groupHeading = $('<li />').addClass('group')
-          .append('<h3>' + result.group + '</h3>')
-          .appendTo($resultsList);
-      }
-      lastGroup = result.group;
-
-      if (output = callbacks.renderResult(result)) {
-        $('<li />').addClass('result')
-          .append(output)
-          .data('result', result) // Store the result object on this DOM element
-          .data('index', index) // For quick determination of index on events
-          .addClass(result.addClass)
-          .appendTo($resultsList);
-      }
-      count++;
-    });
-    return !!count; // Only true if there were elements
-  };
+  /**
+   * Insert the results list into the DOM and position it properly.
+   *
+   * <br /><br /><em>Default behavior: Inserts suggestion list directly
+   * after the input element and sets an absolute position using
+   * jQuery.position() for determining left/top values. Also adds a nice
+   * looking box-shadow to the list.</em>
+   *
+   * @param {Object} $results
+   *   The UL list element to insert, wrapped in jQuery.
+   *
+   * @param {Object} $input
+   *   The text input element, wrapped in jQuery.
+   */
+  insertSuggestionList: function($results, $input) {
+    $results.width($input.outerWidth() - 2) // Subtract border width.
+      .css({
+        position: 'absolute',
+        left: $input.position().left,
+        top: $input.position().top + $input.outerHeight(),
+        zIndex: 10,
+        maxHeight: '330px',
+        // Visually indicate that results are in the topmost layer
+        boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
+      })
+      .insertAfter($input);
+  }
 };
 
 /*
