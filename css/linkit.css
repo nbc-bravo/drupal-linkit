@@ -18,6 +18,11 @@ input#edit-link.with_imce {
 
 /* Better Autocomplete */
 
+.better-autocomplete {
+  left: 1px;
+  top: -1px;
+}
+
 .better-autocomplete > .results > .result img {
   float: left;
   margin: 0 5px 5px 0;
