@@ -3,6 +3,7 @@
 /**
  * @file
  * Hooks and alters provided by Linkit.
+ * @todo: Set data type for parametera and return values
  */
 
 /**
@@ -87,9 +88,9 @@ function hook_linkit_plugins() {
  *
  * @param $string
  *   A string contains the text from the autocomplete field.
- * @param $profile
+ * @param object $profile
  *   The profile settings the user calling this function has.
- * @return
+ * @return array
  *   An array of search results. Each search result is an associative array
  *   that may contain the following key-value pairs:
  *     - "title": The untranslated title for the item.
