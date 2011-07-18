@@ -13,7 +13,6 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
   $query = db_select('file_managed', 'f')
     ->fields('f', array('uri', 'filename'))
     ->condition('f.status' , FILE_STATUS_PERMANENT);
-    // @todo: Make sure we dont include files that are temporary://.
 
   // Not all tokens are supported by Linkit.
   // Here is a list of valid tokens
@@ -156,21 +155,28 @@ function _linkit_file_autocomplete($string, $profile) {
  * @see linkit.api.php
  */
 function _linkit_file_path_info($path_info, $profile) {
-  $public_path = variable_get('file_public_path', conf_path() . '/files');
+  $schemes = array();
+  // Get all stream wrappers.
+  foreach (file_get_stream_wrappers(STREAM_WRAPPERS_WRITE_VISIBLE) as $scheme => $info) {
+    $schemes[] = $scheme;
+  }
 
-  // TODO: In path info, this variable should already exist, to avoid duplication
-  preg_match('~^' . preg_quote($public_path, '~') . '/(.+)$~', $path_info['requested_path'], $matches);
-  $filepath = $matches[1];
-  if (!empty($filepath)) {
-    $result_description = check_plain($profile['file']['result_description']);
+  $file_uri = FALSE;
+  foreach ($schemes as $scheme) {
+    $target = array_pop(explode('/', $path_info['requested_path']));
+    $uri = $scheme . '://' . $target;
+    if (file_stream_wrapper_valid_scheme($scheme) && file_exists($uri)) {
+      $file_uri = $uri;
+    }
+  }
 
+  if($file_uri) {
     // Build a list of all token-like patterns that appear in the text.
     $result_tokens = token_scan($result_description);
 
     // Build the base query.
     $query = _linkit_file_create_base_query($profile, $result_tokens);
-    // @TODO: Make this work with other schemas.
-    $query->condition('f.uri', 'public://' . $filepath);
+    $query->condition('f.uri', $file_uri);
     $query_result = $query->execute()->fetch();
 
     if ($query_result) {
@@ -178,8 +184,7 @@ function _linkit_file_path_info($path_info, $profile) {
         $result = array(
           'title' => check_plain($query_result->filename),
           'description' => _linkit_file_build_description($profile, $result_description, $query_result),
-          // @TODO: Make this work with other schemas.
-          'path' => $public_path . '/' . file_uri_target($query_result->uri),
+          'path' => _linkit_file_get_url($query_result->uri),
         );
         return $result;
       }
