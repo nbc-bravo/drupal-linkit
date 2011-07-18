@@ -232,6 +232,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
+    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
   );
 
   $form['advanced']['wait'] = array(
@@ -241,7 +242,8 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#size' => 5,
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
-  );
+    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+   );
 
   $form['advanced']['ajaxtimtout'] = array(
     '#title' => t('Timeout on AJAX calls'),
@@ -250,6 +252,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
     '#field_suffix' => t('milliseconds'),
+    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
   );
 
   // Append attributes form element to the setttings form.
@@ -273,14 +276,18 @@ function linkit_profile_form($form, &$form_state, $profile) {
 }
 
 /**
+ * Element validate callback for the profile advanced numbers fields.
+ */
+function linkit_advanced_settings_numeric_validate($element, &$form_state, $form) {
+  if (!empty($element['#value']) && !is_numeric($element['#value'])) {
+    form_error($element, $element['#title'] . ' should only contains numbers.');
+  }
+}
+
+/**
  * Validate profile form submissions.
  */
 function linkit_profile_form_validate($form, &$form_state) {
-  foreach ($form_state['values']['advanced'] as $advanced_key => $advanced_value) {
-    if (!empty($advanced_value) && !is_numeric($advanced_value)) {
-      form_set_error('advanced][' . $advanced_key, $form['advanced'][$advanced_key]['#title'] . ' should only contains numbers.');
-    }
-  }
 }
 
 /**
