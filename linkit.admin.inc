@@ -17,7 +17,7 @@ function linkit_admin_page() {
     $rows[] = array(
       check_plain($profile['name']),
       l(t('Edit'), 'admin/config/content/linkit/profile/' . $profile['machine_name']),
-      $machine_name == LINKIT_DEFAULT_PRFOLE_MACHINE_NAME ? '' : l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
+      $machine_name == LINKIT_DEFAULT_PROFILE_MACHINE_NAME ? '' : l(t('Delete'), 'admin/config/content/linkit/profile/' . $profile['machine_name'] . '/delete'),
     );
   }
 

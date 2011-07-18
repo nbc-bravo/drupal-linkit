@@ -18,9 +18,9 @@ function linkit_uninstall() {
  */
 function linkit_install() {
   // Build a default profile.
-  $default_profile[LINKIT_DEFAULT_PRFOLE_MACHINE_NAME] = array(
+  $default_profile[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = array(
     'name' => 'Default',
-    'machine_name' => LINKIT_DEFAULT_PRFOLE_MACHINE_NAME,
+    'machine_name' => LINKIT_DEFAULT_PROFILE_MACHINE_NAME,
     'plugins' => array(
       'node' => array(
         'weight' => 0,
@@ -38,7 +38,7 @@ function linkit_install() {
   variable_set('linkit_profiles', $default_profile);
 
   // Assign the default profile to authenticated users.
-  variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => LINKIT_DEFAULT_PRFOLE_MACHINE_NAME));
+  variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => LINKIT_DEFAULT_PROFILE_MACHINE_NAME));
 }
 
 

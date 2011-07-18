@@ -24,7 +24,7 @@ define('LINKIT_DEFAULT_WEIGHT', 0);
 /**
  * The default profile machine name
  */
-define('LINKIT_DEFAULT_PRFOLE_MACHINE_NAME', 'default');
+define('LINKIT_DEFAULT_PROFILE_MACHINE_NAME', 'default');
 
 
 /**
@@ -110,7 +110,7 @@ function linkit_permission() {
  * Menu access callback; Make the default profile undeletable.
  */
 function linkit_admin_profile_delete_access($profile) {
-  if (user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PRFOLE_MACHINE_NAME) {
+  if (user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PROFILE_MACHINE_NAME) {
     return TRUE;
   }
   return FALSE;
