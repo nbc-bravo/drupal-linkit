@@ -3,7 +3,6 @@
 /**
  * @file
  * Hooks and alters provided by Linkit.
- * @todo: Set data type for parametera and return values
  */
 
 /**
@@ -15,9 +14,9 @@
  * See Drupal FAPI for more info.
  * http://api.drupal.org/api/drupal/developer--topics--forms_api_reference.html
  *
- * @param string $profile
+ * @param array $profile
  *   The profile settings the user calling this function has.
- * @return string
+ * @return
  *   An associative array with form elements with the key being the HTML
  *   attribute name (my_attribute = <a my_attribute="value"></a>).
  */
@@ -67,7 +66,9 @@ function hook_linkit_attributes_alter(&$attributes) {
  *       autocomplete callback function is called.
  *     - "autocomplete callback": The function to call when the users search
  *       for something.
- *     - "path info callback": (optional) @TODO
+ *     - "path info callback": (optional) The function to call then the user
+         have provided something that looks like an URL in the autocomplete
+         textfield.
  */
 function hook_linkit_plugins() {
   $plugins['myplugin'] = array(
@@ -86,11 +87,13 @@ function hook_linkit_plugins() {
  * This function is called when the user is typing in the autocomplete field
  * and the search is triggerd.
  *
+ * Note: If there is no search results, just return an empty array.
+ *
  * @param $string
  *   A string contains the text from the autocomplete field.
- * @param object $profile
+ * @param array $profile
  *   The profile settings the user calling this function has.
- * @return array
+ * @return
  *   An array of search results. Each search result is an associative array
  *   that may contain the following key-value pairs:
  *     - "title": The untranslated title for the item.
@@ -113,7 +116,7 @@ function mymodule_autocomplete_function($string, $profile) {
  *
  * @param $path_info
  *   An associative array containing information about the URL requested.
- * @param $profile
+ * @param array $profile
  *   The profile settings the user calling this function has.
  * @return
  *   An array of search results. Each search result is an associative array
@@ -135,9 +138,9 @@ function mymodule_path_info_function($path_info, $profile) {
  *
  * public:// and private:// is implemented by Linkit core.
  *
- * @param $scheme
+ * @param string $scheme
  *   The scheme for the file.
- * @param $target
+ * @param string $target
  *   The target for the file.
  * @return
  *   A string with the relative or absolute URL to your file. We use relative
