@@ -49,15 +49,14 @@ Drupal.linkit = Drupal.linkit || {};
 
 /**
  * Populate the title and path fields when a linkable object is selected
- * 
+ *
  * @param title
  *   The title of the link, only populated if title is empty
  * @param path
  *   The target path of the link
  * @param {Boolean} silent
  *   Only populate fields, do not focus and select the title field
- * 
- * @todo Create another function which populates by field name since
+ *
  * other fields may be populated by the editor.
  */
 Drupal.linkit.populateLink = function(text, path) {
@@ -76,14 +75,13 @@ Drupal.linkit.openFileBrowser = function () {
 /**
  * When a file is inserted through IMCE, this function is called
  * See IMCE api for details
- * 
+ *
  * @param file
  *   The file object that was selected inside IMCE
  * @param win
  *   The IMCE window object
  */
 Drupal.linkit.IMCECallback = function(file, win) {
-  // TODO: Retrieve public files path by adding it to Drupal.settings
   Drupal.linkit.populateLink(file.name, win.imce.decode(Drupal.settings.linkit.publicFilesDirectory + '/' + file.relpath));
   win.close();
 };

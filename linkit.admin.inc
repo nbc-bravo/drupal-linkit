@@ -230,6 +230,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
       '#title' => t('Let the users use !imce for this profile.', array('!imce' => l('IMCE', 'admin/config/media/imce'))),
       '#type' => 'checkbox',
       '#default_value' => isset($profile['imce']['use_imce']) ? $profile['imce']['use_imce'] : '',
+      '#description' => t('We only support public files with IMCE.'),
     );
   }
 

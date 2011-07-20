@@ -200,6 +200,9 @@ function _linkit_dashboard($editor) {
       'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
       'absolute' => TRUE,
     )));
+    // We will only serv public files.
+    // If you have private files, everyone shouldn't be able to download them from an URL anyway,
+    // and the folder should not be accessable with an URL.
     $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
 

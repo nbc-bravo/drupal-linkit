@@ -105,11 +105,6 @@ linkitDialog = {
 
 tinyMCEPopup.onInit.add(linkitDialog.init, linkitDialog);
 
-/*
- * TODO: Shouldn't it be the other way around, i.e that these editor specific
- * scripts attaches callbacks to the Drupal.linkit object instead so that
- * these files does not need to do any DOM manipulation etc.?
- */
 Drupal.behaviors.linkitInitTinyMCE =  {
   attach: function(context, settings) {
     $('#edit-link', context).keydown(function(ev) {
