@@ -727,7 +727,6 @@ function linkit_linkit_plugins() {
     'path info callback' => '_linkit_user_path_info'
   );
 
-  // TODO: Only for public files, right? There should definitely be a line on that in the description, if not in the title
   $plugins['file'] = array(
     'title' => 'File linking',
     'description' => 'Extends Linkit with the ability to find files in the autocomplete search.',
