@@ -33,7 +33,6 @@ Drupal.behaviors.linkit = {
     });
 
     if (context === window.document) {
-      // TODO: Make autofocus with html5?
       $searchInput.focus();
     }
 
