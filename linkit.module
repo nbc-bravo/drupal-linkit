@@ -192,17 +192,16 @@ function _linkit_dashboard($editor) {
 
   $settings['autocompletePath'] = url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE));
 
-  // TODO: Condition: if files plugin is enabled
+  $profile = linkit_get_dashboard_profile();
+
   // Check if IMCE is enbled and accessable
-  if (module_invoke('imce', 'access')) {
+  if (module_invoke('imce', 'access') && isset($profile['imce']['use_imce']) && $profile['imce']['use_imce'] == 1) {
     $settings['IMCEurl'] = url('imce', array('query' => array(
       'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
       'absolute' => TRUE,
     )));
     $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
-
-  $profile = linkit_get_dashboard_profile();
 
   $settings['advanced'] = array_filter($profile['advanced']);
 
@@ -444,8 +443,7 @@ function _linkit_result_from_url($url, $enabled_plugins) {
  * Implements hook_form().
  */
 function linkit_dashboard_form() {
-  // Check if we have IMCE and access to it.
-  $imce = module_invoke('imce', 'access');
+  $profile = linkit_get_dashboard_profile();
 
   $form['search'] = array(
     '#type' => 'textfield',
@@ -457,8 +455,8 @@ function linkit_dashboard_form() {
     '#weight' => -10,
   );
 
-  // TODO: Add to condition that file plugin should be enabled
-  // TODO: Imce button hijacks the JS submit event for the form
+  // Check if we have IMCE and access to it.
+  $imce = module_invoke('imce', 'access') && isset($profile['imce']['use_imce']) && $profile['imce']['use_imce'] == 1;
   if ($imce) {
     $form['file_browser'] = array(
       '#type' => 'button',
@@ -468,9 +466,9 @@ function linkit_dashboard_form() {
       '#weight' => -8,
     );
     // Add extra class to edit-link field when we can use IMCE
-    $form['search']['#attributes'] = array('class' => array('with_imce'));
+    //$form['search']['#attributes'] = array('class' => array('with_imce'));
     // Add the imce buttom
-    //$form['search']['#field_suffix'] = drupal_render($imcebutton);
+    $form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
 
   $form['path'] = array(

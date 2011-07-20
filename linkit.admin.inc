@@ -217,6 +217,22 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#default_value' => isset($profile['file']['group_by_scheme']) ? $profile['file']['group_by_scheme'] : array(),
   );
 
+  if (module_invoke('imce', 'access')) {
+    $form['imce'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('IMCE'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+    );
+
+    $form['imce']['use_imce'] = array(
+      '#title' => t('Let the users use !imce for this profile.', array('!imce' => l('IMCE', 'admin/config/media/imce'))),
+      '#type' => 'checkbox',
+      '#default_value' => isset($profile['imce']['use_imce']) ? $profile['imce']['use_imce'] : '',
+    );
+  }
+
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
