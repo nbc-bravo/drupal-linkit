@@ -29,7 +29,7 @@ input#edit-link.with_imce {
   top: -1px;
 }
 
-.better-autocomplete > .results > .result img {
+.better-autocomplete > .result img {
   float: left;
   margin: 0 5px 5px 0;
 }
@@ -39,7 +39,7 @@ input#edit-link.with_imce {
  * TODO: Clearfix in IE7 may need *:first-child + html .clearfix {
  */
 
-.better-autocomplete > .results > .result > p:after {
+.better-autocomplete > .result > p:after {
   content: ".";
   display: block;
   height: 0;
@@ -50,17 +50,17 @@ input#edit-link.with_imce {
 
 /* Additional status types */
 
-.better-autocomplete > .results > .result.status-ok {
+.better-autocomplete > .result.status-ok {
   background: #397928;
   border-top-color: #6ba15d;
 }
 
-.better-autocomplete > .results > .result.status-warning {
+.better-autocomplete > .result.status-warning {
   background: #8a3131;
   border-top-color: #b77878;
 }
 
-.better-autocomplete > .results > .result.status-notice {
-	border-top-width: 0;
+.better-autocomplete > .result.status-notice {
+  border-top-width: 0;
   background: #575757;
 }
