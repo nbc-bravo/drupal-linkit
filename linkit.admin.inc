@@ -246,7 +246,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['advanced']['charlimit'] = array(
     '#title' => t('The minimum number of chars to do an AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '',
+    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '3',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
     '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
@@ -255,17 +255,17 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['advanced']['wait'] = array(
     '#title' => t('The time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '',
+    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '250',
     '#size' => 5,
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
     '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
    );
 
-  $form['advanced']['ajaxtimtout'] = array(
+  $form['advanced']['ajaxtimeout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['ajaxtimtout']) ? $profile['advanced']['ajaxtimtout'] : '',
+    '#default_value' => isset($profile['advanced']['ajaxtimeout']) ? $profile['advanced']['ajaxtimeout'] : '5000',
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
     '#field_suffix' => t('milliseconds'),
