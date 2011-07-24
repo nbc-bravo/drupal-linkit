@@ -42,7 +42,7 @@ function linkit_admin_profile_page($profile = array()) {
 /**
  * Generate a profile form.
  */
-function linkit_profile_form($form, &$form_state, $profile) {
+function linkit_profile_form($form, &$form_state, $profile = array()) {
   $form = array();
 
   $form['#tree'] = TRUE;
