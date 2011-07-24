@@ -2,6 +2,7 @@
 
 /**
  * @file
+ *
  * Installation file for linkit.
  */
 
@@ -40,7 +41,6 @@ function linkit_install() {
   // Assign the default profile to authenticated users.
   variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => LINKIT_DEFAULT_PROFILE_MACHINE_NAME));
 }
-
 
 /**
  * Update Linkit permission names.

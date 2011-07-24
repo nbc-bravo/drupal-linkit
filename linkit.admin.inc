@@ -29,7 +29,7 @@ function linkit_admin_page() {
   return $output;
 }
 
- /**
+/**
  * Menu callback; Display a text format form.
  */
 function linkit_admin_profile_page($profile = array()) {
