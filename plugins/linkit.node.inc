@@ -101,13 +101,13 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
  * Build the group string for the node.
  */
 function _linkit_node_build_group($profile, $node) {
+  $group = t('Content');
   if ($profile['node']['group_by_content_type']) {
     $type_name = node_type_get_name($node);
-    return t('Content (%type_name)', array('%type_name' => check_plain($type_name)));
+    // TODO: Should $type_name go through t?
+    $group .= ' · ' . check_plain($type_name);
   }
-  else {
-    return t('Content');
-  }
+  return $group;
 }
 
 /**

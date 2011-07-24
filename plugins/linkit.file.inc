@@ -2,7 +2,9 @@
 
 /**
  * @file
- * Extend Linkit with files.
+ *
+ * Extend Linkit with the ability to find files. Public and private files are
+ * supported by default. Stream wrappers are supported.
  */
 
 /**
@@ -97,7 +99,7 @@ function _linkit_file_build_description($profile, $result_description, $file) {
     $description_array[] = file_uri_scheme($file->uri) . '://';
   }
 
-  $description = (isset($image) ? $image : '') . implode(' - ' , $description_array);
+  $description = (isset($image) ? $image : '') . implode('<br />' , $description_array);
 
   return $description;
 }
