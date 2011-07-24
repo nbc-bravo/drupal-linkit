@@ -18,25 +18,12 @@ function linkit_uninstall() {
  * Implements hook_install().
  */
 function linkit_install() {
-  // Build a default profile.
-  $default_profile[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = array(
-    'name' => 'Default',
-    'machine_name' => LINKIT_DEFAULT_PROFILE_MACHINE_NAME,
-    'plugins' => array(
-      'node' => array(
-        'weight' => 0,
-        'status' => 1,
-      )
-    ),
-    'node' => array(
-      'result_description' => '[node:author] - [node:created:short]',
-    ),
-    'attributes' => array(),
-    'advanced' => array(),
-  );
-
-  // Save the default profile.
-  variable_set('linkit_profiles', $default_profile);
+  require_once 'linkit.admin.inc';
+  // Build a default profile using the settings form.
+  $form_state = array();
+  $form_state['values']['name'] = 'Default';
+  $form_state['values']['machine_name'] = LINKIT_DEFAULT_PROFILE_MACHINE_NAME;
+  drupal_form_submit('linkit_profile_form', $form_state);
 
   // Assign the default profile to authenticated users.
   variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => LINKIT_DEFAULT_PROFILE_MACHINE_NAME));
