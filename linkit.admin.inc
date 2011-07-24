@@ -58,7 +58,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => isset($profile['name']) ? $profile['name'] : '',
+    '#default_value' => isset($profile['name']) ? $profile['name'] : 'Untitled Profile',
     '#required' => TRUE,
   );
 
@@ -92,7 +92,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['node']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['node']['result_description']) ? $profile['node']['result_description'] : '',
+    '#default_value' => isset($profile['node']['result_description']) ? $profile['node']['result_description'] : 'by [node:author] · [node:created:short]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
@@ -109,13 +109,13 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['node']['include_unpublished'] = array(
     '#title' => t('Include unpublished nodes in the result'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['node']['include_unpublished']) ? $profile['node']['include_unpublished'] : array(),
+    '#default_value' => isset($profile['node']['include_unpublished']) ? $profile['node']['include_unpublished'] : 0,
   );
 
   $form['node']['group_by_content_type'] = array(
     '#title' => t('Group the nodes by the content type.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['node']['group_by_content_type']) ? $profile['node']['group_by_content_type'] : array(),
+    '#default_value' => isset($profile['node']['group_by_content_type']) ? $profile['node']['group_by_content_type'] : 1,
   );
 
   $form['user'] = array(
@@ -156,7 +156,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['taxonomy']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['taxonomy']['result_description']) ? $profile['taxonomy']['result_description'] : '',
+    '#default_value' => isset($profile['taxonomy']['result_description']) ? $profile['taxonomy']['result_description'] : '[term:vocabulary]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
@@ -165,7 +165,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['taxonomy']['group_by_vocabulary'] = array(
     '#title' => t('Group the terms by the vocabulary.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['taxonomy']['group_by_vocabulary']) ? $profile['taxonomy']['group_by_vocabulary'] : array(),
+    '#default_value' => isset($profile['taxonomy']['group_by_vocabulary']) ? $profile['taxonomy']['group_by_vocabulary'] : 0,
   );
 
   $form['file'] = array(
@@ -184,7 +184,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
   $form['file']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['file']['result_description']) ? $profile['file']['result_description'] : '',
+    '#default_value' => isset($profile['file']['result_description']) ? $profile['file']['result_description'] : '[file:mime] · [file:size]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
@@ -200,7 +200,7 @@ function linkit_profile_form($form, &$form_state, $profile) {
     '#title' => t('If the file is an image, include this in the search result description.'),
     '#type' => 'checkboxes',
     '#options' => $image_extra_info_options,
-    '#default_value' => isset($profile['file']['image_extra_info']) ? $profile['file']['image_extra_info'] : array(),
+    '#default_value' => isset($profile['file']['image_extra_info']) ? $profile['file']['image_extra_info'] : array('thumbnail', 'dimensions'),
     '#description' => t('This will be added before the "Information to display in the autocomplete field".'),
   );
 
@@ -557,8 +557,14 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
-      '#default_value' => isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED,
     );
+    if (!empty($profile)) {
+      $tmp_plugins[$name]['status']['#default_value'] = isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED;
+    }
+    // Default enabled plugins
+    elseif (in_array($name, array('node', 'external', 'file'))) {
+      $tmp_plugins[$name]['status']['#default_value'] = '1';
+    }
   }
 
   // Sort by #weight.
