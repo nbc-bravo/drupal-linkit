@@ -85,8 +85,8 @@ function _linkit_file_build_description($profile, $result_description, $file) {
     )) : '';
   }
 
-  if ($profile['file']['image_extra_info']['dimensions']) {
-    $description_array[] = ($imageinfo ? ' ' . $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px ' : '');
+  if ($profile['file']['image_extra_info']['dimensions'] && !empty($imageinfo)) {
+    $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
   }
 
   $description_array[] = token_replace($result_description, array(

@@ -124,7 +124,7 @@ function _linkit_node_autocomplete($string, $profile) {
   // Build the base query.
   $query = _linkit_node_create_base_query($profile, $result_tokens);
   $query->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
-         ->addTag('linkit_node_autocomplete');
+        ->addTag('linkit_node_autocomplete');
   $result = $query->execute();
 
   foreach ($result as $node) {
