@@ -12,7 +12,7 @@
   background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
 }
 
-#linkit #edit-search.throbbing {
+#linkit #edit-search.fetching {
   background-image: url(../throbber-active.gif);
 }
 

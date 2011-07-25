@@ -17,12 +17,6 @@ Drupal.behaviors.linkit = {
         }
         Drupal.linkit.populateLink(result.title, result.path);
       },
-      beginFetching: function() {
-        $searchInput.addClass('throbbing');
-      },
-      finishFetching: function() {
-        $searchInput.removeClass('throbbing');
-      },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
       }
