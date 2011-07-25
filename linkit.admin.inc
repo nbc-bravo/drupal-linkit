@@ -563,7 +563,7 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
     }
     // Default enabled plugins
     elseif (in_array($name, array('node', 'external', 'file'))) {
-      $tmp_plugins[$name]['status']['#default_value'] = '1';
+      $tmp_plugins[$name]['status']['#default_value'] = LINKIT_ENABLED;
     }
   }
 
