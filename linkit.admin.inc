@@ -234,42 +234,42 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     );
   }
 
-  $form['advanced'] = array(
+  $form['autocomplete'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Advanced settings'),
+    '#title' => t('Autocomplete options'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
     '#weight' => 100,
   );
 
-  $form['advanced']['charlimit'] = array(
+  $form['autocomplete']['charLimit'] = array(
     '#title' => t('The minimum number of chars to do an AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '3',
+    '#default_value' => isset($profile['autocomplete']['charlimit']) ? $profile['autocomplete']['charlimit'] : '3',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
-  $form['advanced']['wait'] = array(
+  $form['autocomplete']['wait'] = array(
     '#title' => t('The time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '250',
+    '#default_value' => isset($profile['autocomplete']['wait']) ? $profile['autocomplete']['wait'] : '250',
     '#size' => 5,
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
    );
 
-  $form['advanced']['ajaxtimeout'] = array(
+  $form['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['ajaxtimeout']) ? $profile['advanced']['ajaxtimeout'] : '5000',
+    '#default_value' => isset($profile['autocomplete']['ajaxtimeout']) ? $profile['autocomplete']['ajaxtimeout'] : '5000',
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
     '#field_suffix' => t('milliseconds'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
   // Append attributes form element to the setttings form.
@@ -293,12 +293,19 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
 }
 
 /**
- * Element validate callback for the profile advanced numbers fields.
+ * Element validate callback for fields that should be numeric.
  */
-function linkit_advanced_settings_numeric_validate($element, &$form_state, $form) {
+function linkit_isnumeric_validate($element, &$form_state, $form) {
   if (!empty($element['#value']) && !is_numeric($element['#value'])) {
     form_error($element, $element['#title'] . ' should only contains numbers.');
   }
+
+  // Alter the value by typecasting into an integer.
+  $form_element = &$form_state['values'];
+  foreach ($element['#array_parents'] as $current) {
+    $form_element = &$form_element[$current];
+  }
+  $form_element = (int) $form_element;
 }
 
 /**
