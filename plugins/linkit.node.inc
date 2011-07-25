@@ -104,7 +104,6 @@ function _linkit_node_build_group($profile, $node) {
   $group = t('Content');
   if ($profile['node']['group_by_content_type']) {
     $type_name = node_type_get_name($node);
-    // TODO: Should $type_name go through t?
     $group .= ' · ' . check_plain($type_name);
   }
   return $group;
