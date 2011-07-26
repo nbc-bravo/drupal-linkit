@@ -314,7 +314,7 @@ function linkit_scan_url($url) {
   $root_url = drupal_substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
-  if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(.*?))?(?:$|\?|#)~', $url, $matches)) {
+  if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(?:\?q=)?(.*?))?(?:$|\?|#)~', $url, $matches)) {
     $path_info['target'] = 'internal';
     // The "?foo=bar#anchor" trailing part of the URL
     $path_info['query_fragment'] = (isset($parts['query']) ? '?' . $parts['query'] : '') . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
