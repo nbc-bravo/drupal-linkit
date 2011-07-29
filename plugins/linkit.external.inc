@@ -24,7 +24,7 @@ function _linkit_external_path_info($path_info, $profile) {
     CURLOPT_FOLLOWLOCATION => TRUE,
     CURLOPT_MAXREDIRS => 5,
     CURLOPT_NOBODY => TRUE,
-    CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+    CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP, // TODO: Ftp must be allowed in linkit.module
     CURLOPT_TIMEOUT_MS => $profile['advanced']['ajaxtimeout'],
     CURLOPT_USERAGENT => 'Linkit/2.x Drupal/7.x',
   ));
