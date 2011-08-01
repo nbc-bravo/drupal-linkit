@@ -7,16 +7,6 @@
  */
 
 /**
- * This attribute or plugin is enabled.
- */
-define('LINKIT_ENABLED', 1);
-
-/**
- * This attribute or plugin is disabled.
- */
-define('LINKIT_DISABLED', 0);
-
-/**
  * The default weight for attributes and plugins.
  */
 define('LINKIT_DEFAULT_WEIGHT', 0);
@@ -206,7 +196,7 @@ function _linkit_dashboard($editor) {
     $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
 
-  $settings['advanced'] = array_filter($profile['advanced']);
+  $settings['autocomplete'] = array_filter($profile['autocomplete']);
 
   drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
@@ -324,7 +314,7 @@ function linkit_scan_url($url) {
   $root_url = drupal_substr(url('<front>', array('absolute' => TRUE)), 0, -1);
 
   // Internal URL
-  if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(.*?))?(?:$|\?|#)~', $url, $matches)) {
+  if (preg_match('~^' . preg_quote($root_url, '~') . '(?:/(?:\?q=)?(.*?))?(?:$|\?|#)~', $url, $matches)) {
     $path_info['target'] = 'internal';
     // The "?foo=bar#anchor" trailing part of the URL
     $path_info['query_fragment'] = (isset($parts['query']) ? '?' . $parts['query'] : '') . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
@@ -798,7 +788,7 @@ function linkit_get_profile_attributes() {
   if (isset($profile['attributes'])) {
     // Loop thru all attributes and build an array with all that is enabled.
     foreach (linkit_get_attributes($profile) as $name => $attribute) {
-      if (isset($profile['attributes'][$name]['status']) && $profile['attributes'][$name]['status'] == LINKIT_ENABLED) {
+      if (isset($profile['attributes'][$name]['enabled']) && $profile['attributes'][$name]['enabled']) {
         // Add Linkit specific class, this is used by the editor JS scripts.
         $attribute['#attributes']['class'][] = 'linkit-attribute';
         $enabled_attributes[$name] = $attribute;
@@ -820,7 +810,7 @@ function linkit_get_profile_plugins() {
   // Include plugin file.
   foreach ($installed_plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
-    if ($profile['plugins'][$name]['status'] == LINKIT_ENABLED) {
+    if ($profile['plugins'][$name]['enabled']) {
       $enabled_plugins[$name] = $plugin;
       if (isset($plugin['file'])) {
         if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {

@@ -8,11 +8,7 @@ Drupal.behaviors.linkit = {
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
-      { // Options
-        charLimit : typeof settings.linkit.advanced.charlimit != 'undefined' ? settings.linkit.advanced.charlimit : 3,
-        wait : typeof settings.linkit.advanced.wait != 'undefined' ? settings.linkit.advanced.wait : 250,
-        ajaxTimeout : typeof settings.linkit.advanced.ajaxtimeout != 'undefined' ? settings.linkit.advanced.ajaxtimeout : 5000
-      },
+      settings.linkit.autocomplete,
       { // Callbacks
       select: function(result) {
         // Only change the link text if it is empty
@@ -20,12 +16,6 @@ Drupal.behaviors.linkit = {
           return false;
         }
         Drupal.linkit.populateLink(result.title, result.path);
-      },
-      beginFetching: function() {
-        $searchInput.addClass('throbbing');
-      },
-      finishFetching: function() {
-        $searchInput.removeClass('throbbing');
       },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
@@ -81,7 +71,10 @@ Drupal.linkit.openFileBrowser = function () {
  *   The IMCE window object
  */
 Drupal.linkit.IMCECallback = function(file, win) {
-  Drupal.linkit.populateLink(file.name, win.imce.decode(Drupal.settings.linkit.publicFilesDirectory + '/' + file.relpath));
+  Drupal.linkit.populateLink(file.name,
+      win.imce.decode(Drupal.settings.basePath +
+                      Drupal.settings.linkit.publicFilesDirectory +
+                      '/' + file.relpath));
   win.close();
 };
 

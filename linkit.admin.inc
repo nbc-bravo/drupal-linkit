@@ -84,7 +84,7 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[node][status]"]' => array('checked' => FALSE),
+        'input[name="plugins[node][enabled]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -126,7 +126,7 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[user][status]"]' => array('checked' => FALSE),
+        'input[name="plugins[user][enabled]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -148,7 +148,7 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[taxonomy][status]"]' => array('checked' => FALSE),
+        'input[name="plugins[taxonomy][enabled]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -176,7 +176,7 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[file][status]"]' => array('checked' => FALSE),
+        'input[name="plugins[file][enabled]"]' => array('checked' => FALSE),
       ),
     ),
   );
@@ -234,42 +234,42 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
     );
   }
 
-  $form['advanced'] = array(
+  $form['autocomplete'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Advanced settings'),
+    '#title' => t('Autocomplete options'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
     '#weight' => 100,
   );
 
-  $form['advanced']['charlimit'] = array(
+  $form['autocomplete']['charLimit'] = array(
     '#title' => t('The minimum number of chars to do an AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['charlimit']) ? $profile['advanced']['charlimit'] : '3',
+    '#default_value' => isset($profile['autocomplete']['charlimit']) ? $profile['autocomplete']['charlimit'] : '3',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
-  $form['advanced']['wait'] = array(
+  $form['autocomplete']['wait'] = array(
     '#title' => t('The time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['wait']) ? $profile['advanced']['wait'] : '250',
+    '#default_value' => isset($profile['autocomplete']['wait']) ? $profile['autocomplete']['wait'] : '250',
     '#size' => 5,
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
    );
 
-  $form['advanced']['ajaxtimeout'] = array(
+  $form['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['advanced']['ajaxtimeout']) ? $profile['advanced']['ajaxtimeout'] : '5000',
+    '#default_value' => isset($profile['autocomplete']['ajaxtimeout']) ? $profile['autocomplete']['ajaxtimeout'] : '5000',
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
     '#field_suffix' => t('milliseconds'),
-    '#element_validate' => array('linkit_advanced_settings_numeric_validate'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
   // Append attributes form element to the setttings form.
@@ -293,12 +293,19 @@ function linkit_profile_form($form, &$form_state, $profile = array()) {
 }
 
 /**
- * Element validate callback for the profile advanced numbers fields.
+ * Element validate callback for fields that should be numeric.
  */
-function linkit_advanced_settings_numeric_validate($element, &$form_state, $form) {
+function linkit_isnumeric_validate($element, &$form_state, $form) {
   if (!empty($element['#value']) && !is_numeric($element['#value'])) {
     form_error($element, $element['#title'] . ' should only contains numbers.');
   }
+
+  // Alter the value by typecasting into an integer.
+  $form_element = &$form_state['values'];
+  foreach ($element['#array_parents'] as $current) {
+    $form_element = &$form_element[$current];
+  }
+  $form_element = (int) $form_element;
 }
 
 /**
@@ -553,17 +560,17 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
       '#title_display' => 'invisible',
       '#default_value' => isset($profile['plugins'][$name]['weight']) ? $profile['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
-    $tmp_plugins[$name]['status'] = array(
+    $tmp_plugins[$name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
     );
     if (!empty($profile)) {
-      $tmp_plugins[$name]['status']['#default_value'] = isset($profile['plugins'][$name]['status']) ? $profile['plugins'][$name]['status'] : LINKIT_DISABLED;
+      $tmp_plugins[$name]['enabled']['#default_value'] = isset($profile['plugins'][$name]['enabled']) ? $profile['plugins'][$name]['enabled'] : FALSE;
     }
     // Default enabled plugins
     elseif (in_array($name, array('node', 'external', 'file'))) {
-      $tmp_plugins[$name]['status']['#default_value'] = LINKIT_ENABLED;
+      $tmp_plugins[$name]['enabled']['#default_value'] = TRUE;
     }
   }
 
@@ -609,11 +616,11 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
       '#default_value' => isset($profile['attributes'][$name]['weight']) ? $profile['attributes'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
 
-    $form['attributes_fieldset']['attributes'][$name]['status'] = array(
+    $form['attributes_fieldset']['attributes'][$name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
-      '#default_value' => isset($profile['attributes'][$name]['status']) ? $profile['attributes'][$name]['status'] : LINKIT_DISABLED,
+      '#default_value' => isset($profile['attributes'][$name]['enabled']) ? $profile['attributes'][$name]['enabled'] : FALSE,
     );
   }
 }
@@ -635,7 +642,7 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
 
     $variables['linkit_' . $type . '_listing'][$i] = new stdClass();
     $variables['linkit_' . $type . '_listing'][$i]->title = drupal_render($element['name']);
-    $variables['linkit_' . $type . '_listing'][$i]->status = drupal_render($element['status']);
+    $variables['linkit_' . $type . '_listing'][$i]->enabled = drupal_render($element['enabled']);
     $variables['linkit_' . $type . '_listing'][$i]->weight_select = drupal_render($element['weight']);
     $variables['linkit_' . $type . '_listing'][$i]->printed = FALSE;
 
@@ -664,7 +671,7 @@ function _linkit_theme_profile_form_table($variables, $type) {
     $fields = array(
       $element->title,
       $element->weight_select,
-      $element->status
+      $element->enabled
     );
 
     if (isset($element->description)) {
