@@ -39,7 +39,7 @@ function linkit_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
-
+/*
   $items['admin/config/content/linkit'] = array(
     'title' => 'Linkit profiles',
     'description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
@@ -74,7 +74,7 @@ function linkit_menu() {
     'access arguments' => array(5),
     'file' => 'linkit.admin.inc',
   );
-
+*/
   return $items;
 }
 
@@ -118,9 +118,8 @@ function linkit_theme($existing, $type, $theme, $path) {
     'linkit_profile_assignment' => array(
       'render element' => 'form',
     ),
-    'linkit_profile_form' => array(
+    'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
-      'file' => 'linkit.admin.inc',
     ),
   );
 }
@@ -774,10 +773,12 @@ function linkit_get_profile($profile_name) {
  * @param $profile_name
  *   The profile ID.
  */
-function linkit_profile_load($profile_name) {
+/*
+ * function linkit_profile_load($profile_name) {
+
   return linkit_get_profile($profile_name);
 }
-
+*/
 /**
  * Get all enabled attributes for the profiles used on the dashboard.
  */
@@ -891,4 +892,80 @@ function _linkit_rebuild_role_assign_settings() {
  */
 function linkit_user_role_delete($role) {
   _linkit_rebuild_role_assign_settings();
+}
+
+/**
+* Implementation of hook_ctools_plugin_api().
+*
+* Tell CTools that we support the default_ffmpeg_converter_presets API.
+*/
+function linkit_ctools_plugin_api($owner, $api) {
+  if ($owner == 'linkit' && $api == 'linkit_default') {
+    return array('version' => 1);
+  }
+}
+
+/**
+* Implementation of hook_default_ffmpeg_converter_preset().
+*
+* Provide a couple of default presets.
+*/
+function linkit_profile_default() {
+  $export = array();
+
+  $profile = new stdClass;
+  $profile->api_version = 1;
+  $profile->name = 'default';
+  $profile->title = 'Default';
+  $export['default'] = $profile;
+
+  return $export;
+}
+
+/**
+* Load a single Linkit profile.
+*/
+function linkit_profile_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('linkit_profile', 'names', array($name));
+  if (isset($result[$name])) {
+    return $result[$name];
+  }
+}
+
+/**
+ * Load all Linkit profiles.
+ */
+
+function linkit_profile_load_all($reset = FALSE) {
+  $cache = &drupal_static('__FUNCTION__', array());
+  static $all_loaded = FALSE;
+
+  // We check our own private static because individual minis could have
+  // been loaded prior to load all and we need to know that.
+  if (!$all_loaded || $reset) {
+    $all_loaded = TRUE;
+    if ($reset) {
+      $cache = array();
+    }
+
+    ctools_include('export');
+    $profiles = ctools_export_load_object('linkit_profiles');
+    foreach ($profiles as $profile) {
+      if (empty($cache[$profile->name])) {
+        $cache[$profile->name] = $profile;
+      }
+    }
+  }
+
+  return $cache;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function linkit_ctools_plugin_directory($module, $type) {
+  if ($type == 'export_ui') {
+    return 'plugins/' . $type;
+  }
 }
