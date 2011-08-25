@@ -15,7 +15,6 @@ function linkit_schema() {
   $schema['linkit_profiles'] = array(
     'description' => 'Base table holding Linkit profiles.',
     'export' => array(
-
       'key' => 'name',
       'key name' => 'Name',
       'primary key' => 'pid',
@@ -23,6 +22,7 @@ function linkit_schema() {
       'default hook' => 'linkit_profile_default',
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
+      'can disable' => FALSE,
       'api' => array(
         'owner' => 'linkit',
         'api' => 'linkit_default',
@@ -39,7 +39,7 @@ function linkit_schema() {
         'no export' => TRUE,
       ),
       'name' => array(
-        'description' => 'Machine-readable name for this preset.',
+        'description' => 'Machine-readable name for this profile.',
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
@@ -53,10 +53,13 @@ function linkit_schema() {
       'data' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => 'A serialized array with options that might be needed by the renderer.',
+        'description' => 'A serialized array with settings.',
       ),
     ),
-    'primary key' => array('pid', 'name'),
+    'primary key' => array('pid'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
   );
 
   return $schema;
@@ -66,8 +69,10 @@ function linkit_schema() {
  * Implements hook_uninstall().
  */
 function linkit_uninstall() {
+  /*
   variable_del('linkit_profiles');
   variable_del('linkit_roles_profiles');
+  */
 }
 
 /**

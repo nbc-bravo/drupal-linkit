@@ -89,21 +89,26 @@ function _linkit_dashboard_theme() {
  * Implements hook_permission().
  */
 function linkit_permission() {
-  return array(
-    'administer linkit' => array(
-      'title' => t('Administer Linkit'),
-    ),
-  );
-}
+  $permissions = array();
 
-/**
- * Menu access callback; Make the default profile undeletable.
- */
-function linkit_admin_profile_delete_access($profile) {
-  if (user_access('administer linkit') && isset($profile['machine_name']) && $profile['machine_name'] != LINKIT_DEFAULT_PROFILE_MACHINE_NAME) {
-    return TRUE;
+  $permissions['administer linkit'] = array(
+    'title' => t('Administer Linkit'),
+    'description' => t('Perform administration tasks for Linkit.'),
+  );
+
+  $profiles = linkit_profile_load_all(TRUE);
+
+  foreach ($profiles as $profile) {
+    $permissions['linkit use ' . $profile->name . ' profile'] = array(
+      'title' => t('Use the !url Linkit profile', array(
+        '!url' => l($profile->title, 'admin/structure/linkit/' . $profile->name . '/edit'),
+      )),
+    );
   }
-  return FALSE;
+
+
+
+  return $permissions;
 }
 
 /**
@@ -161,7 +166,7 @@ function template_preprocess_linkit_dashboard(&$variables) {
   $variables['help']              = theme('help');
   $variables['language']          = $GLOBALS['language'];
   $variables['language']->dir     = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
-  $variables['messages']          = isset($variables['show_messages']) ? theme('status_messages') : '';
+  $variables['messages']          = theme('status_messages');
   $variables['css']               = drupal_add_css();
   $variables['styles']            = drupal_get_css();
   $variables['scripts']           = drupal_get_js();
@@ -593,15 +598,9 @@ function linkit_help($path, $arg) {
  * @see filter_format_load()
  */
 function linkit_profile_exists($profile_name) {
+  // @TODO: Fix this so it works with CTools.
   $profiles = variable_get('linkit_profiles', array());
   return isset($profiles[$profile_name]);
-}
-
-/**
- * Generate a page title.
- */
-function linkit_admin_profile_title($op, $profile) {
-  return $op . ' Linkit profile - ' . $profile['name'];
 }
 
 /**
@@ -655,7 +654,7 @@ function linkit_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['accesskey']['weight']) ? $profile['attributes']['accesskey']['weight'] : 0,
+    '#weight' => isset($profile->attributes['accesskey']['weight']) ? $profile->attributes['accesskey']['weight'] : 0,
   );
 
   $attributes['class'] = array(
@@ -664,7 +663,7 @@ function linkit_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['class']['weight']) ? $profile['attributes']['class']['weight'] : 0,
+    '#weight' => isset($profile->attributes['class']['weight']) ? $profile->attributes['class']['weight'] : 0,
   );
 
   $attributes['id'] = array(
@@ -673,7 +672,7 @@ function linkit_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['id']['weight']) ? $profile['attributes']['id']['weight'] : 0,
+    '#weight' => isset($profile->attributes['id']['weight']) ? $profile->attributes['id']['weight'] : 0,
   );
 
   $attributes['rel'] = array(
@@ -682,7 +681,7 @@ function linkit_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['rel']['weight']) ? $profile['attributes']['rel']['weight'] : 0,
+    '#weight' => isset($profile->attributes['rel']['weight']) ? $profile->attributes['rel']['weight'] : 0,
   );
 
   $attributes['title'] = array(
@@ -691,7 +690,7 @@ function linkit_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['title']['weight']) ? $profile['attributes']['title']['weight'] : 0,
+    '#weight' => isset($profile->attributes['title']['weight']) ? $profile->attributes['title']['weight'] : 0,
   );
 
   return $attributes;
@@ -743,42 +742,6 @@ function linkit_linkit_plugins() {
   return $plugins;
 }
 
-/**
- * Get all Linkit profiles.
- */
-function linkit_get_profiles() {
-  return variable_get('linkit_profiles', array());
-}
-
-/**
- * Get one Linkit profile.
- *
- * @param $profile_name
- *   The profile machine name.
- */
-function linkit_get_profile($profile_name) {
-  $profile = &drupal_static(__FUNCTION__);
-
-  if (!isset($profile[$profile_name])) {
-    $profiles = linkit_get_profiles();
-    $profile[$profile_name] = isset($profiles[$profile_name]) ? $profiles[$profile_name] : array();
-  }
-
-  return $profile[$profile_name];
-}
-
-/**
- * Menu load callback;
- *
- * @param $profile_name
- *   The profile ID.
- */
-/*
- * function linkit_profile_load($profile_name) {
-
-  return linkit_get_profile($profile_name);
-}
-*/
 /**
  * Get all enabled attributes for the profiles used on the dashboard.
  */
@@ -842,56 +805,13 @@ function linkit_get_dashboard_profile() {
   $best_profile = &drupal_static(__FUNCTION__);
 
   if (!isset($best_profile)) {
-    // Get the role -> profile configuration.
-    $role_profile = variable_get('linkit_roles_profiles', array());
-
     // Get the profiles.
-    $profiles = linkit_get_profiles();
+    $profiles = linkit_profile_load_all($reset = FALSE);
 
-    $role_profile = array_reverse(array_filter($role_profile), TRUE);
 
-    foreach ($role_profile AS $rid => $profile_name) {
-      if (isset($user->roles[$rid])) {
-        $best_profile = $profiles[$profile_name];
-        break;
-      }
-    }
+
   }
   return $best_profile;
-}
-
-/**
- * Rebuild all role assignments to avoid conflicts.4
- */
-function _linkit_rebuild_role_assign_settings() {
-  $profiles = linkit_get_profiles();
-  $drupal_roles = user_roles();
-  $roles_profiles = variable_get('linkit_roles_profiles', array());
-
-  $role_diff = array_diff_key($roles_profiles, $drupal_roles);
-
- // Unset all roles that does not exists.
-  foreach ($role_diff AS $rid => $profile_name) {
-    unset($roles_profiles[$rid]);
-  }
-
-  // Check that profiles that is assign to roles really exists.
-  // If not, set the to blank (- None -).
-  foreach ($roles_profiles AS $rid => $profile_name) {
-    if (!isset($profiles[$profile_name])) {
-      $roles_profiles[$rid] = '';
-    }
-  }
-
-  // Save this.
-  variable_set('linkit_roles_profiles', $roles_profiles);
-}
-
-/**
- * Implements hook_user_role_delete().
- */
-function linkit_user_role_delete($role) {
-  _linkit_rebuild_role_assign_settings();
 }
 
 /**
@@ -906,9 +826,7 @@ function linkit_ctools_plugin_api($owner, $api) {
 }
 
 /**
-* Implementation of hook_default_ffmpeg_converter_preset().
-*
-* Provide a couple of default presets.
+* Provide a default profile.
 */
 function linkit_profile_default() {
   $export = array();
@@ -917,6 +835,7 @@ function linkit_profile_default() {
   $profile->api_version = 1;
   $profile->name = 'default';
   $profile->title = 'Default';
+  $profile->data = serialize(array());
   $export['default'] = $profile;
 
   return $export;
@@ -926,29 +845,29 @@ function linkit_profile_default() {
 * Load a single Linkit profile.
 */
 function linkit_profile_load($name) {
-  ctools_include('export');
-  $result = ctools_export_load_object('linkit_profile', 'names', array($name));
-  if (isset($result[$name])) {
-    return $result[$name];
+  $cache = &drupal_static('__FUNCTION__', array());
+
+  if (!isset($cache[$name])) {
+    ctools_include('export');
+    $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
+    if (isset($result[$name])) {
+      $result[$name]->data = unserialize($result[$name]->data);
+      $cache[$name] = $result[$name];
+    }
+    else {
+      return FALSE;
+    }
   }
+  return $cache[$name];
 }
 
 /**
  * Load all Linkit profiles.
  */
-
 function linkit_profile_load_all($reset = FALSE) {
   $cache = &drupal_static('__FUNCTION__', array());
-  static $all_loaded = FALSE;
 
-  // We check our own private static because individual minis could have
-  // been loaded prior to load all and we need to know that.
-  if (!$all_loaded || $reset) {
-    $all_loaded = TRUE;
-    if ($reset) {
-      $cache = array();
-    }
-
+  if (!$cache) {
     ctools_include('export');
     $profiles = ctools_export_load_object('linkit_profiles');
     foreach ($profiles as $profile) {

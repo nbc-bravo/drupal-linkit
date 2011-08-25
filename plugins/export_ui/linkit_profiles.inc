@@ -6,10 +6,22 @@ $plugin = array(
   'create access' => 'administer linkit',
 
   'menu' => array(
-    'menu prefix' => 'admin/structure',
-    'menu item' => 'linkit-profiles',
+    //'menu prefix' => 'admin/config/content/',
+    'menu item' => 'linkit',
     'menu title' => 'Linkit Profiles',
-    'menu description' => 'Administer Linkit profiles.',
+    'menu description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
+    'items' => array(
+        'add' => array(
+        'path' => 'add',
+        'title' => 'New profile',
+        'page callback' => 'ctools_export_ui_switcher_page',
+        'page arguments' => array('linkit_profiles', 'add'),
+        'access callback' => 'ctools_export_ui_task_access',
+        'access arguments' => array('linkit_profiles', 'add'),
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => -100,
+      ),
+    ),
   ),
 
   'title singular' => t('Linkit profile'),
@@ -19,45 +31,47 @@ $plugin = array(
 
   'form' => array(
      'settings' => 'linkit_profiles_export_ui_form',
-     //'submit' => 'dynamic_formatters_export_ui_form_submit'
+     'submit' => 'linkit_profiles_export_ui_form_submit',
    ),
 );
 
 /**
  * Generate a profile form.
  */
-function linkit_profiles_export_ui_form(&$form, &$form_state, $profile = array()) {
+function linkit_profiles_export_ui_form(&$form, &$form_state) {
+  $profile = $form_state['item'];
+
   $form = array();
-
-  $form['#tree'] = TRUE;
-$form['#theme'] = 'linkit_profiles_export_ui_form';
-
+  $form['#theme'] = 'linkit_profiles_export_ui_form';
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'linkit') . '/css/linkit.css',
   );
 
-  $form['name'] = array(
+  $form['data']['#tree'] = TRUE;
+
+  $form['data']['title'] = array(
     '#type' => 'textfield',
-    '#title' => t('Name'),
-    '#default_value' => isset($profile['name']) ? $profile['name'] : 'Untitled Profile',
+    '#title' => t('Title'),
+    '#default_value' => isset($profile->title) ? $profile->title : 'Untitled Profile',
     '#required' => TRUE,
   );
 
-  $form['machine_name'] = array(
+  $form['data']['name'] = array(
     '#type' => 'machine_name',
     '#required' => TRUE,
-    '#default_value' => isset($profile['machine_name']) ? $profile['machine_name'] : '',
+    '#default_value' => isset($profile->name) ? $profile->name : '',
     '#maxlength' => 255,
     '#machine_name' => array(
       'exists' => 'linkit_profile_exists',
+      'source' => array('data', 'title'),
     ),
-    '#disabled' => !empty($profile['machine_name']),
+    '#disabled' => !is_null($profile->name),
   );
 
   // Append plugin form element to the setttings form.
   _linkit_build_plugin_form_fields($form, $profile);
 
-  $form['node'] = array(
+  $form['data']['node'] = array(
     '#type' => 'fieldset',
     '#title' => t('Node settings'),
     '#collapsible' => TRUE,
@@ -70,36 +84,36 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     ),
   );
 
-  $form['node']['result_description'] = array(
+  $form['data']['node']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['node']['result_description']) ? $profile['node']['result_description'] : 'by [node:author] · [node:created:short]',
+    '#default_value' => isset($profile->data['node']['result_description']) ? $profile->data['node']['result_description'] : 'by [node:author] · [node:created:short]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
-  $form['node']['content_types'] = array(
+  $form['data']['node']['content_types'] = array(
     '#title' => t('Include this content types in the search result'),
     '#type' => 'checkboxes',
     '#options' => node_type_get_names(),
-    '#default_value' => isset($profile['node']['content_types']) ? $profile['node']['content_types'] : array(),
+    '#default_value' => isset($profile->data['node']['content_types']) ? $profile->data['node']['content_types'] : array(),
     '#description' => t('If none is checked, all content types will be present in the search result.'),
   );
 
-  $form['node']['include_unpublished'] = array(
+  $form['data']['node']['include_unpublished'] = array(
     '#title' => t('Include unpublished nodes in the result'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['node']['include_unpublished']) ? $profile['node']['include_unpublished'] : 0,
+    '#default_value' => isset($profile->data['node']['include_unpublished']) ? $profile->data['node']['include_unpublished'] : 0,
   );
 
-  $form['node']['group_by_content_type'] = array(
+  $form['data']['node']['group_by_content_type'] = array(
     '#title' => t('Group the nodes by the content type.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['node']['group_by_content_type']) ? $profile['node']['group_by_content_type'] : 1,
+    '#default_value' => isset($profile->data['node']['group_by_content_type']) ? $profile->data['node']['group_by_content_type'] : 1,
   );
 
-  $form['user'] = array(
+  $form['data']['user'] = array(
     '#type' => 'fieldset',
     '#title' => t('User settings'),
     '#collapsible' => TRUE,
@@ -112,16 +126,16 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     ),
   );
 
-  $form['user']['result_description'] = array(
+  $form['data']['user']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['user']['result_description']) ? $profile['user']['result_description'] : '',
+    '#default_value' => isset($profile->data['user']['result_description']) ? $profile->data['user']['result_description'] : '',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
   );
 
-  $form['taxonomy'] = array(
+  $form['data']['taxonomy'] = array(
     '#type' => 'fieldset',
     '#title' => t('Taxonomy term settings'),
     '#collapsible' => TRUE,
@@ -134,22 +148,22 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     ),
   );
 
-  $form['taxonomy']['result_description'] = array(
+  $form['data']['taxonomy']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['taxonomy']['result_description']) ? $profile['taxonomy']['result_description'] : '[term:vocabulary]',
+    '#default_value' => isset($profile->data['taxonomy']['result_description']) ? $profile->data['taxonomy']['result_description'] : '[term:vocabulary]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
-  $form['taxonomy']['group_by_vocabulary'] = array(
+  $form['data']['taxonomy']['group_by_vocabulary'] = array(
     '#title' => t('Group the terms by the vocabulary.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['taxonomy']['group_by_vocabulary']) ? $profile['taxonomy']['group_by_vocabulary'] : 0,
+    '#default_value' => isset($profile->data['taxonomy']['group_by_vocabulary']) ? $profile->data['taxonomy']['group_by_vocabulary'] : 0,
   );
 
-  $form['file'] = array(
+  $form['data']['file'] = array(
     '#type' => 'fieldset',
     '#title' => t('File settings'),
     '#collapsible' => TRUE,
@@ -162,10 +176,10 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     ),
   );
 
-  $form['file']['result_description'] = array(
+  $form['data']['file']['result_description'] = array(
     '#title' => t('Information to display in the autocomplete field'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['file']['result_description']) ? $profile['file']['result_description'] : '[file:mime] · [file:size]',
+    '#default_value' => isset($profile->data['file']['result_description']) ? $profile->data['file']['result_description'] : '[file:mime] · [file:size]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
@@ -177,29 +191,29 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     'dimensions' => t('Full images dimensions (width and height)'),
   );
 
-  $form['file']['image_extra_info'] = array(
+  $form['data']['file']['image_extra_info'] = array(
     '#title' => t('If the file is an image, include this in the search result description.'),
     '#type' => 'checkboxes',
     '#options' => $image_extra_info_options,
-    '#default_value' => isset($profile['file']['image_extra_info']) ? $profile['file']['image_extra_info'] : array('thumbnail', 'dimensions'),
+    '#default_value' => isset($profile->data['file']['image_extra_info']) ? $profile->data['file']['image_extra_info'] : array('thumbnail', 'dimensions'),
     '#description' => t('This will be added before the "Information to display in the autocomplete field".'),
   );
 
-  $form['file']['show_scheme'] = array(
+  $form['data']['file']['show_scheme'] = array(
     '#title' => t('Include the file scheme in the search result description.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['file']['show_scheme']) ? $profile['file']['show_scheme'] : array(),
+    '#default_value' => isset($profile->data['file']['show_scheme']) ? $profile->data['file']['show_scheme'] : array(),
     '#description' => t('This will be added after the "Information to display in the autocomplete field".'),
   );
 
-  $form['file']['group_by_scheme'] = array(
+  $form['data']['file']['group_by_scheme'] = array(
     '#title' => t('Group the files by the scheme.'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile['file']['group_by_scheme']) ? $profile['file']['group_by_scheme'] : array(),
+    '#default_value' => isset($profile->data['file']['group_by_scheme']) ? $profile->data['file']['group_by_scheme'] : array(),
   );
 
   if (module_invoke('imce', 'access')) {
-    $form['imce'] = array(
+    $form['data']['imce'] = array(
       '#type' => 'fieldset',
       '#title' => t('IMCE'),
       '#collapsible' => TRUE,
@@ -207,15 +221,15 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
       '#tree' => TRUE,
     );
 
-    $form['imce']['use_imce'] = array(
+    $form['data']['imce']['use_imce'] = array(
       '#title' => t('Let the users use !imce for this profile.', array('!imce' => l('IMCE', 'admin/config/media/imce'))),
       '#type' => 'checkbox',
-      '#default_value' => isset($profile['imce']['use_imce']) ? $profile['imce']['use_imce'] : '',
+      '#default_value' => isset($profile->data['imce']['use_imce']) ? $profile->data['imce']['use_imce'] : '',
       '#description' => t('We only support public files with IMCE.'),
     );
   }
 
-  $form['autocomplete'] = array(
+  $form['data']['autocomplete'] = array(
     '#type' => 'fieldset',
     '#title' => t('Autocomplete options'),
     '#collapsible' => TRUE,
@@ -224,29 +238,29 @@ $form['#theme'] = 'linkit_profiles_export_ui_form';
     '#weight' => 100,
   );
 
-  $form['autocomplete']['charLimit'] = array(
+  $form['data']['autocomplete']['charLimit'] = array(
     '#title' => t('The minimum number of chars to do an AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['autocomplete']['charlimit']) ? $profile['autocomplete']['charlimit'] : '3',
+    '#default_value' => isset($profile->data['autocomplete']['charlimit']) ? $profile->data['autocomplete']['charlimit'] : '3',
     '#size' => 5,
     '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
-  $form['autocomplete']['wait'] = array(
+  $form['data']['autocomplete']['wait'] = array(
     '#title' => t('The time in ms between last keypress and AJAX call'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['autocomplete']['wait']) ? $profile['autocomplete']['wait'] : '250',
+    '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '250',
     '#size' => 5,
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
     '#element_validate' => array('linkit_isnumeric_validate'),
    );
 
-  $form['autocomplete']['remoteTimeout'] = array(
+  $form['data']['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Timeout on AJAX calls'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile['autocomplete']['ajaxtimeout']) ? $profile['autocomplete']['ajaxtimeout'] : '5000',
+    '#default_value' => isset($profile->data['autocomplete']['ajaxtimeout']) ? $profile->data['autocomplete']['ajaxtimeout'] : '5000',
     '#size' => 5,
     '#description' => t('(Default : 5000)'),
     '#field_suffix' => t('milliseconds'),
@@ -299,10 +313,10 @@ function theme_linkit_profiles_export_ui_form($variables) {
   $form = &$variables['form'];
 
   $plugin_table = _linkit_theme_profile_form_table($variables, 'plugins');
-  $form['plugins_fieldset']['plugins']['#markup'] = $plugin_table;
+  $form['data']['plugins_fieldset']['plugins']['#markup'] = $plugin_table;
 
   $attribute_table = _linkit_theme_profile_form_table($variables, 'attributes');
-  $form['attributes_fieldset']['attributes']['#markup'] = $attribute_table;
+  $form['data']['attributes_fieldset']['attributes']['#markup'] = $attribute_table;
 
   $output = drupal_render_children($form);
   return $output;
@@ -326,7 +340,7 @@ function _linkit_sort_attributes_by_weight($a, $b) {
  * Append plugin form element to the setttings form.
  */
 function _linkit_build_plugin_form_fields(&$form, $profile) {
-  $form['plugins_fieldset'] = array(
+  $form['data']['plugins_fieldset'] = array(
     '#type' => 'fieldset',
     '#title' => t('Plugins'),
     '#collapsible' => TRUE,
@@ -335,9 +349,10 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
     '#theme' => '_linkit_theme_profile_form_table',
   );
 
-  $form['plugins_fieldset']['plugins'] = array(
+  $form['data']['plugins_fieldset']['plugins'] = array(
     '#markup' => '',
     '#tree' => TRUE,
+    '#parents' => array('data', 'plugins'),
   );
 
   // Get all plugins.
@@ -353,15 +368,15 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
       '#type' => 'weight',
       '#title' => t('Weight for @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
-      '#default_value' => isset($profile['plugins'][$name]['weight']) ? $profile['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
+      '#default_value' => isset($profile->data['plugins'][$name]['weight']) ? $profile->data['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
     $tmp_plugins[$name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => t($plugin['title']))),
       '#title_display' => 'invisible',
     );
-    if (!empty($profile)) {
-      $tmp_plugins[$name]['enabled']['#default_value'] = isset($profile['plugins'][$name]['enabled']) ? $profile['plugins'][$name]['enabled'] : FALSE;
+    if (isset($profile->data['plugins'])) {
+      $tmp_plugins[$name]['enabled']['#default_value'] = isset($profile->data['plugins'][$name]['enabled']) ? $profile->data['plugins'][$name]['enabled'] : FALSE;
     }
     // Default enabled plugins
     elseif (in_array($name, array('node', 'external', 'file'))) {
@@ -373,7 +388,7 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
   uasort($tmp_plugins, '_linkit_sort_plugins_by_weight');
 
   foreach ($tmp_plugins AS $name => $plugin) {
-    $form['plugins_fieldset']['plugins'][$name] = $plugin;
+    $form['data']['plugins_fieldset']['plugins'][$name] = $plugin;
   }
 
 }
@@ -383,7 +398,7 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
  */
 function _linkit_build_attribute_form_fields(&$form, $profile) {
 
-  $form['attributes_fieldset'] = array(
+  $form['data']['attributes_fieldset'] = array(
     '#type' => 'fieldset',
     '#title' => t('Attributes'),
     '#collapsible' => TRUE,
@@ -391,9 +406,11 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
     '#tree' => FALSE,
   );
 
-  $form['attributes_fieldset']['attributes'] = array(
+  $form['data']['attributes_fieldset']['attributes'] = array(
     '#markup' => '',
     '#tree' => TRUE,
+    '#parents' => array('data', 'attributes'),
+
   );
 
   $attrs = linkit_get_attributes($profile);
@@ -402,20 +419,20 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
   uasort($attrs, '_linkit_sort_attributes_by_weight');
 
   foreach ($attrs as $name => $attr) {
-    $form['attributes_fieldset']['attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
+    $form['data']['attributes_fieldset']['attributes'][$name]['name'] = array('#markup' => check_plain($attr['#title']));
 
-    $form['attributes_fieldset']['attributes'][$name]['weight'] = array(
+    $form['data']['attributes_fieldset']['attributes'][$name]['weight'] = array(
       '#type' => 'weight',
       '#title' => t('Weight for @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
-      '#default_value' => isset($profile['attributes'][$name]['weight']) ? $profile['attributes'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
+      '#default_value' => isset($profile->data['attributes'][$name]['weight']) ? $profile->data['attributes'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
 
-    $form['attributes_fieldset']['attributes'][$name]['enabled'] = array(
+    $form['data']['attributes_fieldset']['attributes'][$name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable @title', array('@title' => $attr['#title'])),
       '#title_display' => 'invisible',
-      '#default_value' => isset($profile['attributes'][$name]['enabled']) ? $profile['attributes'][$name]['enabled'] : FALSE,
+      '#default_value' => isset($profile->data['attributes'][$name]['enabled']) ? $profile->data['attributes'][$name]['enabled'] : FALSE,
     );
   }
 }
@@ -429,8 +446,8 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
  */
 function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
   // Add each attribute in the form to the appropriate place in the attribute listing.
-  foreach (element_children($variables['form'][$type . '_fieldset'][$type]) as $i) {
-    $element = &$variables['form'][$type . '_fieldset'][$type][$i];
+  foreach (element_children($variables['form']['data'][$type . '_fieldset'][$type]) as $i) {
+    $element = &$variables['form']['data'][$type . '_fieldset'][$type][$i];
 
     // Set special classes needed for table drag and drop.
     $element['weight']['#attributes']['class'] = array('weight');
@@ -492,10 +509,24 @@ function _linkit_theme_profile_form_table($variables, $type) {
 
   return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type), 'sticky' => FALSE));
 }
+/**
+ * Save callback for linkit_profiles_export_ui_form.
+ *
+ *
+ *
+ * @param array $form
+ * @param array $form_state
+ */
+function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 
-function dynamic_formatters_export_ui_form_submit(&$form, &$form_state) {
-  $form_state['item']->renderer = $form_state['values']['renderer'];
-  $form_state['item']->parent_style = $form_state['values']['parent_style'];
-  $form_state['item']->children_style = $form_state['values']['children_style'];
-  $form_state['item']->title = $form_state['values']['title'];
+  $form_state['item']->title = trim($form_state['values']['data']['title']);
+  $form_state['item']->name = $form_state['values']['data']['name'];
+
+  // Unset this two values as this will not be saves in the data field.
+  unset($form_state['values']['data']['title'], $form_state['values']['data']['name']);
+
+  $form_state['item']->data = serialize($form_state['values']['data']);
+
+  // CTools will work on this variable alter and screw it up, so unset it.
+  unset($form_state['values']['data']);
 }
