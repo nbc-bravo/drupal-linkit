@@ -68,6 +68,14 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#disabled' => !is_null($profile->name),
   );
 
+  $form['data']['input_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Input format'),
+    '#default_value' => isset($profile->data['input_format']) ? $profile->data['input_format'] : '',
+    '#options' => _linkit_filter_formats($profile),
+    '#description' => t('Formats....'),
+  );
+
   // Append plugin form element to the setttings form.
   _linkit_build_plugin_form_fields($form, $profile);
 

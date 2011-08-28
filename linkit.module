@@ -806,7 +806,7 @@ function linkit_get_dashboard_profile() {
 
   if (!isset($best_profile)) {
     // Get the profiles.
-    $profiles = linkit_profile_load_all($reset = FALSE);
+    $profiles = linkit_profile_load_all();
 
 
 
@@ -867,11 +867,12 @@ function linkit_profile_load($name) {
 function linkit_profile_load_all($reset = FALSE) {
   $cache = &drupal_static('__FUNCTION__', array());
 
-  if (!$cache) {
+  if (!$cache || $reset) {
     ctools_include('export');
     $profiles = ctools_export_load_object('linkit_profiles');
     foreach ($profiles as $profile) {
       if (empty($cache[$profile->name])) {
+        $profile->data = unserialize($profile->data);
         $cache[$profile->name] = $profile;
       }
     }
@@ -887,4 +888,47 @@ function linkit_ctools_plugin_directory($module, $type) {
   if ($type == 'export_ui') {
     return 'plugins/' . $type;
   }
+}
+
+/**
+ * @param $profile
+ *   A profile object.
+ *
+ * @return
+ *   An array with available input formats.
+ */
+function _linkit_filter_formats($profile) {
+  $formats = _linkit_get_filter_formats();
+  $profiles = linkit_profile_load_all(TRUE);
+
+  unset($profiles[$profile->name]);
+dsm($profiles);
+  foreach ($profiles as $profile) {
+    unset($formats[$profile->data['input_format']]);
+  }
+
+  return $formats;
+}
+
+/**
+ * Get all filter formats.
+ *
+ * @return
+ *   An array of filter formats.
+ */
+function _linkit_get_filter_formats() {
+  $formats = filter_formats();
+
+  $options = array();
+  foreach ($formats as $format) {
+    $options[$format->format] = $format->name;
+  }
+
+  if (count($options) > 0) {
+    $options = array_merge(array('' => t('N/A')), $options);
+  }
+
+  dpr($options);
+
+  return $options;
 }
