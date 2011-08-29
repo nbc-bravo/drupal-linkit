@@ -120,11 +120,10 @@ function linkit_theme($existing, $type, $theme, $path) {
       'variables' => array('form' => NULL),
       'template' => 'linkit-dashboard',
     ),
-    'linkit_profile_assignment' => array(
-      'render element' => 'form',
-    ),
     'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
+      'path' => drupal_get_path('module', 'linkit') . '/plugins/export_ui',
+      'file' => 'linkit_profiles.inc',
     ),
   );
 }
@@ -815,33 +814,6 @@ function linkit_get_dashboard_profile() {
 }
 
 /**
-* Implementation of hook_ctools_plugin_api().
-*
-* Tell CTools that we support the default_ffmpeg_converter_presets API.
-*/
-function linkit_ctools_plugin_api($owner, $api) {
-  if ($owner == 'linkit' && $api == 'linkit_default') {
-    return array('version' => 1);
-  }
-}
-
-/**
-* Provide a default profile.
-*/
-function linkit_profile_default() {
-  $export = array();
-
-  $profile = new stdClass;
-  $profile->api_version = 1;
-  $profile->name = 'default';
-  $profile->title = 'Default';
-  $profile->data = serialize(array());
-  $export['default'] = $profile;
-
-  return $export;
-}
-
-/**
 * Load a single Linkit profile.
 */
 function linkit_profile_load($name) {
@@ -879,15 +851,6 @@ function linkit_profile_load_all($reset = FALSE) {
   }
 
   return $cache;
-}
-
-/**
- * Implements hook_ctools_plugin_directory().
- */
-function linkit_ctools_plugin_directory($module, $type) {
-  if ($type == 'export_ui') {
-    return 'plugins/' . $type;
-  }
 }
 
 /**
@@ -937,4 +900,126 @@ function _linkit_get_text_formats() {
   }
 
   return $options;
+}
+
+/**
+* Implementation of hook_ctools_plugin_api().
+*
+* Tell CTools that we support the default_linkit_profiles API.
+*/
+function linkit_ctools_plugin_api($owner, $api) {
+  if ($owner == 'linkit' && $api == 'linkit_profiles') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function linkit_ctools_plugin_directory($module, $type) {
+  if ($type == 'export_ui') {
+    return 'plugins/' . $type;
+  }
+}
+
+/**
+* Provide a default profile.
+*
+* @return
+*  An array with a default Linkit profile.
+*/
+function linkit_default_linkit_profile() {
+  $export = array();
+
+  // The text format with the lowest weight.
+  $all_formats = filter_formats();
+  $text_format = reset($all_formats);
+
+  $default = new stdClass;
+  $default->api_version = 1;
+  $default->name = 'default';
+  $default->title = 'Default';
+  $default->data = serialize(array(
+    'text_format' => $text_format->format,
+    'plugins' => array(
+      'taxonomy' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'user' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'node' => array(
+        'weight' => '0',
+        'enabled' => 1,
+      ),
+      'file' => array(
+        'weight' => '0',
+        'enabled' => 1,
+      ),
+      'external' => array(
+        'weight' => '0',
+        'enabled' => 1,
+      ),
+    ),
+    'node' => array(
+      'result_description' => 'by [node:author] · [node:created:short]',
+      'content_types' => array(
+        'article' => 0,
+        'basic_page' => 0,
+      ),
+      'include_unpublished' => 0,
+      'group_by_content_type' => 1,
+    ),
+    'user' => array(
+      'result_description' => '',
+    ),
+    'taxonomy' => array(
+      'result_description' => '[term:vocabulary]',
+      'group_by_vocabulary' => 0,
+    ),
+    'file' => array(
+      'result_description' => '[file:mime] · [file:size]',
+      'image_extra_info' => array(
+        'thumbnail' => 'thumbnail',
+        'dimensions' => 'dimensions',
+      ),
+      'show_scheme' => 0,
+      'group_by_scheme' => 0,
+    ),
+    'imce' => array(
+      'use_imce' => 0,
+    ),
+    'autocomplete' => array(
+      'charLimit' => 3,
+      'wait' => 250,
+      'remoteTimeout' => 5000,
+    ),
+    'attributes' => array(
+      'rel' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'class' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'accesskey' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'id' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+      'title' => array(
+        'weight' => '0',
+        'enabled' => 0,
+      ),
+    ),
+  ));
+
+  $export['default'] = $default;
+  return $export;
 }
