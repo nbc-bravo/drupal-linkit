@@ -901,13 +901,13 @@ function linkit_ctools_plugin_directory($module, $type) {
  *   An array with all available input formats.
  */
 function _linkit_text_formats($profile) {
-  $formats = _linkit_get_filter_formats();
+  $formats = _linkit_get_text_formats();
   $profiles = linkit_profile_load_all(TRUE);
 
   // Show which text format that is assign to the current profile, so we delete
   // the current profile from the array containing all profiles.
   unset($profiles[$profile->name]);
-
+  
   // Unset all text formats that is used by other profiles.
   foreach ($profiles as $profile) {
     unset($formats[$profile->data['text_format']]);

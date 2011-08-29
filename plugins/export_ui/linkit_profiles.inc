@@ -82,7 +82,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#type' => 'select',
     '#title' => t('Text format'),
     '#default_value' => isset($profile->data['text_format']) ? $profile->data['text_format'] : '',
-    '#options' => _linkit_get_text_formats($profile),
+    '#options' => _linkit_text_formats($profile),
     '#description' => t('Attach this profile to one text format. A text format can only be attached to one profile at the same time.'),
   );
 
