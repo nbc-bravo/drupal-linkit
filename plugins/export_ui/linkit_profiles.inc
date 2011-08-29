@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Ctools export ui plugin to handle Linkit profiles.
+ */
 
 $plugin = array(
   'schema' => 'linkit_profiles',
@@ -37,6 +41,12 @@ $plugin = array(
 
 /**
  * Generate a profile form.
+ *
+ * @param $form
+ *   A form array
+ *
+ * @param $form_state
+ *   A
  */
 function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $profile = $form_state['item'];
@@ -68,12 +78,12 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#disabled' => !is_null($profile->name),
   );
 
-  $form['data']['input_format'] = array(
+  $form['data']['text_format'] = array(
     '#type' => 'select',
-    '#title' => t('Input format'),
-    '#default_value' => isset($profile->data['input_format']) ? $profile->data['input_format'] : '',
-    '#options' => _linkit_filter_formats($profile),
-    '#description' => t('Formats....'),
+    '#title' => t('Text format'),
+    '#default_value' => isset($profile->data['text_format']) ? $profile->data['text_format'] : '',
+    '#options' => _linkit_get_text_formats($profile),
+    '#description' => t('Attach this profile to one text format. A text format can only be attached to one profile at the same time.'),
   );
 
   // Append plugin form element to the setttings form.

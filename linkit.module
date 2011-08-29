@@ -891,32 +891,39 @@ function linkit_ctools_plugin_directory($module, $type) {
 }
 
 /**
+ * Get all text formats from the database and unset all that is already
+ * attached to a profile.
+ *
  * @param $profile
- *   A profile object.
+ *   The current profile object.
  *
  * @return
- *   An array with available input formats.
+ *   An array with all available input formats.
  */
-function _linkit_filter_formats($profile) {
+function _linkit_text_formats($profile) {
   $formats = _linkit_get_filter_formats();
   $profiles = linkit_profile_load_all(TRUE);
 
+  // Show which text format that is assign to the current profile, so we delete
+  // the current profile from the array containing all profiles.
   unset($profiles[$profile->name]);
-dsm($profiles);
+
+  // Unset all text formats that is used by other profiles.
   foreach ($profiles as $profile) {
-    unset($formats[$profile->data['input_format']]);
+    unset($formats[$profile->data['text_format']]);
   }
 
   return $formats;
 }
 
 /**
- * Get all filter formats.
+ * Build an array with text formats that can be used as an #option in a form
+ * element and add a "none" value to the array.
  *
  * @return
- *   An array of filter formats.
+ *   An array of text formats.
  */
-function _linkit_get_filter_formats() {
+function _linkit_get_text_formats() {
   $formats = filter_formats();
 
   $options = array();
@@ -924,11 +931,10 @@ function _linkit_get_filter_formats() {
     $options[$format->format] = $format->name;
   }
 
+  // Add a N/A state so it can be set to "none"
   if (count($options) > 0) {
     $options = array_merge(array('' => t('N/A')), $options);
   }
-
-  dpr($options);
 
   return $options;
 }
