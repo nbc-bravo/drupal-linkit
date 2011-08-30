@@ -39,42 +39,7 @@ function linkit_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
-/*
-  $items['admin/config/content/linkit'] = array(
-    'title' => 'Linkit profiles',
-    'description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
-    'page callback' => 'linkit_admin_page',
-    'access arguments' => array('administer linkit'),
-    'file' => 'linkit.admin.inc',
-  );
 
-  $items['admin/config/content/linkit/profile/add'] = array(
-    'title' => 'Add new Linkit profile',
-    'page callback' => 'linkit_admin_profile_page',
-    'access arguments' => array('administer linkit'),
-    'type' => MENU_LOCAL_ACTION,
-    'weight' => 1,
-    'file' => 'linkit.admin.inc',
-  );
-
-  $items['admin/config/content/linkit/profile/%linkit_profile'] = array(
-    'title callback' => 'linkit_admin_profile_title',
-    'title arguments' => array('Edit', 5),
-    'page callback' => 'linkit_admin_profile_page',
-    'page arguments' => array(5),
-    'access arguments' => array('administer linkit'),
-    'file' => 'linkit.admin.inc',
-  );
-
-  $items['admin/config/content/linkit/profile/%linkit_profile/delete'] = array(
-    'title' => 'Delete Linkit profile',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('linkit_profile_delete_form', 5),
-    'access callback' => 'linkit_admin_profile_delete_access',
-    'access arguments' => array(5),
-    'file' => 'linkit.admin.inc',
-  );
-*/
   return $items;
 }
 
