@@ -551,9 +551,8 @@ function linkit_help($path, $arg) {
  * @see filter_format_load()
  */
 function linkit_profile_exists($profile_name) {
-  // @TODO: Fix this so it works with CTools.
-  $profiles = variable_get('linkit_profiles', array());
-  return isset($profiles[$profile_name]);
+  $profile = linkit_profile_load($profile_name);
+  return isset($profile);
 }
 
 /**
