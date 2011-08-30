@@ -10,7 +10,7 @@ $plugin = array(
   'create access' => 'administer linkit',
 
   'menu' => array(
-    //'menu prefix' => 'admin/config/content/',
+    'menu prefix' => 'admin/config/content/',
     'menu item' => 'linkit',
     'menu title' => 'Linkit Profiles',
     'menu description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
@@ -23,7 +23,7 @@ $plugin = array(
         'access callback' => 'ctools_export_ui_task_access',
         'access arguments' => array('linkit_profiles', 'add'),
         'type' => MENU_LOCAL_ACTION,
-        'weight' => -100,
+        'weight' => -10,
       ),
     ),
   ),
