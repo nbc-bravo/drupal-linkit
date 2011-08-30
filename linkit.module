@@ -96,18 +96,6 @@ function linkit_permission() {
     'description' => t('Perform administration tasks for Linkit.'),
   );
 
-  $profiles = linkit_profile_load_all(TRUE);
-
-  foreach ($profiles as $profile) {
-    $permissions['linkit use ' . $profile->name . ' profile'] = array(
-      'title' => t('Use the !url Linkit profile', array(
-        '!url' => l($profile->title, 'admin/structure/linkit/' . $profile->name . '/edit'),
-      )),
-    );
-  }
-
-
-
   return $permissions;
 }
 
