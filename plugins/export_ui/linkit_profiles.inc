@@ -30,8 +30,8 @@ $plugin = array(
 
   'title singular' => t('Linkit profile'),
   'title plural' => t('Linkit profiles'),
-  'title singular proper' => t('Dynamic formatter preset'),
-  'title plural proper' => t('Dynamic formatter presets'),
+  'title singular proper' => t('Linkit profile'),
+  'title plural proper' => t('Linkit profiles'),
 
   'form' => array(
      'settings' => 'linkit_profiles_export_ui_form',
