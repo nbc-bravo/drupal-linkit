@@ -936,11 +936,11 @@ function linkit_default_linkit_profile() {
   $all_formats = filter_formats();
   $text_format = reset($all_formats);
 
-  $default = new stdClass;
-  $default->api_version = 1;
-  $default->name = 'default';
-  $default->title = 'Default';
-  $default->data = serialize(array(
+  $linkit_profile = new stdClass;
+  $linkit_profile->api_version = 1;
+  $linkit_profile->name = 'default';
+  $linkit_profile->title = 'Default';
+  $linkit_profile->data = serialize(array(
     'text_format' => $text_format->format,
     'plugins' => array(
       'taxonomy' => array(
@@ -1021,6 +1021,6 @@ function linkit_default_linkit_profile() {
     ),
   ));
 
-  $export['default'] = $default;
+  $export['default'] = $linkit_profile;
   return $export;
 }
