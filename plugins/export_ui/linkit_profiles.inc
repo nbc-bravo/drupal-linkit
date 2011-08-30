@@ -10,7 +10,7 @@ $plugin = array(
   'create access' => 'administer linkit',
 
   'menu' => array(
-    'menu prefix' => 'admin/config/content/',
+    'menu prefix' => 'admin/config/content',
     'menu item' => 'linkit',
     'menu title' => 'Linkit Profiles',
     'menu description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
