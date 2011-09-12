@@ -469,15 +469,15 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 function _linkit_build_role_assignment_form_fields(&$form, $profile) {
   $roles = user_roles();
   $assiged_roles = _linkit_get_assigned_roles($profile);
-  dsm($assiged_roles);
+
   foreach ($roles as $role_id => $role_name) {
     $form['roles'][$role_id] = array(
       '#type' =>'checkbox', 
       '#title' => $role_name,
       '#default_value' => isset($profile->role_rids[$role_id]) ? $profile->role_rids[$role_id] : FALSE,
     );
-    
-    // disable roles thats already assigned.
+
+    // Disable roles thats already assigned.
     if (in_array($role_id, array_keys($assiged_roles))) {
       $form['roles'][$role_id]['#disabled'] = TRUE;
       $form['roles'][$role_id]['#title'] = $role_name . ' '. t('(used by %profile)', array('%profile' => $assiged_roles[$role_id]));
@@ -485,7 +485,8 @@ function _linkit_build_role_assignment_form_fields(&$form, $profile) {
 
   }
 
- }
+}
+
 /**
  * Preprocess tabledrag variables
  *
