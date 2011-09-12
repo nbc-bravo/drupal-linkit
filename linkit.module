@@ -79,6 +79,10 @@ function linkit_theme($existing, $type, $theme, $path) {
       'path' => drupal_get_path('module', 'linkit') . '/plugins/export_ui',
       'file' => 'linkit_profiles.inc',
     ),
+     'linkit_assignment_form' => array(
+      'file' => 'plugins/export_ui/linkit_profiles_ui.class.php',
+      'render element' => 'form',
+    ),
   );
 }
 
@@ -767,6 +771,21 @@ function linkit_get_dashboard_profile() {
 }
 
 /**
+ * Get all Linkit profiles and return there names.
+ *
+ * @return
+ *   An array that can be used as an #options in a form.
+ */
+function _linkit_get_profile_names() {
+  $profiles = linkit_profile_load_all();
+  $profile_names= array();
+  foreach ($profiles AS $profile) {
+    $profile_names[$profile->name] = $profile->admin_title;
+  }
+  return $profile_names;
+}
+
+/**
 * Load a single Linkit profile.
 */
 function linkit_profile_load($name) {
@@ -777,6 +796,7 @@ function linkit_profile_load($name) {
     $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
     if (isset($result[$name])) {
       $result[$name]->data = unserialize($result[$name]->data);
+      $result[$name]->role_rids = unserialize($result[$name]->role_rids);
       $cache[$name] = $result[$name];
     }
     else {
@@ -798,61 +818,13 @@ function linkit_profile_load_all($reset = FALSE) {
     foreach ($profiles as $profile) {
       if (empty($cache[$profile->name])) {
         $profile->data = unserialize($profile->data);
+        $profile->role_rids = unserialize($profile->role_rids);
         $cache[$profile->name] = $profile;
       }
     }
   }
 
   return $cache;
-}
-
-/**
- * Get all text formats from the database and unset all that is already
- * attached to a profile.
- *
- * @param $profile
- *   The current profile object.
- *
- * @return
- *   An array with all available input formats.
- */
-function _linkit_text_formats($profile) {
-  $formats = _linkit_get_text_formats();
-  $profiles = linkit_profile_load_all(TRUE);
-
-  // Show which text format that is assign to the current profile, so we delete
-  // the current profile from the array containing all profiles.
-  unset($profiles[$profile->name]);
-  
-  // Unset all text formats that is used by other profiles.
-  foreach ($profiles as $profile) {
-    unset($formats[$profile->data['text_format']]);
-  }
-
-  return $formats;
-}
-
-/**
- * Build an array with text formats that can be used as an #option in a form
- * element and add a "none" value to the array.
- *
- * @return
- *   An array of text formats.
- */
-function _linkit_get_text_formats() {
-  $formats = filter_formats();
-
-  $options = array();
-  foreach ($formats as $format) {
-    $options[$format->format] = $format->name;
-  }
-
-  // Add a N/A state so it can be set to "none"
-  if (count($options) > 0) {
-    $options = array_merge(array('' => t('N/A')), $options);
-  }
-
-  return $options;
 }
 
 /**
@@ -884,16 +856,11 @@ function linkit_ctools_plugin_directory($module, $type) {
 function linkit_default_linkit_profile() {
   $export = array();
 
-  // The text format with the lowest weight.
-  $all_formats = filter_formats();
-  $text_format = reset($all_formats);
-
   $linkit_profile = new stdClass;
   $linkit_profile->api_version = 1;
-  $linkit_profile->name = 'default';
-  $linkit_profile->title = 'Default';
+  $linkit_profile->name = LINKIT_DEFAULT_PROFILE_MACHINE_NAME;
+  $linkit_profile->admin_title = ucfirst(LINKIT_DEFAULT_PROFILE_MACHINE_NAME);
   $linkit_profile->data = serialize(array(
-    'text_format' => $text_format->format,
     'plugins' => array(
       'taxonomy' => array(
         'weight' => '0',
@@ -972,6 +939,7 @@ function linkit_default_linkit_profile() {
       ),
     ),
   ));
+  $linkit_profile->role_ids = serialize(array(DRUPAL_AUTHENTICATED_RID));
 
   $export['default'] = $linkit_profile;
   return $export;

@@ -17,17 +17,17 @@ $plugin = array(
     'items' => array(
         'add' => array(
         'path' => 'add',
-        'title' => 'New profile',
+        'title' => 'New profile', // menu alter??
         'page callback' => 'ctools_export_ui_switcher_page',
         'page arguments' => array('linkit_profiles', 'add'),
         'access callback' => 'ctools_export_ui_task_access',
         'access arguments' => array('linkit_profiles', 'add'),
         'type' => MENU_LOCAL_ACTION,
-        'weight' => -10,
+        'weight' => -10,  // menu alter??
       ),
     ),
   ),
-
+  
   'title singular' => t('Linkit profile'),
   'title plural' => t('Linkit profiles'),
   'title singular proper' => t('Linkit profile'),
@@ -37,6 +37,11 @@ $plugin = array(
      'settings' => 'linkit_profiles_export_ui_form',
      'submit' => 'linkit_profiles_export_ui_form_submit',
    ),
+
+  'handler' => array(
+    'class' => 'linkit_profiles_ui',
+    'parent' => 'ctools_export_ui',
+  ),
 );
 
 /**
@@ -59,10 +64,10 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
 
   $form['data']['#tree'] = TRUE;
 
-  $form['data']['title'] = array(
+  $form['data']['admin_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#default_value' => isset($profile->title) ? $profile->title : 'Untitled Profile',
+    '#default_value' => isset($profile->admin_title) ? $profile->admin_title : 'Untitled Profile',
     '#required' => TRUE,
   );
 
@@ -73,17 +78,9 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#maxlength' => 255,
     '#machine_name' => array(
       'exists' => 'linkit_profile_exists',
-      'source' => array('data', 'title'),
+      'source' => array('data', 'admin_title'),
     ),
     '#disabled' => !is_null($profile->name),
-  );
-
-  $form['data']['text_format'] = array(
-    '#type' => 'select',
-    '#title' => t('Text format'),
-    '#default_value' => isset($profile->data['text_format']) ? $profile->data['text_format'] : '',
-    '#options' => _linkit_text_formats($profile),
-    '#description' => t('Attach this profile to one text format. A text format can only be attached to one profile at the same time.'),
   );
 
   // Append plugin form element to the setttings form.
@@ -285,6 +282,17 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
+  $form['roles'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Role assignment'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  // Append role form elements to the settings form.
+  _linkit_build_role_assignment_form_fields($form, $profile);
+
   // Append attributes form element to the setttings form.
   _linkit_build_attribute_form_fields($form, $profile);
 }
@@ -456,6 +464,29 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 }
 
 /**
+ * Append role form elements to the settings form.
+ */ 
+function _linkit_build_role_assignment_form_fields(&$form, $profile) {
+  $roles = user_roles();
+  $assiged_roles = _linkit_get_assigned_roles($profile);
+  dsm($assiged_roles);
+  foreach ($roles as $role_id => $role_name) {
+    $form['roles'][$role_id] = array(
+      '#type' =>'checkbox', 
+      '#title' => $role_name,
+      '#default_value' => isset($profile->role_rids[$role_id]) ? $profile->role_rids[$role_id] : FALSE,
+    );
+    
+    // disable roles thats already assigned.
+    if (in_array($role_id, array_keys($assiged_roles))) {
+      $form['roles'][$role_id]['#disabled'] = TRUE;
+      $form['roles'][$role_id]['#title'] = $role_name . ' '. t('(used by %profile)', array('%profile' => $assiged_roles[$role_id]));
+    }
+
+  }
+
+ }
+/**
  * Preprocess tabledrag variables
  *
  * @param $variables
@@ -537,14 +568,35 @@ function _linkit_theme_profile_form_table($variables, $type) {
  */
 function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 
-  $form_state['item']->title = trim($form_state['values']['data']['title']);
+  $form_state['item']->admin_title = trim($form_state['values']['data']['admin_title']);
   $form_state['item']->name = $form_state['values']['data']['name'];
 
   // Unset this two values as this will not be saves in the data field.
-  unset($form_state['values']['data']['title'], $form_state['values']['data']['name']);
+  unset($form_state['values']['data']['admin_title'], $form_state['values']['data']['name']);
 
   $form_state['item']->data = serialize($form_state['values']['data']);
+  $form_state['item']->role_rids = serialize(array_filter($form_state['values']['roles']));
 
   // CTools will work on this variable alter and screw it up, so unset it.
   unset($form_state['values']['data']);
+}
+
+
+/**
+ * Get all roles that is assign to profiles and make an array of them.
+ *
+ * @param object The profile object.
+ */
+ function _linkit_get_assigned_roles($profile) {
+  $profiles = linkit_profile_load_all();
+  $roles = array();
+
+  foreach ($profiles as $profile) {
+    foreach ($profile->role_rids as $rid => $value) {
+      $role = user_role_load($rid);
+      $roles[$rid] = $profile->admin_title;
+    }
+  }
+
+  return $roles;
 }

@@ -23,6 +23,7 @@ function linkit_schema() {
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
       'can disable' => FALSE,
+      'bulk export' => TRUE,
       'api' => array(
         'owner' => 'linkit',
         'api' => 'linkit_profiles',
@@ -32,7 +33,7 @@ function linkit_schema() {
     ),
     'fields' => array(
       'pid' => array(
-        'description' => 'Serial id for this preset.',
+        'description' => 'Serial id for this profile.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
@@ -44,7 +45,7 @@ function linkit_schema() {
         'length' => 128,
         'not null' => TRUE,
       ),
-      'title' => array(
+      'admin_title' => array(
         'description' => 'Administrative title for this profile.',
         'type' => 'varchar',
         'length' => 128,
@@ -54,6 +55,11 @@ function linkit_schema() {
         'type' => 'text',
         'size' => 'big',
         'description' => 'A serialized array with settings.',
+      ),
+      'role_rids' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'A serialized array with role rids that is assign to this profile.',
       ),
     ),
     'primary key' => array('pid'),
@@ -78,46 +84,6 @@ function linkit_uninstall() {
 /**
  * Implements hook_install().
  */
-
 function linkit_install() {
   drupal_install_schema('linkit_profiles');
-  /*
-  require_once 'linkit.admin.inc';
-  // Build a default profile using the settings form.
-  $form_state = array();
-  $form_state['values']['name'] = 'Default';
-  $form_state['values']['machine_name'] = LINKIT_DEFAULT_PROFILE_MACHINE_NAME;
-  drupal_form_submit('linkit_profile_form', $form_state);
-
-  // Assign the default profile to authenticated users.
-  variable_set('linkit_roles_profiles', array(DRUPAL_AUTHENTICATED_RID => LINKIT_DEFAULT_PROFILE_MACHINE_NAME));
-*/
-}
-
-
-/**
- * Update Linkit permission names.
- */
-function linkit_update_7100() {
-  // See http://drupal.org/node/1050444
-  $plugins = array('file', 'node', 'taxonomy', 'user');
-
-  foreach ($plugins AS $plugin) {
-    db_update('role_permission')
-      ->fields(array('permission' => 'use linkit ' . $plugin . ' plugin'))
-      ->condition('permission', 'create ' . $plugin . ' links')
-      ->condition('module', 'linkit_permissions')
-      ->execute();
-  }
-
-  db_update('role_permission')
-    ->fields(array('permission' => 'use all linkit plugins'))
-    ->condition('permission', 'create all links')
-    ->condition('module', 'linkit_permissions')
-    ->execute();
-
-  return t('Linkit permission was successfully updated.');
-
-  // In case of an error, simply throw an exception with an error message.
-  throw new DrupalUpdateException(t('Something went wrong; Please go to admin/people/permissions and update your Linkit permissions manually.'));
 }
