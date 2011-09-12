@@ -81,7 +81,7 @@ class linkit_profiles_ui extends ctools_export_ui {
    */
   function buildRoleList($rids) {
     $list = array();
-    foreach ($rids as $rid => $name) {
+    foreach ($rids as $rid => $value) {
       $role = user_role_load($rid);
       $list[] = $role->name;
     }
