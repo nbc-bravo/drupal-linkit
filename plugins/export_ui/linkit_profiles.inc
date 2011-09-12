@@ -589,7 +589,10 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
  * @param object The profile object.
  */
  function _linkit_get_assigned_roles($profile) {
-  $profiles = linkit_profile_load_all();
+  $profiles = linkit_profile_load_all(TRUE);
+  // Unset the profile being edited.
+  unset($profiles[$profile->name]);
+
   $roles = array();
 
   foreach ($profiles as $profile) {

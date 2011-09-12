@@ -765,7 +765,6 @@ function linkit_get_dashboard_profile() {
     $profiles = linkit_profile_load_all();
 
 
-
   }
   return $best_profile;
 }
