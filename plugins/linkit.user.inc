@@ -60,7 +60,7 @@ function _linkit_user_create_base_query($profile, $result_tokens) {
 function _linkit_user_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile['user']['result_description']);
+  $result_description = check_plain($profile->data['user']['result_description']);
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
@@ -94,7 +94,7 @@ function _linkit_user_autocomplete($string, $profile) {
 function _linkit_user_path_info($path_info, $profile) {
   // Check if path is referring to a user
   if (arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
-    $result_description = check_plain($profile['user']['result_description']);
+    $result_description = check_plain($profile->data['user']['result_description']);
 
     // Build a list of all token-like patterns that appear in the text.
     $result_tokens = token_scan($result_description);

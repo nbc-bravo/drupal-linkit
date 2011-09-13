@@ -71,17 +71,13 @@ function linkit_theme($existing, $type, $theme, $path) {
   // @Todo: Move all theme stuff to a separate file.
   return array(
     'linkit_dashboard' => array(
-       'render element' => 'form',
+      'render element' => 'form',
       'template' => 'linkit-dashboard',
     ),
     'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
       'path' => drupal_get_path('module', 'linkit') . '/plugins/export_ui',
       'file' => 'linkit_profiles.inc',
-    ),
-     'linkit_assignment_form' => array(
-      'file' => 'plugins/export_ui/linkit_profiles_ui.class.php',
-      'render element' => 'form',
     ),
   );
 }
@@ -157,7 +153,7 @@ function _linkit_dashboard($editor) {
     $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
   }
 
-  $settings['autocomplete'] = array_filter($profile['autocomplete']);
+  $settings['autocomplete'] = array_filter($profile->data['autocomplete']);
 
   drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
@@ -705,10 +701,10 @@ function linkit_get_profile_attributes() {
   $profile = linkit_get_dashboard_profile();
   $enabled_attributes = array();
 
-  if (isset($profile['attributes'])) {
+  if (isset($profile->data['attributes'])) {
     // Loop thru all attributes and build an array with all that is enabled.
     foreach (linkit_get_attributes($profile) as $name => $attribute) {
-      if (isset($profile['attributes'][$name]['enabled']) && $profile['attributes'][$name]['enabled']) {
+      if (isset($profile->data['attributes'][$name]['enabled']) && $profile->data['attributes'][$name]['enabled']) {
         // Add Linkit specific class, this is used by the editor JS scripts.
         $attribute['#attributes']['class'][] = 'linkit-attribute';
         $enabled_attributes[$name] = $attribute;
@@ -730,7 +726,7 @@ function linkit_get_profile_plugins() {
   // Include plugin file.
   foreach ($installed_plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
-    if ($profile['plugins'][$name]['enabled']) {
+    if ($profile->data['plugins'][$name]['enabled']) {
       $enabled_plugins[$name] = $plugin;
       if (isset($plugin['file'])) {
         if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
@@ -759,14 +755,40 @@ function linkit_get_plugins() {
 function linkit_get_dashboard_profile() {
   global $user;
   $best_profile = &drupal_static(__FUNCTION__);
-
+  
   if (!isset($best_profile)) {
+    // @TODO: Fix better fallback if no profile is loaded.
+    $best_profile = array();
     // Get the profiles.
     $profiles = linkit_profile_load_all();
-    print_r($profiles);
+    usort($profiles, '_linkit_sort_profiles_by_weight');
+    
+    foreach ($profiles as $profile) {
+      // Dont work with disabled profiles.
+      if (isset($profile->disabled)) {
+        continue;
+      }
 
+      // Loop thru the assigned roles, if we get a match, use that and break 
+      // out of this loop.
+      foreach ($profile->role_rids as $rid => $value) {
+        if(array_key_exists($rid, $user->roles)) {
+          $best_profile = $profile;
+          break;
+        }
+      }
+
+    }
+    
   }
   return $best_profile;
+}
+
+/**
+ * Sort profiles by weight.
+ */
+function _linkit_sort_profiles_by_weight($a, $b) {
+  return $a->weight >= $b->weight;
 }
 
 /**

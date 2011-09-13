@@ -72,16 +72,16 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   }
 
   // Content type check
-  if ($allowed_content_types = array_filter($profile['node']['content_types'])) {
+  if ($allowed_content_types = array_filter($profile->data['node']['content_types'])) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
 
   // Status condition.
-  if (!isset($profile['node']['include_unpublished'])) {
+  if (!isset($profile->data['node']['include_unpublished'])) {
     $query->condition('n.status', 1);
   }
 
-  if ($profile['node']['group_by_content_type']) {
+  if ($profile->data['node']['group_by_content_type']) {
     $fields = $query->getFields();
     // We need the type to sort on, if its not yet included in the query, we
     // have to inlcude it.
@@ -102,7 +102,7 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
  */
 function _linkit_node_build_group($profile, $node) {
   $group = t('Content');
-  if ($profile['node']['group_by_content_type']) {
+  if ($profile->data['node']['group_by_content_type']) {
     $type_name = node_type_get_name($node);
     $group .= ' · ' . check_plain($type_name);
   }
@@ -115,7 +115,7 @@ function _linkit_node_build_group($profile, $node) {
 function _linkit_node_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile['node']['result_description']);
+  $result_description = check_plain($profile->data['node']['result_description']);
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
@@ -150,7 +150,7 @@ function _linkit_node_autocomplete($string, $profile) {
 function _linkit_node_path_info($path_info, $profile) {
   // Check if path is referring to a node
   if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
-    $result_description = check_plain($profile['node']['result_description']);
+    $result_description = check_plain($profile->data['node']['result_description']);
 
     // Build a list of all token-like patterns that appear in the text.
     $result_tokens = token_scan($result_description);

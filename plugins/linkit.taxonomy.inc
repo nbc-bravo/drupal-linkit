@@ -35,7 +35,7 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
     }
   }
 
-  if ($profile['taxonomy']['group_by_vocabulary']) {
+  if ($profile->data['taxonomy']['group_by_vocabulary']) {
     $fields = $query->getFields();
     // We need the vid to sort on, if its not yet included in the query, we
     // have to inlcude it.
@@ -55,7 +55,7 @@ function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
  * Build the group string for the term.
  */
 function _linkit_taxonomy_build_group($profile, $term) {
-  if ($profile['taxonomy']['group_by_vocabulary']) {
+  if ($profile->data['taxonomy']['group_by_vocabulary']) {
     $vocabulary = taxonomy_vocabulary_load($term->vid);
     return t('Terms (%vocabulary_name)', array('%vocabulary_name' => check_plain($vocabulary->name)));
   }
@@ -70,7 +70,7 @@ function _linkit_taxonomy_build_group($profile, $term) {
 function _linkit_taxonomy_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile['taxonomy']['result_description']);
+  $result_description = check_plain($profile->data['taxonomy']['result_description']);
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
@@ -107,7 +107,7 @@ function _linkit_taxonomy_path_info($path_info, $profile) {
 
   // Check if path is referring to a taxonomy
   if (in_array(arg(0, $path_info['system_path']), $taxonomy_uri_array)) {
-    $result_description = check_plain($profile['taxonomy']['result_description']);
+    $result_description = check_plain($profile->data['taxonomy']['result_description']);
 
     // Build a list of all token-like patterns that appear in the text.
     $result_tokens = token_scan($result_description);

@@ -60,7 +60,7 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
     }
   }
 
-  if ($profile['file']['group_by_scheme']) {
+  if ($profile->data['file']['group_by_scheme']) {
     $query->orderBy('f.uri', 'ASC');
   }
 
@@ -76,18 +76,18 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
 function _linkit_file_build_description($profile, $result_description, $file) {
   $description_array = array();
 
-  if ($profile['file']['image_extra_info']['thumbnail'] || $profile['file']['image_extra_info']['dimensions']) {
+  if ($profile->data['file']['image_extra_info']['thumbnail'] || $profile->data['file']['image_extra_info']['dimensions']) {
     $imageinfo = image_get_info($file->uri);
   }
 
-  if ($profile['file']['image_extra_info']['thumbnail']) {
+  if ($profile->data['file']['image_extra_info']['thumbnail']) {
     $image = $imageinfo ? theme_image_style(array(
       'style_name' => 'linkit_thumb',
       'path' => $file->uri,
     )) : '';
   }
 
-  if ($profile['file']['image_extra_info']['dimensions'] && !empty($imageinfo)) {
+  if ($profile->data['file']['image_extra_info']['dimensions'] && !empty($imageinfo)) {
     $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
   }
 
@@ -95,7 +95,7 @@ function _linkit_file_build_description($profile, $result_description, $file) {
     'file' => $file,
   ));
 
-  if ($profile['file']['show_scheme']) {
+  if ($profile->data['file']['show_scheme']) {
     $description_array[] = file_uri_scheme($file->uri) . '://';
   }
 
@@ -108,7 +108,7 @@ function _linkit_file_build_description($profile, $result_description, $file) {
  * Build the group string for the file.
  */
 function _linkit_file_build_group($profile, $file) {
-  if ($profile['file']['group_by_scheme']) {
+  if ($profile->data['file']['group_by_scheme']) {
     // Get all stream wrappers.
     $stream_wrapper = file_get_stream_wrappers();
     return t('Files (%stream_wrapper)', array('%stream_wrapper' => t($stream_wrapper[file_uri_scheme($file->uri)]['name'])));
@@ -124,7 +124,7 @@ function _linkit_file_build_group($profile, $file) {
 function _linkit_file_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile['file']['result_description']);
+  $result_description = check_plain($profile->data['file']['result_description']);
 
   // Build a list of all token-like patterns that appear in the text.
   $result_tokens = token_scan($result_description);
