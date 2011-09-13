@@ -68,14 +68,14 @@ function linkit_permission() {
  * Implements hook_theme().
  */
 function linkit_theme($existing, $type, $theme, $path) {
+  // @Todo: Move all theme stuff to a separate file.
   return array(
     'linkit_dashboard' => array(
-      'variables' => array('form' => NULL),
+       'render element' => 'form',
       'template' => 'linkit-dashboard',
     ),
     'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
-      // @Todo: Move all theme stuff to a separate file.
       'path' => drupal_get_path('module', 'linkit') . '/plugins/export_ui',
       'file' => 'linkit_profiles.inc',
     ),
@@ -763,7 +763,7 @@ function linkit_get_dashboard_profile() {
   if (!isset($best_profile)) {
     // Get the profiles.
     $profiles = linkit_profile_load_all();
-
+    print_r($profiles);
 
   }
   return $best_profile;
@@ -840,9 +840,9 @@ function linkit_ctools_plugin_api($owner, $api) {
 /**
  * Implements hook_ctools_plugin_directory().
  */
-function linkit_ctools_plugin_directory($module, $type) {
-  if ($type == 'export_ui') {
-    return 'plugins/' . $type;
+function linkit_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'export_ui') {
+    return 'plugins/' . $plugin;
   }
 }
 
@@ -938,8 +938,8 @@ function linkit_default_linkit_profile() {
       ),
     ),
   ));
-  $linkit_profile->role_ids = serialize(array(DRUPAL_AUTHENTICATED_RID));
+  $linkit_profile->role_rids = serialize(array(DRUPAL_AUTHENTICATED_RID => 1));
 
-  $export['default'] = $linkit_profile;
+  $export[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = $linkit_profile;
   return $export;
 }
