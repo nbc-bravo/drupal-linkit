@@ -18,7 +18,7 @@
 </head>
 <body>
   <div id="linkit">
-    <?php if (!empty($messages)): print $messages; endif; ?>
+    <div id="console" class="clearfix"><?php print $messages; ?></div>
     <?php if (!empty($help)): print $help; endif; ?>
     <div id="content-content" class="clearfix">
       <?php print $form; ?>
