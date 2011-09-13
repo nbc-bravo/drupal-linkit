@@ -41,6 +41,9 @@ class linkit_profiles_ui extends ctools_export_ui {
     // we can use it safely.
     switch ($form_state['values']['order']) {
       case 'disabled':
+        $this->sorts[$name] = $item->weight;
+        break;
+      case 'disabled_title':
         $this->sorts[$name] = empty($item->disabled) . $name;
         break;
       case 'title':
@@ -89,6 +92,34 @@ class linkit_profiles_ui extends ctools_export_ui {
       $list[] = $role->name;
     }
     return implode(', ', $list);
+  }
+
+  /**
+   * Provide a list of sort options.
+   *
+   * Override this if you wish to provide more or change how these work.
+   * The actual handling of the sorting will happen in build_row().
+   */
+  function list_sort_options() {
+    $options = array('disabled' => t('Weight'));
+    if (!empty($this->plugin['export']['admin_title'])) {
+      $options += array(
+        'disabled_title' => t('Enabled, title'),
+        $this->plugin['export']['admin_title'] => t('Title'),
+      );
+    }
+    else {
+      $options += array(
+        'disabled_title' => t('Enabled, name'),
+      );
+    }
+
+    $options += array(
+      'name' => t('Name'),
+      'storage' => t('Storage'),
+    );
+
+    return $options;
   }
 }
 
