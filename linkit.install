@@ -61,6 +61,12 @@ function linkit_schema() {
         'size' => 'big',
         'description' => 'A serialized array with role rids that is assign to this profile.',
       ),
+      'weight' => array(
+        'description' => 'Profile weight.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
     ),
     'primary key' => array('pid'),
     'unique keys' => array(

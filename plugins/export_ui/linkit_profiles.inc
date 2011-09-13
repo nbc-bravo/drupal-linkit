@@ -64,24 +64,47 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
 
   $form['data']['#tree'] = TRUE;
 
-  $form['data']['admin_title'] = array(
+  $form['admin_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
     '#default_value' => isset($profile->admin_title) ? $profile->admin_title : 'Untitled Profile',
     '#required' => TRUE,
+    '#weight' => -100,
   );
 
-  $form['data']['name'] = array(
+  $form['name'] = array(
     '#type' => 'machine_name',
     '#required' => TRUE,
     '#default_value' => isset($profile->name) ? $profile->name : '',
     '#maxlength' => 255,
     '#machine_name' => array(
       'exists' => 'linkit_profile_exists',
-      'source' => array('data', 'admin_title'),
+      'source' => array('admin_title'),
     ),
     '#disabled' => !is_null($profile->name),
   );
+
+  $form['weight'] = array(
+    '#type' => 'weight',
+    '#title' => t('Weight'),
+    '#default_value' => $profile->weight,
+    '#delta' => 10,
+    '#weight' => -98,
+    '#description' => t('If a user have multiple roles, the Linkit profile weight will descide which profile to use.'),
+  );
+
+  $form['roles'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Access'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+    '#weight' => -97,
+    '#description' => t('A drupal role can only be assigned to one profile at the same time.'),
+  );
+
+  // Append role form elements to the settings form.
+  _linkit_build_role_assignment_form_fields($form, $profile);
 
   // Append plugin form element to the setttings form.
   _linkit_build_plugin_form_fields($form, $profile);
@@ -282,17 +305,6 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
-  $form['roles'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Role assignment'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#tree' => TRUE,
-  );
-
-  // Append role form elements to the settings form.
-  _linkit_build_role_assignment_form_fields($form, $profile);
-
   // Append attributes form element to the setttings form.
   _linkit_build_attribute_form_fields($form, $profile);
 }
@@ -480,7 +492,7 @@ function _linkit_build_role_assignment_form_fields(&$form, $profile) {
     // Disable roles thats already assigned.
     if (in_array($role_id, array_keys($assiged_roles))) {
       $form['roles'][$role_id]['#disabled'] = TRUE;
-      $form['roles'][$role_id]['#title'] = $role_name . ' '. t('(used by %profile)', array('%profile' => $assiged_roles[$role_id]));
+      $form['roles'][$role_id]['#description'] = t('This role is used by %profile', array('%profile' => $assiged_roles[$role_id]));
     }
 
   }
@@ -569,14 +581,12 @@ function _linkit_theme_profile_form_table($variables, $type) {
  */
 function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 
-  $form_state['item']->admin_title = trim($form_state['values']['data']['admin_title']);
-  $form_state['item']->name = $form_state['values']['data']['name'];
-
-  // Unset this two values as this will not be saves in the data field.
-  unset($form_state['values']['data']['admin_title'], $form_state['values']['data']['name']);
+  $form_state['item']->admin_title = trim($form_state['values']['admin_title']);
+  $form_state['item']->name = $form_state['values']['name'];
 
   $form_state['item']->data = serialize($form_state['values']['data']);
   $form_state['item']->role_rids = serialize(array_filter($form_state['values']['roles']));
+  $form_state['item']->weight = $form_state['values']['weight'];
 
   // CTools will work on this variable alter and screw it up, so unset it.
   unset($form_state['values']['data']);

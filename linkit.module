@@ -939,6 +939,7 @@ function linkit_default_linkit_profile() {
     ),
   ));
   $linkit_profile->role_rids = serialize(array(DRUPAL_AUTHENTICATED_RID => 1));
+  $linkit_profile->weight = LINKIT_DEFAULT_WEIGHT;
 
   $export[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = $linkit_profile;
   return $export;

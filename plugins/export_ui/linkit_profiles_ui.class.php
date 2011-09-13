@@ -19,6 +19,7 @@ class linkit_profiles_ui extends ctools_export_ui {
     $header[] = array('data' => t('Name'), 'class' => array('ctools-export-ui-name'));
     $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
     $header[] = array('data' => t('Roles'), 'class' => array('ctools-export-ui-roles'));
+    $header[] = array('data' => t('Weight'), 'class' => array('ctools-export-ui-weight'));
     $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
 
     return $header;
@@ -62,9 +63,11 @@ class linkit_profiles_ui extends ctools_export_ui {
     }
     $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => array('ctools-export-ui-name'));
     $this->rows[$name]['data'][] = array('data' => check_plain($item->{$schema['export']['export type string']}), 'class' => array('ctools-export-ui-storage'));
-    
+
     $role_lost = $this->buildRoleList($item->role_rids);
     $this->rows[$name]['data'][] = array('data' => check_plain($role_lost), 'class' => array('ctools-export-ui-roles'));
+
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->weight), 'class' => array('ctools-export-ui-weight'));
 
     $ops = theme('links__ctools_dropbutton', array('links' => $operations, 'attributes' => array('class' => array('links', 'inline'))));
 
