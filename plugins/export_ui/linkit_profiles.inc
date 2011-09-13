@@ -90,7 +90,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#default_value' => $profile->weight,
     '#delta' => 10,
     '#weight' => -98,
-    '#description' => t('If a user have multiple roles, the Linkit profile weight will descide which profile to use.'),
+    '#description' => t('If a user have multiple roles, the Linkit profile weight will determine which profile to use. Lower weight will take the precedence.'),
   );
 
   $form['roles'] = array(
