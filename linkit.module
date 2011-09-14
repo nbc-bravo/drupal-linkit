@@ -123,6 +123,11 @@ function _linkit_dashboard($editor) {
 
   $profile = linkit_get_dashboard_profile();
 
+  if ($profile == NULL) {
+    drupal_set_message(t('There is no Linkit profile associate to your role.'), 'warning');
+    return '';
+  }
+
   // Check if IMCE is enbled and accessable
   if (module_invoke('imce', 'access') && isset($profile['imce']['use_imce']) && $profile['imce']['use_imce'] == 1) {
     $settings['IMCEurl'] = url('imce', array('query' => array(
@@ -740,7 +745,7 @@ function linkit_get_dashboard_profile() {
 
   if (!isset($best_profile)) {
     // @TODO: Fix better fallback if no profile is loaded.
-    $best_profile = array();
+    $best_profile = NULL;
     // Get the profiles.
     $profiles = linkit_profile_load_all();
     usort($profiles, '_linkit_sort_profiles_by_weight');
