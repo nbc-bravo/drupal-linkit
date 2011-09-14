@@ -1,10 +1,5 @@
-
 name = Linkit
-
 description = Provides an easy interface for inserting links to internal content, files and external pages by providing autocomplete search for several WYSIWYG-editors.
-
 core = 7.x
-
 configure = admin/config/content/linkit
-
-;dependencies[] = pathologic
+dependencies[] = ctools
