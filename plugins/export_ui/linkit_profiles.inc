@@ -326,41 +326,6 @@ function linkit_isnumeric_validate($element, &$form_state, $form) {
 }
 
 /**
- * Processes variables
- *
- * The $variables array contains the following arguments:
- * - $form
- *
- * @see linkit_profile_form()
- */
-function template_preprocess_linkit_profiles_export_ui_form(&$variables) {
-  _linkit_preprocess_tabledrag_variables($variables, 'plugins');
-  _linkit_preprocess_tabledrag_variables($variables, 'attributes');
-}
-
-/**
- * Returns HTML for the linkit_profile_form form.
- *
- * @param $variables
- *   An associative array containing:
- *   - form: A render element representing the form.
- *
- * @ingroup themeable
- */
-function theme_linkit_profiles_export_ui_form($variables) {
-  $form = &$variables['form'];
-
-  $plugin_table = _linkit_theme_profile_form_table($variables, 'plugins');
-  $form['data']['plugins_fieldset']['plugins']['#markup'] = $plugin_table;
-
-  $attribute_table = _linkit_theme_profile_form_table($variables, 'attributes');
-  $form['data']['attributes_fieldset']['attributes']['#markup'] = $attribute_table;
-
-  $output = drupal_render_children($form);
-  return $output;
-}
-
-/**
  * Sort plugins by weight.
  */
 function _linkit_sort_plugins_by_weight($a, $b) {
@@ -500,41 +465,11 @@ function _linkit_build_role_assignment_form_fields(&$form, $profile) {
 }
 
 /**
- * Preprocess tabledrag variables
- *
- * @param $variables
- * @param $type
- *   "plugin" or "attribute"
- */
-function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
-  // Add each attribute in the form to the appropriate place in the attribute listing.
-  foreach (element_children($variables['form']['data'][$type . '_fieldset'][$type]) as $i) {
-    $element = &$variables['form']['data'][$type . '_fieldset'][$type][$i];
-
-    // Set special classes needed for table drag and drop.
-    $element['weight']['#attributes']['class'] = array('weight');
-
-    $variables['linkit_' . $type . '_listing'][$i] = new stdClass();
-    $variables['linkit_' . $type . '_listing'][$i]->title = drupal_render($element['name']);
-    $variables['linkit_' . $type . '_listing'][$i]->enabled = drupal_render($element['enabled']);
-    $variables['linkit_' . $type . '_listing'][$i]->weight_select = drupal_render($element['weight']);
-    $variables['linkit_' . $type . '_listing'][$i]->printed = FALSE;
-
-    // Add description if it extists.
-    if (isset($element['description'])) {
-      $variables['linkit_' . $type . '_listing'][$i]->description = drupal_render($element['description']);
-    }
-  }
-}
-
-/**
  * Helper function to render settings tables.
  *
  * @param $variables.
  * @param $type
  *   "plugin" or "attribute".
- *
- * @see theme_linkit_profile_form()
  */
 function _linkit_theme_profile_form_table($variables, $type) {
   $rows = array();
@@ -571,10 +506,9 @@ function _linkit_theme_profile_form_table($variables, $type) {
 
   return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type), 'sticky' => FALSE));
 }
+
 /**
  * Save callback for linkit_profiles_export_ui_form.
- *
- *
  *
  * @param array $form
  * @param array $form_state
@@ -591,7 +525,6 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
   // CTools will work on this variable alter and screw it up, so unset it.
   unset($form_state['values']['data']);
 }
-
 
 /**
  * Get all roles that is assign to profiles and make an array of them.
