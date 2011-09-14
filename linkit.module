@@ -129,7 +129,7 @@ function _linkit_dashboard($editor) {
   }
 
   // Check if IMCE is enbled and accessable
-  if (module_invoke('imce', 'access') && isset($profile['imce']['use_imce']) && $profile['imce']['use_imce'] == 1) {
+  if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
     $settings['IMCEurl'] = url('imce', array('query' => array(
       'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
       'absolute' => TRUE,
@@ -393,7 +393,7 @@ function linkit_dashboard_form() {
   );
 
   // Check if we have IMCE and access to it.
-  $imce = module_invoke('imce', 'access') && isset($profile['imce']['use_imce']) && $profile['imce']['use_imce'] == 1;
+  $imce = module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1;
   if ($imce) {
     $form['file_browser'] = array(
       '#type' => 'button',
