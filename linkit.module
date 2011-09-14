@@ -756,7 +756,7 @@ function linkit_get_dashboard_profile() {
         continue;
       }
 
-      // Loop thru the assigned roles, if we get a match, use that and break
+      // Loop thru the associated roles, if we get a match, use that and break
       // out of this loop.
       foreach ($profile->role_rids as $rid => $value) {
         if (array_key_exists($rid, $user->roles)) {

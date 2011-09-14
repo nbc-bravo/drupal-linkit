@@ -100,11 +100,11 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#collapsed' => TRUE,
     '#tree' => TRUE,
     '#weight' => -97,
-    '#description' => t('A drupal role can only be assigned to one profile at the same time.'),
+    '#description' => t('A drupal role can only be associated to one profile at the same time.'),
   );
 
   // Append role form elements to the settings form.
-  _linkit_build_role_assignment_form_fields($form, $profile);
+  _linkit_build_role_associate_form_fields($form, $profile);
 
   // Append plugin form element to the setttings form.
   _linkit_build_plugin_form_fields($form, $profile);
@@ -443,9 +443,9 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 /**
  * Append role form elements to the settings form.
  */
-function _linkit_build_role_assignment_form_fields(&$form, $profile) {
+function _linkit_build_role_associate_form_fields(&$form, $profile) {
   $roles = user_roles();
-  $assiged_roles = _linkit_get_assigned_roles($profile);
+  $assiged_roles = _linkit_get_associated_roles($profile);
 
   foreach ($roles as $role_id => $role_name) {
     $form['roles'][$role_id] = array(
@@ -454,7 +454,7 @@ function _linkit_build_role_assignment_form_fields(&$form, $profile) {
       '#default_value' => isset($profile->role_rids[$role_id]) ? $profile->role_rids[$role_id] : FALSE,
     );
 
-    // Disable roles thats already assigned.
+    // Disable roles thats already associated.
     if (in_array($role_id, array_keys($assiged_roles))) {
       $form['roles'][$role_id]['#disabled'] = TRUE;
       $form['roles'][$role_id]['#description'] = t('This role is used by %profile', array('%profile' => $assiged_roles[$role_id]));
@@ -527,11 +527,11 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 }
 
 /**
- * Get all roles that is assign to profiles and make an array of them.
+ * Get all roles that is associated to profiles and make an array of them.
  *
  * @param object The profile object.
  */
-function _linkit_get_assigned_roles($profile) {
+function _linkit_get_associated_roles($profile) {
   $profiles = linkit_profile_load_all(TRUE);
   // Unset the profile being edited.
   unset($profiles[$profile->name]);
