@@ -67,7 +67,7 @@ function _linkit_user_autocomplete($string, $profile) {
 
   $query = _linkit_user_create_base_query($profile, $result_tokens);
   $query ->condition('u.name', '%' . db_like($string) . '%', 'LIKE')
-         ->addTag('linkit_user_autocomplete');
+    ->addTag('linkit_user_autocomplete');
   $result = $query->execute();
 
   foreach ($result AS $user) {

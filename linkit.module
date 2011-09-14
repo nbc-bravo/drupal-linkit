@@ -754,7 +754,7 @@ function linkit_get_dashboard_profile() {
       // Loop thru the assigned roles, if we get a match, use that and break
       // out of this loop.
       foreach ($profile->role_rids as $rid => $value) {
-        if(array_key_exists($rid, $user->roles)) {
+        if (array_key_exists($rid, $user->roles)) {
           $best_profile = $profile;
           break;
         }
@@ -831,7 +831,7 @@ function linkit_profile_load_all($reset = FALSE) {
 }
 
 /**
- * Implementation of hook_ctools_plugin_api().
+ * Implements hook_ctools_plugin_api().
  *
  * Tell CTools that we support the default_linkit_profiles API.
  */
@@ -862,7 +862,7 @@ function linkit_default_linkit_profile() {
   $linkit_profile = new stdClass;
   $linkit_profile->api_version = 1;
   $linkit_profile->name = LINKIT_DEFAULT_PROFILE_MACHINE_NAME;
-  $linkit_profile->admin_title = ucfirst(LINKIT_DEFAULT_PROFILE_MACHINE_NAME);
+  $linkit_profile->admin_title = drupal_ucfirst(LINKIT_DEFAULT_PROFILE_MACHINE_NAME);
   $linkit_profile->data = serialize(array(
     'plugins' => array(
       'taxonomy' => array(
