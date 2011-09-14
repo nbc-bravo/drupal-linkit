@@ -27,7 +27,7 @@ $plugin = array(
       ),
     ),
   ),
-  
+
   'title singular' => t('Linkit profile'),
   'title plural' => t('Linkit profiles'),
   'title singular proper' => t('Linkit profile'),
@@ -36,7 +36,7 @@ $plugin = array(
   'form' => array(
      'settings' => 'linkit_profiles_export_ui_form',
      'submit' => 'linkit_profiles_export_ui_form_submit',
-   ),
+  ),
 
   'handler' => array(
     'class' => 'linkit_profiles_ui',
@@ -225,7 +225,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
 
   $image_extra_info_options = array(
     // Coder is saying "$text argument to l() should be enclosed within t() so that it is translatable." but image styles is not translatable.
-    'thumbnail' => t('Image thumbnail (Uses the image style named !linkit_thumb_link)', array('!linkit_thumb_link' => l('linkit_thumb', 'admin/config/media/image-styles/edit/linkit_thumb'))),
+    'thumbnail' => t('Image thumbnail (Uses the image style named !linkit_thumb_link)', array('!linkit_thumb_link' => l(t('linkit_thumb'), 'admin/config/media/image-styles/edit/linkit_thumb'))),
     'dimensions' => t('Full images dimensions (width and height)'),
   );
 
@@ -260,7 +260,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     );
 
     $form['data']['imce']['use_imce'] = array(
-      '#title' => t('Let the users use !imce for this profile.', array('!imce' => l('IMCE', 'admin/config/media/imce'))),
+      '#title' => t('Let the users use !imce for this profile.', array('!imce' => l(t('IMCE'), 'admin/config/media/imce'))),
       '#type' => 'checkbox',
       '#default_value' => isset($profile->data['imce']['use_imce']) ? $profile->data['imce']['use_imce'] : '',
       '#description' => t('We only support public files with IMCE.'),
@@ -293,7 +293,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#description' => t('(Default : 250)'),
     '#field_suffix' => t('milliseconds'),
     '#element_validate' => array('linkit_isnumeric_validate'),
-   );
+  );
 
   $form['data']['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Timeout on AJAX calls'),
@@ -442,14 +442,14 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 
 /**
  * Append role form elements to the settings form.
- */ 
+ */
 function _linkit_build_role_assignment_form_fields(&$form, $profile) {
   $roles = user_roles();
   $assiged_roles = _linkit_get_assigned_roles($profile);
 
   foreach ($roles as $role_id => $role_name) {
     $form['roles'][$role_id] = array(
-      '#type' =>'checkbox', 
+      '#type' => 'checkbox',
       '#title' => $role_name,
       '#default_value' => isset($profile->role_rids[$role_id]) ? $profile->role_rids[$role_id] : FALSE,
     );
@@ -531,7 +531,7 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
  *
  * @param object The profile object.
  */
- function _linkit_get_assigned_roles($profile) {
+function _linkit_get_assigned_roles($profile) {
   $profiles = linkit_profile_load_all(TRUE);
   // Unset the profile being edited.
   unset($profiles[$profile->name]);

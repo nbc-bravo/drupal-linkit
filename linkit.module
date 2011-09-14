@@ -55,7 +55,6 @@ function _linkit_dashboard_theme() {
  */
 function linkit_permission() {
   $permissions = array();
-
   $permissions['administer linkit'] = array(
     'title' => t('Administer Linkit'),
     'description' => t('Perform administration tasks for Linkit.'),
@@ -738,21 +737,21 @@ function linkit_get_plugins() {
 function linkit_get_dashboard_profile() {
   global $user;
   $best_profile = &drupal_static(__FUNCTION__);
-  
+
   if (!isset($best_profile)) {
     // @TODO: Fix better fallback if no profile is loaded.
     $best_profile = array();
     // Get the profiles.
     $profiles = linkit_profile_load_all();
     usort($profiles, '_linkit_sort_profiles_by_weight');
-    
+
     foreach ($profiles as $profile) {
       // Dont work with disabled profiles.
       if (isset($profile->disabled)) {
         continue;
       }
 
-      // Loop thru the assigned roles, if we get a match, use that and break 
+      // Loop thru the assigned roles, if we get a match, use that and break
       // out of this loop.
       foreach ($profile->role_rids as $rid => $value) {
         if(array_key_exists($rid, $user->roles)) {
@@ -762,7 +761,7 @@ function linkit_get_dashboard_profile() {
       }
 
     }
-    
+
   }
   return $best_profile;
 }
@@ -790,8 +789,8 @@ function _linkit_get_profile_names() {
 }
 
 /**
-* Load a single Linkit profile.
-*/
+ * Load a single Linkit profile.
+ */
 function linkit_profile_load($name) {
   $cache = &drupal_static('__FUNCTION__', array());
 
@@ -832,10 +831,10 @@ function linkit_profile_load_all($reset = FALSE) {
 }
 
 /**
-* Implementation of hook_ctools_plugin_api().
-*
-* Tell CTools that we support the default_linkit_profiles API.
-*/
+ * Implementation of hook_ctools_plugin_api().
+ *
+ * Tell CTools that we support the default_linkit_profiles API.
+ */
 function linkit_ctools_plugin_api($owner, $api) {
   if ($owner == 'linkit' && $api == 'linkit_profiles') {
     return array('version' => 1);
@@ -852,11 +851,11 @@ function linkit_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
-* Provide a default profile.
-*
-* @return
-*  An array with a default Linkit profile.
-*/
+ * Provide a default profile.
+ *
+ * @return
+ *  An array with a default Linkit profile.
+ */
 function linkit_default_linkit_profile() {
   $export = array();
 

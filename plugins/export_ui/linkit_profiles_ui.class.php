@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Class that extends the regular ctools export ui.
+ */
+
+/**
  * Base class for export UI.
  */
 class linkit_profiles_ui extends ctools_export_ui {
