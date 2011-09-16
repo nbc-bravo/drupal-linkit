@@ -745,7 +745,7 @@ function linkit_get_dashboard_profile() {
   if (!isset($best_profile)) {
     $best_profile = null;
     // Get the profiles.
-    $profiles = linkit_profile_load_all(TRUE);
+    $profiles = linkit_profile_load_all();
     usort($profiles, '_linkit_sort_profiles_by_weight');
 
     foreach ($profiles as $profile) {
@@ -796,7 +796,6 @@ function _linkit_get_profile_names() {
  */
 function linkit_profile_load($name) {
   $cache = &drupal_static('__FUNCTION__', array());
-
   if (!isset($cache[$name])) {
     ctools_include('export');
     $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
@@ -815,22 +814,14 @@ function linkit_profile_load($name) {
 /**
  * Load all Linkit profiles.
  */
-function linkit_profile_load_all($reset = FALSE) {
-  $cache = &drupal_static('__FUNCTION__', array());
-
-  if (!$cache || $reset) {
-    ctools_include('export');
-    $profiles = ctools_export_load_object('linkit_profiles');
-    foreach ($profiles as $profile) {
-      if (empty($cache[$profile->name])) {
-        $profile->data = unserialize($profile->data);
-        $profile->role_rids = unserialize($profile->role_rids);
-        $cache[$profile->name] = $profile;
-      }
-    }
+function linkit_profile_load_all() {
+  ctools_include('export');
+  $profiles = ctools_export_load_object('linkit_profiles');
+  foreach ($profiles as &$profile) {
+    $profile->data = unserialize($profile->data);
+    $profile->role_rids = unserialize($profile->role_rids);
   }
-
-  return $cache;
+  return $profiles;
 }
 
 /**
@@ -859,7 +850,7 @@ function linkit_ctools_plugin_directory($module, $plugin) {
  * @return
  *  An array with a default Linkit profile.
  */
-function linkit_default_lsinkit_profile() {
+function linkit_default_linkit_profile() {
   $export = array();
 
   $linkit_profile = new stdClass;
