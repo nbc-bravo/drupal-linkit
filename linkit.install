@@ -22,7 +22,6 @@ function linkit_schema() {
       'default hook' => 'default_linkit_profile',
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
-      'can disable' => FALSE,
       'bulk export' => TRUE,
       'api' => array(
         'owner' => 'linkit',
@@ -79,6 +78,8 @@ function linkit_schema() {
 
 /**
  * Implements hook_uninstall().
+ *
+ * @TODO: Fix this hook.
  */
 function linkit_uninstall() {
   /*

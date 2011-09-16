@@ -7,25 +7,12 @@
 $plugin = array(
   'schema' => 'linkit_profiles',
   'access' => 'administer linkit',
-  'create access' => 'administer linkit',
 
   'menu' => array(
     'menu prefix' => 'admin/config/content',
     'menu item' => 'linkit',
     'menu title' => 'Linkit Profiles',
     'menu description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
-    'items' => array(
-        'add' => array(
-        'path' => 'add',
-        'title' => 'New profile', // menu alter??
-        'page callback' => 'ctools_export_ui_switcher_page',
-        'page arguments' => array('linkit_profiles', 'add'),
-        'access callback' => 'ctools_export_ui_task_access',
-        'access arguments' => array('linkit_profiles', 'add'),
-        'type' => MENU_LOCAL_ACTION,
-        'weight' => -10,  // menu alter??
-      ),
-    ),
   ),
 
   'title singular' => t('Linkit profile'),
@@ -38,10 +25,7 @@ $plugin = array(
      'submit' => 'linkit_profiles_export_ui_form_submit',
   ),
 
-  'handler' => array(
-    'class' => 'linkit_profiles_ui',
-    'parent' => 'ctools_export_ui',
-  ),
+  'handler' => 'linkit_profiles_ui',
 );
 
 /**

@@ -121,8 +121,7 @@ function _linkit_dashboard($editor) {
 
   $settings['autocompletePath'] = url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE));
 
-  $profile = linkit_get_dashboard_profile();
-
+  $profile = linkit_get_dashboard_profile(TRUE);
   if ($profile == NULL) {
     drupal_set_message(t('There is no Linkit profile associate to your role.'), 'warning');
     return '';
@@ -744,10 +743,9 @@ function linkit_get_dashboard_profile() {
   $best_profile = &drupal_static(__FUNCTION__);
 
   if (!isset($best_profile)) {
-    // @TODO: Fix better fallback if no profile is loaded.
-    $best_profile = NULL;
+    $best_profile = null;
     // Get the profiles.
-    $profiles = linkit_profile_load_all();
+    $profiles = linkit_profile_load_all(TRUE);
     usort($profiles, '_linkit_sort_profiles_by_weight');
 
     foreach ($profiles as $profile) {
@@ -764,10 +762,10 @@ function linkit_get_dashboard_profile() {
           break;
         }
       }
-
     }
 
   }
+
   return $best_profile;
 }
 
@@ -861,7 +859,7 @@ function linkit_ctools_plugin_directory($module, $plugin) {
  * @return
  *  An array with a default Linkit profile.
  */
-function linkit_default_linkit_profile() {
+function linkit_default_lsinkit_profile() {
   $export = array();
 
   $linkit_profile = new stdClass;
