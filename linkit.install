@@ -20,6 +20,7 @@ function linkit_schema() {
       'primary key' => 'pid',
       'identifier' => 'linkit_profile',
       'default hook' => 'default_linkit_profile',
+      'status' => 'linkit_profiles_statuses',
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
       'bulk export' => TRUE,
