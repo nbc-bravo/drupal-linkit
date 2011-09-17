@@ -16,7 +16,7 @@ class linkit_profiles_ui extends ctools_export_ui {
     $header[] = array('data' => t('Name'), 'class' => array('ctools-export-ui-name'));
     $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
     $header[] = array('data' => t('Roles'), 'class' => array('ctools-export-ui-roles'));
-    $header[] = array('data' => t('Weight'), 'class' => array('ctools-export-ui-weight'));
+    $header[] = array('data' => t('Priority'), 'class' => array('ctools-export-ui-priority'));
     $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
     return $header;
   }
@@ -28,7 +28,7 @@ class linkit_profiles_ui extends ctools_export_ui {
 
     switch ($form_state['values']['order']) {
       case 'disabled':
-        $this->sorts[$name] = $item->weight;
+        $this->sorts[$name] = $item->priority;
         break;
       case 'disabled_title':
         $this->sorts[$name] = empty($item->disabled) . $item->admin_title;
@@ -53,7 +53,7 @@ class linkit_profiles_ui extends ctools_export_ui {
         array('data' => check_plain($name), 'class' => array('ctools-export-ui-name')),
         array('data' => check_plain($item->{$schema['export']['export type string']}), 'class' => array('ctools-export-ui-storage')),
         array('data' => check_plain($role_lost), 'class' => array('ctools-export-ui-roles')),
-        array('data' => check_plain($item->weight), 'class' => array('ctools-export-ui-weight')),
+        array('data' => check_plain($item->priority), 'class' => array('ctools-export-ui-priority')),
         array('data' => $ops, 'class' => array('ctools-export-ui-operations')),
       ),
       'class' => array(!empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled'),
@@ -74,7 +74,7 @@ class linkit_profiles_ui extends ctools_export_ui {
 
   function list_sort_options() {
     $options = array(
-      'disabled' => t('Weight'),
+      'disabled' => t('Priority'),
       'disabled_title' => t('Enabled, title'),
       'admin_title'=> t('Title'),
       'name' => t('Name'),

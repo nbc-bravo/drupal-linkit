@@ -746,7 +746,7 @@ function linkit_get_dashboard_profile() {
     $best_profile = null;
     // Get the profiles.
     $profiles = linkit_profile_load_all();
-    usort($profiles, '_linkit_sort_profiles_by_weight');
+    usort($profiles, '_linkit_sort_profiles_by_priority');
 
     foreach ($profiles as $profile) {
       // Dont work with disabled profiles.
@@ -759,7 +759,7 @@ function linkit_get_dashboard_profile() {
       foreach ($profile->role_rids as $rid => $value) {
         if (array_key_exists($rid, $user->roles)) {
           $best_profile = $profile;
-          break;
+          break 2;
         }
       }
     }
@@ -770,10 +770,10 @@ function linkit_get_dashboard_profile() {
 }
 
 /**
- * Sort profiles by weight.
+ * Sort profiles by priority.
  */
-function _linkit_sort_profiles_by_weight($a, $b) {
-  return $a->weight >= $b->weight;
+function _linkit_sort_profiles_by_priority($a, $b) {
+  return $a->priority <= $b->priority;
 }
 
 /**
@@ -937,7 +937,7 @@ function linkit_default_linkit_profile() {
     ),
   ));
   $linkit_profile->role_rids = serialize(array(DRUPAL_AUTHENTICATED_RID => 1));
-  $linkit_profile->weight = '-10';
+  $linkit_profile->priority = '-10';
 
   $export[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = $linkit_profile;
   return $export;

@@ -68,13 +68,13 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#disabled' => !is_null($profile->name),
   );
 
-  $form['weight'] = array(
+  $form['priority'] = array(
     '#type' => 'weight',
-    '#title' => t('Weight'),
-    '#default_value' => $profile->weight,
+    '#title' => t('Priority'),
+    '#default_value' => $profile->priority,
     '#delta' => 10,
     '#weight' => -98,
-    '#description' => t('If a user have multiple roles, the Linkit profile weight will determine which profile to use. Lower weight will take the precedence.'),
+    '#description' => t('If a user have multiple roles, the profile priority will determine which profile to use. Higher priority will take the precedence.'),
   );
 
   $form['roles'] = array(
@@ -504,7 +504,7 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 
   $form_state['item']->data = serialize($form_state['values']['data']);
   $form_state['item']->role_rids = serialize(array_filter($form_state['values']['roles']));
-  $form_state['item']->weight = $form_state['values']['weight'];
+  $form_state['item']->priority = $form_state['values']['priority'];
 
   // CTools will work on this variable alter and screw it up, so unset it.
   unset($form_state['values']['data']);
@@ -516,7 +516,7 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
  * @param object The profile object.
  */
 function _linkit_get_associated_roles($profile) {
-  $profiles = linkit_profile_load_all(TRUE);
+  $profiles = linkit_profile_load_all();
   // Unset the profile being edited.
   unset($profiles[$profile->name]);
 
