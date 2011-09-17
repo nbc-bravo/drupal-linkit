@@ -749,8 +749,9 @@ function linkit_get_dashboard_profile() {
     usort($profiles, '_linkit_sort_profiles_by_priority');
 
     foreach ($profiles as $profile) {
+
       // Dont work with disabled profiles.
-      if (isset($profile->disabled)) {
+      if (isset($profile->disabled) && $profile->disabled) {
         continue;
       }
 
