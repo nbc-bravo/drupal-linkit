@@ -44,6 +44,16 @@ function linkit_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function linkit_menu_alter(&$items) {
+  // Override the default titles that ctools export_ui sets.
+  // This way there is less code compared to define this in the plugin array.
+  $items['admin/config/content/linkit/add']['title'] = 'Add new profile';
+  $items['admin/config/content/linkit/import']['title'] = 'Import profiles';
+}
+
+/**
  * Return the theme name to be used when showing linkit dashboard
  */
 function _linkit_dashboard_theme() {
