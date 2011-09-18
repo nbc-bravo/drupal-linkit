@@ -20,7 +20,7 @@ function linkit_schema() {
       'primary key' => 'pid',
       'identifier' => 'linkit_profile',
       'default hook' => 'default_linkit_profile',
-      'status' => 'linkit_profiles_statuses',
+      'status' => 'linkit_profiles_status',
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
       'bulk export' => TRUE,
@@ -79,14 +79,10 @@ function linkit_schema() {
 
 /**
  * Implements hook_uninstall().
- *
- * @TODO: Fix this hook.
  */
 function linkit_uninstall() {
-  /*
-  variable_del('linkit_profiles');
-  variable_del('linkit_roles_profiles');
-  */
+  variable_del('linkit_profiles_status');
+  drupal_uninstall_schema('linkit');
 }
 
 /**
