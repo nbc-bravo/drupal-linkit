@@ -829,8 +829,12 @@ function linkit_profile_load_all() {
   ctools_include('export');
   $profiles = ctools_export_load_object('linkit_profiles');
   foreach ($profiles as &$profile) {
-    $profile->data = unserialize($profile->data);
-    $profile->role_rids = unserialize($profile->role_rids);
+    if (!is_array($profile->data)) {
+      $profile->data = unserialize($profile->data);
+    }
+    if (!is_array($profile->role_rids)) {
+      $profile->role_rids = unserialize($profile->role_rids);
+    }
   }
   return $profiles;
 }
