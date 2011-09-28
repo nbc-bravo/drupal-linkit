@@ -196,6 +196,8 @@ function _linkit_file_path_info($path_info, $profile) {
   }
 
   if ($file_uri) {
+    $result_description = check_plain($profile->data['file']['result_description']);
+
     // Build a list of all token-like patterns that appear in the text.
     $result_tokens = token_scan($result_description);
 
