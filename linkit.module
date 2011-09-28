@@ -151,6 +151,9 @@ function _linkit_dashboard($editor) {
 
   $settings['autocomplete'] = array_filter($profile->data['autocomplete']);
 
+  // Add caseSensitive
+  $settings['autocomplete'] += array('caseSensitive' => TRUE);
+
   drupal_add_js(array('linkit' => $settings), 'setting');
   drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
 
@@ -182,8 +185,6 @@ function _linkit_dashboard($editor) {
  */
 function _linkit_autocomplete($search = NULL) {
   $search = check_url($_GET['s']);
-
-  $url = parse_url($search);
   $enabled_plugins = linkit_get_profile_plugins();
 
   // Absolute URL

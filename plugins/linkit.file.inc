@@ -180,7 +180,15 @@ function _linkit_file_path_info($path_info, $profile) {
 
   $file_uri = FALSE;
   foreach ($schemes as $scheme) {
-    $target = array_pop(explode('/', $path_info['requested_path']));
+    switch ($scheme) {
+      case 'public':
+        $file_public_path = variable_get('file_public_path', conf_path() . '/files');
+        $target = str_replace($file_public_path . '/', '', $path_info['requested_path']);
+        break;
+
+      default:
+        $target = array_pop(explode('/', $path_info['requested_path']));
+    }
     $uri = $scheme . '://' . $target;
     if (file_stream_wrapper_valid_scheme($scheme) && file_exists($uri)) {
       $file_uri = $uri;
@@ -195,9 +203,13 @@ function _linkit_file_path_info($path_info, $profile) {
     $query = _linkit_file_create_base_query($profile, $result_tokens);
     $query->condition('f.uri', $file_uri);
     $query_result = $query->execute()->fetch();
-
     if ($query_result) {
-      if (_linkit_file_access($query_result->uri)) {
+      $access = _linkit_file_access($query_result->uri);
+      // Pass thru the access if the file belong to IMCE.
+      if (module_exists('imce') && $query_result->module == 'imce') {
+        $access = TRUE;
+      }
+      if ($access) {
         $result = array(
           'title' => check_plain($query_result->filename),
           'description' => _linkit_file_build_description($profile, $result_description, $query_result),
