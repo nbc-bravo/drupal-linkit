@@ -50,7 +50,8 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
       }
     }
 
-    // There can be tokens that is chained so we will not find them in the switch statement above.
+    // There can be tokens that is chained so we will not find them in the
+    // switch statement above.
     if (token_find_with_prefix($result_tokens['file'], 'timestamp')) {
       $query->addField('f', 'timestamp');
     }
@@ -62,6 +63,15 @@ function _linkit_file_create_base_query($profile, $result_tokens) {
 
   if ($profile->data['file']['group_by_scheme']) {
     $query->orderBy('f.uri', 'ASC');
+  }
+
+  // Special for IMCE files.
+  // Files uploaded with IMCE will not pass any hook_file_download functions,
+  // so simply let them pass thru our access check, and for that we need to now
+  // if the file belong to IMCE.
+  if (module_exists('imce')) {
+    $query->addField('fu', 'module');
+    $query->leftJoin('file_usage', 'fu', 'f.fid = fu.fid');
   }
 
   // Add the default sort.
@@ -136,7 +146,12 @@ function _linkit_file_autocomplete($string, $profile) {
   $result = $query->execute();
 
   foreach ($result as $file) {
-    if (_linkit_file_access($file->uri)) {
+    $access = _linkit_file_access($file->uri);
+    // Pass thru the access if the file belong to IMCE.
+    if (module_exists('imce') && $file->module == 'imce') {
+      $access = TRUE;
+    }
+    if ($access) {
       $matches[] = array(
         'title' => $file->filename,
         'description' => _linkit_file_build_description($profile, $result_description, $file),
