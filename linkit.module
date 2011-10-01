@@ -220,6 +220,18 @@ function _linkit_autocomplete_search($search, $enabled_plugins) {
         $matches = array_merge($matches, $results);
       }
     }
+    // Special for link to frontpage.
+    if (strpos($search, 'front') !== FALSE) {
+      $results = array(
+        array(
+          'title' => t('Frontpage'),
+          'description' => 'The frontpage for this site.',
+          'path' => url('<front>'),
+          'group' => t('System'),
+        )
+      );
+      $matches = array_merge($matches, $results);
+    }
   }
   if (!empty($matches)) {
     return $matches;
