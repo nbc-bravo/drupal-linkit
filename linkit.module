@@ -905,6 +905,7 @@ function linkit_profile_save($profile) {
 
   return drupal_write_record('linkit_profiles', $profile, $update);
 }
+
 /**
  * Implements hook_ctools_plugin_api().
  *
