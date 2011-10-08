@@ -40,6 +40,17 @@ function linkit_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['admin/config/content/linkit/reorder'] = array(
+    'title' => 'Reorder',
+    'description' => 'Reorder Linkit profiles',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('linkit_profiles_reorder'),
+    'access arguments' => array('administer linkit'),
+    'file path' => drupal_get_path('module', 'linkit') . '/plugins/export_ui',
+    'file' => 'linkit_profiles.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
   return $items;
 }
 
@@ -51,6 +62,10 @@ function linkit_menu_alter(&$items) {
   // This way there is less code compared to define this in the plugin array.
   $items['admin/config/content/linkit/add']['title'] = 'Add new profile';
   $items['admin/config/content/linkit/import']['title'] = 'Import profiles';
+
+  // Make tabs
+  $items['admin/config/content/linkit/add']['type'] = MENU_LOCAL_TASK;
+  $items['admin/config/content/linkit/import']['type'] = MENU_LOCAL_TASK;
 }
 
 /**
@@ -86,6 +101,10 @@ function linkit_theme($existing, $type, $theme, $path) {
     'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
       'file' => 'linkit.theme.inc',
+    ),
+    'linkit_profiles_reorder' => array(
+      'render element' => 'form',
+      'file' => 'linkit.theme.inc'
     ),
   );
 }
@@ -772,7 +791,6 @@ function linkit_get_dashboard_profile() {
     usort($profiles, '_linkit_sort_profiles_by_priority');
 
     foreach ($profiles as $profile) {
-
       // Dont work with disabled profiles.
       if (isset($profile->disabled) && $profile->disabled) {
         continue;
@@ -787,7 +805,6 @@ function linkit_get_dashboard_profile() {
         }
       }
     }
-
   }
 
   return $best_profile;
@@ -797,7 +814,7 @@ function linkit_get_dashboard_profile() {
  * Sort profiles by priority.
  */
 function _linkit_sort_profiles_by_priority($a, $b) {
-  return $a->priority <= $b->priority;
+  return $a->priority >= $b->priority;
 }
 
 /**

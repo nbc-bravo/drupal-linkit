@@ -531,3 +531,48 @@ function _linkit_get_associated_roles($profile) {
 
   return $roles;
 }
+
+/**
+ * Form for reorder profiles.
+ */
+function linkit_profiles_reorder() {
+  $profiles = linkit_profile_load_all();
+  $form = array();
+  $form['#tree'] = TRUE;
+  // Sort by priority.
+  uasort($profiles, '_linkit_sort_profiles_by_priority');
+
+  foreach ($profiles as $profile_machine_name => $profile) {
+    $form['profiles'][$profile_machine_name] = array(
+      'name' => array('#markup' => $profile->admin_title),
+      'priority' => array(
+        '#type' => 'weight',
+        '#title' => t('Priority weight for @title', array('@title' => $profile->admin_title)),
+        '#title_display' => 'invisible',
+        '#default_value' => isset($profile->priority) ? $profile->priority : LINKIT_DEFAULT_WEIGHT,
+        '#attributes' => array(
+          'class' => array('priority'),
+        )
+      )
+    );
+  }
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+/**
+ * Save function for the reorder form.
+ */
+function linkit_profiles_reorder_submit($form, &$form_state) {
+  ctools_include('export-ui');
+  foreach($form_state['values']['profiles'] as $profile_machine_name => $value) {
+    $profile = linkit_profile_load($profile_machine_name);
+    $profile->priority = $value['priority'];
+    ctools_export_crud_save($profile->table, $profile);
+  }
+}

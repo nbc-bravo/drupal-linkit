@@ -78,3 +78,31 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
     }
   }
 }
+
+/**
+ * Preprocess tabledrag
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - form: A render element representing the form.
+ */
+function theme_linkit_profiles_reorder($variables) {
+  $form = $variables['form'];
+  $header = array(t('Profile'), t('Priority'));
+  $rows = array();
+
+  foreach (element_children($form['profiles']) as $profile_name) {
+    $rows[] = array(
+      'data' => array(
+        drupal_render($form['profiles'][$profile_name]['name']),
+        drupal_render($form['profiles'][$profile_name]['priority'])
+      ),
+      'class' => array('draggable', 'tabledrag-leaf'),
+     );
+  }
+
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profile-reorder'), 'sticky' => FALSE));
+  $output .= drupal_render_children($form);
+  drupal_add_tabledrag('linkit-profile-reorder', 'order', 'sibling', 'priority', NULL, NULL, FALSE);
+  return $output;
+}
