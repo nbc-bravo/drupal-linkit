@@ -519,7 +519,6 @@ function _linkit_get_associated_roles($profile) {
   $profiles = linkit_profile_load_all();
   // Unset the profile being edited.
   unset($profiles[$profile->name]);
-
   $roles = array();
 
   foreach ($profiles as $profile) {
@@ -569,10 +568,9 @@ function linkit_profiles_reorder() {
  * Save function for the reorder form.
  */
 function linkit_profiles_reorder_submit($form, &$form_state) {
-  ctools_include('export-ui');
   foreach($form_state['values']['profiles'] as $profile_machine_name => $value) {
     $profile = linkit_profile_load($profile_machine_name);
     $profile->priority = $value['priority'];
-    ctools_export_crud_save($profile->table, $profile);
+    linkit_profile_save($profile);
   }
 }

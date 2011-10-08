@@ -841,8 +841,12 @@ function linkit_profile_load($name) {
     ctools_include('export');
     $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
     if (isset($result[$name])) {
-      $result[$name]->data = unserialize($result[$name]->data);
-      $result[$name]->role_rids = unserialize($result[$name]->role_rids);
+      if (!is_array($result[$name]->data)) {
+        $result[$name]->data = unserialize($result[$name]->data);
+      }
+      if (!is_array($result[$name]->role_rids)) {
+        $result[$name]->role_rids = unserialize($result[$name]->role_rids);
+      }
       $cache[$name] = $result[$name];
     }
     else {
@@ -869,6 +873,38 @@ function linkit_profile_load_all() {
   return $profiles;
 }
 
+/**
+ * Save a single Linkit profile.
+ */
+function linkit_profile_save($profile) {
+  $schema = ctools_export_get_schema('linkit_profiles');
+  $export = $schema['export'];
+
+  // Objects should have a serial primary key. If not, simply fail to write.
+  if (empty($export['primary key'])) {
+    return FALSE;
+  }
+
+  $key = $export['primary key'];
+  if ($profile->export_type & EXPORT_IN_DATABASE) {
+    // Existing record.
+    $update = array($key);
+  }
+  else {
+    // New record.
+    $update = array();
+    $profile->export_type = EXPORT_IN_DATABASE;
+  }
+
+  if (is_array($profile->data)) {
+    $profile->data = serialize($profile->data);
+  }
+  if (is_array($profile->role_rids)) {
+    $profile->role_rids = serialize($profile->role_rids);
+  }
+
+  return drupal_write_record('linkit_profiles', $profile, $update);
+}
 /**
  * Implements hook_ctools_plugin_api().
  *
