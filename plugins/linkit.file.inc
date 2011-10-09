@@ -215,7 +215,7 @@ function _linkit_file_path_info($path_info, $profile) {
         $result = array(
           'title' => check_plain($query_result->filename),
           'description' => _linkit_file_build_description($profile, $result_description, $query_result),
-          'path' => _linkit_file_get_url($query_result->uri),
+          'path' => _linkit_file_get_url($query_result->uri), // TODO: Path seems to be an array, should always be a string.
         );
         return $result;
       }
