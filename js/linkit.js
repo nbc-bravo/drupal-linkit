@@ -12,7 +12,7 @@ Drupal.behaviors.linkit = {
 
   attach: function(context, settings) {
 
-    var $searchInput = $('#linkit #edit-search', context);
+    var $searchInput = $('#linkit-modal #edit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,

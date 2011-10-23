@@ -1,23 +1,23 @@
 
-#linkit { padding: 40px; }
+#linkit-modal { padding: 40px; }
 
 #edit-link.with_imce {
   margin-bottom:10px;
 }
 
-#linkit #edit-search {
+#linkit-modal #edit-search {
   font-size: 1em;
   height: 2em;
   padding: 3px 25px 3px 5px;
   background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
 }
 
-#linkit #edit-search.fetching {
+#linkit-modal #edit-search.fetching {
   background-image: url(../throbber-active.gif);
 }
 
 /* The attributes fieldset thinks it's better than Better Autocomplete. It is not. */
-#linkit .form-item-search {
+#linkit-modal .form-item-search {
   position: relative;
   z-index: 1;
 }
