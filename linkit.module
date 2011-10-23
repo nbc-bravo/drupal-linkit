@@ -178,24 +178,6 @@ function linkit_library() {
     ),
   );
 
-  // Linkit dialog
-  $libraries['linkit_dialog'] = array(
-    'title' => 'Linkit base',
-    'js' => array(
-      // Add global settings for Linkit
-      array(
-        'type' => 'setting',
-        'data' => array('linkit' => array('modulepath' => drupal_get_path('module', 'linkit'))),
-      ),
-    ),
-    'css' => array(
-      $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
-    ),
-    'dependencies' => array(
-      array('linkit', 'linkit_base'),
-    ),
-  );
-
   foreach ($libraries as &$library) {
     $library += $common;
   }
