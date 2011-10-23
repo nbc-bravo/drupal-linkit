@@ -2,14 +2,8 @@
 
 /**
  * @file
+ * Linkit theme functions.
  */
-
- /**
- * Template preprocess function for theme_linkit_dashboard().
- */
-function template_preprocess_linkit_dashboard(&$variables) {
-  $variables['messages']          = theme('status_messages');
-}
 
 /**
  * Processes variables

@@ -93,11 +93,6 @@ function linkit_permission() {
  */
 function linkit_theme($existing, $type, $theme, $path) {
   return array(
-    'linkit_dashboard' => array(
-      'render element' => 'form',
-      'template' => 'linkit-dashboard',
-      'file' => 'linkit.theme.inc',
-    ),
     'linkit_profiles_export_ui_form' => array(
       'render element' => 'form',
       'file' => 'linkit.theme.inc',
