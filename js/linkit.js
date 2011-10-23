@@ -1,3 +1,11 @@
+/**
+ * @file
+ * Linkit dialog functions
+ */
+
+// Create the linkit namespace.
+Drupal.linkit = Drupal.linkit || {};
+
 (function ($) {
 
 Drupal.behaviors.linkit = {
@@ -23,7 +31,7 @@ Drupal.behaviors.linkit = {
     });
 
     if (context === window.document) {
-      $searchInput.focus();
+      //$searchInput.focus();
     }
 
     // Open IMCE
@@ -32,58 +40,6 @@ Drupal.behaviors.linkit = {
       return false;
     });
   }
-};
-
-Drupal.linkit = Drupal.linkit || {};
-
-/**
- * Populate the title and path fields when a linkable object is selected
- *
- * @param title
- *   The title of the link, only populated if title is empty
- * @param path
- *   The target path of the link
- * @param {Boolean} silent
- *   Only populate fields, do not focus and select the title field
- *
- * other fields may be populated by the editor.
- */
-Drupal.linkit.populateLink = function(text, path) {
-  $('#linkit').data('text', text);
-  $('#linkit #edit-path').val(path);
-  $('#linkit #edit-search').blur();
-};
-
-/**
- * Open the IMCE file browser
- */
-Drupal.linkit.openFileBrowser = function () {
-  window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
-};
-
-/**
- * When a file is inserted through IMCE, this function is called
- * See IMCE api for details
- *
- * @param file
- *   The file object that was selected inside IMCE
- * @param win
- *   The IMCE window object
- */
-Drupal.linkit.IMCECallback = function(file, win) {
-  Drupal.linkit.populateLink(file.name,
-      win.imce.decode(Drupal.settings.basePath +
-                      Drupal.settings.linkit.publicFilesDirectory +
-                      '/' + file.relpath));
-  win.close();
-};
-
-/**
- * Show a message if there is no selection.
- */
-Drupal.linkit.noselection = function() {
-  var info_text = Drupal.t('<em class="notice">Notice: No selection was found, your link text will appear as the item title you are linking to.</em>');
-  $('#linkit-dashboard-form').prepend(info_text);
 };
 
 })(jQuery);

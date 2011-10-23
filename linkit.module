@@ -166,6 +166,7 @@ function linkit_library() {
   $libraries['linkit_base'] = array(
     'title' => 'Linkit base',
     'js' => array(
+      $path . '/js/linkit.js' => array('group' => JS_DEFAULT),
       $path . '/js/linkit.dialog.js' => array('group' => JS_DEFAULT),
       // Add global settings for Linkit
       array(
@@ -178,6 +179,7 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
+      array('linkit', 'linkit_bac'),
     ),
   );
 
@@ -185,7 +187,6 @@ function linkit_library() {
   $libraries['linkit_dialog'] = array(
     'title' => 'Linkit base',
     'js' => array(
-      $path . '/js/linkit.js' => array('group' => JS_DEFAULT),
       // Add global settings for Linkit
       array(
         'type' => 'setting',
@@ -196,7 +197,7 @@ function linkit_library() {
       $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
     ),
     'dependencies' => array(
-      array('linkit', 'linkit_bac'),
+      array('linkit', 'linkit_base'),
     ),
   );
 
@@ -259,7 +260,7 @@ function _linkit_dashboard($editor) {
       break;
   }
   $form = drupal_get_form('linkit_dashboard_form');
-  print theme('linkit_dashboard', array('form' => render($form)));
+  print drupal_render($form);
 }
 
 /**

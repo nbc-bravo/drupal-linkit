@@ -8,16 +8,7 @@
  * Template preprocess function for theme_linkit_dashboard().
  */
 function template_preprocess_linkit_dashboard(&$variables) {
-  // Construct page title
-  $variables['head_title']        = t('Linkit dashboard');
-  $variables['head']              = drupal_get_html_head();
-  $variables['help']              = theme('help');
-  $variables['language']          = $GLOBALS['language'];
-  $variables['language']->dir     = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
   $variables['messages']          = theme('status_messages');
-  $variables['css']               = drupal_add_css();
-  $variables['styles']            = drupal_get_css();
-  $variables['scripts']           = drupal_get_js();
 }
 
 /**

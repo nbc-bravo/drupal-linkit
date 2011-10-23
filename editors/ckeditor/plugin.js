@@ -18,13 +18,9 @@
       // Add Command.
       editor.addCommand( 'Linkit', {
         exec : function () {
+          window.linkiteditorname = editor.name; // @TODO: Build a setter function for this?
           var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor
-          if (window.showModalDialog) {
-            var media = window.showModalDialog(path, { 'opener' : window, 'editorname' : editor.name }, "dialogWidth:750px; dialogHeight:320px; center:yes; resizable:yes; help:no;");
-          }
-          else {
-            var media = window.open(path + (path.indexOf('?') == -1 ? '?' : '&') + 'editorname='+encodeURI(editor.name), null, "width=750,height=320,resizable,alwaysRaised,dependent,toolbar=no,location=no,menubar=no");
-          }
+          Drupal.linkit.dialog.buildDialog(path);
         }
       });
 
