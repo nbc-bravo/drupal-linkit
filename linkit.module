@@ -137,20 +137,82 @@ function linkit_ckeditor_plugin() {
 }
 
 /**
+ * Implements hook_library().
+ */
+function linkit_library() {
+  $path = drupal_get_path('module', 'linkit');
+
+  $common = array(
+    'website' => 'http://drupal.org/project/linkit',
+    'version' => '7.2',
+  );
+
+  // Better Autocomplete
+  $libraries['linkit_bac'] = array(
+    'title' => 'Linkit Better Autocomplete',
+    'js' => array(
+      $path . '/better-autocomplete/jquery.better-autocomplete.js' => array('group' => JS_LIBRARY),
+      array(
+        'type' => 'setting',
+        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE)))),
+      ),
+    ),
+    'css' => array(
+      $path . '/better-autocomplete/better-autocomplete.css' => array('group' => CSS_DEFAULT),
+    ),
+  );
+
+  // Linkit base
+  $libraries['linkit_base'] = array(
+    'title' => 'Linkit base',
+    'js' => array(
+      $path . '/js/linkit.dialog.js' => array('group' => JS_DEFAULT),
+      // Add global settings for Linkit
+      array(
+        'type' => 'setting',
+        'data' => array('linkit' => array('modulepath' => drupal_get_path('module', 'linkit'))),
+      ),
+    ),
+    'css' => array(
+      $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
+    ),
+    'dependencies' => array(
+      array('system', 'ui.dialog'),
+    ),
+  );
+
+  // Linkit dialog
+  $libraries['linkit_dialog'] = array(
+    'title' => 'Linkit base',
+    'js' => array(
+      $path . '/js/linkit.js' => array('group' => JS_DEFAULT),
+      // Add global settings for Linkit
+      array(
+        'type' => 'setting',
+        'data' => array('linkit' => array('modulepath' => drupal_get_path('module', 'linkit'))),
+      ),
+    ),
+    'css' => array(
+      $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
+    ),
+    'dependencies' => array(
+      array('linkit', 'linkit_bac'),
+    ),
+  );
+
+  foreach ($libraries as &$library) {
+    $library += $common;
+  }
+
+  return $libraries;
+}
+
+/**
  * Creates the dashboard.
  */
 function _linkit_dashboard($editor) {
-  module_invoke('admin_menu', 'suppress');
-
-  // Better Autocomplete
-  drupal_add_js(drupal_get_path('module', 'linkit') . '/better-autocomplete/jquery.better-autocomplete.js', array('group' => JS_LIBRARY));
-  drupal_add_css(drupal_get_path('module', 'linkit') . '/better-autocomplete/better-autocomplete.css');
-
-  drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
-
-  $settings['autocompletePath'] = url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE));
-
   $profile = linkit_get_dashboard_profile(TRUE);
+
   if ($profile == NULL) {
     drupal_set_message(t('There is no Linkit profile associate to your role.'), 'warning');
     return '';
@@ -172,9 +234,10 @@ function _linkit_dashboard($editor) {
 
   // Add caseSensitive
   $settings['autocomplete'] += array('caseSensitive' => TRUE);
-
   drupal_add_js(array('linkit' => $settings), 'setting');
-  drupal_add_js(drupal_get_path('module', 'linkit') . '/linkit.js');
+
+  // Add Linkit dialog library
+  drupal_add_library('linkit', 'linkit_dialog');
 
   switch ($editor) {
     case 'wysiwyg_tinymce':
@@ -527,33 +590,18 @@ function linkit_wysiwyg_plugin($editor, $version) {
 }
 
 /**
- * Add necessary settings to the Drupal.settings array.
+ *  Add necessary settings to the Drupal.settings array and include the
+ * libraries we need.
  */
 function _linkit_add_settings($editor) {
-  $editor_settings_added = &drupal_static(__FUNCTION__ . ':editor_settings_added', array());
-  $global_settings_added = &drupal_static(__FUNCTION__ . ':global_settings_added', FALSE);
+  drupal_add_library('linkit', 'linkit_base');
 
-  if (!isset($editor_settings_added[$editor])) {
-    $editor_settings_added[$editor] = TRUE;
+  // Add dialog url
+  $settings = array(
+    'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
+  );
 
-    // Add popup url
-    $settings = array(
-      'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
-    );
-    drupal_add_js($settings, 'setting');
-  }
-
-  if (!$global_settings_added) {
-    $global_settings_added = TRUE;
-
-    // Add global settings for Linkit
-    $settings = array(
-      'linkit' => array(
-        'modulepath' => drupal_get_path('module', 'linkit'),
-      ),
-    );
-    drupal_add_js($settings, 'setting');
-  }
+  drupal_add_js($settings, 'setting');
 }
 
 /**
