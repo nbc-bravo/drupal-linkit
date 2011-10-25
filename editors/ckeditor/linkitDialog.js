@@ -1,85 +1,62 @@
-
 /**
- * @file Linkit ckeditor dialog helper.
+ * @file
+ * Linkit ckeditor dialog helper.
  */
+
+Drupal.linkit.editorDialog.ckeditor = {};
 
 (function ($) {
 
-var LinkitDialog = {};
-
-LinkitDialog = {
+Drupal.linkit.editorDialog.ckeditor = {
   init : function() {
-    this.getEditor();
-    this.getSelection();
-    this.afterInit();
-  },
+    var linkitSelection = Drupal.linkit.getLinkitSelection();
+    var plugin = CKEDITOR.plugins.linkit;
 
-  /**
-   * Get CKEDITOR and current instance name.
-   */
-  getEditor : function () {
-    if (typeof(dialogArguments) != 'undefined') {
-      var CKEDITOR = dialogArguments.opener.CKEDITOR;
-      var name = dialogArguments.editorname;
-    } else {
-      var CKEDITOR = window.opener.CKEDITOR;
-      var name = decodeURI((RegExp('editorname=(.+?)(&|$)').exec(location.search)||[,null])[1]);
-    }
-
-    this.CKEDITOR = CKEDITOR;
-    this.instance_name = name;
-
-    //Get the editor instance.
-    this.editor = this.CKEDITOR.instances[this.instance_name];
-  },
-
-  /**
-   * Get CKEDITOR and current instance name.
-   */
-  getSelection : function () {
+    var selectedElement = null;
     var selectedText = '';
-    var selection = this.editor.getSelection();
-    if (selection.getType() == this.CKEDITOR.SELECTION_TEXT) {
-      if (this.CKEDITOR.env.ie) {
-        selection.unlock(true);
-        selectedText = selection.getNative().createRange().text;
+
+    // Get the selected text based on the selection.
+    if (linkitSelection.selection.getType() == CKEDITOR.SELECTION_TEXT) {
+      if (CKEDITOR.env.ie) {
+        linkitSelection.selection.unlock(true);
+        selectedText = linkitSelection.selection.getNative().createRange().text;
       }
       else {
-        selectedText = selection.getNative();
+        selectedText = linkitSelection.selection.getNative();
       }
     }
+    // Save the selected text.
+    Drupal.linkit.setEditorSelectedText(selectedText.toString());
 
-    this.selectedText = selectedText.toString();
-    this.selection = selection;
-    
-    //Get the selected element.
-    var ranges = this.selection.getRanges();
-    var element;
-
-    if (ranges.length == 1) {
-      var rangeRoot = ranges[0].getCommonAncestor(true);
-      element = rangeRoot.getAscendant('a', true);
+    // Get the selected element based on the selection.
+    if ((selectedElement = plugin.getSelectedLink()) && selectedElement.hasAttribute('href')) {
+      linkitSelection.selection.selectElement(selectedElement);
+    }
+    else {
+      selectedElement = null;
     }
 
-    this.selectedElement = element;
+    // Save the selected element.
+    Drupal.linkit.setEditorSelectedElement(selectedElement);
   },
 
   /**
    * Prepare the dialog after init.
    */
   afterInit : function () {
+    var linkitSelection = Drupal.linkit.getLinkitSelection();
+
     // If we have selected an element, grab the elements attributes.
-    if(this.selectedElement) {
-      $('#edit-path').val(this.selectedElement.getAttribute('href'));
-      var selectedElement = this.selectedElement;
+    if(linkitSelection.selectedElement) {
+      $('#linkit-modal #edit-path').val(linkitSelection.selectedElement.getAttribute('href'));
       // Set values from selection.
-      $('#edit-attributes .linkit-attribute').each(function() {
-        $(this).val(selectedElement.getAttribute($(this).attr('name')));
+      $('#linkit-modal #edit-attributes .linkit-attribute').each(function() {
+        $(this).val(linkitSelection.selectedElement.getAttribute($(this).attr('name')));
       });
     }
-    else if(this.selection.getNative().isCollapsed) {
+    else if(linkitSelection.selection.getNative().isCollapsed) {
       // No text and no element is selected.
-      Drupal.linkit.noselection();
+      Drupal.linkit.dialog.noselection();
     }
     else {
      // Text is selected.
@@ -90,19 +67,21 @@ LinkitDialog = {
    * Prepare the insert.
    */
   insertLink : function() {
+    var linkitSelection = Drupal.linkit.getLinkitSelection();
     // Get the data from the form.
     this.getData();
 
     //If no path, just close this window.
     if(this.data.attributes.href == "") {
       alert(Drupal.t('There is no path.'));
-      $('#edit-search').focus();
+      $('#linkit-modal #edit-search').focus();
       return false;
     }
     // Ok, we have a path, lets make a link of it and insert.
     else {
-      this.CKEDITOR.tools.callFunction(this.editor._.linkitFnNum, this.data, this.editor);
-      window.close();
+      CKEDITOR.tools.callFunction(linkitSelection.editor._.linkitFnNum, this.data, linkitSelection.editor);
+      Drupal.linkit.dialog.close();
+      return false;
     }
   },
 
@@ -110,40 +89,21 @@ LinkitDialog = {
    * Get data from the form.
    */
   getData : function () {
+    var linkitSelection = Drupal.linkit.getLinkitSelection();
     var data = {};
     data.attributes = {};
 
-    $("#edit-attributes .linkit-attribute").each(function() {
+    $("#linkit-modal #edit-attributes .linkit-attribute").each(function() {
       if($(this).val() != "") {
         data.attributes[$(this).attr('name')] = $(this).val();
       }
     });
 
-    data.attributes['href'] = $("#edit-path").val();
-    data.text = this.selection.getNative().isCollapsed ? $('#linkit').data('text') : this.selectedText;
+    data.attributes['href'] = $("#linkit-modal #edit-path").val();
+    data.text = linkitSelection.selection.getNative().isCollapsed ? $('#linkit-modal').data('text') : linkitSelection.selectedText;
 
     this.data = data;
   }
 };
-
-$(document).ready(function() {
-  LinkitDialog.init();
-  $('#edit-link').keydown(function(ev) {
-    if (ev.keyCode == 13) {
-      // Prevent browsers from firing the click event on the first submit
-      // button when enter is used to select from the autocomplete list.
-      return false;
-    }
-  });
-  
-  $('#edit-insert').click(function() {
-    LinkitDialog.insertLink();
-    return false;
-  });
-
-  $('#cancel').click(function() {
-    window.close();
-  });
-});
 
 })(jQuery);

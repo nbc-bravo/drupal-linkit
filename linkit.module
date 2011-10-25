@@ -178,6 +178,14 @@ function linkit_library() {
     ),
   );
 
+  // Linkit base
+  $libraries['linkit_ckeditor'] = array(
+    'title' => 'Linkit CKeditor',
+    'js' => array(
+      $path . '/editors/ckeditor/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+  );
+
   foreach ($libraries as &$library) {
     $library += $common;
   }
@@ -227,7 +235,7 @@ function _linkit_dashboard($editor) {
     case 'ckeditor':
     case 'wysiwyg_ckeditor':
       // Add JavaScript.
-      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
+      //drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
       break;
 
     case 'fckeditor':
@@ -578,8 +586,9 @@ function _linkit_add_settings($editor) {
   $settings = array(
     'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
   );
-
   drupal_add_js($settings, 'setting');
+
+  drupal_add_library('linkit', 'linkit_ckeditor');
 }
 
 /**

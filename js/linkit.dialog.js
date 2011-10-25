@@ -8,6 +8,7 @@ Drupal.linkit.dialog = Drupal.linkit.dialog || {};
 
 (function($) {
 
+
 /**
  * Dialog default options.
  */
@@ -46,6 +47,33 @@ Drupal.linkit.dialog.dialogButtons = function () {
 }
 
 /**
+ * jQuery dialog buttons is located outside the IFRAME where Linkit dashboard
+ * is shown and they cant trigger events in the IFRAME.
+ * Our own buttons for inserting a link and cancel is inside that IFRAME and
+ * can't destroy the dialog, so we have to bind our buttons to the dialog button.
+ */
+Drupal.behaviors.linkit_dialogButtons = {
+  attach: function (context, settings) {
+    $('#linkit-modal #edit-insert', context).click(function() {
+       var linkitSelection = Drupal.linkit.getLinkitSelection();
+      // Call the insertLink() function.
+      Drupal.linkit.editorDialog[linkitSelection.editorName].insertLink();
+      // Close the dialog.
+      Drupal.linkit.dialog.close();
+    });
+
+    $('#linkit-modal #cancel', context).bind('click', Drupal.linkit.dialog.close);
+  }
+};
+
+/**
+ *
+ */
+Drupal.linkit.dialog.close = function () {
+  $('#linkit-modal').parent('.ui-dialog').find('.ui-dialog-buttonpane button').click();
+};
+
+/**
  * Populate the title and path fields when a linkable object is selected
  *
  * @param title
@@ -58,9 +86,9 @@ Drupal.linkit.dialog.dialogButtons = function () {
  * other fields may be populated by the editor.
  */
 Drupal.linkit.dialog.populateLink = function(text, path) {
-  $('#linkit').data('text', text);
-  $('#linkit #edit-path').val(path);
-  $('#linkit #edit-search').blur();
+  $('#linkit-modal').data('text', text);
+  $('#linkit-modal #edit-path').val(path);
+  $('#linkit-modal #edit-search').blur();
 };
 
 /**
@@ -99,13 +127,22 @@ Drupal.linkit.dialog.noselection = function() {
  * Return the Iframe that we use in the dialog.
  */
 Drupal.linkit.dialog.createDialog = function(src) {
-  var content = $('<div>').attr('id', 'linkit-modal').load(src, function() {
+  // Create a dialog dig in the <body>.
+  $('body').append($('<div></div>').attr('id', 'linkit-modal'));
+
+  var linkitSelection = Drupal.linkit.getLinkitSelection();
+
+  // Initialize Linkit editor js.
+  Drupal.linkit.editorDialog[linkitSelection.editorName].init();
+
+  return $('#linkit-modal').load(src, function(data) {
     // Run all the behaviors again for this new context.
-    Drupal.attachBehaviors(this, Drupal.settings);
-    // Initialize Linkit editor js.
-    LinkitDialog.init();
+    console.log($('.linkit-wrapper'));
+    Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
+
+      // Run the afterInit function.
+    Drupal.linkit.editorDialog[linkitSelection.editorName].afterInit();
   });
-  return content;
 }
 
 /**
@@ -122,7 +159,6 @@ Drupal.linkit.dialog.buildDialog = function (url) {
    var linkitDialog = Drupal.linkit.dialog.createDialog(url);
 
    var dia = linkitDialog.dialog(dialogOptions);
-
 
    // Remove the title bar from the dialog.
    linkitDialog.parents(".ui-dialog").find(".ui-dialog-titlebar").remove();

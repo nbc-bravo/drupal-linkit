@@ -1,7 +1,7 @@
 
 #linkit-modal { padding: 40px; }
 
-#edit-link.with_imce {
+#linkit-modal #edit-link.with_imce {
   margin-bottom:10px;
 }
 
@@ -14,12 +14,6 @@
 
 #linkit-modal #edit-search.fetching {
   background-image: url(../throbber-active.gif);
-}
-
-/* The attributes fieldset thinks it's better than Better Autocomplete. It is not. */
-#linkit-modal .form-item-search {
-  position: relative;
-  z-index: 1;
 }
 
 /* Better Autocomplete */
@@ -63,4 +57,9 @@
 .better-autocomplete > .result.status-notice {
   border-top-width: 0;
   background: #575757;
+}
+
+#linkit #edit-attributes .form-item {
+  float:left;
+  margin-right:20px;
 }

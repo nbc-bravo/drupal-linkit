@@ -1,11 +1,13 @@
 /**
- * @file Plugin for inserting links with Linkit.
+ * @file
+ * Plugin for inserting links with Linkit.
  */
+
 (function ($) {
   CKEDITOR.plugins.add( 'Linkit', {
 
     requires : [ 'fakeobjects', 'htmlwriter' ],
-      
+
     init: function( editor ) {
 
       // Add Button.
@@ -18,8 +20,17 @@
       // Add Command.
       editor.addCommand( 'Linkit', {
         exec : function () {
-          window.linkiteditorname = editor.name; // @TODO: Build a setter function for this?
-          var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor
+          // Set the editor object.
+          Drupal.linkit.setEditor(editor);
+          // Set which editor is calling the dialog script.
+          Drupal.linkit.setEditorName('ckeditor');
+          // Set the name of the editor field, this is just for CKeditor.
+
+          Drupal.linkit.setEditorField(editor.name);
+
+          Drupal.linkit.setEditorSelection(editor.getSelection());
+
+          var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor;
           Drupal.linkit.dialog.buildDialog(path);
         }
       });
@@ -30,53 +41,58 @@
 
   });
 
+  CKEDITOR.plugins.linkit = {
+    getSelectedLink : function( )
+    {
+      try
+      {
+        var linkitSelection = Drupal.linkit.getLinkitSelection();
+        if ( linkitSelection.selection.getType() == CKEDITOR.SELECTION_ELEMENT )
+        {
+          var selectedElement = linkitSelection.selection.getSelectedElement();
+          if ( selectedElement.is( 'a' ) )
+            return selectedElement;
+        }
+
+        // Save the range
+        Drupal.linkit.setSelectionRange(linkitSelection.selection.getRanges( true ));
+
+        var range = linkitSelection.selection.getRanges( true )[ 0 ];
+        range.shrink( CKEDITOR.SHRINK_TEXT );
+        var root = range.getCommonAncestor();
+        return root.getAscendant( 'a', true );
+      }
+      catch( e ) { return null; }
+    },
+  };
+
   function insertLink(data, editor) {
     this.fakeObj = false;
+    var linkitSelection = Drupal.linkit.getLinkitSelection();
+    var plugin = CKEDITOR.plugins.linkit;
+    var selectedElement = null;
 
-    var selection = editor.getSelection(),
-    ranges = selection.getRanges(),
-    element = null;
-
-    // Fill in all the relevant fields if there's already one link selected.
-    if (ranges.length == 1) {
-      var rangeRoot = ranges[0].getCommonAncestor(true);
-      element = rangeRoot.getAscendant('a', true);
-
-      if (element && element.getAttribute('href')) {
-        selection.selectElement(element);
-      }
-      else if ((element = rangeRoot.getAscendant('img', true)) && element.getAttribute('_cke_real_element_type') && element.getAttribute('_cke_real_element_type') == 'anchor') {
-        this.fakeObj = element;
-        element = editor.restoreRealElement(this.fakeObj);
-        selection.selectElement(this.fakeObj);
-      }
-      else {
-        element = null;
-      }
-    }
-
-    // Record down the selected element in the dialog.
-    this._.selectedElement = element;
+    this._.selectedElement = linkitSelection.selectedElement;
 
     if ( !this._.selectedElement ) {
       // Create element if current selection is collapsed.
-      var selection = editor.getSelection(), ranges = selection.getRanges();
-      
-      if ( ranges.length == 1 && ranges[0].collapsed ) {
-        var text = new CKEDITOR.dom.text( data.text, editor.document );
+      var ranges = linkitSelection.selectionRange;
+
+      if ( ranges.length == 1 ) {
+        var text = new CKEDITOR.dom.text( data.text, linkitSelection.editor.document );
         ranges[0].insertNode( text );
         ranges[0].selectNodeContents( text );
-        selection.selectRanges( ranges );
+        linkitSelection.selection.selectRanges( ranges );
       }
 
       // Insert into editor.
       var style = new CKEDITOR.style( { element : 'a', attributes : data.attributes } );
       style.type = CKEDITOR.STYLE_INLINE;
-      style.apply( editor.document );
+      style.apply( linkitSelection.editor.document );
     }
     else {
       // We're only editing an existing link, so just overwrite the attributes.
-      var element = this._.selectedElement;
+      var element = linkitSelection.selectedElement;
 
       var removeAttributes = [];
 
@@ -93,8 +109,9 @@
       if (this.fakeObj) {
         editor.createFakeElement(element, 'cke_anchor', 'anchor').replace(this.fakeObj);
       }
-      delete this._.selectedElement;
     }
+
+    delete this._.selectedElement;
   }
 
 })(jQuery);
