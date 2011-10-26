@@ -63,7 +63,7 @@
         return root.getAscendant( 'a', true );
       }
       catch( e ) { return null; }
-    },
+    }
   };
 
   function insertLink(data, editor) {
@@ -97,7 +97,9 @@
       var removeAttributes = [];
 
       for ( var i = 0 ; i < element.$.attributes.length ; i++ ) {
-        removeAttributes.push(element.$.attributes[i].localName);
+        // Remove the 'linkit_' prefix.
+        var attr = element.$.attributes[i].localName.substr(7);
+        removeAttributes.push(attr);
       }
 
       // Remove all attributes so we can update them.

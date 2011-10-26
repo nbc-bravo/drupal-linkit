@@ -12,7 +12,7 @@ Drupal.linkit.editorDialog = Drupal.linkit.editorDialog || {};
 Drupal.behaviors.linkit = {
   attach: function(context, settings) {
 
-  $('#linkit-modal #edit-link', context).keydown(function(ev) {
+  $('#linkit-modal #edit-linkit-link', context).keydown(function(ev) {
     if (ev.keyCode == 13) {
       // Prevent browsers from firing the click event on the first submit
       // button when enter is used to select from the autocomplete list.
@@ -20,7 +20,7 @@ Drupal.behaviors.linkit = {
     }
   });
 
-    var $searchInput = $('#linkit-modal #edit-search', context);
+    var $searchInput = $('#linkit-modal #edit-linkit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,

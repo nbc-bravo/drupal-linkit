@@ -8,7 +8,6 @@ Drupal.linkit.dialog = Drupal.linkit.dialog || {};
 
 (function($) {
 
-
 /**
  * Dialog default options.
  */
@@ -28,7 +27,7 @@ Drupal.linkit.dialog.dialogOptions = function() {
       opacity: 0.4
     }
   }
-}
+};
 
 /**
  * Define the dialog buttons.
@@ -44,7 +43,7 @@ Drupal.linkit.dialog.dialogButtons = function () {
   };
 
   return buttons;
-}
+};
 
 /**
  * jQuery dialog buttons is located outside the IFRAME where Linkit dashboard
@@ -54,15 +53,16 @@ Drupal.linkit.dialog.dialogButtons = function () {
  */
 Drupal.behaviors.linkit_dialogButtons = {
   attach: function (context, settings) {
-    $('#linkit-modal #edit-insert', context).click(function() {
+    $('#linkit-modal #edit-linkit-insert', context).click(function() {
        var linkitSelection = Drupal.linkit.getLinkitSelection();
       // Call the insertLink() function.
       Drupal.linkit.editorDialog[linkitSelection.editorName].insertLink();
       // Close the dialog.
       Drupal.linkit.dialog.close();
+      return false;
     });
 
-    $('#linkit-modal #cancel', context).bind('click', Drupal.linkit.dialog.close);
+    $('#linkit-modal #linkit-cancel', context).bind('click', Drupal.linkit.dialog.close);
   }
 };
 
@@ -71,6 +71,7 @@ Drupal.behaviors.linkit_dialogButtons = {
  */
 Drupal.linkit.dialog.close = function () {
   $('#linkit-modal').parent('.ui-dialog').find('.ui-dialog-buttonpane button').click();
+  return false;
 };
 
 /**
@@ -87,8 +88,8 @@ Drupal.linkit.dialog.close = function () {
  */
 Drupal.linkit.dialog.populateLink = function(text, path) {
   $('#linkit-modal').data('text', text);
-  $('#linkit-modal #edit-path').val(path);
-  $('#linkit-modal #edit-search').blur();
+  $('#linkit-modal #edit-linkit-path').val(path);
+  $('#linkit-modal #edit-linkit-search').blur();
 };
 
 /**
@@ -135,15 +136,16 @@ Drupal.linkit.dialog.createDialog = function(src) {
   // Initialize Linkit editor js.
   Drupal.linkit.editorDialog[linkitSelection.editorName].init();
 
+  // @TODO: Add throbber!
+
   return $('#linkit-modal').load(src, function(data) {
     // Run all the behaviors again for this new context.
-    console.log($('.linkit-wrapper'));
     Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
 
-      // Run the afterInit function.
+    // Run the afterInit function.
     Drupal.linkit.editorDialog[linkitSelection.editorName].afterInit();
   });
-}
+};
 
 /**
  * Build the dialog
@@ -162,6 +164,6 @@ Drupal.linkit.dialog.buildDialog = function (url) {
 
    // Remove the title bar from the dialog.
    linkitDialog.parents(".ui-dialog").find(".ui-dialog-titlebar").remove();
-}
+};
 
 })(jQuery);

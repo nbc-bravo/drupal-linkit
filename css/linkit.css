@@ -1,18 +1,18 @@
 
 #linkit-modal { padding: 40px; }
 
-#linkit-modal #edit-link.with_imce {
+#linkit-modal #edit-linkit-link.with_imce {
   margin-bottom:10px;
 }
 
-#linkit-modal #edit-search {
+#linkit-modal #edit-linkit-search {
   font-size: 1em;
   height: 2em;
   padding: 3px 25px 3px 5px;
   background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
 }
 
-#linkit-modal #edit-search.fetching {
+#linkit-modal #edit-linkit-search.fetching {
   background-image: url(../throbber-active.gif);
 }
 
@@ -59,7 +59,7 @@
   background: #575757;
 }
 
-#linkit #edit-attributes .form-item {
+#linkit-modal #edit-linkit-attributes .form-item {
   float:left;
   margin-right:20px;
 }

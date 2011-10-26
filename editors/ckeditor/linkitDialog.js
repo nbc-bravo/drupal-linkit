@@ -48,10 +48,12 @@ Drupal.linkit.editorDialog.ckeditor = {
 
     // If we have selected an element, grab the elements attributes.
     if(linkitSelection.selectedElement) {
-      $('#linkit-modal #edit-path').val(linkitSelection.selectedElement.getAttribute('href'));
+      $('#linkit-modal #edit-linkit-path').val(linkitSelection.selectedElement.getAttribute('href'));
       // Set values from selection.
-      $('#linkit-modal #edit-attributes .linkit-attribute').each(function() {
-        $(this).val(linkitSelection.selectedElement.getAttribute($(this).attr('name')));
+      $('#linkit-modal #edit-linkit-attributes .linkit-attribute').each(function() {
+        // Remove the 'linkit_' prefix.
+        var attr = $(this).attr('name').substr(7);
+        $(this).val(linkitSelection.selectedElement.getAttribute(attr));
       });
     }
     else if(linkitSelection.selection.getNative().isCollapsed) {
@@ -74,14 +76,12 @@ Drupal.linkit.editorDialog.ckeditor = {
     //If no path, just close this window.
     if(this.data.attributes.href == "") {
       alert(Drupal.t('There is no path.'));
-      $('#linkit-modal #edit-search').focus();
+      $('#linkit-modal #edit-linkit-search').focus();
       return false;
     }
     // Ok, we have a path, lets make a link of it and insert.
     else {
       CKEDITOR.tools.callFunction(linkitSelection.editor._.linkitFnNum, this.data, linkitSelection.editor);
-      Drupal.linkit.dialog.close();
-      return false;
     }
   },
 
@@ -93,13 +93,15 @@ Drupal.linkit.editorDialog.ckeditor = {
     var data = {};
     data.attributes = {};
 
-    $("#linkit-modal #edit-attributes .linkit-attribute").each(function() {
+    $("#linkit-modal #edit-linkit-attributes .linkit-attribute").each(function() {
       if($(this).val() != "") {
-        data.attributes[$(this).attr('name')] = $(this).val();
+        // Remove the 'linkit_' prefix.
+        var attr = $(this).attr('name').substr(7);
+        data.attributes[attr] = $(this).val();
       }
     });
 
-    data.attributes['href'] = $("#linkit-modal #edit-path").val();
+    data.attributes['href'] = $("#linkit-modal #edit-linkit-path").val();
     data.text = linkitSelection.selection.getNative().isCollapsed ? $('#linkit-modal').data('text') : linkitSelection.selectedText;
 
     this.data = data;

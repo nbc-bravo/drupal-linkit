@@ -472,7 +472,7 @@ function _linkit_result_from_url($url, $enabled_plugins) {
 function linkit_dashboard_form() {
   $profile = linkit_get_dashboard_profile();
 
-  $form['search'] = array(
+  $form['linkit_search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search content'),
     '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.') . '<br />' . t('You can also paste an URL here.'),
@@ -485,7 +485,7 @@ function linkit_dashboard_form() {
   // Check if we have IMCE and access to it.
   $imce = module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1;
   if ($imce) {
-    $form['file_browser'] = array(
+    $form['linkit_file_browser'] = array(
       '#type' => 'button',
       '#value' => t('Open file browser'),
       '#name' => 'linkit-imce',
@@ -498,7 +498,7 @@ function linkit_dashboard_form() {
     $form['search']['#field_suffix'] = drupal_render($imcebutton);
   }
 
-  $form['path'] = array(
+  $form['linkit_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Target path'),
     '#description' => t('Examples: <strong>node/123</strong>, <strong>http://www.example.com/path#anchor</strong>'),
@@ -513,7 +513,7 @@ function linkit_dashboard_form() {
   // If we have enabled attributes, lets put them inside a fieldset.
   if (count($enabled_attributes)) {
     // Create the container fieldset.
-    $form['attributes'] = array(
+    $form['linkit_attributes'] = array(
       '#type' => 'fieldset',
       '#title' => t('Attributes'),
       '#collapsible' => TRUE,
@@ -522,14 +522,15 @@ function linkit_dashboard_form() {
     );
     // Append the attributes info the fieldset.
     foreach ($enabled_attributes AS $name => $attribute) {
-      $form['attributes'][$name] = $attribute;
+      // Add 'linkit_' prefix to ensure that is uniq.
+      $form['linkit_attributes']['linkit_' . $name] = $attribute;
     }
   }
 
-  $form['insert'] = array(
+  $form['linkit_insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert link'),
-    '#suffix' => '<a id="cancel" href="#">' . t('Cancel') . '</a>',
+    '#suffix' => '<a id="linkit-cancel" href="#">' . t('Cancel') . '</a>',
     '#weight' => 100,
   );
 
