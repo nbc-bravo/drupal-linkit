@@ -241,20 +241,7 @@ function _linkit_dashboard($editor) {
   drupal_add_library('linkit', 'linkit_dialog');
 
   switch ($editor) {
-    case 'wysiwyg_tinymce':
-      // Add JavaScript.
-      //drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
-      //drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
-      break;
-
-    case 'ckeditor':
-    case 'wysiwyg_ckeditor':
-      // Add JavaScript.
-      //drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/ckeditor/linkitDialog.js');
-      break;
-
     case 'fckeditor':
-    case 'wysiwyg_fckeditor':
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
       break;
@@ -556,38 +543,22 @@ function linkit_dashboard_form() {
  * Implements hook_wysiwyg_plugin().
  */
 function linkit_wysiwyg_plugin($editor, $version) {
-  $plugins = array();
+  $plugin = array();
   _linkit_add_settings($editor);
 
-  switch ($editor) {
-    case 'tinymce':
-      $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce',
-        'filename' => 'editor_plugin.js',
-        'buttons' => array('linkit' => t('Linkit')),
-        'url' => 'http://drupal.org/project/linkit',
-        'load' => TRUE,
-      );
-      break;
-    case 'ckeditor':
-      $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor',
-        'buttons' => array('linkit' => t('Linkit')),
-        'url' => 'http://drupal.org/project/linkit',
-        'load' => TRUE,
-      );
-      break;
-    case 'fckeditor':
-      $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor',
-        'buttons' => array('linkit' => t('Linkit')),
-        'url' => 'http://drupal.org/project/linkit',
-        'load' => TRUE,
-      );
-    break;
+  $plugin['linkit'] = array(
+    'path' => drupal_get_path('module', 'linkit') . '/editors/' . $editor,
+    'buttons' => array('linkit' => t('Linkit')),
+    'url' => 'http://drupal.org/project/linkit',
+    'load' => TRUE,
+  );
+
+  // TinyMCE needs to know the filename.
+  if($editor == 'tinymce') {
+    $plugin['linkit']['filename'] = 'editor_plugin.js';
   }
 
-  return $plugins;
+  return $plugin;
 }
 
 /**
