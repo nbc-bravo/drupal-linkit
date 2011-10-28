@@ -122,12 +122,19 @@ function linkit_ckeditor_plugin() {
   return array(
     'linkit' => array(
       // Name of the plugin used to write it
-      'name' => 'Linkit',
+      'name' => 'linkit',
       // Description of plugin - it would appear in plugins managment of profile settings
       'desc' => t('Support for Linkit module'),
       // The full path to the CKEditor plugin directory, with trailing slash.
       'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
-    )
+      // Buttons to show up in the toolbar config area.
+      'buttons' => array(
+        'linkit' => array(
+          'label' => 'Linkit',
+          'icon' => 'linkit.png',
+        ),
+      ),
+    ),
   );
 }
 
@@ -563,10 +570,9 @@ function linkit_wysiwyg_plugin($editor, $version) {
       );
       break;
     case 'ckeditor':
-      // notice: Big "L" in the name here! important
-      $plugins['Linkit'] = array(
+      $plugins['linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor',
-        'buttons' => array('Linkit' => t('Linkit')),
+        'buttons' => array('linkit' => t('Linkit')),
         'url' => 'http://drupal.org/project/linkit',
         'load' => TRUE,
       );
@@ -591,12 +597,13 @@ function linkit_wysiwyg_plugin($editor, $version) {
 function _linkit_add_settings($editor) {
   drupal_add_library('linkit', 'linkit_base');
 
-  // Add dialog url
+  // Add dialog url for the editor.
   $settings = array(
     'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
   );
   drupal_add_js($settings, 'setting');
 
+  // Add the linkit library for the editor.
   drupal_add_library('linkit', 'linkit_' . $editor);
 }
 

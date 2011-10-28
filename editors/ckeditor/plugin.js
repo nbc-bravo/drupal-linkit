@@ -4,21 +4,21 @@
  */
 
 (function ($) {
-  CKEDITOR.plugins.add( 'Linkit', {
+  CKEDITOR.plugins.add( 'linkit', {
 
     requires : [ 'fakeobjects' ],
 
     init: function( editor ) {
 
       // Add Button.
-      editor.ui.addButton( 'Linkit', {
+      editor.ui.addButton( 'linkit', {
         label: 'Linkit',
-        command: 'Linkit',
+        command: 'linkit',
         icon: this.path + 'linkit.png'
       });
 
       // Add Command.
-      editor.addCommand( 'Linkit', {
+      editor.addCommand( 'linkit', {
         exec : function () {
 
           // Set the editor object.
