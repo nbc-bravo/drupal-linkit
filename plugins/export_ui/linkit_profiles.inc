@@ -556,6 +556,8 @@ function linkit_profiles_reorder() {
     );
   }
 
+  $form['helptext'] = array('#markup' => t('If a user have multiple roles, the profile priority will determine which profile to use. Higher priority will take the precedence.'));
+
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
