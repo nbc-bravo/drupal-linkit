@@ -50,7 +50,7 @@
           // Save the selected element.
           Drupal.linkit.setEditorSelectedElement(element);
 
-          var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor;
+          var path = Drupal.settings.linkit.url.ckeditor;
           Drupal.linkit.dialog.buildDialog(path);
         }
       });
