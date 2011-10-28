@@ -86,6 +86,7 @@ Drupal.linkit.dialog.close = function () {
  *   - attributes: An object with additional attributes for the anchor element
  */
 Drupal.linkit.dialog.populateFields = function(link) {
+  link = link || {};
   link.attributes = link.attributes || {};
   $('#linkit-modal #edit-linkit-path').val(link.path);
   $.each(link.attributes, function(name, value) {

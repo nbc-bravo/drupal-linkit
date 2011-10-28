@@ -186,6 +186,14 @@ function linkit_library() {
     ),
   );
 
+  // Linkit base
+  $libraries['linkit_tinymce'] = array(
+    'title' => 'Linkit TinyMCE',
+    'js' => array(
+      $path . '/editors/tinymce/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+  );
+
   foreach ($libraries as &$library) {
     $library += $common;
   }
@@ -228,8 +236,8 @@ function _linkit_dashboard($editor) {
   switch ($editor) {
     case 'wysiwyg_tinymce':
       // Add JavaScript.
-      drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
-      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
+      //drupal_add_js(wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce/tiny_mce_popup.js');
+      //drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/tinymce/linkit.js');
       break;
 
     case 'ckeditor':
@@ -542,7 +550,7 @@ function linkit_dashboard_form() {
  */
 function linkit_wysiwyg_plugin($editor, $version) {
   $plugins = array();
-  _linkit_add_settings('wysiwyg_' . $editor);
+  _linkit_add_settings($editor);
 
   switch ($editor) {
     case 'tinymce':
@@ -589,7 +597,7 @@ function _linkit_add_settings($editor) {
   );
   drupal_add_js($settings, 'setting');
 
-  drupal_add_library('linkit', 'linkit_ckeditor');
+  drupal_add_library('linkit', 'linkit_' . $editor);
 }
 
 /**

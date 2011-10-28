@@ -116,7 +116,7 @@
       style.apply(editor.document);
     }
     else {
-      // We are only editing an existing link, so just overwrite the attributes.
+      // We are editing an existing link, so just overwrite the attributes.
       var element = linkitCache.selectedElement;
 
       element.setAttribute('href', data.path);
