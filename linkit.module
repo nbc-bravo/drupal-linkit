@@ -653,48 +653,36 @@ function linkit_linkit_attributes($profile) {
   $attributes['accesskey'] = array(
     '#type' => 'textfield',
     '#title' => t('Accesskey'),
-    '#maxlength' => 255,
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($profile->attributes['accesskey']['weight']) ? $profile->attributes['accesskey']['weight'] : 0,
   );
 
   $attributes['class'] = array(
     '#type' => 'textfield',
     '#title' => t('Class'),
-    '#maxlength' => 255,
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($profile->attributes['class']['weight']) ? $profile->attributes['class']['weight'] : 0,
   );
 
   $attributes['id'] = array(
     '#type' => 'textfield',
     '#title' => t('ID'),
-    '#maxlength' => 255,
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($profile->attributes['id']['weight']) ? $profile->attributes['id']['weight'] : 0,
   );
 
   $attributes['rel'] = array(
     '#type' => 'textfield',
     '#title' => t('Rel'),
-    '#maxlength' => 255,
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($profile->attributes['rel']['weight']) ? $profile->attributes['rel']['weight'] : 0,
   );
 
   $attributes['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#maxlength' => 255,
-    '#size' => 40,
-    '#default_value' => '',
-    '#weight' => isset($profile->attributes['title']['weight']) ? $profile->attributes['title']['weight'] : 0,
   );
 
+  foreach ($attributes as $key => &$attribute) {
+    $attribute += array(
+      '#maxlength' => 255,
+      '#size' => 40,
+      '#default_value' => '',
+      '#weight' => isset($profile->data['attributes'][$key]['weight']) ? $profile->data['attributes'][$key]['weight'] : 0,
+    );
+  }
   return $attributes;
 }
 
