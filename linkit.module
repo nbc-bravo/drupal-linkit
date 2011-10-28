@@ -185,7 +185,7 @@ function linkit_library() {
     ),
   );
 
-  // Linkit base
+  // Linkit ckeditor dialog script.
   $libraries['linkit_ckeditor'] = array(
     'title' => 'Linkit CKeditor',
     'js' => array(
@@ -193,7 +193,7 @@ function linkit_library() {
     ),
   );
 
-  // Linkit base
+  // Linkit tinymce dialog script.
   $libraries['linkit_tinymce'] = array(
     'title' => 'Linkit TinyMCE',
     'js' => array(
@@ -240,12 +240,6 @@ function _linkit_dashboard($editor) {
   // Add Linkit dialog library
   drupal_add_library('linkit', 'linkit_dialog');
 
-  switch ($editor) {
-    case 'fckeditor':
-      // Add JavaScript.
-      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
-      break;
-  }
   $form = drupal_get_form('linkit_dashboard_form');
   print drupal_render($form);
 }
