@@ -31,82 +31,75 @@ Drupal.behaviors.linkit = {
         if (typeof result.disabled != 'undefined' && result.disabled) {
           return false;
         }
-        Drupal.linkit.dialog.populateLink(result.title, result.path);
+
+        Drupal.linkit.dialog.populateFields({
+          path: result.path
+        });
+
+       $('#linkit-modal #edit-linkit-path').focus();
       },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
       }
     });
 
-    if (context === window.document) {
-      //$searchInput.focus();
-    }
+    $('#linkit-modal .form-text.required').bind({
+        keyup: Drupal.linkit.dialog.requiredFieldsValidation,
+        change: Drupal.linkit.dialog.requiredFieldsValidation});
 
-    // Open IMCE
+    Drupal.linkit.dialog.requiredFieldsValidation();
+/*    // Open IMCE
     $('#linkit-imce').click(function() {
       Drupal.linkit.dialog.openFileBrowser();
       return false;
     });
+*/
   }
 };
 
-// Create the linkitSelection variable.
-Drupal.linkitSelection = {};
+// Create the linkitCache variable.
+Drupal.linkitCache = {};
 
 /**
  * Set the editor object.
  */
 Drupal.linkit.setEditor = function (editor) {
-  Drupal.linkitSelection.editor = editor;
+  Drupal.linkitCache.editor = editor;
 };
 
 /**
  * Set the editor name (ckeidor or tinymce).
  */
 Drupal.linkit.setEditorName = function (editorname) {
-  Drupal.linkitSelection.editorName = editorname;
+  Drupal.linkitCache.editorName = editorname;
 };
 
 /**
  * Set the name of the field that has triggerd Linkit.
  */
 Drupal.linkit.setEditorField = function (editorfield) {
-  Drupal.linkitSelection.editorField = editorfield;
+  Drupal.linkitCache.editorField = editorfield;
 };
 
 /**
  * Set the current selection object.
  */
 Drupal.linkit.setEditorSelection = function (selection) {
-  Drupal.linkitSelection.selection = selection;
+  Drupal.linkitCache.selection = selection;
 };
 
 /**
  * Set the selected element based on the selection.
  */
 Drupal.linkit.setEditorSelectedElement = function (element) {
-  Drupal.linkitSelection.selectedElement = element;
-};
-
-/**
- * Set the selected text based on the selection.
- */
-Drupal.linkit.setEditorSelectedText = function (text) {
-  Drupal.linkitSelection.selectedText = text;
-};
-
-/**
- * Set the ranges based on the selection.
- */
-Drupal.linkit.setSelectionRange = function (ranges) {
-  Drupal.linkitSelection.selectionRange = ranges;
+  Drupal.linkitCache.selectedElement = element;
 };
 
 /**
  * Get the linkitSelection object.
  */
-Drupal.linkit.getLinkitSelection = function () {
-  return Drupal.linkitSelection;
+Drupal.linkit.getLinkitCache = function () {
+  return Drupal.linkitCache;
 };
 
 })(jQuery);

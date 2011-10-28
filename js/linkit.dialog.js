@@ -54,9 +54,9 @@ Drupal.linkit.dialog.dialogButtons = function () {
 Drupal.behaviors.linkit_dialogButtons = {
   attach: function (context, settings) {
     $('#linkit-modal #edit-linkit-insert', context).click(function() {
-       var linkitSelection = Drupal.linkit.getLinkitSelection();
+      var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
-      Drupal.linkit.editorDialog[linkitSelection.editorName].insertLink();
+      Drupal.linkit.editorDialog[linkitCache.editorName].insertLink(Drupal.linkit.dialog.getLink());
       // Close the dialog.
       Drupal.linkit.dialog.close();
       return false;
@@ -67,29 +67,91 @@ Drupal.behaviors.linkit_dialogButtons = {
 };
 
 /**
- *
+ * Close the Linkit dialog.
+ * Return false so the default browser behavior will not submit the form in the
+ * dialog.
  */
 Drupal.linkit.dialog.close = function () {
   $('#linkit-modal').parent('.ui-dialog').find('.ui-dialog-buttonpane button').click();
-  return false;
 };
 
 /**
- * Populate the title and path fields when a linkable object is selected
+ * Populate fields on the dashboard. Typically this method is called from
+ * an editor JS file when the dashboard page has just loaded.
  *
- * @param title
- *   The title of the link, only populated if title is empty
- * @param path
- *   The target path of the link
- * @param {Boolean} silent
- *   Only populate fields, do not focus and select the title field
- *
- * other fields may be populated by the editor.
+ * @param link
+ *   An object with the following properties (all are optional):
+ *   - path: The anchor's href
+ *   - text: The text that should be linked. Has no effect if already set.
+ *   - attributes: An object with additional attributes for the anchor element
  */
-Drupal.linkit.dialog.populateLink = function(text, path) {
-  $('#linkit-modal').data('text', text);
-  $('#linkit-modal #edit-linkit-path').val(path);
-  $('#linkit-modal #edit-linkit-search').blur();
+Drupal.linkit.dialog.populateFields = function(link) {
+  link.attributes = link.attributes || {};
+  $('#linkit-modal #edit-linkit-path').val(link.path);
+  $.each(link.attributes, function(name, value) {
+    $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val(value);
+  });
+  Drupal.linkit.dialog.requiredFieldsValidation();
+};
+
+/**
+ * Check for mandatory text fields in the form and disable for submissions
+ * if any of the fields are empty.
+ */
+Drupal.linkit.dialog.requiredFieldsValidation = function() {
+  var allowed = true;
+  $('#linkit-modal .form-text.required').each(function() {
+    if (!$(this).val()) {
+      allowed = false;
+      return false;
+    }
+  });
+  if (allowed) {
+    $('#linkit-modal #edit-linkit-insert')
+      .removeAttr('disabled')
+      .removeClass('form-button-disabled');
+  }
+  else {
+    $('#linkit-modal #edit-linkit-insert')
+      .attr('disabled', 'disabled')
+      .addClass('form-button-disabled');
+  }
+};
+
+/**
+ * Retrieve a list of the currently available additional attributes in the
+ * dashboard. The attribute "href" is excluded.
+ *
+ * @return
+ *   An array with the names of the attributes.
+ */
+Drupal.linkit.dialog.additionalAttributes = function() {
+  var attributes = [];
+  $('#linkit-modal #edit-linkit-attributes .form-text').each(function() {
+    // Remove the 'linkit_' prefix.
+    attributes.push($(this).attr('name').substr(7));
+  });
+  return attributes;
+}
+
+/**
+ * Retrieve a link object by extracting values from the form.
+ *
+ * @return
+ *   The link object.
+ *
+ * @see Drupal.linkit.dialog.populateFields.
+ */
+  Drupal.linkit.dialog.getLink = function() {
+    var link = {
+      path: $('#linkit-modal #edit-linkit-path').val(),
+      attributes: {}
+    };
+    $.each(Drupal.linkit.dialog.additionalAttributes(), function(f, name) {
+     link.attributes[name] =
+         $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val();
+    });
+  return link;
 };
 
 /**
@@ -128,13 +190,13 @@ Drupal.linkit.dialog.noselection = function() {
  * Return the Iframe that we use in the dialog.
  */
 Drupal.linkit.dialog.createDialog = function(src) {
-  // Create a dialog dig in the <body>.
-  $('body').append($('<div></div>').attr('id', 'linkit-modal'));
-
-  var linkitSelection = Drupal.linkit.getLinkitSelection();
+  var linkitCache = Drupal.linkit.getLinkitCache();
 
   // Initialize Linkit editor js.
-  Drupal.linkit.editorDialog[linkitSelection.editorName].init();
+  Drupal.linkit.editorDialog[linkitCache.editorName].init();
+
+  // Create a dialog dig in the <body>.
+  $('body').append($('<div></div>').attr('id', 'linkit-modal'));
 
   // @TODO: Add throbber!
 
@@ -143,7 +205,7 @@ Drupal.linkit.dialog.createDialog = function(src) {
     Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
 
     // Run the afterInit function.
-    Drupal.linkit.editorDialog[linkitSelection.editorName].afterInit();
+    Drupal.linkit.editorDialog[linkitCache.editorName].afterInit();
   });
 };
 

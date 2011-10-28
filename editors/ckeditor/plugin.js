@@ -6,7 +6,7 @@
 (function ($) {
   CKEDITOR.plugins.add( 'Linkit', {
 
-    requires : [ 'fakeobjects', 'htmlwriter' ],
+    requires : [ 'fakeobjects' ],
 
     init: function( editor ) {
 
@@ -20,15 +20,35 @@
       // Add Command.
       editor.addCommand( 'Linkit', {
         exec : function () {
+
           // Set the editor object.
           Drupal.linkit.setEditor(editor);
           // Set which editor is calling the dialog script.
           Drupal.linkit.setEditorName('ckeditor');
           // Set the name of the editor field, this is just for CKeditor.
-
           Drupal.linkit.setEditorField(editor.name);
 
-          Drupal.linkit.setEditorSelection(editor.getSelection());
+          var selection = editor.getSelection(),
+              element = null;
+
+          // If we have selected a link element, we what to grab its attributes
+          // so we can inserten them into the Linkit form in the  dialog.
+          if ((element = CKEDITOR.plugins.linkit.getSelectedLink(editor)) && element.hasAttribute('href')) {
+            selection.selectElement(element);
+          }
+          else {
+            element = null;
+          }
+
+          // Save the selection.
+          Drupal.linkit.setEditorSelection(selection);
+
+          // Lock the selecton.
+          var linkitCache = Drupal.linkit.getLinkitCache();
+          linkitCache.selection.lock();
+
+          // Save the selected element.
+          Drupal.linkit.setEditorSelectedElement(element);
 
           var path = (Drupal.settings.linkit.url.wysiwyg_ckeditor) ? Drupal.settings.linkit.url.wysiwyg_ckeditor : Drupal.settings.linkit.url.ckeditor;
           Drupal.linkit.dialog.buildDialog(path);
@@ -42,22 +62,19 @@
   });
 
   CKEDITOR.plugins.linkit = {
-    getSelectedLink : function( )
+    getSelectedLink : function( editor )
     {
       try
       {
-        var linkitSelection = Drupal.linkit.getLinkitSelection();
-        if ( linkitSelection.selection.getType() == CKEDITOR.SELECTION_ELEMENT )
+        var selection = editor.getSelection();
+        if ( selection.getType() == CKEDITOR.SELECTION_ELEMENT )
         {
-          var selectedElement = linkitSelection.selection.getSelectedElement();
+          var selectedElement = selection.getSelectedElement();
           if ( selectedElement.is( 'a' ) )
             return selectedElement;
         }
 
-        // Save the range
-        Drupal.linkit.setSelectionRange(linkitSelection.selection.getRanges( true ));
-
-        var range = linkitSelection.selection.getRanges( true )[ 0 ];
+        var range = selection.getRanges( true )[ 0 ];
         range.shrink( CKEDITOR.SHRINK_TEXT );
         var root = range.getCommonAncestor();
         return root.getAscendant( 'a', true );
@@ -66,54 +83,53 @@
     }
   };
 
+  /**
+   *
+   */
   function insertLink(data, editor) {
-    this.fakeObj = false;
-    var linkitSelection = Drupal.linkit.getLinkitSelection();
-    var plugin = CKEDITOR.plugins.linkit;
-    var selectedElement = null;
+    var linkitCache = Drupal.linkit.getLinkitCache(),
+        selection = editor.getSelection();
 
-    this._.selectedElement = linkitSelection.selectedElement;
+    data.path = CKEDITOR.tools.trim(data.path);
 
-    if ( !this._.selectedElement ) {
-      // Create element if current selection is collapsed.
-      var ranges = linkitSelection.selectionRange;
+    // Browser need the "href" for copy/paste link to work. (CKEDITOR ISSUE #6641)
+    data.attributes['data-cke-saved-href'] = data.path;
 
-      if ( ranges.length == 1 ) {
-        var text = new CKEDITOR.dom.text( data.text, linkitSelection.editor.document );
-        ranges[0].insertNode( text );
-        ranges[0].selectNodeContents( text );
-        linkitSelection.selection.selectRanges( ranges );
+    if (!linkitCache.selectedElement) {
+      // We have not selected any link element so lets create a new one.
+      var ranges = selection.getRanges( true );
+      if (ranges.length == 1 && ranges[0].collapsed) {
+        var text = new CKEDITOR.dom.text(data.attributes['data-cke-saved-href'], editor.document);
+        ranges[0].insertNode(text);
+        ranges[0].selectNodeContents(text);
+        selection.selectRanges(ranges);
       }
 
-      // Insert into editor.
-      var style = new CKEDITOR.style( { element : 'a', attributes : data.attributes } );
+      // Delete all attributes that are empty.
+      data.attributes.href = data.path;
+      for (name in data.attributes) {
+        (data.attributes[name]) ? null : delete data.attributes[name];
+      }
+      // Apply style.
+      var style = new CKEDITOR.style({element : 'a', attributes : data.attributes});
       style.type = CKEDITOR.STYLE_INLINE;
-      style.apply( linkitSelection.editor.document );
+      style.apply(editor.document);
     }
     else {
-      // We're only editing an existing link, so just overwrite the attributes.
-      var element = linkitSelection.selectedElement;
+      // We are only editing an existing link, so just overwrite the attributes.
+      var element = linkitCache.selectedElement;
 
-      var removeAttributes = [];
-
-      for ( var i = 0 ; i < element.$.attributes.length ; i++ ) {
-        // Remove the 'linkit_' prefix.
-        var attr = element.$.attributes[i].localName.substr(7);
-        removeAttributes.push(attr);
-      }
-
-      // Remove all attributes so we can update them.
-      element.removeAttributes(removeAttributes);
-
-      // Set params from .
-      element.setAttributes(data.attributes);
-
-      if (this.fakeObj) {
-        editor.createFakeElement(element, 'cke_anchor', 'anchor').replace(this.fakeObj);
+      element.setAttribute('href', data.path);
+      element.setAttribute('data-cke-saved-href', data.path);
+      for (name in data.attributes) {
+        data.attributes[name] ?
+          element.setAttribute(name, data.attributes[name]) :
+          element.removeAttribute(name);
       }
     }
-
-    delete this._.selectedElement;
-  }
+    // Unlock the selection.
+    selection.unlock();
+    delete linkitCache.selectedElement;
+  };
 
 })(jQuery);
