@@ -2,8 +2,7 @@
 
 /**
  * @file
- *
- * Installation file for linkit.
+ * Install, update and uninstall functions for the Linkit module.
  */
 
 /**
@@ -83,12 +82,4 @@ function linkit_schema() {
  */
 function linkit_uninstall() {
   variable_del('linkit_profiles_status');
-  drupal_uninstall_schema('linkit');
-}
-
-/**
- * Implements hook_install().
- */
-function linkit_install() {
-  drupal_install_schema('linkit_profiles');
 }
