@@ -102,6 +102,13 @@ function linkit_ckeditor_plugin() {
       'desc' => t('Support for Linkit module'),
       // The full path to the CKEditor plugin directory, with trailing slash.
       'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
+      // Buttons to show up in the toolbar config area.
+      'buttons' => array(
+        'Linkit' => array(
+          'label' => 'Linkit',
+          'icon' => 'linkit.png',
+        ),
+      ),
     )
   );
 }
