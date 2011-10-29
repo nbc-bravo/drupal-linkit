@@ -1,11 +1,20 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 7.x-1.3, xxxx-xx-xx
+Linkit 7.x-1.3, 2011-10-29
 ------------------------------
+#1106774 by anon: Linkit popup is not closed when instering links.
+#1105018 by donniewiko, anon: Strict Standards: Only variables should be passed
+  by reference.
+#1106786 by anon: Fixed so empty <a> tags is not inserted with TinyMCE.
+Issue #1127790 by skylord, anon: Fixed error in Opera browser.
 Issue #1160054 by betamos: IMCE window disables browser.
-#1127790 by skylord, anon: Fixed error in Opera browser.
-Issue #1209124 by patrick.davey, anon: Show unpublished node settings works 
+Issue #1179926 by anon: Added new CKeditor hook.
+by anon: Deleted CKeditor README.txt as this isnt needed anymore.
+by anon: Updated REAME.txt about CKeditor.
+Issue #1209124 by patrick.davey, anon: Show unpublished node settings works
   backwards to what should be expected.
+by anon: Added button definition for ckeditor toolbar drag n drop conf.
+
 
 Linkit 7.x-1.2, 2011-03-25
 ------------------------------
@@ -17,8 +26,10 @@ Linkit 7.x-1.2, 2011-03-25
 [bug] [#1050980] by vikfroberg, anon: Fixed Linkit geteditresult conflict with
   devel page execution.
 [#1055592] by anon: Removed hook_requirements from install file.
-[documentation] README.txt by betamos: Markdown formatting, spelling, wording, added betamos as maintainer
-Bug #1040714 by anon, betamos: Checks if #pre_render is set before checking if it's an array
+[documentation] README.txt by betamos: Markdown formatting, spelling, wording,
+  added betamos as maintainer
+Bug #1040714 by anon, betamos: Checks if #pre_render is set before checking if
+  it's an array
 Documentation by betamos: README Markdown cvs comment
 [bug] [#1044632] by anon: Fixed Drupal.settings is overwritten when IMCE is
   enabled
@@ -63,7 +74,8 @@ by anon: Removed README.txt for FCKeditor (use for stand alone FCKeditor), as
 Linkit 7.x-1.0, 2011-01-06
 ------------------------------
 This is a fork from Linkit 6.x-1.x-dev.
-#1008434 by binford2k: Fixed undefined variable if wysiwyg editor not supported.
+#1008434 by binford2k: Fixed undefined variable if wysiwyg editor not
+  supported.
 by anon: Ported linkit_files so it works with D7.
 by anon: Fixed the popup dashboard and changed some menu callback urls so they 
   dont piont to admin/linkit.
