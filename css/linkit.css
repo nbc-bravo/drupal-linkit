@@ -24,7 +24,6 @@ span.throbber {
 }
 
 input#edit-link.with_imce {
-  float:left;
   margin-right:10px;
   width:75%;
 }
