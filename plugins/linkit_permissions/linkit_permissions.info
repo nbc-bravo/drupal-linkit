@@ -1,5 +1,0 @@
-name = Linkit Permissions
-description = Extend Linkit with permissions for plugins
-core = 7.x
-package = Linkit
-dependencies[] = "linkit"
