@@ -1,14 +1,19 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
-Linkit 6.x-1.10, xxxx-xx-xx
+Linkit 6.x-1.10, 2011-10-29
 ------------------------------
-Issue #1179926 by dczepierga, anon: Added new hook for integration with 
-  CKEditor module.
-Issue #1182494 by batigolix, anon: Fixed some typos.
-Issue #1160054 by betamos: IMCE window disables browser.
+#1055528 by anon: Added support for BUEditor and MarkdownEditor
+#1106786 by anon: Fixed so empty link tags is not inserted with TinyMCE
+#1055638 by anon: Fixed Linkit inserts absolute URI to files
+#1013494 by anon: Deleted limitations in querys so all matches are included.
 #1127790 by skylord, anon: Fixed error in Opera browser.
-Issue #1209124 by patrick.davey, anon: Show unpublished node settings works 
-  backwards to what should be expected.
+Issue #1160054 by betamos: IMCE window disables browser.
+by batigolix, anon: Fixed some typos.
+by anon: Removed ckeditor README.txt as this will not be used anymore.
+Issue #1179926 by dczepierga, anon: Added new hook for integration with
+  CKEditor module.
+Issue #1209124 by patrick.davey, anon: Show unpublished node settings works backwards to what should be expected.
+by anon, fiver [#1080460] Autocomplete drop-down positioned out of view in IE
 
 Linkit 6.x-1.9, 2011-02-07
 ------------------------------
