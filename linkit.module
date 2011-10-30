@@ -212,33 +212,12 @@ function linkit_library() {
  * Creates the dashboard.
  */
 function _linkit_dashboard($editor) {
-  $profile = linkit_get_dashboard_profile(TRUE);
+  $profile = linkit_get_dashboard_profile();
 
   if ($profile == NULL) {
     drupal_set_message(t('There is no Linkit profile associate to your role.'), 'warning');
     return '';
   }
-
-  // Check if IMCE is enbled and accessable
-  if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
-    $settings['IMCEurl'] = url('imce', array('query' => array(
-      'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
-      'absolute' => TRUE,
-    )));
-    // We will only serv public files.
-    // If you have private files, everyone shouldn't be able to download them from an URL anyway,
-    // and the folder should not be accessable with an URL.
-    $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
-  }
-
-  $settings['autocomplete'] = array_filter($profile->data['autocomplete']);
-
-  // Add caseSensitive
-  $settings['autocomplete'] += array('caseSensitive' => TRUE);
-  drupal_add_js(array('linkit' => $settings), 'setting');
-
-  // Add Linkit dialog library
-  drupal_add_library('linkit', 'linkit_dialog');
 
   $form = drupal_get_form('linkit_dashboard_form');
   print drupal_render($form);
@@ -560,7 +539,32 @@ function linkit_wysiwyg_plugin($editor, $version) {
  * libraries we need.
  */
 function _linkit_add_settings($editor) {
+  static $globalsettings;
   drupal_add_library('linkit', 'linkit_base');
+
+  if (!$globalsettings) {
+    $profile = linkit_get_dashboard_profile();
+
+    // Check if IMCE is enbled and accessable
+    if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
+      $settings['IMCEurl'] = url('imce', array('query' => array(
+        'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
+        'absolute' => TRUE,
+      )));
+      // We will only serv public files.
+      // If you have private files, everyone shouldn't be able to download them from an URL anyway,
+      // and the folder should not be accessable with an URL.
+      $settings['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
+    }
+
+    $settings['autocomplete'] = array_filter($profile->data['autocomplete']);
+
+    // Add caseSensitive
+    $settings['autocomplete'] += array('caseSensitive' => TRUE);
+    drupal_add_js(array('linkit' => $settings), 'setting');
+
+    $globalsettings = TRUE;
+  }
 
   // Add dialog url for the editor.
   $settings = array(
