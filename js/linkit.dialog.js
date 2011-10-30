@@ -20,7 +20,6 @@ Drupal.linkit.dialog.dialogOptions = function() {
     resizable: false,
     minWidth: 800,
     width: 800,
-    height: 550,
     position: 'center',
     overlay: {
       backgroundColor: '#000000',
@@ -238,12 +237,12 @@ Drupal.linkit.dialog.buildDialog = function (url) {
    var dialogOptions = Drupal.linkit.dialog.dialogOptions();
 
    // Build the dialog element.
-   var linkitDialog = Drupal.linkit.dialog.createDialog(url);
+   var linkitDialogElement = Drupal.linkit.dialog.createDialog(url);
 
-   var dia = linkitDialog.dialog(dialogOptions);
+   var linkitDialog = linkitDialogElement.dialog(dialogOptions);
 
    // Remove the title bar from the dialog.
-   linkitDialog.parents(".ui-dialog").find(".ui-dialog-titlebar").remove();
+   linkitDialogElement.parents(".ui-dialog").find(".ui-dialog-titlebar").remove();
 };
 
 })(jQuery);
