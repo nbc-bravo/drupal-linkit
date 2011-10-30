@@ -755,6 +755,7 @@ function linkit_get_profile_plugins() {
 
   $enabled_plugins = array();
 
+  // @TODO: Is hook_hook_info something we should use?
   // Include plugin file.
   foreach ($installed_plugins AS $name => $plugin) {
     // Only include files for plugins that is enabled in the profile for this user.
