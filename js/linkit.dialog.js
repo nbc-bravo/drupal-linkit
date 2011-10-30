@@ -199,15 +199,32 @@ Drupal.linkit.dialog.createDialog = function(src) {
   // Create a dialog dig in the <body>.
   $('body').append($('<div></div>').attr('id', 'linkit-modal'));
 
-  // @TODO: Add throbber!
+  $.ajax({
+    url : src,
+    beforeSend : function() {
+      // Delete exsisting throbbers.
+      $('#linkit-modal .ajax-progress-throbber').remove();
+      // Add new throbber
+      var throbber = $('<div class="ajax-progress ajax-progress-throbber"><div class="throbber">&nbsp;</div></div>');
+      $('#linkit-modal').append(throbber);
+    },
+    success : function(data) {
+      // Insert the respons.
+      $('#linkit-modal').append(data);
+      // Delete exsisting throbbers.
+      $('#linkit-modal .ajax-progress-throbber').remove();
 
-  return $('#linkit-modal').load(src, function(data) {
-    // Run all the behaviors again for this new context.
-    Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
+      var linkitCache = Drupal.linkit.getLinkitCache();
 
-    // Run the afterInit function.
-    Drupal.linkit.editorDialog[linkitCache.editorName].afterInit();
+      // Run all the behaviors again for this new context.
+      Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
+
+      // Run the afterInit function.
+      Drupal.linkit.editorDialog[linkitCache.editorName].afterInit();
+    }
   });
+
+  return $('#linkit-modal');
 };
 
 /**
