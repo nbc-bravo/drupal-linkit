@@ -83,3 +83,34 @@ function linkit_schema() {
 function linkit_uninstall() {
   variable_del('linkit_profiles_status');
 }
+
+/**
+ * Create the {linkit_profiles} table if it not exists.
+ */
+function linkit_update_7200() {
+  if (!db_table_exists('linkit_profiles')) {
+    // Call the schema function to reduce the lines of code here.
+    $schema = linkit_schema();
+    // Create the table.
+    db_create_table('linkit_profiles', $schema['linkit_profiles']);
+    return t('The table {linkit_profiles} was successfully created.');
+  }
+}
+
+/**
+ * Delete old linkit settings.
+ */
+function linkit_update_7201() {
+  // Delete old settings if any.
+  $num_deleted = db_delete('variable')
+  ->condition('name', array('linkit_node', 'linkit_term'), 'IN')
+  ->execute();
+
+  // No old settings deleted
+  if(!$num_deleted) {
+    return "No old Linkit settings were deleted.";
+  }
+  else {
+    return "Old Linkit settings were deleted.";
+  }
+}
