@@ -1,20 +1,18 @@
 
 #linkit-modal { padding: 20px; }
 
-#linkit-modal #edit-linkit-link.with_imce {
-  margin-bottom:10px;
-}
+#linkit-modal #edit-linkit-link.with_imce { margin-bottom:10px; }
 
+#linkit-modal #edit-linkit-path,
 #linkit-modal #edit-linkit-search {
   font-size: 1em;
   height: 2em;
   padding: 3px 25px 3px 5px;
-  background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px;
+  width:440px;
 }
 
-#linkit-modal #edit-linkit-search.fetching {
-  background-image: url(../throbber-active.gif);
-}
+#linkit-modal #edit-linkit-search { background: transparent url(../throbber-inactive.gif) no-repeat 99% 10px; }
+#linkit-modal #edit-linkit-search.fetching { background-image: url(../throbber-active.gif); }
 
 /* Better Autocomplete */
 
@@ -62,6 +60,11 @@
 #linkit-modal #edit-linkit-attributes .form-item {
   float:left;
   margin-right:20px;
+  width:200px;
+}
+
+#linkit-modal #edit-linkit-attributes .form-item .linkit-attribute {
+  width:100%;
 }
 
 .linkit-wrapper .ui-dialog-buttonpane {

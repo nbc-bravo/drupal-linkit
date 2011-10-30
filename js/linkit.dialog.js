@@ -18,8 +18,7 @@ Drupal.linkit.dialog.dialogOptions = function() {
     modal: true,
     draggable: false,
     resizable: false,
-    minWidth: 800,
-    width: 800,
+    width: 520,
     position: 'center',
     overlay: {
       backgroundColor: '#000000',
