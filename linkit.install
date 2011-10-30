@@ -108,9 +108,9 @@ function linkit_update_7201() {
 
   // No old settings deleted
   if(!$num_deleted) {
-    return "No old Linkit settings were deleted.";
+    return t("No old Linkit settings were deleted.");
   }
   else {
-    return "Old Linkit settings were deleted.";
+    return t("Old Linkit settings were deleted.");
   }
 }
