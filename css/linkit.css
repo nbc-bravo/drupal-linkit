@@ -63,3 +63,7 @@
   float:left;
   margin-right:20px;
 }
+
+.linkit-wrapper .ui-dialog-buttonpane {
+  display:none;
+}
