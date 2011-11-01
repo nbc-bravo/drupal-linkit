@@ -132,6 +132,7 @@ function _linkit_node_autocomplete($string, $profile) {
       'description' => token_replace($result_description, array(
         'node' => $node,
       )),
+      // We have to set alias to TRUE as we don't want an alias back.
       'path' => url('node/' . $node->nid, array('alias' => TRUE)),
       'group' => _linkit_node_build_group($profile, $node),
     );

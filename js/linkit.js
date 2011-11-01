@@ -20,43 +20,43 @@ Drupal.behaviors.linkit = {
     }
   });
 
-    var $searchInput = $('#linkit-modal #edit-linkit-search', context);
+  var $searchInput = $('#linkit-modal #edit-linkit-search', context);
 
-    // Create a "Better Autocomplete" object, see betterautocomplete.js
-    $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
-      settings.linkit.autocomplete,
-      { // Callbacks
-      select: function(result) {
-        // Only change the link text if it is empty
-        if (typeof result.disabled != 'undefined' && result.disabled) {
-          return false;
-        }
-
-        Drupal.linkit.dialog.populateFields({
-          path: result.path
-        });
-
-       $('#linkit-modal #edit-linkit-path').focus();
-      },
-      constructURL: function(path, search) {
-        return path + encodeURIComponent(search);
+  // Create a "Better Autocomplete" object, see betterautocomplete.js
+  $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
+    settings.linkit.autocomplete,
+    { // Callbacks
+    select: function(result) {
+      // Only change the link text if it is empty
+      if (typeof result.disabled != 'undefined' && result.disabled) {
+        return false;
       }
-    });
 
-    // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
-    // layout.
-    $('ul.better-autocomplete').hide();
+      Drupal.linkit.dialog.populateFields({
+        path: result.path
+      });
 
-    $('#linkit-modal .form-text.required').bind({
-        keyup: Drupal.linkit.dialog.requiredFieldsValidation,
-        change: Drupal.linkit.dialog.requiredFieldsValidation});
+     $('#linkit-modal #edit-linkit-path').focus();
+    },
+    constructURL: function(path, search) {
+      return path + encodeURIComponent(search);
+    }
+  });
 
-    Drupal.linkit.dialog.requiredFieldsValidation();
+  // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
+  // layout.
+  $('ul.better-autocomplete').hide();
+
+  $('#linkit-modal .form-text.required').bind({
+      keyup: Drupal.linkit.dialog.requiredFieldsValidation,
+      change: Drupal.linkit.dialog.requiredFieldsValidation});
+
+  Drupal.linkit.dialog.requiredFieldsValidation();
 /*    // Open IMCE
-    $('#linkit-imce').click(function() {
-      Drupal.linkit.dialog.openFileBrowser();
-      return false;
-    });
+  $('#linkit-imce').click(function() {
+    Drupal.linkit.dialog.openFileBrowser();
+    return false;
+  });
 */
   }
 };
