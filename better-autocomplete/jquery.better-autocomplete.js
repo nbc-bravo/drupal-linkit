@@ -1,22 +1,37 @@
+
 /**
- * Better Autocomplete is a jQuery plugin.
+ * @fileOverview Better Autocomplete is a flexible jQuery plugin which offers
+ * rich text autocompletion, both from local and remote sources.
  *
  * @author Didrik Nordström, http://betamos.se/
+ *
+ * @version v1.0-dev
  *
  * @requires
  *   <ul><li>
  *   jQuery 1.4+
  *   </li><li>
- *   a modern web browser (not tested in IE)
+ *   IE7+ or any decent webkit/gecko-based web browser
  *   </li></ul>
+ *
+ * @preserve Better Autocomplete v1.0-dev
+ * https://github.com/betamos/Better-Autocomplete
+ *
+ * Copyright 2011, Didrik Nordström, http://betamos.se/
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * Requires jQuery 1.4+
+ * http://jquery.com/
+ */
+
+/**
+ * Create or alter an autocomplete object instance that belongs to
+ * the elements in the selection. Make sure there are only text field elements
+ * in the selection.
  *
  * @constructor
  *
  * @name jQuery.betterAutocomplete
- *
- * @description Create or alter an autocomplete object instance that belongs to
- * the elements in the selection. Make sure there are only text field elements
- * in the selection.
  *
  * @param {String} method
  *   Should be one of the following:
@@ -61,6 +76,10 @@
  *   </li><li>
  *     remoteTimeout: (default=10000) The timeout for remote (AJAX) calls.
  *   </li><li>
+ *     crossOrigin: (default=false) Set to true if cross origin requests will
+ *     be performed, i.e. that the remote URL has a different domain. This will
+ *     force Internet Explorer to use "jsonp" instead of "json" as datatype.
+ *   </li><li>
  *     selectKeys: (default=[9, 13]) The key codes for keys which will select
  *     the current highlighted element. The defaults are tab, enter.
  *   </li></ul>
@@ -99,9 +118,7 @@ $.fn.betterAutocomplete = function(method) {
     destroy: function(bac) {
       bac.destroy();
     }
-  };
-
-  var args = Array.prototype.slice.call(arguments, 1);
+  }, args = Array.prototype.slice.call(arguments, 1);
 
   // Method calling logic
   this.each(function() {
@@ -147,7 +164,9 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     activeRemoteCalls = [], // A flat array of query strings that are pending
     disableMouseHighlight = false, // Suppress the autotriggered mouseover event
     inputEvents = {},
-    isLocal = ($.type(resource) != 'string');
+    isLocal = ($.type(resource) != 'string'),
+    $results = $('<ul />').addClass('better-autocomplete'),
+    hiddenResults = true; // $results are hidden
 
   options = $.extend({
     charLimit: isLocal ? 1 : 3,
@@ -155,13 +174,11 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     caseSensitive: false,
     cacheLimit: isLocal ? 0 : 256, // Number of result objects
     remoteTimeout: 10000, // milliseconds
+    crossOrigin: false,
     selectKeys: [9, 13] // [tab, enter]
   }, options);
 
   callbacks = $.extend({}, defaultCallbacks, callbacks);
-
-  var $results = $('<ul />')
-    .addClass('better-autocomplete');
 
   callbacks.insertSuggestionList($results, $input, options.maxHeight);
 
@@ -200,32 +217,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     }
   };
 
-  inputEvents.keyup = function() {
-    var query = callbacks.canonicalQuery($input.val(), options.caseSensitive);
-    clearTimeout(timer);
-    // Indicate that timer is inactive
-    timer = null;
-    redraw();
-    if (query.length >= options.charLimit && !$.isArray(cache[query]) &&
-        $.inArray(query, activeRemoteCalls) == -1) {
-      // Fetching is required
-      $results.empty();
-      if (isLocal) {
-        fetchResults(query);
-      }
-      else {
-        timer = setTimeout(function() {
-          fetchResults(query);
-          timer = null;
-        }, options.delay);
-      }
-    }
-  };
-
-  // Input with type="search" have a clickable X which clears the input field.
-  inputEvents.click = function() {
-    redraw();
-  };
+  inputEvents.keyup = inputEvents.click = reprocess;
 
   $('.result', $results[0]).live({
     // When the user hovers a result with the mouse, highlight it.
@@ -325,10 +317,10 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
    */
   var setHighlighted = function(index, autoScroll) {
     // Scrolling upwards
-    var up = index == 0 || index < getHighlighted();
-    var $scrollTo = $('.result', $results)
-      .removeClass('highlight')
-      .eq(index).addClass('highlight');
+    var up = index == 0 || index < getHighlighted(),
+      $scrollTo = $('.result', $results)
+        .removeClass('highlight')
+        .eq(index).addClass('highlight');
 
     if (!autoScroll) {
       return;
@@ -370,7 +362,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     var result = $result.data('result');
     callbacks.select(result, $input);
     // Redraw again, if the callback changed focus or content
-    redraw();
+    reprocess();
   };
 
   /**
@@ -406,7 +398,33 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
           callbacks.finishFetching($input);
         }
         redraw();
-      }, options.remoteTimeout);
+      }, options.remoteTimeout, options.crossOrigin);
+    }
+  };
+
+  /**
+   * Reprocess the contents of the input field, fetch data and redraw if
+   * necessary.
+   */
+  function reprocess() {
+    var query = callbacks.canonicalQuery($input.val(), options.caseSensitive);
+    clearTimeout(timer);
+    // Indicate that timer is inactive
+    timer = null;
+    redraw();
+    if (query.length >= options.charLimit && !$.isArray(cache[query]) &&
+        $.inArray(query, activeRemoteCalls) == -1) {
+      // Fetching is required
+      $results.empty();
+      if (isLocal) {
+        fetchResults(query);
+      }
+      else {
+        timer = setTimeout(function() {
+          fetchResults(query);
+          timer = null;
+        }, options.delay);
+      }
     }
   };
 
@@ -434,11 +452,19 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     if (($input.is(':focus') || focus) && !$results.is(':empty')) {
       $results.filter(':hidden').show() // Show if hidden
         .scrollTop($results.data('scroll-top')); // Reset the lost scrolling
+      if (hiddenResults) {
+        hiddenResults = false;
+        callbacks.afterShow($results);
+      }
     }
     else if ($results.is(':visible')) {
       // Store the scrolling position for later
       $results.data('scroll-top', $results.scrollTop())
         .hide(); // Hiding it resets it's scrollTop
+      if (!hiddenResults) {
+        hiddenResults = true;
+        callbacks.afterHide($results);
+      }
     }
   };
 
@@ -467,7 +493,7 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
       var group = callbacks.getGroup(result);
       if ($.type(group) == 'string' && !groups[group]) {
         var $groupHeading = $('<li />').addClass('group')
-          .append($('<h3 />').text(group))
+          .append($('<h3 />').html(group))
           .appendTo($results);
         groups[group] = $groupHeading;
       }
@@ -626,11 +652,14 @@ var defaultCallbacks = {
    * @param {Number} timeout
    *   The preferred timeout for the request. This callback should respect
    *   the timeout.
+   *
+   * @param {Boolean} crossOrigin
+   *   True if a cross origin request should be performed.
    */
-  fetchRemoteData: function(url, completeCallback, timeout) {
+  fetchRemoteData: function(url, completeCallback, timeout, crossOrigin) {
     $.ajax({
       url: url,
-      dataType: 'json',
+      dataType: crossOrigin && !$.support.cors ? 'jsonp' : 'json',
       timeout: timeout,
       success: function(data, textStatus) {
         completeCallback(data);
@@ -675,7 +704,7 @@ var defaultCallbacks = {
    *   The result object.
    *
    * @returns {String}
-   *   The group name. If no group, don't return anything.
+   *   The group name, may contain HTML. If no group, don't return anything.
    */
   getGroup: function(result) {
     if ($.type(result.group) == 'string') {
@@ -708,6 +737,26 @@ var defaultCallbacks = {
   finishFetching: function($input) {
     $input.removeClass('fetching');
   },
+
+  /**
+   * Executed after the suggestion list has been shown.
+   *
+   * @param {Object} $results
+   *   The suggestion list UL element.
+   *
+   * <br /><br /><em>Default behavior: Nothing.</em>
+   */
+  afterShow: function($results) {},
+
+  /**
+   * Executed after the suggestion list has been hidden.
+   *
+   * @param {Object} $results
+   *   The suggestion list UL element.
+   *
+   * <br /><br /><em>Default behavior: Nothing.</em>
+   */
+  afterHide: function($results) {},
 
   /**
    * Construct the remote fetching URL.
