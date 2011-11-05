@@ -131,7 +131,7 @@ Drupal.linkit.dialog.additionalAttributes = function() {
     attributes.push($(this).attr('name').substr(7));
   });
   return attributes;
-}
+};
 
 /**
  * Retrieve a link object by extracting values from the form.

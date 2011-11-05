@@ -42,7 +42,6 @@ Drupal.behaviors.linkit = {
         return path + encodeURIComponent(search);
       },
       insertSuggestionList: function($results, $input) {
-        console.log($input.offset());
         $results.width($input.outerWidth() - 2) // Subtract border width.
           .css({
             position: 'absolute',
@@ -58,7 +57,7 @@ Drupal.behaviors.linkit = {
       }
   });
 
-  $('#linkit-modal .form-text.required').bind({
+  $('#linkit-modal .form-text.required', context).bind({
       keyup: Drupal.linkit.dialog.requiredFieldsValidation,
       change: Drupal.linkit.dialog.requiredFieldsValidation});
 
