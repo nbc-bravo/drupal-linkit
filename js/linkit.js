@@ -20,27 +20,41 @@ Drupal.behaviors.linkit = {
     }
   });
 
-  var $searchInput = $('#linkit-modal #edit-linkit-search', context);
+    var $searchInput = $('#linkit-modal #edit-linkit-search', context);
 
-  // Create a "Better Autocomplete" object, see betterautocomplete.js
-  $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
-    settings.linkit.autocomplete,
-    { // Callbacks
-    select: function(result) {
-      // Only change the link text if it is empty
-      if (typeof result.disabled != 'undefined' && result.disabled) {
-        return false;
+    // Create a "Better Autocomplete" object, see betterautocomplete.js
+    $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
+      settings.linkit.autocomplete,
+      { // Callbacks
+      select: function(result) {
+        // Only change the link text if it is empty
+        if (typeof result.disabled != 'undefined' && result.disabled) {
+          return false;
+        }
+
+        Drupal.linkit.dialog.populateFields({
+          path: result.path
+        });
+
+       $('#linkit-modal #edit-linkit-path').focus();
+      },
+      constructURL: function(path, search) {
+        return path + encodeURIComponent(search);
+      },
+      insertSuggestionList: function($results, $input) {
+        console.log($input.offset());
+        $results.width($input.outerWidth() - 2) // Subtract border width.
+          .css({
+            position: 'absolute',
+            left: $input.offset().left,
+            top: $input.offset().top + $input.outerHeight(),
+            zIndex: 1002,
+            maxHeight: '330px',
+            // Visually indicate that results are in the topmost layer
+            boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
+          })
+          .insertAfter($('#linkit-modal', context).parent());
       }
-
-      Drupal.linkit.dialog.populateFields({
-        path: result.path
-      });
-
-     $('#linkit-modal #edit-linkit-path').focus();
-    },
-    constructURL: function(path, search) {
-      return path + encodeURIComponent(search);
-    }
   });
 
   // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
