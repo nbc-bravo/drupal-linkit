@@ -47,7 +47,7 @@ Drupal.behaviors.linkit = {
             position: 'absolute',
             left: $input.offset().left,
             top: $input.offset().top + $input.outerHeight(),
-            zIndex: 1002,
+            zIndex: 2000,
             maxHeight: '330px',
             // Visually indicate that results are in the topmost layer
             boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
