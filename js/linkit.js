@@ -53,13 +53,10 @@ Drupal.behaviors.linkit = {
             // Visually indicate that results are in the topmost layer
             boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
           })
+          .hide()
           .insertAfter($('#linkit-modal', context).parent());
       }
   });
-
-  // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
-  // layout.
-  $('ul.better-autocomplete').hide();
 
   $('#linkit-modal .form-text.required').bind({
       keyup: Drupal.linkit.dialog.requiredFieldsValidation,
