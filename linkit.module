@@ -587,7 +587,7 @@ function _linkit_add_settings($editor) {
     // Check if IMCE is enbled and accessable
     if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
       $settings['IMCEurl'] = url('imce', array('query' => array(
-        'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
+        'app' => 'Linkit|sendto@Drupal.linkit.dialog.IMCECallback',
         'absolute' => TRUE,
       )));
       // We will only serv public files.

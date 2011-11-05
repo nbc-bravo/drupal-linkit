@@ -62,12 +62,10 @@ Drupal.behaviors.linkit = {
       change: Drupal.linkit.dialog.requiredFieldsValidation});
 
   Drupal.linkit.dialog.requiredFieldsValidation();
-/*    // Open IMCE
-  $('#linkit-imce').click(function() {
-    Drupal.linkit.dialog.openFileBrowser();
-    return false;
-  });
-*/
+    $('#linkit-imce', context).click(function() {
+      Drupal.linkit.dialog.openFileBrowser();
+      return false;
+    });
   }
 };
 

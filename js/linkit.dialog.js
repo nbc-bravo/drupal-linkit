@@ -170,10 +170,11 @@ Drupal.linkit.dialog.openFileBrowser = function () {
  *   The IMCE window object
  */
 Drupal.linkit.dialog.IMCECallback = function(file, win) {
-  Drupal.linkit.dialog.populateLink(file.name,
-      win.imce.decode(Drupal.settings.basePath +
-                      Drupal.settings.linkit.publicFilesDirectory +
-                      '/' + file.relpath));
+  Drupal.linkit.dialog.populateFields({
+     path: win.imce.decode(Drupal.settings.basePath +
+         Drupal.settings.linkit.publicFilesDirectory +
+         '/' + file.relpath)
+  });
   win.close();
 };
 
