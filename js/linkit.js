@@ -40,6 +40,20 @@ Drupal.behaviors.linkit = {
       },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
+      },
+      insertSuggestionList: function($results, $input) {
+        console.log($input.offset());
+        $results.width($input.outerWidth() - 2) // Subtract border width.
+          .css({
+            position: 'absolute',
+            left: $input.offset().left,
+            top: $input.offset().top + $input.outerHeight(),
+            zIndex: 1002,
+            maxHeight: '330px',
+            // Visually indicate that results are in the topmost layer
+            boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
+          })
+          .insertAfter($('#linkit-modal', context).parent());
       }
     });
 
