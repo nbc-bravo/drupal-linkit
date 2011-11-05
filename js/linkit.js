@@ -55,22 +55,22 @@ Drupal.behaviors.linkit = {
           })
           .insertAfter($('#linkit-modal', context).parent());
       }
-    });
+  });
 
-    // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
-    // layout.
-    $('ul.better-autocomplete').hide();
+  // Hide the <ul> BAC gives us. In IE 7 it will be shown, and mess up the
+  // layout.
+  $('ul.better-autocomplete').hide();
 
-    $('#linkit-modal .form-text.required').bind({
-        keyup: Drupal.linkit.dialog.requiredFieldsValidation,
-        change: Drupal.linkit.dialog.requiredFieldsValidation});
+  $('#linkit-modal .form-text.required').bind({
+      keyup: Drupal.linkit.dialog.requiredFieldsValidation,
+      change: Drupal.linkit.dialog.requiredFieldsValidation});
 
-    Drupal.linkit.dialog.requiredFieldsValidation();
+  Drupal.linkit.dialog.requiredFieldsValidation();
 /*    // Open IMCE
-    $('#linkit-imce').click(function() {
-      Drupal.linkit.dialog.openFileBrowser();
-      return false;
-    });
+  $('#linkit-imce').click(function() {
+    Drupal.linkit.dialog.openFileBrowser();
+    return false;
+  });
 */
   }
 };

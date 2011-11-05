@@ -132,6 +132,7 @@ function _linkit_node_autocomplete($string, $profile) {
       'description' => token_replace($result_description, array(
         'node' => $node,
       )),
+      // We have to set alias to TRUE as we don't want an alias back.
       'path' => url('node/' . $node->nid, array('alias' => TRUE)),
       'group' => _linkit_node_build_group($profile, $node),
     );
@@ -149,7 +150,8 @@ function _linkit_node_autocomplete($string, $profile) {
  */
 function _linkit_node_path_info($path_info, $profile) {
   // Check if path is referring to a node
-  if (arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
+  if (isset($path_info['system_path']) && arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
+
     $result_description = check_plain($profile->data['node']['result_description']);
 
     // Build a list of all token-like patterns that appear in the text.
