@@ -20,10 +20,11 @@ Drupal.behaviors.linkit = {
     }
   });
 
-    var $searchInput = $('#linkit-modal #edit-linkit-search', context);
+    Drupal.linkit.$searchInput = $('#linkit-modal #edit-linkit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
-    $searchInput.betterAutocomplete('init', settings.linkit.autocompletePath,
+    Drupal.linkit.$searchInput.betterAutocomplete('init',
+      settings.linkit.autocompletePath,
       settings.linkit.autocomplete,
       { // Callbacks
       select: function(result) {

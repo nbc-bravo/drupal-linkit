@@ -24,7 +24,7 @@ Drupal.linkit.dialog.dialogOptions = function() {
       backgroundColor: '#000000',
       opacity: 0.4
     }
-  }
+  };
 };
 
 /**
@@ -70,6 +70,7 @@ Drupal.behaviors.linkit_dialogButtons = {
  * dialog.
  */
 Drupal.linkit.dialog.close = function () {
+  Drupal.linkit.$searchInput.betterAutocomplete('destroy');
   $('#linkit-modal').parent('.ui-dialog').find('.ui-dialog-buttonpane button').click();
 };
 
