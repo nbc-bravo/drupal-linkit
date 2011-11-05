@@ -183,11 +183,12 @@ function _linkit_file_path_info($path_info, $profile) {
     switch ($scheme) {
       case 'public':
         $file_public_path = variable_get('file_public_path', conf_path() . '/files');
-        $target = str_replace($file_public_path . '/', '', $path_info['requested_path']);
+        $target = str_replace($file_public_path . '/', '', $path_info['path']);
         break;
 
       default:
-        $target = array_pop(explode('/', $path_info['requested_path']));
+        $path = explode('/', $path_info['path']);
+        $target = array_pop($path);
     }
     $uri = $scheme . '://' . $target;
     if (file_stream_wrapper_valid_scheme($scheme) && file_exists($uri)) {

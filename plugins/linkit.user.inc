@@ -93,7 +93,7 @@ function _linkit_user_autocomplete($string, $profile) {
  */
 function _linkit_user_path_info($path_info, $profile) {
   // Check if path is referring to a user
-  if (arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
+  if (isset($path_info['system_path']) && arg(0, $path_info['system_path']) == 'user' && is_numeric(arg(1, $path_info['system_path']))) {
     $result_description = check_plain($profile->data['user']['result_description']);
 
     // Build a list of all token-like patterns that appear in the text.

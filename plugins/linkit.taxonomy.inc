@@ -105,6 +105,10 @@ function _linkit_taxonomy_path_info($path_info, $profile) {
   // Define the default taxonomy URI's first argument (arg(0)).
   $taxonomy_uri_array = array('taxonomy', 'forum');
 
+  if (!isset($path_info['system_path'])) {
+    return FALSE;
+  }
+
   // Check if path is referring to a taxonomy
   if (in_array(arg(0, $path_info['system_path']), $taxonomy_uri_array)) {
     $result_description = check_plain($profile->data['taxonomy']['result_description']);
