@@ -26,11 +26,6 @@
   margin: 0 5px 5px 0;
 }
 
-/**
- * Clearfix
- * TODO: Clearfix in IE7 may need *:first-child + html .clearfix {
- */
-
 .better-autocomplete > .result > p:after {
   content: ".";
   display: block;
