@@ -5,7 +5,7 @@
  *
  * @author Didrik Nordström, http://betamos.se/
  *
- * @version v1.0-dev
+ * @version v1.0
  *
  * @requires
  *   <ul><li>
@@ -166,7 +166,8 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
     inputEvents = {},
     isLocal = ($.type(resource) != 'string'),
     $results = $('<ul />').addClass('better-autocomplete'),
-    hiddenResults = true; // $results are hidden
+    hiddenResults = true, // $results are hidden
+    preventBlurTimer = null; // IE bug workaround, see below in code.
 
   options = $.extend({
     charLimit: isLocal ? 1 : 3,
@@ -180,14 +181,23 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
 
   callbacks = $.extend({}, defaultCallbacks, callbacks);
 
-  callbacks.insertSuggestionList($results, $input, options.maxHeight);
+  callbacks.insertSuggestionList($results, $input);
 
   inputEvents.focus = function() {
-    redraw(true);
+    // If the blur timer is active, a redraw is redundant.
+    preventBlurTimer || redraw(true);
   };
 
   inputEvents.blur = function() {
-    redraw();
+    // If the blur prevention timer is active, refocus the input, since the
+    // blur event can not be cancelled.
+    if (preventBlurTimer) {
+      $input.focus();
+    }
+    else {
+      // The input has already lost focus, so redraw the suggestion list.
+      redraw();
+    }
   };
 
   inputEvents.keydown = function(event) {
@@ -238,8 +248,15 @@ var BetterAutocomplete = function($input, resource, options, callbacks) {
   });
 
   // Prevent blur when clicking on group titles, scrollbars etc.,
-  // This event is triggered after the others' because of bubbling order.
+  // This event is triggered after the others because of bubbling.
   $results.mousedown(function() {
+    // Bug in IE where clicking on scrollbar would trigger a blur event for the
+    // input field, despite using preventDefault() on the mousedown event.
+    // This workaround locks the blur event on the input for a small time.
+    clearTimeout(preventBlurTimer);
+    preventBlurTimer = setTimeout(function() {
+      preventBlurTimer = null;
+    }, 50);
     return false;
   });
 
@@ -598,7 +615,7 @@ var defaultCallbacks = {
    *   From options.caseSensitive, the searching should be case sensitive.
    *
    * @returns {Array[Object]}
-   *   A flat array containing pure result objects. Must return an array.
+   *   A flat array containing pure result objects. May be an empty array.
    */
   queryLocalResults: function(query, resource, caseSensitive) {
     if (!$.isArray(resource)) {
@@ -682,7 +699,7 @@ var defaultCallbacks = {
    *   The raw data recieved from the server. Can be undefined.
    *
    * @returns {Array[Object]}
-   *   A flat array containing result objects. Must return an array.
+   *   A flat array containing result objects. May be an empty array.
    */
   processRemoteData: function(data) {
     if ($.isArray(data)) {
@@ -742,9 +759,9 @@ var defaultCallbacks = {
    * Executed after the suggestion list has been shown.
    *
    * @param {Object} $results
-   *   The suggestion list UL element.
+   *   The suggestion list UL element, wrapped in jQuery.
    *
-   * <br /><br /><em>Default behavior: Nothing.</em>
+   * <br /><br /><em>Default behavior: Does nothing.</em>
    */
   afterShow: function($results) {},
 
@@ -752,9 +769,9 @@ var defaultCallbacks = {
    * Executed after the suggestion list has been hidden.
    *
    * @param {Object} $results
-   *   The suggestion list UL element.
+   *   The suggestion list UL element, wrapped in jQuery.
    *
-   * <br /><br /><em>Default behavior: Nothing.</em>
+   * <br /><br /><em>Default behavior: Does nothing.</em>
    */
   afterHide: function($results) {},
 
