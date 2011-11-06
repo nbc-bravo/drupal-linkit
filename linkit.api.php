@@ -27,14 +27,14 @@ function hook_linkit_attributes($profile) {
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
-    '#weight' => isset($profile['attributes']['my_attribute']['weight']) ? $profile['attributes']['my_attribute']['weight'] : 0,
+    '#weight' => isset($profile->data['attributes']['my_attribute']['weight']) ? $profile->data['attributes']['my_attribute']['weight'] : 0,
   );
 
   return $attributes;
 }
 
 /**
- * Alter a attribute before it has been processed.
+ * Alter an attribute before it has been processed.
  *
  * This hook is useful for altering the attribute form array that will be used
  * in both the Linkit profile form and in the Linkit dashboard.
