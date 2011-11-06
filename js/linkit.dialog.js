@@ -183,28 +183,27 @@ Drupal.linkit.dialog.IMCECallback = function(file, win) {
  * Return the Iframe that we use in the dialog.
  */
 Drupal.linkit.dialog.createDialog = function(src) {
-  var linkitCache = Drupal.linkit.getLinkitCache();
+  var linkitCache = Drupal.linkit.getLinkitCache(),
+    $linkitModal = $('<div />').attr('id', 'linkit-modal');
 
   // Initialize Linkit editor js.
   Drupal.linkit.editorDialog[linkitCache.editorName].init();
 
   // Create a dialog dig in the <body>.
-  $('body').append($('<div></div>').attr('id', 'linkit-modal'));
+  $('body').append($linkitModal);
 
   $.ajax({
     url : src,
     beforeSend : function() {
-      // Delete exsisting throbbers.
-      $('#linkit-modal .ajax-progress-throbber').remove();
       // Add new throbber
       var throbber = $('<div class="ajax-progress ajax-progress-throbber"><div class="throbber">&nbsp;</div></div>');
-      $('#linkit-modal').append(throbber);
+      $linkitModal.append(throbber);
     },
     success : function(data) {
       // Insert the respons.
-      $('#linkit-modal').append(data);
+      $linkitModal.append(data);
       // Delete exsisting throbbers.
-      $('#linkit-modal .ajax-progress-throbber').remove();
+      $('.ajax-progress-throbber', $linkitModal).remove();
 
       var linkitCache = Drupal.linkit.getLinkitCache();
 
@@ -216,7 +215,7 @@ Drupal.linkit.dialog.createDialog = function(src) {
     }
   });
 
-  return $('#linkit-modal');
+  return $linkitModal;
 };
 
 /**
