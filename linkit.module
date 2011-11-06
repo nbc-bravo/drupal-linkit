@@ -625,6 +625,8 @@ function _linkit_add_settings($editor) {
 
 /**
  * Implements hook_help().
+ * 
+ * @TODO: Add help text here.
  */
 function linkit_help($path, $arg) {
   switch ($path) {
