@@ -69,7 +69,8 @@ You also need to make "/" considered local.
 API
 ===
 
-We have an API exaple file (linkit.api.php) located in the Linkit module root.
+We have an API example file (linkit.api.php) located in the Linkit module root.
+There is also an example module <https://github.com/bratanon/Mymodule>.
 
 
 MAINTAINERS
