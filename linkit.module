@@ -3,7 +3,6 @@
 /**
  * @file
  * Main file for linkit module.
- * @todo Provide help
  */
 
 /**
@@ -622,15 +621,12 @@ function _linkit_add_settings($editor) {
 
 /**
  * Implements hook_help().
- * 
- * @TODO: Add help text here.
  */
 function linkit_help($path, $arg) {
   switch ($path) {
-    case 'admin/config/content/linkit':
-      $output = '<p>' . t('Help text here.') . '</p>';
-      $output .= '<p>' . t('More help text.') . '</p>';
-      return $output;
+    case 'admin/help#linkit':
+      $output = file_get_contents(drupal_get_path('module', 'linkit') . '/README.txt');
+      return nl2br($output);
   }
 }
 
