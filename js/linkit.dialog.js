@@ -180,14 +180,6 @@ Drupal.linkit.dialog.IMCECallback = function(file, win) {
 };
 
 /**
- * Show a message if there is no selection.
- */
-Drupal.linkit.dialog.noselection = function() {
-  var info_text = Drupal.t('<em class="notice">Notice: No selection was found, your link text will appear as the item title you are linking to.</em>');
-  $('#linkit-dashboard-form').prepend(info_text);
-};
-
-/**
  * Return the Iframe that we use in the dialog.
  */
 Drupal.linkit.dialog.createDialog = function(src) {
