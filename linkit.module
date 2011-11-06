@@ -573,7 +573,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
   );
 
   // TinyMCE needs to know the filename.
-  if($editor == 'tinymce') {
+  if ($editor == 'tinymce') {
     $plugin['linkit']['filename'] = 'editor_plugin.js';
   }
 
