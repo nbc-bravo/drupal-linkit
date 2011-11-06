@@ -47,18 +47,26 @@ Drupal.behaviors.linkit = {
           })
           .hide()
           .insertAfter($('#linkit-modal', context).parent());
-      }
-  });
-
-  $('#linkit-modal .form-text.required', context).bind({
+        }
+    });
+  
+    $('#linkit-modal .form-text.required', context).bind({
       keyup: Drupal.linkit.dialog.requiredFieldsValidation,
       change: Drupal.linkit.dialog.requiredFieldsValidation});
 
-  Drupal.linkit.dialog.requiredFieldsValidation();
-    $('#linkit-imce', context).click(function() {
-      Drupal.linkit.dialog.openFileBrowser();
-      return false;
-    });
+    Drupal.linkit.dialog.requiredFieldsValidation();
+
+    if (settings.linkit.IMCEurl) {
+      var $imceButton = $('<input />')
+        .attr({type: 'button', id: 'linkit-imce', name: 'linkit-imce'})
+        .addClass('form-submit')
+        .val(Drupal.t('Open file browser'))
+        .insertAfter($('#linkit-modal .form-item-linkit-search'))
+        .click(function() {
+          Drupal.linkit.dialog.openFileBrowser();
+          return false;
+        });
+    }
   }
 };
 

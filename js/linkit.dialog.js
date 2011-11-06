@@ -49,9 +49,9 @@ Drupal.linkit.dialog.dialogButtons = function () {
  * Our own buttons for inserting a link and cancel is inside that IFRAME and
  * can't destroy the dialog, so we have to bind our buttons to the dialog button.
  */
-Drupal.behaviors.linkit_dialogButtons = {
+Drupal.behaviors.linkitDialogButtons = {
   attach: function (context, settings) {
-    $('#linkit-modal #edit-linkit-insert', context).click(function() {
+    $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
       Drupal.linkit.editorDialog[linkitCache.editorName].insertLink(Drupal.linkit.dialog.getLink());
