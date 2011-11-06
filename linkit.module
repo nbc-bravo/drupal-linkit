@@ -181,6 +181,7 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
+      array('system', 'drupal.collapse'),
       array('linkit', 'linkit_bac'),
     ),
   );
