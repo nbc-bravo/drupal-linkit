@@ -13,7 +13,6 @@ Drupal.linkit.dialog = Drupal.linkit.dialog || {};
  */
 Drupal.linkit.dialog.dialogOptions = function() {
   return {
-    buttons: Drupal.linkit.dialog.dialogButtons(),
     dialogClass: 'linkit-wrapper',
     modal: true,
     draggable: false,
@@ -23,24 +22,9 @@ Drupal.linkit.dialog.dialogOptions = function() {
     overlay: {
       backgroundColor: '#000000',
       opacity: 0.4
-    }
+    },
+    close: Drupal.linkit.dialog.close
   };
-};
-
-/**
- * Define the dialog buttons.
- */
-Drupal.linkit.dialog.dialogButtons = function () {
-
-  var close = Drupal.t('Close');
-  var buttons = {};
-
-  buttons[close] = function () {
-    $(this).dialog("destroy");
-    $(this).remove();
-  };
-
-  return buttons;
 };
 
 /**
@@ -71,7 +55,7 @@ Drupal.behaviors.linkitDialogButtons = {
  */
 Drupal.linkit.dialog.close = function () {
   Drupal.linkit.$searchInput.betterAutocomplete('destroy');
-  $('#linkit-modal').parent('.ui-dialog').find('.ui-dialog-buttonpane button').click();
+  $('#linkit-modal').dialog('destroy').remove();
 };
 
 /**
@@ -225,16 +209,12 @@ Drupal.linkit.dialog.createDialog = function(src) {
  *   The url to call in the iframe.
  */
 Drupal.linkit.dialog.buildDialog = function (url) {
-   // Get the options for the dialog.
-   var dialogOptions = Drupal.linkit.dialog.dialogOptions();
-
    // Build the dialog element.
-   var linkitDialogElement = Drupal.linkit.dialog.createDialog(url);
-
-   var linkitDialog = linkitDialogElement.dialog(dialogOptions);
-
-   // Remove the title bar from the dialog.
-   linkitDialogElement.parents(".ui-dialog").find(".ui-dialog-titlebar").remove();
+   Drupal.linkit.dialog.createDialog(url)
+     // Create jQuery UI Dialog
+     .dialog(Drupal.linkit.dialog.dialogOptions())
+     // Remove the title bar from the dialog.
+     .siblings(".ui-dialog-titlebar").remove();
 };
 
 })(jQuery);
