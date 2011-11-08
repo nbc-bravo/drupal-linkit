@@ -10,7 +10,7 @@
  */
 class linkit_profiles_ui extends ctools_export_ui {
 
-  function list_table_header() {
+  public function list_table_header() {
     $header = array();
     $header[] = array('data' => t('Title'), 'class' => array('ctools-export-ui-title'));
     $header[] = array('data' => t('Name'), 'class' => array('ctools-export-ui-name'));
@@ -21,7 +21,7 @@ class linkit_profiles_ui extends ctools_export_ui {
     return $header;
   }
 
-  function list_build_row($item, &$form_state, $operations) {
+  public function list_build_row($item, &$form_state, $operations) {
     // Set up sorting
     $name = $item->name;
     $schema = ctools_export_get_schema($this->plugin['schema']);
@@ -72,7 +72,7 @@ class linkit_profiles_ui extends ctools_export_ui {
     return implode(', ', $list);
   }
 
-  function list_sort_options() {
+  public function list_sort_options() {
     $options = array(
       'disabled' => t('Priority'),
       'disabled_title' => t('Enabled, title'),
