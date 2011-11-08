@@ -45,14 +45,14 @@ class linkit_profiles_ui extends ctools_export_ui {
     }
 
     $ops = theme('links__ctools_dropbutton', array('links' => $operations, 'attributes' => array('class' => array('links', 'inline'))));
-    $role_lost = $this->buildRoleList($item->role_rids);
+    $role_list = $this->buildRoleList($item->role_rids);
 
     $this->rows[$name] = array(
       'data' => array(
         array('data' => check_plain($item->admin_title), 'class' => array('ctools-export-ui-title')),
         array('data' => check_plain($name), 'class' => array('ctools-export-ui-name')),
         array('data' => check_plain($item->{$schema['export']['export type string']}), 'class' => array('ctools-export-ui-storage')),
-        array('data' => check_plain($role_lost), 'class' => array('ctools-export-ui-roles')),
+        array('data' => check_plain($role_list), 'class' => array('ctools-export-ui-roles')),
         array('data' => check_plain($item->priority), 'class' => array('ctools-export-ui-priority')),
         array('data' => $ops, 'class' => array('ctools-export-ui-operations')),
       ),
