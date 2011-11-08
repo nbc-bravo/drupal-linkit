@@ -544,6 +544,7 @@ function linkit_profiles_reorder() {
   foreach ($profiles as $profile_machine_name => $profile) {
     $form['profiles'][$profile_machine_name] = array(
       'name' => array('#markup' => $profile->admin_title),
+      'roles' => array('#markup' => linkit_profiles_ui::buildRoleList($profile->role_rids)),
       'priority' => array(
         '#type' => 'weight',
         '#title' => t('Priority weight for @title', array('@title' => $profile->admin_title)),

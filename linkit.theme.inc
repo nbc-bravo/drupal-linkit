@@ -73,13 +73,14 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
  */
 function theme_linkit_profiles_reorder($variables) {
   $form = $variables['form'];
-  $header = array(t('Profile'), t('Priority'));
+  $header = array(t('Profile'), t('Roles'), t('Priority'));
   $rows = array();
 
   foreach (element_children($form['profiles']) as $profile_name) {
     $rows[] = array(
       'data' => array(
         drupal_render($form['profiles'][$profile_name]['name']),
+        drupal_render($form['profiles'][$profile_name]['roles']),
         drupal_render($form['profiles'][$profile_name]['priority'])
       ),
       'class' => array('draggable', 'tabledrag-leaf'),

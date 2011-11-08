@@ -63,7 +63,7 @@ class linkit_profiles_ui extends ctools_export_ui {
   /**
    * Build a list of all roles that is asssigned to a profile.
    */
-  function buildRoleList($rids) {
+  public static function buildRoleList($rids) {
     $list = array();
     foreach ($rids as $rid => $value) {
       $role = user_role_load($rid);
