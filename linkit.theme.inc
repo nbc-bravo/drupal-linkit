@@ -81,7 +81,7 @@ function theme_linkit_profiles_reorder($variables) {
       'data' => array(
         drupal_render($form['profiles'][$profile_name]['name']),
         drupal_render($form['profiles'][$profile_name]['roles']),
-        drupal_render($form['profiles'][$profile_name]['priority'])
+        drupal_render($form['profiles'][$profile_name]['weight'])
       ),
       'class' => array('draggable', 'tabledrag-leaf'),
      );
@@ -89,6 +89,6 @@ function theme_linkit_profiles_reorder($variables) {
 
   $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profile-reorder'), 'sticky' => FALSE));
   $output .= drupal_render_children($form);
-  drupal_add_tabledrag('linkit-profile-reorder', 'order', 'sibling', 'priority', NULL, NULL, FALSE);
+  drupal_add_tabledrag('linkit-profile-reorder', 'order', 'sibling', 'weight', NULL, NULL, FALSE);
   return $output;
 }

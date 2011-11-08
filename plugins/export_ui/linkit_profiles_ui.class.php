@@ -28,7 +28,7 @@ class linkit_profiles_ui extends ctools_export_ui {
 
     switch ($form_state['values']['order']) {
       case 'disabled':
-        $this->sorts[$name] = $item->priority;
+        $this->sorts[$name] = $item->weight;
         break;
       case 'disabled_title':
         $this->sorts[$name] = empty($item->disabled) . $item->admin_title;
@@ -53,7 +53,7 @@ class linkit_profiles_ui extends ctools_export_ui {
         array('data' => check_plain($name), 'class' => array('ctools-export-ui-name')),
         array('data' => check_plain($item->{$schema['export']['export type string']}), 'class' => array('ctools-export-ui-storage')),
         array('data' => check_plain($role_list), 'class' => array('ctools-export-ui-roles')),
-        array('data' => check_plain($item->priority), 'class' => array('ctools-export-ui-priority')),
+        array('data' => check_plain($item->weight), 'class' => array('ctools-export-ui-priority')),
         array('data' => $ops, 'class' => array('ctools-export-ui-operations')),
       ),
       'class' => array(!empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled'),

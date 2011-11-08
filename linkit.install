@@ -61,7 +61,7 @@ function linkit_schema() {
         'size' => 'big',
         'description' => 'A serialized array with role rids that is assign to this profile.',
       ),
-      'priority' => array(
+      'weight' => array(
         'description' => 'Profile priority.',
         'type' => 'int',
         'not null' => TRUE,
