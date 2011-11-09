@@ -263,7 +263,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $form['data']['autocomplete']['charLimit'] = array(
     '#title' => t('Character limit'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['charlimit']) ? $profile->data['autocomplete']['charlimit'] : '3',
+    '#default_value' => isset($profile->data['autocomplete']['charLimit']) ? $profile->data['autocomplete']['charLimit'] : '3',
     '#size' => 5,
     '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
     '#element_validate' => array('linkit_isnumeric_validate'),
@@ -272,7 +272,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $form['data']['autocomplete']['wait'] = array(
     '#title' => t('Key press delay'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '250',
+    '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '350',
     '#size' => 5,
     '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
     '#field_suffix' => t('ms'),
@@ -282,7 +282,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $form['data']['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Remote timeout'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['ajaxtimeout']) ? $profile->data['autocomplete']['ajaxtimeout'] : '5000',
+    '#default_value' => isset($profile->data['autocomplete']['remoteTimeout']) ? $profile->data['autocomplete']['remoteTimeout'] : '10000',
     '#size' => 5,
     '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
     '#field_suffix' => t('ms'),
