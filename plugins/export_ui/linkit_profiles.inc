@@ -30,12 +30,6 @@ $plugin = array(
 
 /**
  * Generate a profile form.
- *
- * @param $form
- *   A form array
- *
- * @param $form_state
- *   A
  */
 function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $profile = $form_state['item'];
@@ -390,7 +384,7 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
     '#type' => 'fieldset',
     '#title' => t('HTML Attributes'),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
     '#tree' => FALSE,
   );
 
