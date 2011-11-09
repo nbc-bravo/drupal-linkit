@@ -12,7 +12,7 @@ $plugin = array(
     'menu prefix' => 'admin/config/content',
     'menu item' => 'linkit',
     'menu title' => 'Linkit Profiles',
-    'menu description' => 'Manage internal linking and control what results are shown in the autocomplete search.',
+    'menu description' => t('Manage internal linking and control what results are shown in the autocomplete search.'),
   ),
 
   'title singular' => t('Linkit profile'),
@@ -51,7 +51,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   $form['admin_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#default_value' => isset($profile->admin_title) ? $profile->admin_title : 'Untitled Profile',
+    '#default_value' => isset($profile->admin_title) ? $profile->admin_title : t('Untitled profile'),
     '#required' => TRUE,
     '#weight' => -100,
   );
@@ -70,21 +70,22 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
 
   $form['priority'] = array(
     '#type' => 'weight',
-    '#title' => t('Priority'),
+    '#title' => t('Weight'),
     '#default_value' => $profile->priority,
     '#delta' => 10,
     '#weight' => -98,
-    '#description' => t('If a user have multiple roles, the profile priority will determine which profile to use. Higher priority will take the precedence.'),
+    '#description' => t('If the user has multiple roles, the profile with lowest weight will then be assigned to the user. ' .
+    										'In general, the most permissive profile should be assigned the lowest weight.'),
   );
 
   $form['roles'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Access'),
+    '#title' => t('Roles with access'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
     '#weight' => -97,
-    '#description' => t('A drupal role can only be associated to one profile at the same time.'),
+    '#description' => t('Roles which may use this profile. Note that if <em>authenticated user</em> is ticked, all roles (except anonymous) will have permission to this profile.'),
   );
 
   // Append role form elements to the settings form.
@@ -95,7 +96,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
 
   $form['data']['node'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Node settings'),
+    '#title' => t('Node plugin'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -107,37 +108,37 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   );
 
   $form['data']['node']['result_description'] = array(
-    '#title' => t('Information to display in the autocomplete field'),
+    '#title' => t('Result format'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['node']['result_description']) ? $profile->data['node']['result_description'] : 'by [node:author] · [node:created:short]',
     '#size' => 120,
     '#maxlength' => 255,
-    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
+    '#description' => t('Available tokens: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
   $form['data']['node']['content_types'] = array(
-    '#title' => t('Include this content types in the search result'),
+    '#title' => t('Content type filter'),
     '#type' => 'checkboxes',
     '#options' => node_type_get_names(),
     '#default_value' => isset($profile->data['node']['content_types']) ? $profile->data['node']['content_types'] : array(),
-    '#description' => t('If none is checked, all content types will be present in the search result.'),
+    '#description' => t('If left blank, all content types will appear in autocomplete results.'),
   );
 
   $form['data']['node']['include_unpublished'] = array(
-    '#title' => t('Include unpublished nodes in the result'),
+    '#title' => t('Include unpublished nodes'),
     '#type' => 'checkbox',
     '#default_value' => isset($profile->data['node']['include_unpublished']) ? $profile->data['node']['include_unpublished'] : 0,
   );
 
   $form['data']['node']['group_by_content_type'] = array(
-    '#title' => t('Group the nodes by the content type.'),
+    '#title' => t('Group nodes by content type'),
     '#type' => 'checkbox',
     '#default_value' => isset($profile->data['node']['group_by_content_type']) ? $profile->data['node']['group_by_content_type'] : 1,
   );
 
   $form['data']['user'] = array(
     '#type' => 'fieldset',
-    '#title' => t('User settings'),
+    '#title' => t('User plugin'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -149,17 +150,17 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   );
 
   $form['data']['user']['result_description'] = array(
-    '#title' => t('Information to display in the autocomplete field'),
+    '#title' => t('Result format'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['user']['result_description']) ? $profile->data['user']['result_description'] : '',
     '#size' => 120,
     '#maxlength' => 255,
-    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
+    '#description' => t('Available tokens: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
   );
 
   $form['data']['taxonomy'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Taxonomy term settings'),
+    '#title' => t('Taxonomy plugin'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -171,23 +172,23 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   );
 
   $form['data']['taxonomy']['result_description'] = array(
-    '#title' => t('Information to display in the autocomplete field'),
+    '#title' => t('Result format'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['taxonomy']['result_description']) ? $profile->data['taxonomy']['result_description'] : '[term:vocabulary]',
     '#size' => 120,
     '#maxlength' => 255,
-    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
+    '#description' => t('Available tokens: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
   $form['data']['taxonomy']['group_by_vocabulary'] = array(
-    '#title' => t('Group the terms by the vocabulary.'),
+    '#title' => t('Group terms by vocabulary'),
     '#type' => 'checkbox',
     '#default_value' => isset($profile->data['taxonomy']['group_by_vocabulary']) ? $profile->data['taxonomy']['group_by_vocabulary'] : 0,
   );
 
   $form['data']['file'] = array(
     '#type' => 'fieldset',
-    '#title' => t('File settings'),
+    '#title' => t('File plugin'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -199,61 +200,60 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   );
 
   $form['data']['file']['result_description'] = array(
-    '#title' => t('Information to display in the autocomplete field'),
+    '#title' => t('Result format'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['file']['result_description']) ? $profile->data['file']['result_description'] : '[file:mime] · [file:size]',
     '#size' => 120,
     '#maxlength' => 255,
-    '#description' => t('Available tokens are: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
+    '#description' => t('Available tokens: %tokens.', array('%tokens' => '[file:fid], [file:name], [file:mime], [file:size], [file:timestamp], [file:owner]')),
+  );
+
+  $form['data']['file']['show_scheme'] = array(
+    '#title' => t('Show file scheme'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile->data['file']['show_scheme']) ? $profile->data['file']['show_scheme'] : array()
+  );
+
+  $form['data']['file']['group_by_scheme'] = array(
+    '#title' => t('Group files by scheme'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($profile->data['file']['group_by_scheme']) ? $profile->data['file']['group_by_scheme'] : array(),
   );
 
   $image_extra_info_options = array(
     // Coder is saying "$text argument to l() should be enclosed within t() so that it is translatable." but image styles is not translatable.
-    'thumbnail' => t('Image thumbnail (Uses the image style named !linkit_thumb_link)', array('!linkit_thumb_link' => l(t('linkit_thumb'), 'admin/config/media/image-styles/edit/linkit_thumb'))),
-    'dimensions' => t('Full images dimensions (width and height)'),
+    'thumbnail' => t('Show thumbnails <em>(using the image style !linkit_thumb_link)</em>', array('!linkit_thumb_link' => l('linkit_thumb', 'admin/config/media/image-styles/edit/linkit_thumb'))),
+    'dimensions' => t('Show pixel dimensions'),
   );
 
   $form['data']['file']['image_extra_info'] = array(
-    '#title' => t('If the file is an image, include this in the search result description.'),
+    '#title' => t('Images'),
     '#type' => 'checkboxes',
     '#options' => $image_extra_info_options,
     '#default_value' => isset($profile->data['file']['image_extra_info']) ? $profile->data['file']['image_extra_info'] : array('thumbnail', 'dimensions'),
-    '#description' => t('This will be added before the "Information to display in the autocomplete field".'),
-  );
-
-  $form['data']['file']['show_scheme'] = array(
-    '#title' => t('Include the file scheme in the search result description.'),
-    '#type' => 'checkbox',
-    '#default_value' => isset($profile->data['file']['show_scheme']) ? $profile->data['file']['show_scheme'] : array(),
-    '#description' => t('This will be added after the "Information to display in the autocomplete field".'),
-  );
-
-  $form['data']['file']['group_by_scheme'] = array(
-    '#title' => t('Group the files by the scheme.'),
-    '#type' => 'checkbox',
-    '#default_value' => isset($profile->data['file']['group_by_scheme']) ? $profile->data['file']['group_by_scheme'] : array(),
   );
 
   if (module_invoke('imce', 'access')) {
     $form['data']['imce'] = array(
       '#type' => 'fieldset',
-      '#title' => t('IMCE'),
+      '#title' => t('IMCE file picking'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#tree' => TRUE,
     );
 
     $form['data']['imce']['use_imce'] = array(
-      '#title' => t('Let the users use !imce for this profile.', array('!imce' => l(t('IMCE'), 'admin/config/media/imce'))),
+      '#title' => t('Enable !imce file picking', array('!imce' => l(t('IMCE'), 'admin/config/media/imce'))),
       '#type' => 'checkbox',
       '#default_value' => isset($profile->data['imce']['use_imce']) ? $profile->data['imce']['use_imce'] : '',
-      '#description' => t('We only support public files with IMCE.'),
+      '#description' => t('Note that only public files are supported.'),
     );
   }
 
   $form['data']['autocomplete'] = array(
     '#type' => 'fieldset',
     '#title' => t('Autocomplete options'),
+    '#description' => t('Linkit uses !bac which may be configured with focus on performance.', array('!bac' => l('Better Autocomplete', 'https://github.com/betamos/Better-Autocomplete'))),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -261,31 +261,31 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   );
 
   $form['data']['autocomplete']['charLimit'] = array(
-    '#title' => t('The minimum number of chars to do an AJAX call'),
+    '#title' => t('Character limit'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['charlimit']) ? $profile->data['autocomplete']['charlimit'] : '3',
     '#size' => 5,
-    '#description' => t('A typical use case for this limit is to reduce server load. (Default : 3)'),
+    '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
   $form['data']['autocomplete']['wait'] = array(
-    '#title' => t('The time in ms between last keypress and AJAX call'),
+    '#title' => t('Key press delay'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '250',
     '#size' => 5,
-    '#description' => t('(Default : 250)'),
-    '#field_suffix' => t('milliseconds'),
+    '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
+    '#field_suffix' => t('ms'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
   $form['data']['autocomplete']['remoteTimeout'] = array(
-    '#title' => t('Timeout on AJAX calls'),
+    '#title' => t('Remote timeout'),
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['ajaxtimeout']) ? $profile->data['autocomplete']['ajaxtimeout'] : '5000',
     '#size' => 5,
-    '#description' => t('(Default : 5000)'),
-    '#field_suffix' => t('milliseconds'),
+    '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
+    '#field_suffix' => t('ms'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
@@ -329,7 +329,8 @@ function _linkit_sort_attributes_by_weight($a, $b) {
 function _linkit_build_plugin_form_fields(&$form, $profile) {
   $form['data']['plugins_fieldset'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Plugins'),
+    '#title' => t('Linkit plugins'),
+    '#description' => t('Linkit is all about the plugins. They define what content Linkit will present in the autocomplete search field.'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#tree' => FALSE,
@@ -349,17 +350,17 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
   $tmp_plugins = array();
 
   foreach ($plugins AS $name => $plugin) {
-    $tmp_plugins[$name]['name'] = array('#markup' => t($plugin['title']));
-    $tmp_plugins[$name]['description'] = array('#markup' => t($plugin['description']));
+    $tmp_plugins[$name]['name'] = array('#markup' => $plugin['title']);
+    $tmp_plugins[$name]['description'] = array('#markup' => $plugin['description']);
     $tmp_plugins[$name]['weight'] = array(
       '#type' => 'weight',
-      '#title' => t('Weight for @title', array('@title' => t($plugin['title']))),
+      '#title' => t('Weight for @title', array('@title' => $plugin['title'])),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile->data['plugins'][$name]['weight']) ? $profile->data['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
     $tmp_plugins[$name]['enabled'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable @title', array('@title' => t($plugin['title']))),
+      '#title' => t('Enable @title', array('@title' => $plugin['title'])),
       '#title_display' => 'invisible',
     );
     if (isset($profile->data['plugins'])) {
@@ -387,7 +388,7 @@ function _linkit_build_attribute_form_fields(&$form, $profile) {
 
   $form['data']['attributes_fieldset'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Attributes'),
+    '#title' => t('HTML Attributes'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#tree' => FALSE,
@@ -441,7 +442,7 @@ function _linkit_build_role_associate_form_fields(&$form, $profile) {
     // Disable roles thats already associated.
     if (in_array($role_id, array_keys($assiged_roles))) {
       $form['roles'][$role_id]['#disabled'] = TRUE;
-      $form['roles'][$role_id]['#description'] = t('This role is used by %profile', array('%profile' => $assiged_roles[$role_id]));
+      $form['roles'][$role_id]['#description'] = t('This role is already in use by the %name profile', array('%name' => $assiged_roles[$role_id]));
     }
 
   }

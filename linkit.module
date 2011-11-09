@@ -495,7 +495,7 @@ function linkit_dashboard_form() {
   $form['linkit_search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search content'),
-    '#description' => t('Start typing to find content. Use arrow keys to navigate up and down.') . '<br />' . t('You can also paste an URL here.'),
+    '#description' => t('Start typing to find content or paste a URI. Use the arrow keys to navigate.'),
     '#maxlength' => 255,
     '#size' => 60,
     '#default_value' => '',
@@ -678,27 +678,27 @@ function linkit_get_attributes($profile = NULL) {
 function linkit_linkit_attributes($profile) {
   $attributes['accesskey'] = array(
     '#type' => 'textfield',
-    '#title' => t('Accesskey'),
+    '#title' => 'accesskey',
   );
 
   $attributes['class'] = array(
     '#type' => 'textfield',
-    '#title' => t('Class'),
+    '#title' => 'class',
   );
 
   $attributes['id'] = array(
     '#type' => 'textfield',
-    '#title' => t('ID'),
+    '#title' => 'id',
   );
 
   $attributes['rel'] = array(
     '#type' => 'textfield',
-    '#title' => t('Rel'),
+    '#title' => 'rel',
   );
 
   $attributes['title'] = array(
     '#type' => 'textfield',
-    '#title' => t('Title'),
+    '#title' => 'title',
   );
 
   foreach ($attributes as $key => &$attribute) {
@@ -717,40 +717,40 @@ function linkit_linkit_attributes($profile) {
  */
 function linkit_linkit_plugins() {
   $plugins['node'] = array(
-    'title' => 'Node linking',
-    'description' => 'Extends Linkit with the ability to find nodes in the autocomplete search.',
+    'title' => t('Node'),
+    'description' => t('Find nodes by node title.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
     'autocomplete callback' => '_linkit_node_autocomplete',
     'path info callback' => '_linkit_node_path_info'
   );
 
   $plugins['user'] = array(
-    'title' => 'User linking',
-    'description' => 'Extends Linkit with the ability to find users in the autocomplete search.',
+    'title' => t('User'),
+    'description' => t('Find users by user name.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
     'autocomplete callback' => '_linkit_user_autocomplete',
     'path info callback' => '_linkit_user_path_info'
   );
 
   $plugins['file'] = array(
-    'title' => 'File linking',
-    'description' => 'Extends Linkit with the ability to find files in the autocomplete search.',
+    'title' => t('File'),
+    'description' => t('Find public and private Drupal files by file name.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
     'autocomplete callback' => '_linkit_file_autocomplete',
     'path info callback' => '_linkit_file_path_info',
   );
 
   $plugins['taxonomy'] = array(
-    'title' => 'Taxonomy linking',
-    'description' => 'Extends Linkit with the ability to find terms in the autocomplete search.',
+    'title' => t('Taxonomy'),
+    'description' => t('Find taxonomy terms by term name.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
     'path info callback' => '_linkit_taxonomy_path_info'
   );
 
   $plugins['external'] = array(
-    'title' => 'External linking',
-    'description' => 'Extends Linkit with the ability to ping and retrieve information about external sites.',
+    'title' => t('External URI'),
+    'description' => t('Paste external URI\'s into the autocomplete search field. Linkit immiediately identifies broken URI\'s.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
     'path info callback' => '_linkit_external_path_info'
   );
