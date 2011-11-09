@@ -62,10 +62,10 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#disabled' => !is_null($profile->name),
   );
 
-  $form['priority'] = array(
+  $form['weight'] = array(
     '#type' => 'weight',
     '#title' => t('Weight'),
-    '#default_value' => $profile->priority,
+    '#default_value' => $profile->weight,
     '#delta' => 10,
     '#weight' => -98,
     '#description' => t('If the user has multiple roles, the profile with lowest weight will then be assigned to the user. ' .
@@ -499,7 +499,7 @@ function linkit_profiles_export_ui_form_submit(&$form, &$form_state) {
 
   $form_state['item']->data = serialize($form_state['values']['data']);
   $form_state['item']->role_rids = serialize(array_filter($form_state['values']['roles']));
-  $form_state['item']->priority = $form_state['values']['priority'];
+  $form_state['item']->weight = $form_state['values']['weight'];
 
   // CTools will work on this variable alter and screw it up, so unset it.
   unset($form_state['values']['data']);
@@ -533,17 +533,18 @@ function linkit_profiles_reorder() {
   $profiles = linkit_profile_load_all();
   $form = array();
   $form['#tree'] = TRUE;
-  // Sort by priority.
-  uasort($profiles, '_linkit_sort_profiles_by_priority');
+  // Sort by weight.
+  uasort($profiles, '_linkit_sort_profiles_by_weight');
 
   foreach ($profiles as $profile_machine_name => $profile) {
     $form['profiles'][$profile_machine_name] = array(
       'name' => array('#markup' => $profile->admin_title),
-      'priority' => array(
+      'roles' => array('#markup' => linkit_profiles_ui::buildRoleList($profile->role_rids)),
+      'weight' => array(
         '#type' => 'weight',
-        '#title' => t('Priority weight for @title', array('@title' => $profile->admin_title)),
+        '#title' => t('Weight for @title', array('@title' => $profile->admin_title)),
         '#title_display' => 'invisible',
-        '#default_value' => isset($profile->priority) ? $profile->priority : LINKIT_DEFAULT_WEIGHT,
+        '#default_value' => isset($profile->weight) ? $profile->weight : LINKIT_DEFAULT_WEIGHT,
         '#attributes' => array(
           'class' => array('priority'),
         )
@@ -551,7 +552,7 @@ function linkit_profiles_reorder() {
     );
   }
 
-  $form['helptext'] = array('#markup' => t('If a user have multiple roles, the profile priority will determine which profile to use. Higher priority will take the precedence.'));
+  $form['helptext'] = array('#markup' => t('If a user have multiple roles, the profile weight will determine which profile to use. Lower weight will take precedence.'));
 
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
@@ -567,7 +568,7 @@ function linkit_profiles_reorder() {
 function linkit_profiles_reorder_submit($form, &$form_state) {
   foreach($form_state['values']['profiles'] as $profile_machine_name => $value) {
     $profile = linkit_profile_load($profile_machine_name);
-    $profile->priority = $value['priority'];
+    $profile->weight = $value['weight'];
     linkit_profile_save($profile);
   }
 }
