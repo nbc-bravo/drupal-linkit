@@ -546,7 +546,7 @@ function linkit_profiles_reorder() {
         '#title_display' => 'invisible',
         '#default_value' => isset($profile->weight) ? $profile->weight : LINKIT_DEFAULT_WEIGHT,
         '#attributes' => array(
-          'class' => array('priority'),
+          'class' => array('weight'),
         )
       )
     );

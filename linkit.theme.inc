@@ -73,7 +73,7 @@ function _linkit_preprocess_tabledrag_variables(&$variables, $type) {
  */
 function theme_linkit_profiles_reorder($variables) {
   $form = $variables['form'];
-  $header = array(t('Profile'), t('Roles'), t('Priority'));
+  $header = array(t('Profile'), t('Roles'), t('Weight'));
   $rows = array();
 
   foreach (element_children($form['profiles']) as $profile_name) {
