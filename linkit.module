@@ -109,9 +109,17 @@ function linkit_theme($existing, $type, $theme, $path) {
 function linkit_element_info_alter(&$types) {
   if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
-      _linkit_add_settings('ckeditor');
+      $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
     }
   }
+}
+
+/**
+ * Add Linkit settings to pages where we have a ckeditor element.
+ */
+function linkit_pre_render_ckeditor_element($element) {
+  _linkit_add_settings('ckeditor');
+  return $element;
 }
 
 /**
@@ -572,9 +580,9 @@ function linkit_wysiwyg_plugin($editor, $version) {
 function _linkit_add_settings($editor) {
   static $globalsettings;
   drupal_add_library('linkit', 'linkit_base');
+  $profile = linkit_get_dashboard_profile();
 
-  if (!$globalsettings) {
-    $profile = linkit_get_dashboard_profile();
+  if (!$globalsettings && $profile) {
 
     // Check if IMCE is enbled and accessable
     if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
