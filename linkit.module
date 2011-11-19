@@ -221,13 +221,7 @@ function linkit_library() {
  */
 function _linkit_dashboard($editor) {
   $profile = linkit_get_dashboard_profile();
-
-  if ($profile == NULL) {
-    drupal_set_message(t('There is no Linkit profile associate to your role.'), 'warning');
-    return '';
-  }
-
-  $form = drupal_get_form('linkit_dashboard_form');
+  $form = drupal_get_form('linkit_dashboard_form', $profile);
   print drupal_render($form);
 }
 
@@ -497,8 +491,17 @@ function _linkit_result_from_url($url, $enabled_plugins) {
 /**
  * Implements hook_form().
  */
-function linkit_dashboard_form() {
+function linkit_dashboard_form($form, &$form_state, $profile) {
   $profile = linkit_get_dashboard_profile();
+
+  // If we do not have a Linkit profile, lets show the user a message.
+  if (is_null($profile)) {
+    drupal_set_message(t('There is no Linkit profile associated with your role.'), 'warning');
+    $form['message'] = array(
+      '#markup' => theme('status_messages') . '<a id="linkit-cancel" href="#">' . t('Close') . '</a>',
+    );
+    return $form;
+  }
 
   $form['linkit_search'] = array(
     '#type' => 'textfield',
@@ -583,7 +586,6 @@ function _linkit_add_settings($editor) {
   $profile = linkit_get_dashboard_profile();
 
   if (!$globalsettings && $profile) {
-
     // Check if IMCE is enbled and accessable
     if (module_invoke('imce', 'access') && isset($profile->data['imce']['use_imce']) && $profile->data['imce']['use_imce'] == 1) {
       $settings['IMCEurl'] = url('imce', array('query' => array(
