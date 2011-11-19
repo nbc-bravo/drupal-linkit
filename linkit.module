@@ -220,8 +220,7 @@ function linkit_library() {
  * Creates the dashboard.
  */
 function _linkit_dashboard($editor) {
-  $profile = linkit_get_dashboard_profile();
-  $form = drupal_get_form('linkit_dashboard_form', $profile);
+  $form = drupal_get_form('linkit_dashboard_form');
   print drupal_render($form);
 }
 
@@ -491,7 +490,7 @@ function _linkit_result_from_url($url, $enabled_plugins) {
 /**
  * Implements hook_form().
  */
-function linkit_dashboard_form($form, &$form_state, $profile) {
+function linkit_dashboard_form($form, &$form_state) {
   $profile = linkit_get_dashboard_profile();
 
   // If we do not have a Linkit profile, lets show the user a message.
