@@ -28,6 +28,12 @@
           // Set the name of the editor field, this is just for CKeditor.
           Drupal.linkit.setEditorField(editor.name);
 
+          var linkitCache = Drupal.linkit.getLinkitCache();
+          // Unlock the selecton for IE.
+          if (CKEDITOR.env.ie && typeof linkitCache.selection !== 'undefined') {
+            linkitCache.selection.unlock();
+          }
+
           var selection = editor.getSelection(),
               element = null;
 
@@ -43,9 +49,12 @@
           // Save the selection.
           Drupal.linkit.setEditorSelection(selection);
 
-          // Lock the selecton.
           var linkitCache = Drupal.linkit.getLinkitCache();
-          linkitCache.selection.lock();
+
+          // Lock the selecton for IE.
+          if (CKEDITOR.env.ie) {
+            linkitCache.selection.lock();
+          }
 
           // Save the selected element.
           Drupal.linkit.setEditorSelectedElement(element);
