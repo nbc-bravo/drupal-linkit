@@ -111,7 +111,7 @@ Drupal.linkit.dialog.requiredFieldsValidation = function() {
  */
 Drupal.linkit.dialog.additionalAttributes = function() {
   var attributes = [];
-  $('#linkit-modal #edit-linkit-attributes .form-text').each(function() {
+  $('#linkit-modal #edit-linkit-attributes .linkit-attribute').each(function() {
     // Remove the 'linkit_' prefix.
     attributes.push($(this).attr('name').substr(7));
   });
