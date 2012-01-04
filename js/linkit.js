@@ -12,6 +12,10 @@ Drupal.linkit.editorDialog = Drupal.linkit.editorDialog || {};
 Drupal.behaviors.linkit = {
   attach: function(context, settings) {
 
+    if ($('#linkit-modal #edit-linkit-search', context).length == 0) {
+      return;
+    }
+
     Drupal.linkit.$searchInput = $('#linkit-modal #edit-linkit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
