@@ -56,6 +56,7 @@ Drupal.behaviors.linkitDialogButtons = {
 Drupal.linkit.dialog.close = function () {
   Drupal.linkit.$searchInput.betterAutocomplete('destroy');
   $('#linkit-modal').dialog('destroy').remove();
+  return false;
 };
 
 /**
