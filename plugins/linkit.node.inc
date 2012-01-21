@@ -71,7 +71,7 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
     }
   }
 
-  // Content type check
+  // Content type check.
   if ($allowed_content_types = array_filter($profile->data['node']['content_types'])) {
     $query->condition('n.type', $allowed_content_types, 'IN');
   }
@@ -79,6 +79,11 @@ function _linkit_node_create_base_query($profile, $result_tokens) {
   // Status condition.
   if (!isset($profile->data['node']['include_unpublished'])) {
     $query->condition('n.status', 1);
+  }
+  // We are includeing both published and unpublished nodes, and we'll want to
+  // know the status info.
+  else {
+    $query->addField('n', 'status');
   }
 
   if ($profile->data['node']['group_by_content_type']) {
@@ -127,14 +132,22 @@ function _linkit_node_autocomplete($string, $profile) {
   $result = $query->execute();
 
   foreach ($result as $node) {
+    $title_suffix = '';
+    $row_class = '';
+    if (isset($profile->data['node']['include_unpublished']) && $node->status == NODE_NOT_PUBLISHED) {
+      $title_suffix = '<span class="status"> - ' . t('unpublished') . '</span>';
+      $row_class = 'unpublished-node';
+    }
+
     $matches[] = array(
-      'title' => $node->title,
+      'title' => $node->title . $title_suffix,
       'description' => token_replace($result_description, array(
         'node' => $node,
       )),
       // We have to set alias to TRUE as we don't want an alias back.
       'path' => url('node/' . $node->nid, array('alias' => TRUE)),
       'group' => _linkit_node_build_group($profile, $node),
+      'addClass' => $row_class,
     );
   }
 
