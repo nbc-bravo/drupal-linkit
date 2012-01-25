@@ -12,7 +12,7 @@ function _linkit_node_create_base_query($profile) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
         ->addTag('node_access');
-  
+
   // Content type check.
   if ($allowed_content_types = array_filter($profile->data['node']['content_types'])) {
     $query->entityCondition('bundle', $allowed_content_types);
