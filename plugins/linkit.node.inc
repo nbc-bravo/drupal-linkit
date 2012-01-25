@@ -8,96 +8,28 @@
 /**
  * Build the default node query.
  */
-function _linkit_node_create_base_query($profile, $result_tokens) {
-  // Build default query
-  $query = db_select('node', 'n')
-    ->fields('n', array('nid', 'title'))
-    ->addTag('node_access');
-
-  // Not all tokens are supported by Linkit.
-  // Here is a list of valid tokens
-  // [node:nid]
-  // [node:vid]
-  // [node:tnid]
-  // [node:type]
-  // [node:type-name]
-  // [node:title]
-  // [node:language]
-  // [node:created] (short, medium, long, since, raw, custom, [default : medium])
-  // [node:changed] (short, medium, long, since, raw, custom, [default : medium])
-  // [node:author]  (Can use the user tokens, [default : name])
-
-  if (isset($result_tokens['node'])) {
-    foreach ($result_tokens['node'] as $token => $token_value) {
-      switch ($token) {
-        case 'vid':
-          $query->addField('n', 'vid');
-          break;
-        case 'tnid':
-          $query->addField('n', 'tnid');
-          break;
-        case 'type':
-        case 'type-name';
-          $query->addField('n', 'type');
-          break;
-        case 'language':
-          $query->addField('n', 'language');
-          break;
-        case 'author':
-          $query->addField('n', 'uid');
-          $query->addField('u', 'name', 'name');
-          $query->leftJoin('users', 'u', 'u.uid = n.uid');
-          break;
-        case 'created':
-          $query->addField('n', 'created');
-          break;
-        case 'changed':
-          $query->addField('n', 'changed');
-          break;
-      }
-    }
-
-    // This tokens can be chained so we cant use them in the foreach loop above.
-    if (token_find_with_prefix($result_tokens['node'], 'author')) {
-      $query->addField('n', 'uid');
-    }
-
-    if (token_find_with_prefix($result_tokens['node'], 'created')) {
-      $query->addField('n', 'created');
-    }
-
-    if (token_find_with_prefix($result_tokens['node'], 'changed')) {
-      $query->addField('n', 'changed');
-    }
-  }
-
+function _linkit_node_create_base_query($profile) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+        ->addTag('node_access');
+  
   // Content type check.
   if ($allowed_content_types = array_filter($profile->data['node']['content_types'])) {
-    $query->condition('n.type', $allowed_content_types, 'IN');
+    $query->entityCondition('bundle', $allowed_content_types);
   }
 
   // Status condition.
   if (!isset($profile->data['node']['include_unpublished'])) {
-    $query->condition('n.status', 1);
-  }
-  // We are includeing both published and unpublished nodes, and we'll want to
-  // know the status info.
-  else {
-    $query->addField('n', 'status');
+    $query->propertyCondition('status', 1);
   }
 
+  // Sort the results by the entity bundle if we are grouping by bundle.
   if ($profile->data['node']['group_by_content_type']) {
-    $fields = $query->getFields();
-    // We need the type to sort on, if its not yet included in the query, we
-    // have to inlcude it.
-    if (!isset($fields['type'])) {
-      $query->addField('n', 'type');
-    }
-    $query->orderBy('n.type', 'ASC');
+    $query->propertyOrderBy('type', 'ASC');
   }
 
   // Add the default sort.
-  $query->orderBy('n.title', 'ASC');
+  $query->propertyOrderBy('title', 'ASC');
 
   return $query;
 }
@@ -120,18 +52,21 @@ function _linkit_node_build_group($profile, $node) {
 function _linkit_node_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile->data['node']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
   // Build the base query.
-  $query = _linkit_node_create_base_query($profile, $result_tokens);
-  $query->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
-        ->addTag('linkit_node_autocomplete');
-  $result = $query->execute();
+  $query = _linkit_node_create_base_query($profile);
 
-  foreach ($result as $node) {
+  // Add the title condition to the query object.
+  $query->propertyCondition('title', '%' . db_like($string) . '%', 'LIKE')
+        ->addTag('linkit_node_autocomplete');
+
+  // Execute the query.
+  $result = $query->execute();
+  $node_nids = array_keys($result['node']);
+
+  // Load all the nodes with all the nids we got.
+  $nodes = entity_load('node', $node_nids);
+
+  foreach ($nodes as $node) {
     $title_suffix = '';
     $row_class = '';
     if (isset($profile->data['node']['include_unpublished']) && $node->status == NODE_NOT_PUBLISHED) {
@@ -139,18 +74,20 @@ function _linkit_node_autocomplete($string, $profile) {
       $row_class = 'unpublished-node';
     }
 
+    // Create the URI for the entuty.
+    $uri = entity_uri('node', $node);
+
     $matches[] = array(
       'title' => $node->title . $title_suffix,
-      'description' => token_replace($result_description, array(
+      'description' => token_replace(check_plain($profile->data['node']['result_description']), array(
         'node' => $node,
       )),
       // We have to set alias to TRUE as we don't want an alias back.
-      'path' => url('node/' . $node->nid, array('alias' => TRUE)),
+      'path' => url($uri['path'], array('alias' => TRUE)),
       'group' => _linkit_node_build_group($profile, $node),
       'addClass' => $row_class,
     );
   }
-
   return $matches;
 }
 
@@ -165,21 +102,32 @@ function _linkit_node_path_info($path_info, $profile) {
   // Check if path is referring to a node
   if (isset($path_info['system_path']) && arg(0, $path_info['system_path']) == 'node' && is_numeric(arg(1, $path_info['system_path']))) {
 
-    $result_description = check_plain($profile->data['node']['result_description']);
-
-    // Build a list of all token-like patterns that appear in the text.
-    $result_tokens = token_scan($result_description);
+    $nid = arg(1, $path_info['system_path']);
 
     // Build the base query.
-    $query = _linkit_node_create_base_query($profile, $result_tokens);
-    $query->condition('n.nid', arg(1, $path_info['system_path']));
-    $query_result = $query->execute()->fetch();
+    // We can't just load the node here as we also need to attach the profile
+    // settings to the query.
+    $query = _linkit_node_create_base_query($profile);
 
-    if ($query_result) {
+    // Add the nid condition to the query object.
+    $query->propertyCondition('nid', $nid);
+
+    // Execute the query.
+    $result = $query->execute();
+
+    // If we for some reason don't get our node nid, return false.
+    if (!isset($result['node'][$nid]->nid)) {
+      return FALSE;
+    }
+
+    // Load the node with the corresponding nid.
+    $nodes = entity_load('node', array($result['node'][$nid]->nid));
+    $node = $nodes[$nid];
+    if ($node) {
       $result = array(
-        'title' => check_plain($query_result->title),
-        'description' => token_replace($result_description, array(
-          'node' => $query_result,
+        'title' => check_plain($node->title),
+        'description' => token_replace(check_plain($profile->data['node']['result_description']), array(
+          'node' => $node,
         )),
       );
       return $result;
