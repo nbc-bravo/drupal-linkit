@@ -1,5 +1,13 @@
 <?php
 
+
+function linkit_init() {
+  if (0) {
+  module_load_include('inc', 'linkit', '/plugins/linkit.file');
+  $profile = linkit_profile_load('default');
+  _linkit_file_autocomplete('IMAG', $profile);
+  }
+}
 /**
  * @file
  * Main file for linkit module.
@@ -260,7 +268,7 @@ function _linkit_autocomplete_search($search, $enabled_plugins) {
     foreach ($enabled_plugins AS $name => $plugin) {
       // The function should exist, maybe it's better to just throw the error?
       if (isset($plugin['autocomplete callback'])) {
-        $results = call_user_func($plugin['autocomplete callback'], $search, $profile);
+        $results = call_user_func($plugin['autocomplete callback'], $search, $profile, $name, $plugin);
         $matches = array_merge($matches, $results);
       }
     }
@@ -725,6 +733,17 @@ function linkit_linkit_attributes($profile) {
  * Implements hook_linkit_plugins().
  */
 function linkit_linkit_plugins() {
+  $entity_info = entity_get_info();
+  foreach ($entity_info as $name => $info) {
+    $plugins[$name] = array(
+     'title' => $info['label'],
+     'description' => t('Entity: %label', array('%label' => $info['label'])),
+     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.entity.inc',
+     'autocomplete callback' => '_linkit_entity_autocomplete',
+     'path info callback' => '_linkit_entity_path_info',
+     'settings form' => 'linkit_entity_settings',
+    );
+  }
   $plugins['node'] = array(
     'title' => t('Node'),
     'description' => t('Find nodes by node title.'),
