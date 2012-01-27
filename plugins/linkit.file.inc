@@ -10,72 +10,12 @@
 /**
  * Build the default node query.
  */
-function _linkit_file_create_base_query($profile, $result_tokens) {
-  // Get files.
-  $query = db_select('file_managed', 'f')
-    ->fields('f', array('uri', 'filename'))
-    ->condition('f.status' , FILE_STATUS_PERMANENT);
+function _linkit_file_create_base_query($profile) {
 
-  // Not all tokens are supported by Linkit.
-  // Here is a list of valid tokens
-  // [file:fid]
-  // [file:name]
-  // [file:mime]
-  // [file:size]
-  // [file:timestamp] (short, medium, long, since, raw, custom, [default : medium])
-  // [file:owner] (Can use the user tokens, [default : name])
-
-  if (isset($result_tokens['file'])) {
-    foreach ($result_tokens['file'] as $token => $token_value) {
-      switch ($token) {
-        case 'fid':
-          $query->addField('f', 'fid');
-          break;
-
-        case 'mime':
-          $query->addField('f', 'filemime');
-          break;
-
-        case 'size':
-          $query->addField('f', 'filesize');
-          break;
-
-        case 'timestamp':
-          $query->addField('f', 'timestamp');
-          break;
-
-        case 'owner':
-          $query->addField('f', 'uid');
-          break;
-      }
-    }
-
-    // There can be tokens that is chained so we will not find them in the
-    // switch statement above.
-    if (token_find_with_prefix($result_tokens['file'], 'timestamp')) {
-      $query->addField('f', 'timestamp');
-    }
-
-    if (token_find_with_prefix($result_tokens['file'], 'owner')) {
-      $query->addField('f', 'uid');
-    }
-  }
-
-  if ($profile->data['file']['group_by_scheme']) {
-    $query->orderBy('f.uri', 'ASC');
-  }
-
-  // Special for IMCE files.
-  // Files uploaded with IMCE will not pass any hook_file_download functions,
-  // so simply let them pass thru our access check, and for that we need to now
-  // if the file belong to IMCE.
-  if (module_exists('imce')) {
-    $query->addField('fu', 'module');
-    $query->leftJoin('file_usage', 'fu', 'f.fid = fu.fid');
-  }
-
-  // Add the default sort.
-  $query->orderBy('f.filename', 'ASC');
+  // Get files
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'file')
+        ->propertyCondition('status', FILE_STATUS_PERMANENT);
 
   return $query;
 }
@@ -134,27 +74,32 @@ function _linkit_file_build_group($profile, $file) {
 function _linkit_file_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile->data['file']['result_description']);
-
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
   // Build the base query.
-  $query = _linkit_file_create_base_query($profile, $result_tokens);
-  $query->condition('f.filename', '%' . db_like($string) . '%', 'LIKE')
+  $query = _linkit_file_create_base_query($profile);
+
+  // Add the filename condition to the query object.
+  $query->propertyCondition('filename', '%' . db_like($string) . '%', 'LIKE')
         ->addTag('linkit_file_autocomplete');
+
+  // Execute the query.
   $result = $query->execute();
 
-  foreach ($result as $file) {
+  $file_fids = array_keys($result['file']);
+
+  // Load all the users with all the uids we got.
+  $files = entity_load('file', $file_fids);
+
+  foreach ($files as $file) {
     $access = _linkit_file_access($file->uri);
     // Pass thru the access if the file belong to IMCE.
-    if (module_exists('imce') && $file->module == 'imce') {
-      $access = TRUE;
-    }
+    //if (module_exists('imce') && $file->module == 'imce') {
+    //  $access = TRUE;
+    //}
     if ($access) {
       $matches[] = array(
         'title' => $file->filename,
-        'description' => _linkit_file_build_description($profile, $result_description, $file),
+        'description' => _linkit_file_build_description($profile,
+          check_plain($profile->data['file']['result_description']), $file),
         'path' => _linkit_file_get_url($file->uri),
         'group' => _linkit_file_build_group($profile, $file),
       );
@@ -263,36 +208,21 @@ function _linkit_file_access($uri) {
 /**
  * Get an relative url to the file.
  *
- * We don't want to use the "getExternalUrl()" provided by the stream wrappers
- * as this functions return an absolute paths.
- *
  * @param $uri
  *   The URI of the file.
  * @return
  *   A relative URL to the file.
  */
 function _linkit_file_get_url($uri) {
-  $scheme = file_uri_scheme($uri);
-  $target = file_uri_target($uri);
-  $url = module_invoke_all('linkit_get_url', $scheme, $target);
+  // There is no implementation such as getInternalUrl in the stream wrappers
+  // interface, so we have to use the getExternalUrl tho this is returning an
+  // absolute url.
+  $url = file_stream_wrapper_get_instance_by_uri($uri)->getExternalUrl();
+
+  // Remove the base path from the url to make it relative.
+  // If the stream wrapper actually is using a real external url, this would
+  // not brake anyway.
+  $url = str_replace($GLOBALS['base_url'], '', $url);
+
   return $url;
-}
-
-/**
- * Implements hook_linkit_get_url().
- */
-function linkit_linkit_get_url($scheme, $target) {
-  switch ($scheme) {
-    case 'public':
-      $directory = variable_get('file_public_path', conf_path() . '/files');
-      $path = str_replace('\\', '/', $target);
-      return base_path() . $directory . '/' . drupal_encode_path($path);
-      break;
-
-    case 'private':
-      $directory = variable_get('file_private_path', '');
-      $path = str_replace('\\', '/', $target);
-      return url('system/files/' . $path);
-      break;
-  }
 }
