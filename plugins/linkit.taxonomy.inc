@@ -8,45 +8,18 @@
 /**
  * Build the default node query.
  */
-function _linkit_taxonomy_create_base_query($profile, $result_tokens) {
-  // Build default query
-  $query = db_select('taxonomy_term_data', 't')
-    ->fields('t', array('tid', 'name'))
-    ->addTag('term_access');
-
-  // Not all tokens are supported by Linkit.
-  // Here is a list of valid tokens
-  // [term:tid]
-  // [term:name]
-  // [term:vocabulary] (vid, name, [default : name])
-  // [term:parent]
-  if (isset($result_tokens['term'])) {
-    foreach ($result_tokens['term'] AS $token => $token_value) {
-      switch ($token) {
-        case 'vocabulary':
-          $query->addField('t', 'vid');
-          break;
-      }
-    }
-
-    // There can be tokens that is chained so we will not find them in the switch statement above.
-    if (token_find_with_prefix($result_tokens['term'], 'vocabulary')) {
-      $query->addField('t', 'vid');
-    }
-  }
+function _linkit_taxonomy_create_base_query($profile) {
+  // Get terms
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'taxonomy_term')
+        ->addTag('term_access');
 
   if ($profile->data['taxonomy']['group_by_vocabulary']) {
-    $fields = $query->getFields();
-    // We need the vid to sort on, if its not yet included in the query, we
-    // have to inlcude it.
-    if (!isset($fields['vid'])) {
-      $query->addField('t', 'vid');
-    }
-    $query->orderBy('t.vid', 'ASC');
+    $query->propertyOrderBy('vid', 'ASC');
   }
 
   // Add the default sort.
-  $query->orderBy('t.name', 'ASC');
+  $query->propertyOrderBy('name', 'ASC');
 
   return $query;
 }
@@ -70,21 +43,26 @@ function _linkit_taxonomy_build_group($profile, $term) {
 function _linkit_taxonomy_autocomplete($string, $profile) {
   $matches = array();
 
-  $result_description = check_plain($profile->data['taxonomy']['result_description']);
+  $query = _linkit_taxonomy_create_base_query($profile);
 
-  // Build a list of all token-like patterns that appear in the text.
-  $result_tokens = token_scan($result_description);
-
-  $query = _linkit_taxonomy_create_base_query($profile, $result_tokens);
-  $query->condition('t.name' , '%' . db_like($string) . '%' , 'LIKE')
+  // Add the name condition to the query object.
+  $query->propertyCondition('name', '%' . db_like($string) . '%', 'LIKE')
         ->addTag('linkit_taxonomy_autocomplete');
-  $result = $query->execute();
 
-  foreach ($result as $term) {
-    $uri = entity_uri('taxonomy_term', taxonomy_term_load($term->tid));
+  // Execute the query.
+  $result = $query->execute();
+  $term_tids = array_keys($result['taxonomy_term']);
+
+  // Load all the terms with all the tids we got.
+  $terms = entity_load('taxonomy_term', $term_tids);
+
+  foreach ($terms as $term) {
+    // Create the URI for the entity.
+    $uri = entity_uri('taxonomy_term', $term);
+
     $matches[] = array(
       'title' => $term->name,
-      'description' => token_replace($result_description, array(
+      'description' => token_replace(check_plain($profile->data['taxonomy']['result_description']), array(
         'term' => $term,
       )),
       'path' => url($uri['path'], array('alias' => TRUE)),
