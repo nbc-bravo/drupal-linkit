@@ -92,6 +92,7 @@ function _linkit_file_autocomplete($string, $profile) {
   foreach ($files as $file) {
     $access = _linkit_file_access($file->uri);
     // Pass thru the access if the file belong to IMCE.
+
     //if (module_exists('imce') && $file->module == 'imce') {
     //  $access = TRUE;
     //}
@@ -142,26 +143,33 @@ function _linkit_file_path_info($path_info, $profile) {
   }
 
   if ($file_uri) {
-    $result_description = check_plain($profile->data['file']['result_description']);
-
-    // Build a list of all token-like patterns that appear in the text.
-    $result_tokens = token_scan($result_description);
-
     // Build the base query.
-    $query = _linkit_file_create_base_query($profile, $result_tokens);
-    $query->condition('f.uri', $file_uri);
-    $query_result = $query->execute()->fetch();
-    if ($query_result) {
-      $access = _linkit_file_access($query_result->uri);
+    $query = _linkit_file_create_base_query($profile);
+
+    // Add the nid condition to the query object.
+    $query->propertyCondition('uri', $file_uri);
+
+    // Execute the query.
+    $result = $query->execute();
+
+    $file_fids = array_keys($result['file']);
+
+    // Load all the users with all the uids we got.
+    $files = entity_load('file', $file_fids);
+    $file = current($files);
+
+    if ($file) {
+      $access = _linkit_file_access($file->uri);
       // Pass thru the access if the file belong to IMCE.
-      if (module_exists('imce') && $query_result->module == 'imce') {
-        $access = TRUE;
-      }
+      //if (module_exists('imce') && $query_result->module == 'imce') {
+      //  $access = TRUE;
+      //}
       if ($access) {
         $result = array(
-          'title' => check_plain($query_result->filename),
-          'description' => _linkit_file_build_description($profile, $result_description, $query_result),
-          'path' => _linkit_file_get_url($query_result->uri), // TODO: Path seems to be an array, should always be a string.
+          'title' => check_plain($file->filename),
+          'description' => _linkit_file_build_description($profile,
+            check_plain($profile->data['file']['result_description']), $file),
+          'path' => _linkit_file_get_url($file->uri),
         );
         return $result;
       }
