@@ -89,13 +89,8 @@ function _linkit_taxonomy_path_info($path_info, $profile) {
 
   // Check if path is referring to a taxonomy
   if (in_array(arg(0, $path_info['system_path']), $taxonomy_uri_array)) {
-    $result_description = check_plain($profile->data['taxonomy']['result_description']);
-
-    // Build a list of all token-like patterns that appear in the text.
-    $result_tokens = token_scan($result_description);
-
     // We need to know where the tid is.
-    switch ($path_info['system_path']) {
+    switch (arg(0, $path_info['system_path'])) {
       case 'taxonomy':
         // URI = taxonomy/term/[tid]
         $arg_i = 2;
@@ -106,16 +101,17 @@ function _linkit_taxonomy_path_info($path_info, $profile) {
         break;
     }
 
-    // Build the base query.
-    $query = _linkit_taxonomy_create_base_query($profile, $result_tokens);
-    $query->condition('t.tid', arg($arg_i, $path_info['system_path']));
-    $query_result = $query->execute()->fetch();
+    $tid = arg($arg_i, $path_info['system_path']);
 
-    if ($query_result) {
+    // Load the term with the corresponding tid.
+    $terms = entity_load('taxonomy_term', array($tid));
+    $term = $terms[$tid];
+
+    if ($term) {
       $result = array(
-        'title' => check_plain($query_result->name),
-        'description' => token_replace($result_description, array(
-          'term' => $query_result,
+        'title' => check_plain($term->name),
+        'description' => token_replace(check_plain($profile->data['taxonomy']['result_description']), array(
+          'term' => $term,
         )),
       );
       return $result;
