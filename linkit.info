@@ -3,3 +3,4 @@ description = Provides an easy interface for inserting links to internal content
 core = 7.x
 configure = admin/config/content/linkit
 dependencies[] = ctools
+files[] = plugins/plugin.class.inc

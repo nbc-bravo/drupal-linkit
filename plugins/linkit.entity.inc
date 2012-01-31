@@ -2,35 +2,38 @@
 
 /**
  * @file
- * Extend Linkit with user links.
+ * Extend Linkit with entity support.
  */
 
 /**
- * Build the default node query.
+ * Build the default query.
  */
 function _linkit_entity_create_base_query($profile, $name, $plugin) {
-  $info = entity_get_info($name);
-  // Get users
+  // Load all defined entities.
+  $entity_info = entity_get_info($name);
+
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', $name);
 
-  // Add the default sort.
-  $query->propertyOrderBy($info['entity keys']['label'], 'ASC');
+  // Add the default sort on the enity label.
+  $query->propertyOrderBy($entity_info['entity keys']['label'], 'ASC');
   return $query;
 }
 
 /**
  * The autocomplete callback function for the Linkit user plugin.
  */
-function _linkit_entity_autocomplete($string, $profile, $name, $plugin) {
+function linkit_entity_autocomplete($string, $profile, $name, $plugin) {
   $matches = array();
-  $info = entity_get_info($name);
+  $entity_info = entity_get_info($name);
   $query = _linkit_entity_create_base_query($profile, $name, $plugin);
 
   // Add the title condition to the query object.
-  $query->propertyCondition($info['entity keys']['label'], '%' . db_like($string) . '%', 'LIKE')
-        ->addTag('linkit_user_autocomplete');
+  $query->propertyCondition($entity_info['entity keys']['label'], '%' . db_like($string) . '%', 'LIKE')
+        ->addTag('linkit_entity_autocomplete');
+
   drupal_alter('linkit_entity_query', $query, $profile, $name, $plugin);
+
   // Execute the query.
   $result = $query->execute();
   $ids = array_keys($result[$name]);
@@ -39,10 +42,13 @@ function _linkit_entity_autocomplete($string, $profile, $name, $plugin) {
   $entities = entity_load($name, $ids);
 
   foreach ($entities AS $entity) {
-    // Create the URI for the entuty.
+    // If we have the entity module enabled, we check the access againt the
+    // definded entity access callback.
     if (module_exists('entity') && !entity_access('view', $name, $entity)) {
       continue;
     }
+
+    // Create the URI for the entity.
     $uri = entity_uri($name, $entity);
 
     $matches[] = array(
@@ -54,7 +60,6 @@ function _linkit_entity_autocomplete($string, $profile, $name, $plugin) {
       'group' => t($name),
     );
   }
-
   return $matches;
 }
 

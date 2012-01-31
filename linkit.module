@@ -256,21 +256,33 @@ function _linkit_autocomplete($search = NULL) {
 /**
  * Perform internal autocomplete search
  *
- * @param $search
+ * @param $search_string
  *   The search string
  * @return $results
  *   An array with the result objects
  */
-function _linkit_autocomplete_search($search, $enabled_plugins) {
+function _linkit_autocomplete_search($search_string, $enabled_plugins) {
   $matches = array();
-  if ($search) {
+  if ($search_string) {
     $profile = linkit_get_dashboard_profile();
-    foreach ($enabled_plugins AS $name => $plugin) {
+    // @TODO: THIS IS JUST FOR DEV!
+    module_load_include('inc', 'linkit', 'plugins/plugin.class');
+    foreach ($enabled_plugins AS $plugin_name => $plugin_data) {
+
+      $plugin = linkit_get_plugin_instance($plugin_data['pluginClass']);
+      $plugin->init($profile, $plugin_name);
+      $plugin->setSearchString($search_string);
+
+      $results = $plugin->autocomplete_callback();
+      $matches = array_merge($matches, $results);
+
+      /*
       // The function should exist, maybe it's better to just throw the error?
       if (isset($plugin['autocomplete callback'])) {
         $results = call_user_func($plugin['autocomplete callback'], $search, $profile, $name, $plugin);
         $matches = array_merge($matches, $results);
       }
+      */
     }
     // Special for link to frontpage.
     if (strpos($search, 'front') !== FALSE) {
@@ -734,17 +746,18 @@ function linkit_linkit_attributes($profile) {
  */
 function linkit_linkit_plugins() {
   $entity_info = entity_get_info();
+
   foreach ($entity_info as $name => $info) {
     $plugins[$name] = array(
      'title' => $info['label'],
      'description' => t('Entity: %label', array('%label' => $info['label'])),
-     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.entity.inc',
-     'autocomplete callback' => '_linkit_entity_autocomplete',
-     'path info callback' => '_linkit_entity_path_info',
-     'settings form' => 'linkit_entity_settings',
+     //'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.' . $name . '.inc',
+     'pluginClass' => 'LinkitPlugin' . $name,
     );
   }
-  $plugins['node'] = array(
+
+  /*
+   $plugins['node'] = array(
     'title' => t('Node'),
     'description' => t('Find nodes by node title.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
@@ -775,16 +788,26 @@ function linkit_linkit_plugins() {
     'autocomplete callback' => '_linkit_taxonomy_autocomplete',
     'path info callback' => '_linkit_taxonomy_path_info'
   );
-
+  */
+  /*
   $plugins['external'] = array(
     'title' => t('External URI'),
     'description' => t('Paste external URI\'s into the autocomplete search field. Linkit immiediately identifies broken URI\'s.'),
     'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
     'path info callback' => '_linkit_external_path_info'
   );
+   */
 
   return $plugins;
 }
+
+/**
+ * Alter our entity plugins.
+ */
+function linkit_linkit_get_plugins_alter(&$plugins) {
+
+}
+
 
 /**
  * Get all enabled attributes for the profiles used on the dashboard.
@@ -843,6 +866,7 @@ function linkit_get_profile_plugins() {
  */
 function linkit_get_plugins() {
   $plugins = module_invoke_all('linkit_plugins');
+  drupal_alter('linkit_get_plugins', $plugins);
   return $plugins;
 }
 
@@ -1092,4 +1116,17 @@ function linkit_default_linkit_profile() {
 
   $export[LINKIT_DEFAULT_PROFILE_MACHINE_NAME] = $linkit_profile;
   return $export;
+}
+
+/**
+ * Returns a reference to the plugin class.
+ */
+function linkit_get_plugin_instance($class_name) {
+  if (class_exists($class_name)) {
+    $instance = new $class_name();
+    return $instance;
+  }
+  else {
+    return FALSE;
+  }
 }

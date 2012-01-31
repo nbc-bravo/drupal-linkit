@@ -110,11 +110,11 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#description' => t('Available tokens: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
   );
 
-  $form['data']['node']['content_types'] = array(
+  $form['data']['node']['bundles'] = array(
     '#title' => t('Content type filter'),
     '#type' => 'checkboxes',
     '#options' => node_type_get_names(),
-    '#default_value' => isset($profile->data['node']['content_types']) ? $profile->data['node']['content_types'] : array(),
+    '#default_value' => isset($profile->data['node']['bundles']) ? $profile->data['node']['bundles'] : array(),
     '#description' => t('If left blank, all content types will appear in autocomplete results.'),
   );
 
@@ -124,10 +124,10 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#default_value' => isset($profile->data['node']['include_unpublished']) ? $profile->data['node']['include_unpublished'] : 0,
   );
 
-  $form['data']['node']['group_by_content_type'] = array(
+  $form['data']['node']['group_by_bundle'] = array(
     '#title' => t('Group nodes by content type'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile->data['node']['group_by_content_type']) ? $profile->data['node']['group_by_content_type'] : 1,
+    '#default_value' => isset($profile->data['node']['group_by_bundle']) ? $profile->data['node']['group_by_bundle'] : 1,
   );
 
   $form['data']['user'] = array(
@@ -152,32 +152,32 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#description' => t('Available tokens: %tokens.', array('%tokens' => '[user:uid], [user:name], [user:mail], [user:last-login], [user:created]')),
   );
 
-  $form['data']['taxonomy'] = array(
+  $form['data']['taxonomy_term'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Taxonomy plugin'),
+    '#title' => t('Taxonomy term plugin'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
     '#states' => array(
       'invisible' => array(
-        'input[name="plugins[taxonomy][enabled]"]' => array('checked' => FALSE),
+        'input[name="plugins[taxonomy_term][enabled]"]' => array('checked' => FALSE),
       ),
     ),
   );
 
-  $form['data']['taxonomy']['result_description'] = array(
+  $form['data']['taxonomy_term']['result_description'] = array(
     '#title' => t('Result format'),
     '#type' => 'textfield',
-    '#default_value' => isset($profile->data['taxonomy']['result_description']) ? $profile->data['taxonomy']['result_description'] : '[term:vocabulary]',
+    '#default_value' => isset($profile->data['taxonomy_term']['result_description']) ? $profile->data['taxonomy_term']['result_description'] : '[term:vocabulary]',
     '#size' => 120,
     '#maxlength' => 255,
     '#description' => t('Available tokens: %tokens.', array('%tokens' => '[term:tid], [term:name], [term:vocabulary], [term:parent]')),
   );
 
-  $form['data']['taxonomy']['group_by_vocabulary'] = array(
+  $form['data']['taxonomy_term']['group_by_bundle'] = array(
     '#title' => t('Group terms by vocabulary'),
     '#type' => 'checkbox',
-    '#default_value' => isset($profile->data['taxonomy']['group_by_vocabulary']) ? $profile->data['taxonomy']['group_by_vocabulary'] : 0,
+    '#default_value' => isset($profile->data['taxonomy_term']['group_by_bundle']) ? $profile->data['taxonomy_term']['group_by_bundle'] : 0,
   );
 
   $form['data']['file'] = array(
