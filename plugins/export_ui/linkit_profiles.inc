@@ -342,7 +342,7 @@ function _linkit_build_plugin_form_fields(&$form, $profile) {
 
   // Used to store plugin form elements temporary so we can use this to sort by weight.
   $tmp_plugins = array();
-
+  
   foreach ($plugins AS $name => $plugin) {
     $tmp_plugins[$name]['name'] = array('#markup' => $plugin['title']);
     $tmp_plugins[$name]['description'] = array('#markup' => $plugin['description']);

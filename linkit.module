@@ -1,11 +1,12 @@
 <?php
 
-
+// FOR DEV TEST ONLY
 function linkit_init() {
   if (0) {
-  module_load_include('inc', 'linkit', '/plugins/linkit.file');
-  $profile = linkit_profile_load('default');
-  _linkit_file_autocomplete('IMAG', $profile);
+    $enabled_plugins = linkit_get_profile_plugins();
+    $search = 'Lorem';
+    $matches = _linkit_autocomplete_search($search, $enabled_plugins);
+    dsm($matches);
   }
 }
 /**
@@ -265,12 +266,10 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
   $matches = array();
   if ($search_string) {
     $profile = linkit_get_dashboard_profile();
-    // @TODO: THIS IS JUST FOR DEV!
-    module_load_include('inc', 'linkit', 'plugins/plugin.class');
+
     foreach ($enabled_plugins AS $plugin_name => $plugin_data) {
 
-      $plugin = linkit_get_plugin_instance($plugin_data['pluginClass']);
-      $plugin->init($profile, $plugin_name);
+      $plugin = linkit_get_plugin_handler($plugin_data, $profile, $search_string);
       $plugin->setSearchString($search_string);
 
       $results = $plugin->autocomplete_callback();
@@ -285,7 +284,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
       */
     }
     // Special for link to frontpage.
-    if (strpos($search, 'front') !== FALSE) {
+    if (strpos($search_string, 'front') !== FALSE) {
       $results = array(
         array(
           'title' => t('Frontpage'),
@@ -843,30 +842,28 @@ function linkit_get_profile_plugins() {
 
   $enabled_plugins = array();
 
-  // Include plugin file.
   foreach ($installed_plugins AS $name => $plugin) {
-    // Only include files for plugins that is enabled in the profile for this user.
     if ($profile->data['plugins'][$name]['enabled']) {
       $enabled_plugins[$name] = $plugin;
-      if (isset($plugin['file'])) {
-        if (file_exists(DRUPAL_ROOT . '/' . $plugin['file'])) {
-          require_once DRUPAL_ROOT . '/' . $plugin['file'];
-        }
-        else {
-          drupal_set_message(t('The Linkit plugin %plugin could not be loaded because the file %file was not found.', array('%plugin' => $name, '%file' => DRUPAL_ROOT . '/' . $plugin['file'])), 'error');
-        }
-      }
     }
   }
   return $enabled_plugins;
 }
 
 /**
- * Get all Linkit plugins.
+ * Fetch metadata for all linkit plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available linkit plugins.
  */
 function linkit_get_plugins() {
-  $plugins = module_invoke_all('linkit_plugins');
-  drupal_alter('linkit_get_plugins', $plugins);
+  ctools_include('context');
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('linkit', 'linkit');
+  //dsm($plugins);
+  // @TODO: Is this alter needed or does ctools implments an alter function?
+  drupal_alter('linkit_plugins', $plugins);
+
   return $plugins;
 }
 
@@ -1000,24 +997,39 @@ function linkit_profile_save($profile) {
 }
 
 /**
- * Implements hook_ctools_plugin_api().
- *
- * Tell CTools that we support the default_linkit_profiles API.
+ * Implements hook_ctools_plugin_directory().
  */
-function linkit_ctools_plugin_api($owner, $api) {
-  if ($owner == 'linkit' && $api == 'linkit_profiles') {
-    return array('version' => 1);
+function linkit_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && !empty($plugin)) {
+    return "plugins/" . $plugin;
+  }
+  if ($module == 'linkit' && !empty($plugin)) {
+    return "plugins/" . $plugin;
   }
 }
 
 /**
- * Implements hook_ctools_plugin_directory().
+ * Implements hook_ctools_plugin_TYPE() to inform the plugin system that Linkit
+ * owns Linkit plugin types.
  */
-function linkit_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'ctools' && $plugin == 'export_ui') {
-    return 'plugins/' . $plugin;
-  }
+function linkit_ctools_plugin_type() {
+  $plugins['linkit'] = array(
+    'child plugins' => TRUE,
+    'classes' => array('class'),
+    'process' => 'linkit_linkit_plugin_process',
+  );
+  return $plugins;
 }
+
+/**
+ * CTools callback; Process the behavoir plugins.
+ */
+function linkit_linkit_plugin_process(&$plugin, $info) {
+  $plugin += array(
+    'description' => '',
+  );
+}
+
 
 /**
  * Provide a default profile.
@@ -1119,14 +1131,29 @@ function linkit_default_linkit_profile() {
 }
 
 /**
- * Returns a reference to the plugin class.
+ * Get the plugin handler for a given plugin.
  */
-function linkit_get_plugin_instance($class_name) {
-  if (class_exists($class_name)) {
-    $instance = new $class_name();
-    return $instance;
+function linkit_get_plugin_handler($plugin, $profile = NULL, $search_string = NULL) {
+  $object_cache = drupal_static(__FUNCTION__);
+
+  $identifier = $plugin['name'];
+  $matches = array();
+  if (!isset($object_cache[$identifier])) {
+    ctools_include('plugins');
+    $class = ctools_plugin_load_class($plugin['module'], 'linkit', $identifier, 'class');
+    if (class_exists($class)) {
+      $object_cache[$identifier] = new $class($plugin, $profile);
+      $object_cache[$identifier]->setSearchString($search_string);
+
+      $results = $object_cache[$identifier]->autocomplete_callback();
+      $matches = array_merge($matches, $results);
+//call_user_func(array($class, 'init'), $profile, $identifier);
+    }
+    else {
+      $object_cache[$identifier] = 'broken'; //EntityReference_SelectionHandler_Broken::getInstance($field, $instance);
+    }
   }
-  else {
-    return FALSE;
-  }
+  //dsm($matches);
+  //dsm($object_cache);
+  return $object_cache[$identifier];
 }
