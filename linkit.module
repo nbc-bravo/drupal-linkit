@@ -2,7 +2,7 @@
 
 // FOR DEV TEST ONLY
 function linkit_init() {
-  if (0) {
+  if (1) {
     $enabled_plugins = linkit_get_profile_plugins();
     $search = 'Lorem';
     $matches = _linkit_autocomplete_search($search, $enabled_plugins);
@@ -269,7 +269,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
 
     foreach ($enabled_plugins as $plugin) {
       // Get an instance og the handler for this plugin.
-      $handler = linkit_get_plugin_handler($plugin, $profile, $search_string);
+      $handler = linkit_get_plugin_handler($plugin, $profile);
       $handler->setSearchString($search_string);
 
       $results = $handler->autocomplete_callback();
@@ -1135,24 +1135,16 @@ function linkit_default_linkit_profile() {
  */
 function linkit_get_plugin_handler($plugin, $profile = NULL, $search_string = NULL) {
   $object_cache = drupal_static(__FUNCTION__);
-
   $identifier = $plugin['name'];
   if (!isset($object_cache[$identifier])) {
     ctools_include('plugins');
     $class = ctools_plugin_load_class($plugin['module'], 'linkit', $identifier, 'class');
     if (class_exists($class)) {
       $object_cache[$identifier] = new $class($plugin, $profile);
-      //$object_cache[$identifier]->setSearchString($search_string);
-
-      //$results = $object_cache[$identifier]->autocomplete_callback();
-      //$matches = array_merge($matches, $results);
-//call_user_func(array($class, 'init'), $profile, $identifier);
     }
     else {
       $object_cache[$identifier] = 'broken'; //EntityReference_SelectionHandler_Broken::getInstance($field, $instance);
     }
   }
-  //dsm($matches);
-  //dsm($object_cache);
   return $object_cache[$identifier];
 }

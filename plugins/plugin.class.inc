@@ -74,10 +74,6 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    * Generate a settings form for this handler.
    * Uses the standard Drupal FAPI.
    *
-   *
-   * @param  &$form
-   *   The FAPI array from the profile page.
-   *
    * @return
    *   An array containing any custom form elements to be displayed in the
    *   profile editing form

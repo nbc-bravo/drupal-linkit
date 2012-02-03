@@ -114,6 +114,17 @@ class LinkitPluginEntity extends LinkitPlugin {
   }
 
   /**
+   * If there is a "result_description", run it thro token_replace.
+   */
+  function buildDescription($item) {
+    if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
+      return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
+       $this->plugin['entity_type'] => $item,
+      ));
+    }
+  }
+
+  /**
    * When "group_by_bundle" is active, we need to add the bundle name to the
    * group, else just return the entity label.
    *
@@ -209,7 +220,7 @@ class LinkitPluginEntity extends LinkitPlugin {
    function buildSettingsForm() {
     $conf = isset($this->profile->data[$this->plugin['name']]) ?
             $this->profile->data[$this->plugin['name']] : array();
-    dsm($this->entity_info);
+
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',
       '#title' => t('!type plugin', array('!type' => $this->plugin['title'])),
@@ -223,29 +234,39 @@ class LinkitPluginEntity extends LinkitPlugin {
       ),
     );
 
+    // A short description in within the serach result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
       '#title' => t('Result format'),
       '#type' => 'textfield',
-      '#default_value' => isset($conf['result_description']) ? $conf['result_description'] : 'by [node:author] · [node:created:short]',
+      '#default_value' => isset($conf['result_description']) ? $conf['result_description'] : '',
       '#size' => 120,
       '#maxlength' => 255,
-      '#description' => t('Available tokens: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
     );
 
-    $form[$this->plugin['name']]['bundles'] = array(
-      '#title' => t('Type filter'),
-      '#type' => 'checkboxes',
-      '#options' => node_type_get_names(),
-      '#default_value' => isset($conf['bundles']) ? $conf['bundles'] : array(),
-      '#description' => t('If left blank, all types will appear in autocomplete results.'),
-    );
+    //@TODO: Does this give us an error when there is no bundles?
+    if (count($this->entity_info['bundles']) > 1) {
+      $bundles = array();
+      // Extract the bundle data.
+      foreach ($this->entity_info['bundles'] as $bundle_name => $bundle) {
+        $bundles[$bundle_name] = $bundle['label'];
+      }
 
-    $form[$this->plugin['name']]['group_by_bundle'] = array(
-      '#title' => t('Group nodes by type'),
-      '#type' => 'checkbox',
-      '#default_value' => isset($conf['group_by_bundle']) ? $conf['group_by_bundle'] : 1,
-    );
+      // Filter the possible bundles to use if the entity has bundles.
+      $form[$this->plugin['name']]['bundles'] = array(
+        '#title' => t('Type filter'),
+        '#type' => 'checkboxes',
+        '#options' => $bundles,
+        '#default_value' => isset($conf['bundles']) ? $conf['bundles'] : array(),
+        '#description' => t('If left blank, all types will appear in autocomplete results.'),
+      );
 
+      // Group the results with this bundle.
+      $form[$this->plugin['name']]['group_by_bundle'] = array(
+        '#title' => t('Group nodes by type'),
+        '#type' => 'checkbox',
+        '#default_value' => isset($conf['group_by_bundle']) ? $conf['group_by_bundle'] : 1,
+      );
+    }
     return $form;
   }
 }

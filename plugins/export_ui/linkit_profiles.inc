@@ -95,7 +95,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     // Get an instance og the handler for this plugin.
     $handler = linkit_get_plugin_handler($plugin, $profile);
     $plugin_form = $handler->buildSettingsForm();
-    dsm($plugin_form);
+    // Add the handler settings form to the generic.
     $form['data'] += $plugin_form;
   }
 
