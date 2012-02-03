@@ -196,4 +196,56 @@ class LinkitPluginEntity extends LinkitPlugin {
     }
     return $matches;
   }
+
+  /**
+   * Generate a settings form for this handler.
+   * Uses the standard Drupal FAPI.
+   * The element will be attached to the "data" key.
+   *
+   * @return
+   *   An array containing any custom form elements to be displayed in the
+   *   profile editing form
+   */
+   function buildSettingsForm() {
+    $conf = isset($this->profile->data[$this->plugin['name']]) ?
+            $this->profile->data[$this->plugin['name']] : array();
+    dsm($this->entity_info);
+    $form[$this->plugin['name']] = array(
+      '#type' => 'fieldset',
+      '#title' => t('!type plugin', array('!type' => $this->plugin['title'])),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+      '#states' => array(
+        'invisible' => array(
+          'input[name="plugins[' . $this->plugin['name'] . '][enabled]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+
+    $form[$this->plugin['name']]['result_description'] = array(
+      '#title' => t('Result format'),
+      '#type' => 'textfield',
+      '#default_value' => isset($conf['result_description']) ? $conf['result_description'] : 'by [node:author] · [node:created:short]',
+      '#size' => 120,
+      '#maxlength' => 255,
+      '#description' => t('Available tokens: %tokens.', array('%tokens' => '[node:nid], [node:vid], [node:tnid], [node:type], [node:type-name], [node:title], [node:language], [node:created], [node:changed], [node:author]')),
+    );
+
+    $form[$this->plugin['name']]['bundles'] = array(
+      '#title' => t('Type filter'),
+      '#type' => 'checkboxes',
+      '#options' => node_type_get_names(),
+      '#default_value' => isset($conf['bundles']) ? $conf['bundles'] : array(),
+      '#description' => t('If left blank, all types will appear in autocomplete results.'),
+    );
+
+    $form[$this->plugin['name']]['group_by_bundle'] = array(
+      '#title' => t('Group nodes by type'),
+      '#type' => 'checkbox',
+      '#default_value' => isset($conf['group_by_bundle']) ? $conf['group_by_bundle'] : 1,
+    );
+
+    return $form;
+  }
 }

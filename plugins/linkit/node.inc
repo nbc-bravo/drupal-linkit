@@ -34,5 +34,11 @@ class LinkitPluginNode extends LinkitPluginEntity {
      if (isset($this->profile->data['node']['include_unpublished']) && $entity->status == NODE_NOT_PUBLISHED) {
       return 'unpublished-node';
     }
+
+    $form[$this->plugin['name']]['include_unpublished'] = array(
+      '#title' => t('Include unpublished nodes'),
+      '#type' => 'checkbox',
+      '#default_value' => isset($profile->data['node']['include_unpublished']) ? $profile->data['node']['include_unpublished'] : 0,
+    );
   }
 }

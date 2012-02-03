@@ -65,13 +65,22 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    * Returns a string with CSS classes that will be added to the search result
    * row for this item.
    *
-   * @return a string with CSS classes
+   * @return
+   *   A string with CSS classes
    */
   function buildRowClass() {}
 
   /**
-   * Add plugin settings to the profile settings page.
-   * Use regular Drupal FAPI elements.
+   * Generate a settings form for this handler.
+   * Uses the standard Drupal FAPI.
+   *
+   *
+   * @param  &$form
+   *   The FAPI array from the profile page.
+   *
+   * @return
+   *   An array containing any custom form elements to be displayed in the
+   *   profile editing form
    */
-  function buildSettingsForm() {}
+   function buildSettingsForm() {}
 }
