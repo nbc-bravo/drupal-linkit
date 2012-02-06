@@ -1,40 +1,4 @@
 <?php
-/**
- * @file
- * Linkit Entity Plugin.
- *
- */
-$plugin = array(
-  'title' => t("Entity : bundle"),
-  'description' => t('Enables.'),
-  'get child' => 'linkit_entity_ctools_linkit_get_child',
-  'get children' => 'linkit_entity_ctools_linkit_get_children',
-  'class' => 'LinkitPluginEntity',
-);
-
-function linkit_entity_ctools_linkit_get_child($plugin, $parent, $child) {
-  $plugins = linkit_entity_ctools_linkit_get_children($plugin, $parent);
-  return $plugins[$parent . ':' . $child];
-}
-
-function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
-  $entities = entity_get_info();
-  $plugins = array();
-
-  foreach ($entities as $entity_type => $entity) {
-    // We can and will only use entities that have an URI CALLBACK defined.
-    if (!isset($entity['uri callback'])) {
-      continue;
-    }
-    $plugin['title'] = $entity['label'];
-    $plugin['description'] = t('Enable Linkit to search for the @entity entity bundle.', array('@entity' => $entity_type));
-    $plugin['name'] = $parent . ':' . $entity_type;
-    $plugin['entity_type'] = $entity_type;
-    $plugins[$parent . ':' . $entity_type] = $plugin;
-  }
-
-  return $plugins;
-}
 
 /**
  * Define Linkit entity plugin.
@@ -70,6 +34,13 @@ class LinkitPluginEntity extends LinkitPlugin {
   var $entity_key_bundle;
 
   /**
+   * Plugin specific settings.
+   *
+   * @var arrayu
+   */
+  var $conf;
+
+  /**
    *
    * @param object $profile
    *   The Linkit profile to use.
@@ -91,6 +62,8 @@ class LinkitPluginEntity extends LinkitPlugin {
     if(!isset($this->entity_field_label)) {
       $this->entity_field_label = $this->entity_info['entity keys']['label'];
     }
+
+    $this->conf = $this->profile->data[$this->plugin['name']];
   }
 
   /**
@@ -117,11 +90,9 @@ class LinkitPluginEntity extends LinkitPlugin {
    * If there is a "result_description", run it thro token_replace.
    */
   function buildDescription($item) {
-    if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
-      return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-       $this->plugin['entity_type'] => $item,
-      ));
-    }
+    return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
+      $this->plugin['entity_type'] => $item,
+    ));
   }
 
   /**
@@ -136,8 +107,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
     // If the entities by this entity should be grouped by bundle, get the
     // name and append it to the group.
-    if (isset($this->profile->data[$this->plugin['name']]['group_by_bundle']) &&
-            $this->profile->data[$this->plugin['name']]['group_by_bundle']) {
+    if ($this->profile->data[$this->plugin['name']]['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
@@ -181,6 +151,13 @@ class LinkitPluginEntity extends LinkitPlugin {
         ->addTag('linkit_entity_autocomplete')
         ->addTag('linkit_' . $this->plugin['name'] . '_autocomplete');
 
+    // Bundle check.
+    if (isset($this->entity_key_bundle) ) {
+      if ($bundles = array_filter($this->conf['bundles'])) {
+        $this->query->propertyCondition($this->entity_key_bundle, $bundles, 'IN');
+      }
+    }
+
     // Execute the query.
     $result = $this->query->execute();
 
@@ -218,9 +195,6 @@ class LinkitPluginEntity extends LinkitPlugin {
    *   profile editing form
    */
    function buildSettingsForm() {
-    $conf = isset($this->profile->data[$this->plugin['name']]) ?
-            $this->profile->data[$this->plugin['name']] : array();
-
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',
       '#title' => t('!type plugin', array('!type' => $this->plugin['title'])),
@@ -238,12 +212,12 @@ class LinkitPluginEntity extends LinkitPlugin {
     $form[$this->plugin['name']]['result_description'] = array(
       '#title' => t('Result format'),
       '#type' => 'textfield',
-      '#default_value' => isset($conf['result_description']) ? $conf['result_description'] : '',
+      '#default_value' => isset($this->conf['result_description']) ? $this->conf['result_description'] : '',
       '#size' => 120,
       '#maxlength' => 255,
     );
 
-    //@TODO: Does this give us an error when there is no bundles?
+    // If there is bundles, add some default settings features.
     if (count($this->entity_info['bundles']) > 1) {
       $bundles = array();
       // Extract the bundle data.
@@ -256,7 +230,7 @@ class LinkitPluginEntity extends LinkitPlugin {
         '#title' => t('Type filter'),
         '#type' => 'checkboxes',
         '#options' => $bundles,
-        '#default_value' => isset($conf['bundles']) ? $conf['bundles'] : array(),
+        '#default_value' => isset($this->conf['bundles']) ? $this->conf['bundles'] : array(),
         '#description' => t('If left blank, all types will appear in autocomplete results.'),
       );
 
@@ -264,7 +238,7 @@ class LinkitPluginEntity extends LinkitPlugin {
       $form[$this->plugin['name']]['group_by_bundle'] = array(
         '#title' => t('Group nodes by type'),
         '#type' => 'checkbox',
-        '#default_value' => isset($conf['group_by_bundle']) ? $conf['group_by_bundle'] : 1,
+        '#default_value' => isset($this->conf['group_by_bundle']) ? $this->conf['group_by_bundle'] : 0,
       );
     }
     return $form;

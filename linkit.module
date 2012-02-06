@@ -4,7 +4,7 @@
 function linkit_init() {
   if (1) {
     $enabled_plugins = linkit_get_profile_plugins();
-    $search = 'Lorem';
+    $search = 'Vol';
     $matches = _linkit_autocomplete_search($search, $enabled_plugins);
     dsm($matches);
   }
@@ -270,6 +270,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
     foreach ($enabled_plugins as $plugin) {
       // Get an instance og the handler for this plugin.
       $handler = linkit_get_plugin_handler($plugin, $profile);
+      dsm($handler);
       $handler->setSearchString($search_string);
 
       $results = $handler->autocomplete_callback();
@@ -741,74 +742,6 @@ function linkit_linkit_attributes($profile) {
 }
 
 /**
- * Implements hook_linkit_plugins().
- */
-function linkit_linkit_plugins() {
-  $entity_info = entity_get_info();
-
-  foreach ($entity_info as $name => $info) {
-    $plugins[$name] = array(
-     'title' => $info['label'],
-     'description' => t('Entity: %label', array('%label' => $info['label'])),
-     //'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.' . $name . '.inc',
-     'pluginClass' => 'LinkitPlugin' . $name,
-    );
-  }
-
-  /*
-   $plugins['node'] = array(
-    'title' => t('Node'),
-    'description' => t('Find nodes by node title.'),
-    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.node.inc',
-    'autocomplete callback' => '_linkit_node_autocomplete',
-    'path info callback' => '_linkit_node_path_info'
-  );
-
-  $plugins['user'] = array(
-    'title' => t('User'),
-    'description' => t('Find users by user name.'),
-    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.user.inc',
-    'autocomplete callback' => '_linkit_user_autocomplete',
-    'path info callback' => '_linkit_user_path_info'
-  );
-
-  $plugins['file'] = array(
-    'title' => t('File'),
-    'description' => t('Find public and private Drupal files by file name.'),
-    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.file.inc',
-    'autocomplete callback' => '_linkit_file_autocomplete',
-    'path info callback' => '_linkit_file_path_info',
-  );
-
-  $plugins['taxonomy'] = array(
-    'title' => t('Taxonomy'),
-    'description' => t('Find taxonomy terms by term name.'),
-    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.taxonomy.inc',
-    'autocomplete callback' => '_linkit_taxonomy_autocomplete',
-    'path info callback' => '_linkit_taxonomy_path_info'
-  );
-  */
-  /*
-  $plugins['external'] = array(
-    'title' => t('External URI'),
-    'description' => t('Paste external URI\'s into the autocomplete search field. Linkit immiediately identifies broken URI\'s.'),
-    'file' => drupal_get_path('module', 'linkit') . '/plugins/linkit.external.inc',
-    'path info callback' => '_linkit_external_path_info'
-  );
-   */
-
-  return $plugins;
-}
-
-/**
- * Alter our entity plugins.
- */
-function linkit_linkit_get_plugins_alter(&$plugins) {
-
-}
-
-
-/**
  * Get all enabled attributes for the profiles used on the dashboard.
  */
 function linkit_get_profile_attributes() {
@@ -857,18 +790,29 @@ function linkit_get_profile_plugins() {
  *   An array of arrays with information about all available linkit plugins.
  */
 function linkit_get_plugins() {
-  ctools_include('context');
   ctools_include('plugins');
-  $plugins = ctools_get_plugins('linkit', 'linkit');
-  //dsm($plugins);
-  // @TODO: Is this alter needed or does ctools implments an alter function?
+  $plugins = ctools_get_plugins('linkit', 'linkit_plugins');
+  // If you alter the plugins handler, be sure the new handler is registerd or
+  // you include it in some other way.
   drupal_alter('linkit_plugins', $plugins);
-
   return $plugins;
 }
 
 /**
- * Get the "best" Linkit profile based on the users roles to use on the dashboard.
+ * Fetch metadata for one linkit plugin by the given name.
+ */
+function linkit_get_plugin($plugin_name) {
+  ctools_include('plugins');
+  $plugin = ctools_get_plugins('linkit', 'linkit_plugins', $plugin_name);
+  // If you alter the plugin handler, be sure the new handler is registerd or
+  // you include it in some other way.
+  drupal_alter('linkit_plugin', $plugin);
+  return $plugin;
+}
+
+/**
+ * Get the "best" Linkit profile based on the users roles to use on the
+ * dashboard.
  */
 function linkit_get_dashboard_profile() {
   global $user;
@@ -1013,10 +957,10 @@ function linkit_ctools_plugin_directory($module, $plugin) {
  * owns Linkit plugin types.
  */
 function linkit_ctools_plugin_type() {
-  $plugins['linkit'] = array(
+  $plugins['linkit_plugins'] = array(
     'child plugins' => TRUE,
-    'classes' => array('class'),
-    'process' => 'linkit_linkit_plugin_process',
+    'classes' => array('handler', 'entity fallback handler'),
+    'process' => 'linkit_linkit_plugins_process',
   );
   return $plugins;
 }
@@ -1024,7 +968,7 @@ function linkit_ctools_plugin_type() {
 /**
  * CTools callback; Process the behavoir plugins.
  */
-function linkit_linkit_plugin_process(&$plugin, $info) {
+function linkit_linkit_plugins_process(&$plugin, $info) {
   $plugin += array(
     'description' => '',
   );
@@ -1133,17 +1077,27 @@ function linkit_default_linkit_profile() {
 /**
  * Get the plugin handler for a given plugin.
  */
-function linkit_get_plugin_handler($plugin, $profile = NULL, $search_string = NULL) {
+function linkit_get_plugin_handler($plugin, $profile = NULL) {
   $object_cache = drupal_static(__FUNCTION__);
   $identifier = $plugin['name'];
   if (!isset($object_cache[$identifier])) {
     ctools_include('plugins');
-    $class = ctools_plugin_load_class($plugin['module'], 'linkit', $identifier, 'class');
+    // Try load the default handler.
+    $class = ctools_plugin_get_class($plugin, 'handler');
     if (class_exists($class)) {
       $object_cache[$identifier] = new $class($plugin, $profile);
     }
     else {
-      $object_cache[$identifier] = 'broken'; //EntityReference_SelectionHandler_Broken::getInstance($field, $instance);
+      $object_cache[$identifier] = 'broken';
+
+      // The default handler class does not seems to exists, lets try the
+      // entity fallback handler if we have any.
+      if (isset($plugin['entity fallback handler'])) {
+        $fallback_class = ctools_plugin_get_class($plugin, 'entity fallback handler');
+        if (class_exists($fallback_class)) {
+          $object_cache[$identifier] = new $fallback_class($plugin, $profile);
+        }
+      }
     }
   }
   return $object_cache[$identifier];

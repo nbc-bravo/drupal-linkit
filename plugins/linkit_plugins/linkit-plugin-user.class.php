@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Linkit User Plugin.
- */
 
 /**
  * Define Linkit user plugin class.
