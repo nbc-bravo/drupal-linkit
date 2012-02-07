@@ -107,7 +107,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
     // If the entities by this entity should be grouped by bundle, get the
     // name and append it to the group.
-    if ($this->profile->data[$this->plugin['name']]['group_by_bundle']) {
+    if (isset($this->conf['group_by_bundle']) && $this->conf['bundles']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
@@ -152,7 +152,7 @@ class LinkitPluginEntity extends LinkitPlugin {
         ->addTag('linkit_' . $this->plugin['name'] . '_autocomplete');
 
     // Bundle check.
-    if (isset($this->entity_key_bundle) ) {
+    if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {
       if ($bundles = array_filter($this->conf['bundles'])) {
         $this->query->propertyCondition($this->entity_key_bundle, $bundles, 'IN');
       }
