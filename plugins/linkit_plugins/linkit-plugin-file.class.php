@@ -10,31 +10,44 @@ class LinkitPluginFile extends LinkitPluginEntity {
    */
   function buildDescription($file) {
     $description_array = array();
+    //Get image info.
+    $imageinfo = image_get_info($file->uri);
 
-   if ($this->conf['image_extra_info']['thumbnail'] || $this->conf['image_extra_info']['dimensions']) {
-     $imageinfo = image_get_info($file->uri);
-   }
+    if ($this->conf['image_extra_info']['thumbnail']) {
+      $image = $imageinfo ? theme_image_style(array(
+          'width' => $imageinfo['width'],
+          'height' => $imageinfo['height'],
+          'style_name' => 'linkit_thumb',
+          'path' => $file->uri,
+        )) : '';
+    }
 
-   if ($this->conf['image_extra_info']['thumbnail']) {
-     $image = $imageinfo ? theme_image_style(array(
-       'style_name' => 'linkit_thumb',
-       'path' => $file->uri,
-     )) : '';
-   }
+    if ($this->conf['image_extra_info']['dimensions'] && !empty($imageinfo)) {
+      $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
+    }
 
-   if ($this->conf['image_extra_info']['dimensions'] && !empty($imageinfo)) {
-     $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
-   }
+    $description_array[] = parent::buildDescription($file);
 
-   $description_array[] = parent::buildDescription($file);
+    if ($this->conf['show_scheme']) {
+      $description_array[] = file_uri_scheme($file->uri) . '://';
+    }
 
-   if ($this->conf['show_scheme']) {
-     $description_array[] = file_uri_scheme($file->uri) . '://';
-   }
+    $description = (isset($image) ? $image : '') . implode('<br />' , $description_array);
 
-   $description = (isset($image) ? $image : '') . implode('<br />' , $description_array);
+    return $description;
+  }
 
-   return $description;
+  /**
+   *
+   */
+  function buildGroup($file) {
+    $group = parent::buildGroup($file);
+    if ($this->conf['group_by_scheme']) {
+      // Get all stream wrappers.
+      $stream_wrapper = file_get_stream_wrappers();
+      $group .= ' · ' . $stream_wrapper[file_uri_scheme($file->uri)]['name'];
+    }
+    return $group;
   }
 
   /**
