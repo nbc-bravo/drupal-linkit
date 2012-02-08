@@ -1,10 +1,11 @@
 <?php
 
 // FOR DEV TEST ONLY
-function linkit_init() {
+function linkit_init() {;
   if (1) {
     $enabled_plugins = linkit_get_profile_plugins();
-    $search = 'Vol';
+    
+    $search = 'IMAG';
     $matches = _linkit_autocomplete_search($search, $enabled_plugins);
     dsm($matches);
   }

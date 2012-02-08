@@ -161,6 +161,10 @@ class LinkitPluginEntity extends LinkitPlugin {
     // Execute the query.
     $result = $this->query->execute();
 
+    if (!isset($result[$this->plugin['entity_type']])) {
+      return array();
+    }
+
     $ids = array_keys($result[$this->plugin['entity_type']]);
 
     // Load all the entities with all the ids we got.
@@ -170,7 +174,7 @@ class LinkitPluginEntity extends LinkitPlugin {
       // If we have the entity module enabled, we check the access againt the
       // definded entity access callback.
       if (module_exists('entity') && !entity_access('view', $this->plugin['entity_type'], $entity)) {
-        continue;
+       // continue;
       }
 
       $matches[] = array(
@@ -236,7 +240,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
       // Group the results with this bundle.
       $form[$this->plugin['name']]['group_by_bundle'] = array(
-        '#title' => t('Group nodes by type'),
+        '#title' => t('Group by bundle'),
         '#type' => 'checkbox',
         '#default_value' => isset($this->conf['group_by_bundle']) ? $this->conf['group_by_bundle'] : 0,
       );
