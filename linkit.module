@@ -1,15 +1,5 @@
 <?php
 
-// FOR DEV TEST ONLY
-function linkit_init() {;
-  if (1) {
-    $enabled_plugins = linkit_get_profile_plugins();
-    
-    $search = 'IMAG';
-    $matches = _linkit_autocomplete_search($search, $enabled_plugins);
-    dsm($matches);
-  }
-}
 /**
  * @file
  * Main file for linkit module.
@@ -271,19 +261,12 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
     foreach ($enabled_plugins as $plugin) {
       // Get an instance og the handler for this plugin.
       $handler = linkit_get_plugin_handler($plugin, $profile);
-      dsm($handler);
+      // Add the search string
       $handler->setSearchString($search_string);
-
+      // Call the plugin seach metod.
       $results = $handler->autocomplete_callback();
+      // Merge the results.
       $matches = array_merge($matches, $results);
-
-      /*
-      // The function should exist, maybe it's better to just throw the error?
-      if (isset($plugin['autocomplete callback'])) {
-        $results = call_user_func($plugin['autocomplete callback'], $search, $profile, $name, $plugin);
-        $matches = array_merge($matches, $results);
-      }
-      */
     }
     // Special for link to frontpage.
     if (strpos($search_string, 'front') !== FALSE) {
