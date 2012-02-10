@@ -1053,3 +1053,23 @@ function linkit_get_plugin_handler($plugin, $profile = NULL) {
   }
   return $object_cache[$identifier];
 }
+
+
+/**
+ * Extract tokens that can be used by the $type.
+ */
+function linkit_extract_tokens($type) {
+  // token_info() has it own static cache, so we can call it as we like.
+  $tokens = token_info();
+  // If no tokens for the type exists, return an empty array.
+  if (!isset($tokens['tokens'][$type])) {
+    return array();
+  }
+
+  $available_tokens = array();
+  foreach ($tokens['tokens'][$type] as $token_key => $token) {
+    $available_tokens[] = '[' . $type . ':' . $token_key . ']';
+  }
+
+  return $available_tokens;
+}

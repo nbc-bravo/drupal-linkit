@@ -222,6 +222,9 @@ class LinkitPluginEntity extends LinkitPlugin {
       ),
     );
 
+   // Get supported tokens for the entity type.
+   $tokens = linkit_extract_tokens($this->plugin['entity_type']);
+
     // A short description in within the serach result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
       '#title' => t('Result format'),
