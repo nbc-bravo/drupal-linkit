@@ -424,42 +424,9 @@ function _linkit_result_from_url($url, $enabled_plugins) {
   // Add the URL query.
   $url_options['query'] = isset($path_info['query']) ? $path_info['query'] : '';
 
-  // Let plugins review the path and optionally return a result.
-  $result = FALSE;
-  $profile = linkit_get_dashboard_profile();
-  foreach ($enabled_plugins as $name => $plugin) {
-    if (isset($plugin['path info callback']) && $result = call_user_func($plugin['path info callback'], $path_info, $profile)) {
-      break;
-    }
-  }
+  $result = array();
 
-  // A plugin gave a result.
-  if ($result) {
-    // Add the default class.
-    if (!isset($result['addClass'])) {
-      $result['addClass'] = 'status-ok';
-    }
-
-    // This is default target path for internal links, can be overridden by plugins.
-    if (!isset($result['path']) && $path_info['target'] == 'internal') {
-      $result['path'] = url($path_info['system_path'], $url_options);
-    }
-    // This is default target path for external links, can be overridden by plugins.
-    elseif (!isset($result['path']) && $path_info['target'] == 'external') {
-      $result['path'] = $path_info['url'];
-    }
-  }
-  // Special path for the frontpage.
-  elseif (isset($path_info['frontpage']) && $path_info['frontpage'] === TRUE) {
-    $result = array(
-      'path' => url('<front>'),
-      'title' => t('Frontpage'),
-      'description' => t('The frontpage for this site.'),
-      'addClass' => 'status-ok',
-    );
-  }
-  // No plugin result, but the URL seems to be internal that we have access to.
-  elseif (isset($path_info['system_path']) && (bool) $path_info['system_path']) {
+ if (isset($path_info['system_path']) && (bool) $path_info['system_path']) {
     $menu_item = menu_get_item($path_info['system_path']);
     $result = array(
       'path' => url($path_info['system_path'], $url_options),
