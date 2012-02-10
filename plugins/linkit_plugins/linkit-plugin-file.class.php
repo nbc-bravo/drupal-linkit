@@ -57,7 +57,7 @@ class LinkitPluginFile extends LinkitPluginEntity {
     // Call the parent getQueryInstance method.
     parent::getQueryInstance();
     // We only what permanent files.
-    $this->query->propertyCondition('status', 1);
+    $this->query->propertyCondition('status', FILE_STATUS_PERMANENT);
   }
 
   /**
