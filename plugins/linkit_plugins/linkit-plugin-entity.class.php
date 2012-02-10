@@ -211,13 +211,13 @@ class LinkitPluginEntity extends LinkitPlugin {
    function buildSettingsForm() {
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',
-      '#title' => t('!type plugin', array('!type' => $this->plugin['title'])),
+      '#title' => t('!type plugin settings', array('!type' => $this->plugin['title'])),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#tree' => TRUE,
       '#states' => array(
         'invisible' => array(
-          'input[name="plugins[' . $this->plugin['name'] . '][enabled]"]' => array('checked' => FALSE),
+          'input[name="data[plugins][' . $this->plugin['name'] . '][enabled]"]' => array('checked' => FALSE),
         ),
       ),
     );
