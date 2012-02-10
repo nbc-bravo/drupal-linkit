@@ -235,6 +235,25 @@ class LinkitPluginEntity extends LinkitPlugin {
       '#description' => t('Available tokens: %tokens.', array('%tokens' => implode(', ', $tokens))),
     );
 
+    // If the token module is installed, lets make some fancy stuff with the
+    // token chooser.
+    if (module_exists('token')) {
+      // Unset the regular description if token module is enabled.
+      unset($form[$this->plugin['name']]['result_description']['#description']);
+
+      // Display the user documentation of placeholders.
+      $form[$this->plugin['name']]['token_help'] = array(
+        '#title' => t('Replacement patterns'),
+        '#type' => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $form[$this->plugin['name']]['token_help']['help'] = array(
+        '#theme' => 'token_tree',
+        '#token_types' => array($this->plugin['entity_type']),
+      );
+    }
+
     // If there is bundles, add some default settings features.
     if (count($this->entity_info['bundles']) > 1) {
       $bundles = array();
