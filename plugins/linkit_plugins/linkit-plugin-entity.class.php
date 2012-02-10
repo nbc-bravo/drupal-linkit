@@ -50,7 +50,7 @@ class LinkitPluginEntity extends LinkitPlugin {
    *   The plugin array.
    */
   function __construct($plugin, $profile) {
-    parent::init($plugin, $profile);
+    parent::__construct($plugin, $profile);
 
     // Load the corresponding entity.
     $this->entity_info = entity_get_info($this->plugin['entity_type']);
