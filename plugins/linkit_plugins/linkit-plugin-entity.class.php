@@ -208,7 +208,7 @@ class LinkitPluginEntity extends LinkitPlugin {
    *   An array containing any custom form elements to be displayed in the
    *   profile editing form
    */
-   function buildSettingsForm() {
+  function buildSettingsForm() {
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',
       '#title' => t('!type plugin settings', array('!type' => $this->plugin['title'])),
@@ -222,8 +222,8 @@ class LinkitPluginEntity extends LinkitPlugin {
       ),
     );
 
-   // Get supported tokens for the entity type.
-   $tokens = linkit_extract_tokens($this->plugin['entity_type']);
+    // Get supported tokens for the entity type.
+    $tokens = linkit_extract_tokens($this->plugin['entity_type']);
 
     // A short description in within the serach result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
@@ -232,6 +232,7 @@ class LinkitPluginEntity extends LinkitPlugin {
       '#default_value' => isset($this->conf['result_description']) ? $this->conf['result_description'] : '',
       '#size' => 120,
       '#maxlength' => 255,
+      '#description' => t('Available tokens: %tokens.', array('%tokens' => implode(', ', $tokens))),
     );
 
     // If there is bundles, add some default settings features.
