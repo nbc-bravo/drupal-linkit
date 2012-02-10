@@ -64,6 +64,34 @@
         }
       });
 
+      // Add it to the rightclick menu
+      if (editor.addMenuGroup)
+      {
+        editor.addMenuGroup("Linkit", 100);
+      }
+
+      if (editor.addMenuItems)
+      {
+        editor.addMenuItems( {
+          linkit: {
+            label: 'Linkit',
+            command: 'linkit',
+            icon: this.path + 'linkit.png',
+            group : 'Linkit',
+            order : 0
+          }
+        });
+      }
+
+      if (editor.contextMenu)
+      {
+        editor.contextMenu.addListener(function(element, selection) {
+          if (!element || element.isReadOnly() || (selection.getSelectedText().length < 1 && !element.is('a')))
+            return null;
+          return { linkit: CKEDITOR.TRISTATE_ON };
+        });
+      }
+
       // Register an extra fucntion, this will be used in the popup.
       editor._.linkitFnNum = CKEDITOR.tools.addFunction( insertLink, editor );
     }
