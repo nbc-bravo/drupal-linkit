@@ -41,6 +41,8 @@ class LinkitPluginEntity extends LinkitPlugin {
   var $conf;
 
   /**
+   * Initialize this plugin with the plugin, profile, and entity specific
+   * variables.
    *
    * @param object $profile
    *   The Linkit profile to use.
@@ -53,28 +55,29 @@ class LinkitPluginEntity extends LinkitPlugin {
     // Load the corresponding entity.
     $this->entity_info = entity_get_info($this->plugin['entity_type']);
 
-    // Set bundle key.
+    // Set bundle key name.
     if (isset($this->entity_info['entity keys']['bundle'])) {
       $this->entity_key_bundle = $this->entity_info['entity keys']['bundle'];
     }
 
-    // Set the label field.
+    // Set the label field name.
     if(!isset($this->entity_field_label)) {
       $this->entity_field_label = $this->entity_info['entity keys']['label'];
     }
 
+    // Make a shortcut for the profile data settings for this plugin.
     $this->conf = $this->profile->data[$this->plugin['name']];
   }
 
   /**
-   * Returns a string to use as the search result label.
+   * Build the label that will be used in the search result for each row.
    */
   function buildLabel($entity) {
     return entity_label($this->plugin['entity_type'], $entity);
   }
 
   /**
-   * Returns an URL based in the path and the options.
+   * Build an URL based in the path and the options.
    */
   function buildPath($entity, $options = array()) {
     // Create the URI for the entity.
@@ -87,11 +90,18 @@ class LinkitPluginEntity extends LinkitPlugin {
   }
 
   /**
+   * Build the search row description.
+   *
    * If there is a "result_description", run it thro token_replace.
+   *
+   * @param object $data
+   *   An entity object that will be used in the token_place function.
+   *
+   * @see token_replace()
    */
-  function buildDescription($item) {
-    return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-      $this->plugin['entity_type'] => $item,
+  function buildDescription($data) {
+    return token_replace(check_plain($this->conf['result_description']), array(
+      $this->plugin['entity_type'] => $data,
     ));
   }
 

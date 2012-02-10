@@ -4,7 +4,7 @@
  * Define Linkit node plugin class.
  */
 class LinkitPluginNode extends LinkitPluginEntity {
-  var $query;
+
   /**
    * If we are inclunding unpublished nodes in the search results, and this
    * entity is unpublished, we need to tell the user this.
@@ -23,11 +23,9 @@ class LinkitPluginNode extends LinkitPluginEntity {
   /**
    * Returns a string with CSS classes that will be added to the search result
    * row for this item.
-   *
-   * @return a string with CSS classes
    */
   function buildRowClass($entity) {
-     if ($this->conf['include_unpublished'] && $entity->status == NODE_NOT_PUBLISHED) {
+    if ($this->conf['include_unpublished'] && $entity->status == NODE_NOT_PUBLISHED) {
       return 'unpublished-node';
     }
   }
@@ -51,7 +49,7 @@ class LinkitPluginNode extends LinkitPluginEntity {
    *
    * @return
    *   An array containing any custom form elements to be displayed in the
-   *   profile editing form
+   *   profile editing form.
    */
    function buildSettingsForm() {
      // Get the parent settings form.

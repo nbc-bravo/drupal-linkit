@@ -6,19 +6,26 @@
 class LinkitPluginFile extends LinkitPluginEntity {
 
   /**
+   * Build the search row description.
    *
+   * If there is a "result_description", run it thro token_replace.
+   *
+   * @param object $data
+   *   An entity object that will be used in the token_place function.
+   *
+   * @see token_replace()
    */
-  function buildDescription($file) {
+  function buildDescription($data) {
     $description_array = array();
     //Get image info.
-    $imageinfo = image_get_info($file->uri);
+    $imageinfo = image_get_info($data->uri);
 
     if ($this->conf['image_extra_info']['thumbnail']) {
       $image = $imageinfo ? theme_image_style(array(
           'width' => $imageinfo['width'],
           'height' => $imageinfo['height'],
           'style_name' => 'linkit_thumb',
-          'path' => $file->uri,
+          'path' => $data->uri,
         )) : '';
     }
 
@@ -26,10 +33,10 @@ class LinkitPluginFile extends LinkitPluginEntity {
       $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
     }
 
-    $description_array[] = parent::buildDescription($file);
+    $description_array[] = parent::buildDescription($data);
 
     if ($this->conf['show_scheme']) {
-      $description_array[] = file_uri_scheme($file->uri) . '://';
+      $description_array[] = file_uri_scheme($data->uri) . '://';
     }
 
     $description = (isset($image) ? $image : '') . implode('<br />' , $description_array);
@@ -38,20 +45,22 @@ class LinkitPluginFile extends LinkitPluginEntity {
   }
 
   /**
-   *
+   * Adds the file scheme to the group if "group_by_scheme" is activated.
    */
-  function buildGroup($file) {
-    $group = parent::buildGroup($file);
+  function buildGroup($entity) {
+    // The the standard group name.
+    $group = parent::buildGroup($entity);
+    // Add the scheme.
     if ($this->conf['group_by_scheme']) {
       // Get all stream wrappers.
       $stream_wrapper = file_get_stream_wrappers();
-      $group .= ' · ' . $stream_wrapper[file_uri_scheme($file->uri)]['name'];
+      $group .= ' · ' . $stream_wrapper[file_uri_scheme($entity->uri)]['name'];
     }
     return $group;
   }
 
   /**
-   *
+   * Start a new EntityFieldQuery instance.
    */
   function getQueryInstance() {
     // Call the parent getQueryInstance method.
@@ -61,7 +70,13 @@ class LinkitPluginFile extends LinkitPluginEntity {
   }
 
   /**
+   * Generate a settings form for this handler.
+   * Uses the standard Drupal FAPI.
+   * The element will be attached to the "data" key.
    *
+   * @return
+   *   An array containing any custom form elements to be displayed in the
+   *   profile editing form.
    */
   function buildSettingsForm() {
     $form = parent::buildSettingsForm();
