@@ -10,8 +10,11 @@
  * Linkit plugin interface.
  */
 interface LinkitPluginInterface {
+  /**
+   * This method get called when searching for items to link to in the
+   * autocomplete field.
+   */
   public function autocomplete_callback();
-  //public function path_info_callback();
 }
 
 /**
@@ -20,45 +23,65 @@ interface LinkitPluginInterface {
  */
 abstract class LinkitPlugin implements LinkitPluginInterface {
 
-  function init($plugin, $profile) {
+  /**
+   * Initialize this plugin with the plugin and the profile.
+   *
+   * @param array $plugin
+   *   The plugin array.
+   * @param object $profile
+   *   The Linkit profile object.
+   */
+  function __construct($plugin, $profile) {
     $this->plugin = $plugin;
     $this->profile = $profile;
   }
 
-  function setSearchString($serachString) {
-    $this->searchString = $serachString;
+  /**
+   * Set the search string.
+   *
+   * @param string $serach_string.
+   */
+  function setSearchString($serach_string) {
+    $this->serach_string = $serach_string;
   }
 
   /**
-   * Returns a string to use as the search result label.
+   * Build the label that will be used in the search result for each row.
    */
   function buildLabel($label) {
     return check_plain($label);
   }
 
   /**
-   * Returns an URL based in the path and the options.
+   * Build an URL based in the path and the options.
    */
   function buildPath($path, $options = array()) {
     return url($path, $options);
   }
 
   /**
+   * Build the search row description.
+   *
    * If there is a "result_description", run it thro token_replace.
+   *
+   * @param object $data
+   *   An object that will be used in the token_place function
+   *
+   * @see token_replace()
    */
-  function buildDescription($item) {
+  function buildDescription($data) {
     if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
       return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-       $this->plugin_name => $item,
+       $this->plugin_name => $data,l
       ));
     }
   }
 
   /**
-   * Returns a string to use as the search result label.
+   * Returns a string to use as the search result group name.
    */
-  function buildGroup($groupname) {
-    return check_plain($groupname);
+  function buildGroup($group_name) {
+    return check_plain($group_name);
   }
 
   /**
@@ -68,7 +91,12 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    * @return
    *   A string with CSS classes
    */
-  function buildRowClass() {}
+  function buildRowClass($row_classes) {
+    if (is_array($row_classes)) {
+      $row_classes = implode(' ', $row_classes);
+    }
+    return $row_classes;
+  }
 
   /**
    * Generate a settings form for this handler.
