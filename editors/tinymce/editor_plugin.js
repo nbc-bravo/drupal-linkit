@@ -38,6 +38,24 @@
         // If nothing is selected and caret is not in an anchor, disable button.
         cm.setDisabled('linkit', !sel && !p);
       });
+
+      // We need the real contextmenu in order to make this work.
+      if (editor && editor.plugins.contextmenu) {
+        // Contextmenu gets called - this is what we do.
+        editor.plugins.contextmenu.onContextMenu.add(function(th, m, e, col) {
+          // Only if selected node is an link do this.
+          if (e.nodeName == 'A' || !col) {
+            // Remove all options from standard contextmenu.
+            m.removeAll();
+            th._menu.add({
+              title : 'Linkit',
+              cmd : 'mceLinkit',
+              icon : 'linkit'
+            });
+            //m.addSeparator();
+          }
+        });
+      }
     },
 
     getInfo : function() {
