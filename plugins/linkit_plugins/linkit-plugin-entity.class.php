@@ -66,7 +66,8 @@ class LinkitPluginEntity extends LinkitPlugin {
     }
 
     // Make a shortcut for the profile data settings for this plugin.
-    $this->conf = $this->profile->data[$this->plugin['name']];
+    $this->conf = isset($this->profile->data[$this->plugin['name']]) ?
+            $this->profile->data[$this->plugin['name']] : array();
   }
 
   /**
