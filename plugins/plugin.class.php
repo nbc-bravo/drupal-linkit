@@ -72,7 +72,7 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
   function buildDescription($data) {
     if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
       return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-       $this->plugin_name => $data,l
+       $this->plugin_name => $data,
       ));
     }
   }
