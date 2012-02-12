@@ -91,11 +91,15 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
   // Append plugin form element to the setttings form.
   _linkit_build_plugin_form_fields($form, $profile, $plugins);
   foreach ($plugins as $plugin) {
+
     // Get an instance og the handler for this plugin.
     $handler = linkit_get_plugin_handler($plugin, $profile);
     $plugin_form = $handler->buildSettingsForm();
-    // Add the handler settings form to the generic.
-    $form['data'] += $plugin_form;
+
+    if ($plugin_form) {
+      // Add the handler settings form to the generic.
+      $form['data'] += $plugin_form;
+    }
   }
 
   if (module_invoke('imce', 'access')) {
