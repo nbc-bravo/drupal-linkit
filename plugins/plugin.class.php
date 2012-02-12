@@ -11,7 +11,7 @@
  */
 interface LinkitPluginInterface {
   /**
-   * This method get called when searching for items to link to in the
+   * This method gets called when searching for items to link to in the
    * autocomplete field.
    */
   public function autocomplete_callback();
