@@ -178,10 +178,19 @@ function linkit_update_7202() {
       'bundles' => array(),
       'group_by_bundle' => 0,
     );
-    $data['entity:node'] += $deafult;
-    $data['entity:taxonomy_term'] += $deafult;
-    $data['entity:file'] += $deafult;
-    $data['entity:user'] += $deafult;
+
+    if (isset($data['entity:node'])) {
+      $data['entity:node'] += $deafult;
+    }
+    if (isset($data['entity:taxonomy_term'])) {
+      $data['entity:taxonomy_term'] += $deafult;
+    }
+    if (isset($data['entity:file'])) {
+      $data['entity:file'] += $deafult;
+    }
+    if (isset($data['entity:user'])) {
+      $data['entity:user'] += $deafult;
+    }
 
     $profile->data = serialize($data);
 
