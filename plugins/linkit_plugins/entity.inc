@@ -2,8 +2,19 @@
 /**
  * @file
  * Linkit Entity Plugin.
- *
  */
+
+/**
+ * Plugin structure is an associative array containing:
+ * - title: The title of the plugin used in the admin UI.
+ * - description: A description used in the admin UI.
+ * - entity_type: Only required if the plugin extends LinkitPluginEntity. The
+ *     entity type this plugin will be used for.
+ * - handler: Describes the class to be used for this plugin.
+ * - entity fallback handler: (optional) An array describing a class to use if
+ *     the regular handler doesn't exists.
+ */
+
 $plugin = array(
   'title' => t("Entity : bundle"),
   'description' => t('Enables.'),
