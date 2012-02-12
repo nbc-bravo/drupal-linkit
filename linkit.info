@@ -6,4 +6,4 @@ dependencies[] = ctools
 
 
 ; Our plugins interfaces and abstract implementations.
-files[] = plugins/plugin.class.inc
+files[] = plugins/plugin.class.php
