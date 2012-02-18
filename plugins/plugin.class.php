@@ -72,7 +72,7 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
   function buildDescription($data) {
     if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
       return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-       $this->plugin_name => $data,
+        $this->plugin_name => $data,
       ));
     }
   }
@@ -106,5 +106,5 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    *   An array containing any custom form elements to be displayed in the
    *   profile editing form
    */
-   function buildSettingsForm() {}
+  function buildSettingsForm() {}
 }

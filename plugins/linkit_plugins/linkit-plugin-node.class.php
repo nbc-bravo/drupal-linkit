@@ -1,6 +1,6 @@
 <?php
-
 /**
+ * @file
  * Define Linkit node plugin class.
  */
 class LinkitPluginNode extends LinkitPluginEntity {
@@ -51,16 +51,16 @@ class LinkitPluginNode extends LinkitPluginEntity {
    *   An array containing any custom form elements to be displayed in the
    *   profile editing form.
    */
-   function buildSettingsForm() {
-     // Get the parent settings form.
-     $form = parent::buildSettingsForm();
+  function buildSettingsForm() {
+    // Get the parent settings form.
+    $form = parent::buildSettingsForm();
 
-     $form[$this->plugin['name']]['include_unpublished'] = array(
-       '#title' => t('Include unpublished nodes'),
-       '#type' => 'checkbox',
-       '#default_value' => isset($this->conf['include_unpublished']) ? $this->conf['include_unpublished'] : 0,
-     );
+    $form[$this->plugin['name']]['include_unpublished'] = array(
+      '#title' => t('Include unpublished nodes'),
+      '#type' => 'checkbox',
+      '#default_value' => isset($this->conf['include_unpublished']) ? $this->conf['include_unpublished'] : 0,
+    );
 
-     return $form;
-   }
+    return $form;
+  }
 }

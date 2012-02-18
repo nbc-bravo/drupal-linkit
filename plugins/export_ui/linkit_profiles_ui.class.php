@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Class that extends the regular ctools export ui.

@@ -1,6 +1,6 @@
 <?php
-
 /**
+ * @file
  * Define Linkit user plugin class.
  */
 class LinkitPluginUser extends LinkitPluginEntity {

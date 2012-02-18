@@ -357,7 +357,7 @@ function linkit_scan_url($url) {
     // Remove the subdirectory name from the path if the site is installed in
     // subdirectory. It will be added again by the url() function.
     if (base_path() != "/") {
-       $path_info['path'] = trim(preg_replace(base_path(), '', $path_info['path'], 1), '/');
+      $path_info['path'] = trim(preg_replace(base_path(), '', $path_info['path'], 1), '/');
     }
 
     // Trim the path from slashes.
@@ -425,7 +425,7 @@ function _linkit_result_from_url($url, $enabled_plugins) {
 
   $result = array();
 
- if (isset($path_info['system_path']) && (bool) $path_info['system_path']) {
+  if (isset($path_info['system_path']) && (bool) $path_info['system_path']) {
     $menu_item = menu_get_item($path_info['system_path']);
     $result = array(
       'path' => url($path_info['system_path'], $url_options),
@@ -769,7 +769,7 @@ function linkit_get_dashboard_profile() {
   $best_profile = &drupal_static(__FUNCTION__);
 
   if (!isset($best_profile)) {
-    $best_profile = null;
+    $best_profile = NULL;
     // Get the profiles.
     $profiles = linkit_profile_load_all();
     usort($profiles, '_linkit_sort_profiles_by_weight');

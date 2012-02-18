@@ -1,6 +1,6 @@
 <?php
-
 /**
+ * @file
  * Define Linkit entity plugin.
  */
 class LinkitPluginEntity extends LinkitPlugin {
@@ -61,7 +61,7 @@ class LinkitPluginEntity extends LinkitPlugin {
     }
 
     // Set the label field name.
-    if(!isset($this->entity_field_label)) {
+    if (!isset($this->entity_field_label)) {
       $this->entity_field_label = $this->entity_info['entity keys']['label'];
     }
 

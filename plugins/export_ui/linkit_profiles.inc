@@ -71,8 +71,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     '#default_value' => $profile->weight,
     '#delta' => 10,
     '#weight' => -98,
-    '#description' => t('If the user has multiple roles, the profile with lowest weight will then be assigned to the user. ' .
-    										'In general, the most permissive profile should be assigned the lowest weight.'),
+    '#description' => t('If the user has multiple roles, the profile with lowest weight will then be assigned to the user. In general, the most permissive profile should be assigned the lowest weight.'),
   );
 
   $form['roles'] = array(
@@ -438,7 +437,7 @@ function linkit_profiles_reorder() {
  * Save function for the reorder form.
  */
 function linkit_profiles_reorder_submit($form, &$form_state) {
-  foreach($form_state['values']['profiles'] as $profile_machine_name => $value) {
+  foreach ($form_state['values']['profiles'] as $profile_machine_name => $value) {
     $profile = linkit_profile_load($profile_machine_name);
     $profile->weight = $value['weight'];
     linkit_profile_save($profile);

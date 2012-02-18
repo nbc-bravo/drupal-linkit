@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Install, update and uninstall functions for the Linkit module.
@@ -82,7 +81,7 @@ function linkit_schema() {
 function linkit_install() {
   // Linkit is installed, inform the user about that they should create a Linkit
   // profile.
-  drupal_set_message(t('Linkit is successfully installed, you will have to
+  drupal_set_message(st('Linkit is successfully installed, you will have to
     create a profile in order to use Linkit. Create your profile here !link',
     array('!link' => l('admin/config/content/linkit', 'admin/config/content/linkit'))));
 }
@@ -103,7 +102,7 @@ function linkit_update_7200() {
     $schema = linkit_schema();
     // Create the table.
     db_create_table('linkit_profiles', $schema['linkit_profiles']);
-    return t('The table {linkit_profiles} was successfully created.');
+    return st('The table {linkit_profiles} was successfully created.');
   }
 }
 
@@ -117,11 +116,11 @@ function linkit_update_7201() {
   ->execute();
 
   // No old settings deleted
-  if(!$num_deleted) {
-    return t("No old Linkit settings were deleted.");
+  if (!$num_deleted) {
+    return st("No old Linkit settings were deleted.");
   }
   else {
-    return t("Old Linkit settings were deleted.");
+    return st("Old Linkit settings were deleted.");
   }
 }
 
