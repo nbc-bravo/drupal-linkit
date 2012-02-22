@@ -260,7 +260,11 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
     foreach ($enabled_plugins as $plugin) {
       // Get an instance og the handler for this plugin.
       $handler = linkit_get_plugin_handler($plugin, $profile);
-      // Add the search string
+      // If the handler is broken, just continue.
+      if ($handler->broken()) {
+        continue;
+      }
+      // Add the search string.
       $handler->setSearchString($search_string);
       // Call the plugin seach metod.
       $results = $handler->autocomplete_callback();

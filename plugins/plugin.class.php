@@ -126,6 +126,12 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    *   profile editing form
    */
   function buildSettingsForm() {}
+
+  /**
+   * Determine if the handler is considered 'broken', meaning it's a
+   * a placeholder used when a handler can't be found.
+   */
+  function broken() { }
 }
 
 /**
