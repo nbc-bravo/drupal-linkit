@@ -6,8 +6,8 @@
 
 /**
  * Plugin structure is an associative array containing:
- * - title: The title of the plugin used in the admin UI.
- * - description: A description used in the admin UI.
+ * - ui_title: The title of the plugin used in the admin UI.
+ * - ui_description: A description used in the admin UI.
  * - entity_type: Only required if the plugin extends LinkitPluginEntity. The
  *     entity type this plugin will be used for.
  * - handler: Describes the class to be used for this plugin.
@@ -16,8 +16,6 @@
  */
 
 $plugin = array(
-  'title' => t("Entity : bundle"),
-  'description' => t('Enables.'),
   'get child' => 'linkit_entity_ctools_linkit_get_child',
   'get children' => 'linkit_entity_ctools_linkit_get_children',
   'entity fallback handler' => array(
@@ -41,8 +39,8 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
       continue;
     }
 
-    $plugin['title'] = $entity['label'];
-    $plugin['description'] = t('Enable Linkit to search for the @entity entity bundle.', array('@entity' => $entity_type));
+    $plugin['ui_title'] = $entity['label'];
+    $plugin['ui_description'] = t('Extend Linkit with @entity support.', array('@entity' => $entity_type));
     $plugin['name'] = $parent . ':' . $entity_type;
     $plugin['entity_type'] = $entity_type;
     $plugin['handler'] = array(

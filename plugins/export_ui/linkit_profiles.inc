@@ -215,17 +215,20 @@ function _linkit_build_plugin_form_fields(&$form, $profile, $plugins) {
   $tmp_plugins = array();
 
   foreach ($plugins AS $name => $plugin) {
-    $tmp_plugins[$name]['name'] = array('#markup' => $plugin['title']);
-    $tmp_plugins[$name]['description'] = array('#markup' => $plugin['description']);
+    // Get the plugin handler.
+    $handler = linkit_get_plugin_handler($plugin, $profile);
+
+    $tmp_plugins[$name]['name'] = array('#markup' => $handler->ui_title());
+    $tmp_plugins[$name]['description'] = array('#markup' => $handler->ui_description());
     $tmp_plugins[$name]['weight'] = array(
       '#type' => 'weight',
-      '#title' => t('Weight for @title', array('@title' => $plugin['title'])),
+      '#title' => t('Weight for @title', array('@title' => $handler->ui_title())),
       '#title_display' => 'invisible',
       '#default_value' => isset($profile->data['plugins'][$name]['weight']) ? $profile->data['plugins'][$name]['weight'] : LINKIT_DEFAULT_WEIGHT,
     );
     $tmp_plugins[$name]['enabled'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Enable @title', array('@title' => $plugin['title'])),
+      '#title' => t('Enable @title', array('@title' => $handler->ui_title())),
       '#title_display' => 'invisible',
     );
     if (isset($profile->data['plugins'])) {

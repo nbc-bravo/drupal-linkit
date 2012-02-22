@@ -37,6 +37,25 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
   }
 
   /**
+   * Return a string representing this handler's name in the UI.
+   */
+  function ui_title() {
+    if (!isset($this->plugin['ui_title'])) {
+      return check_plain($this->plugin['module'] . ':' . $this->plugin['name']);
+    }
+    return check_plain($this->plugin['ui_title']);
+  }
+
+  /**
+   * Return a string representing this handler's description in the UI.
+   */
+  function ui_description() {
+    if (isset($this->plugin['ui_description'])) {
+      return check_plain($this->plugin['ui_description']);
+    }
+  }
+
+  /**
    * Set the search string.
    *
    * @param string $serach_string.
@@ -107,4 +126,20 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
    *   profile editing form
    */
   function buildSettingsForm() {}
+}
+
+/**
+ * A special handler to take the place of missing or broken handlers.
+ */
+class LinkitPluginBroken extends LinkitPlugin {
+
+  function ui_title() { return t('Broken/missing handler'); }
+
+  function ui_description() {}
+  function autocomplete_callback() {}
+
+  /**
+   * Determine if the handler is considered 'broken'.
+   */
+  function broken() { return TRUE; }
 }

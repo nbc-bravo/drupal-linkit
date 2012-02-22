@@ -938,7 +938,7 @@ function linkit_get_plugin_handler($plugin, $profile = NULL) {
       $object_cache[$identifier] = new $class($plugin, $profile);
     }
     else {
-      $object_cache[$identifier] = 'broken';
+      $object_cache[$identifier] = new LinkitPluginBroken($plugin, $profile);
 
       // The default handler class does not seems to exists, lets try the
       // entity fallback handler if we have any.
