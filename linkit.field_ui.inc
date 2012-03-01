@@ -14,7 +14,7 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
     $form['instance']['settings']['linkit'] = array(
       '#type' => 'fieldset',
       '#title' => t('Linkit field settings'),
-      '#collapsible' => TRUE,
+      '#collapsible' => FALSE,
       '#collapsed' => FALSE,
     );
     $form['instance']['settings']['linkit']['enable'] = array(
