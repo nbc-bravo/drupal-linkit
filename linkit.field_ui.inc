@@ -37,9 +37,14 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
   $allowed_field_types = linkit_allowed_field_types();
   $allowed_widget_types = linkit_allowed_widget_types();
 
+  // Make a list of all profiles.
+  $profiles = array();
+  foreach (linkit_profile_load_all() as $profile) {
+    $profiles[$profile->name] = $profile->admin_title;
+  }
 
   // Add the linkit settings to the field instance form.
-  if ($form['#field']['type'] == 'text' && $form['instance']['widget']['type']['#value'] == 'text_textfield') {
+  if (in_array($form['#field']['type'], $allowed_field_types) && in_array($form['instance']['widget']['type']['#value'], $allowed_widget_types)) {
     $form['instance']['settings']['linkit'] = array(
       '#type' => 'fieldset',
       '#title' => t('Linkit field settings'),
@@ -52,5 +57,52 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#default_value' => isset($instance['settings']['linkit']['enable'])
         ? $instance['settings']['linkit']['enable'] : 0,
     );
+
+    $form['instance']['settings']['linkit']['profile'] = array(
+      '#type' => 'select',
+      '#title' => t('Profile'),
+      '#options' => $profiles,
+      '#default_value' => isset($instance['settings']['linkitprofileenable'])
+        ? $instance['settings']['linkit']['profile'] : '',
+      '#states' => array(
+        'invisible' => array(
+          'input[name="instance[settings][linkit][enable]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function linkit_field_widget_form_alter(&$element, &$form_state, $context) {
+  $instance = $context['instance'];
+  $field = $context['field'];
+
+  if (isset($instance['settings']['linkit']['enable']) && $instance['settings']['linkit']['enable']) {
+    // Add the javascript files needed for the linkit fields.
+    drupal_add_library('linkit', 'linkit_field');
+
+    switch ($instance['widget']['type']) {
+      case 'link_field':
+        dsm($element);
+        dsm($context);
+        $element['#attributes']['class'][] = 'linkit';
+        $settings['fields'] = array(
+          'edit-' . drupal_clean_css_identifier($instance['field_name']) . '-'  . $context['langcode']  . '-'  . $context['delta'] . '-url' => 1,
+        );
+        break;
+      /*
+      case 'entityreference_autocomplete':
+        $settings['fields'] = array(
+          'edit-' . drupal_clean_css_identifier($instance['field_name']) . '-'  . $context['langcode']  . '-'  . $context['delta'] . '-target-id' => 1,
+        );
+        break;
+       */
+    }
+    if (isset($settings)) {
+      drupal_add_js(array('linkit' => $settings), 'setting');
+    }
   }
 }
