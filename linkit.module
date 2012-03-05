@@ -212,6 +212,17 @@ function linkit_library() {
     ),
   );
 
+  // Linkit field ui script.
+  $libraries['linkit_field'] = array(
+    'title' => 'Linkit Field UI',
+    'js' => array(
+      $path . '/js/linkit.field.js' => array('group' => JS_DEFAULT),
+    ),
+    'dependencies' => array(
+      array('linkit', 'linkit_base'),
+    ),
+  );
+
   foreach ($libraries as &$library) {
     $library += $common;
   }
