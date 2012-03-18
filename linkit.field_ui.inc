@@ -81,25 +81,21 @@ function linkit_field_widget_form_alter(&$element, &$form_state, $context) {
   $field = $context['field'];
 
   if (isset($instance['settings']['linkit']['enable']) && $instance['settings']['linkit']['enable']) {
-    // Add the javascript files needed for the linkit fields.
+    // Add the javascript files needed for the linkit field.
     drupal_add_library('linkit', 'linkit_field');
-
     switch ($instance['widget']['type']) {
       case 'link_field':
-        dsm($element);
-        dsm($context);
         $element['#attributes']['class'][] = 'linkit';
         $settings['fields'] = array(
-          'edit-' . drupal_clean_css_identifier($instance['field_name']) . '-'  . $context['langcode']  . '-'  . $context['delta'] . '-url' => 1,
+          $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][url]' => 1,
         );
         break;
-      /*
+
       case 'entityreference_autocomplete':
         $settings['fields'] = array(
-          'edit-' . drupal_clean_css_identifier($instance['field_name']) . '-'  . $context['langcode']  . '-'  . $context['delta'] . '-target-id' => 1,
+          $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][target_id]' => 1,
         );
         break;
-       */
     }
     if (isset($settings)) {
       drupal_add_js(array('linkit' => $settings), 'setting');

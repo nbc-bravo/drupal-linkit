@@ -15,11 +15,10 @@ Drupal.behaviors.linkit_field = {
     if (settings.linkit.fields == null) {
       return false;
     }
-    console.log(settings.linkit.fields);
     $.each(settings.linkit.fields, function(field) {
-      console.log(field);
+
       // Create a "Better Autocomplete" object, see betterautocomplete.js
-      $('#' + field, context).betterAutocomplete('init',
+      $('[name="' + field + '"]', context).betterAutocomplete('init',
         settings.linkit.autocompletePath,
         settings.linkit.autocomplete,
         { // Callbacks
@@ -28,7 +27,7 @@ Drupal.behaviors.linkit_field = {
           if (typeof result.disabled != 'undefined' && result.disabled) {
             return false;
           }
-          $('#' + field, context).val(function(index, value) {
+          $('[name="' + field + '"]').val(function(index, value) {
             return result.path;
           });
         },
