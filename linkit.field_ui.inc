@@ -9,8 +9,9 @@
  */
 function linkit_allowed_field_types() {
   $allowed_field_types = array(
-    'entityreference',
+    //'entityreference',
     'link_field',
+    'text',
   );
   drupal_alter('linkit_allowed_field_types', $allowed_field_types);
   return $allowed_field_types;
@@ -21,8 +22,9 @@ function linkit_allowed_field_types() {
  */
 function linkit_allowed_widget_types() {
   $allowed_widget_types = array(
-    'entityreference_autocomplete',
+    //'entityreference_autocomplete',
     'link_field',
+    'text_textfield',
   );
   drupal_alter('linkit_allowed_widget_types', $allowed_widget_types);
   return $allowed_widget_types;
@@ -85,19 +87,28 @@ function linkit_field_widget_form_alter(&$element, &$form_state, $context) {
     drupal_add_library('linkit', 'linkit_field');
     switch ($instance['widget']['type']) {
       case 'link_field':
-        $element['#attributes']['class'][] = 'linkit';
         $settings['fields'] = array(
           $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][url]' => 1,
         );
         break;
 
+      /*
       case 'entityreference_autocomplete':
+        unset($element['target_id']['#autocomplete_path']);
         $settings['fields'] = array(
           $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][target_id]' => 1,
         );
         break;
+      */
+
+      case 'text_textfield':
+        $settings['fields'] = array(
+          $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][value]' => 1,
+        );
+        break;
     }
     if (isset($settings)) {
+      $element['#attributes']['class'][] = 'linkit';
       drupal_add_js(array('linkit' => $settings), 'setting');
     }
   }
