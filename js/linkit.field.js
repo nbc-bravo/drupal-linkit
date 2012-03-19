@@ -18,7 +18,7 @@ Drupal.behaviors.linkit_field = {
     $.each(settings.linkit.fields, function(field) {
 
       // Create a "Better Autocomplete" object, see betterautocomplete.js
-      $('[name="' + field + '"]', context).betterAutocomplete('init',
+      $('[name="' + field + '"]:not(.linkit-processed)', context).betterAutocomplete('init',
         settings.linkit.autocompletePath,
         settings.linkit.autocomplete,
         { // Callbacks
@@ -50,7 +50,8 @@ Drupal.behaviors.linkit_field = {
             .hide()
             .insertAfter($input);
           }
-      });
+      })
+      .addClass('linkit-processed');
     });
   }
 };
