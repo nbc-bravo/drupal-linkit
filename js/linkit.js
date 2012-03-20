@@ -33,6 +33,9 @@ Drupal.behaviors.linkit = {
           path: result.path
         });
 
+        // Store the result title (Used when no selection is made bythe user).
+        Drupal.linkitCache.link_tmp_title = result.title;
+
        $('#linkit-modal #edit-linkit-path').focus();
       },
       constructURL: function(path, search) {
@@ -53,7 +56,7 @@ Drupal.behaviors.linkit = {
           .insertAfter($('#linkit-modal', context).parent());
         }
     });
-  
+
     $('#linkit-modal .form-text.required', context).bind({
       keyup: Drupal.linkit.dialog.requiredFieldsValidation,
       change: Drupal.linkit.dialog.requiredFieldsValidation});

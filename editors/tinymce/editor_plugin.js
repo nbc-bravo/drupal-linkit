@@ -30,6 +30,8 @@
         image : url + '/images/linkit.png'
       });
 
+      /*
+      // Uncommented as of #1459832.
       editor.onNodeChange.add(function(ed, cm, n, co) {
         var p = tinymce.DOM.getParent(n, 'A'),
             sel = ed.selection.getContent();
@@ -38,6 +40,7 @@
         // If nothing is selected and caret is not in an anchor, disable button.
         cm.setDisabled('linkit', !sel && !p);
       });
+      */
 
       // We need the real contextmenu in order to make this work.
       if (editor && editor.plugins.contextmenu) {
