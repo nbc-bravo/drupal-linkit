@@ -118,7 +118,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
     // If the entities by this entity should be grouped by bundle, get the
     // name and append it to the group.
-    if (isset($this->conf['group_by_bundle']) && $this->conf['bundles']) {
+    if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle'] && $this->conf['bundles']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
