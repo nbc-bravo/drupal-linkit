@@ -6,6 +6,20 @@
 class LinkitPluginFile extends LinkitPluginEntity {
 
   /**
+   * Set the plugin ui title.
+   */
+  function ui_title() {
+    return t('Managed files');
+  }
+
+  /**
+   * Set the plugin ui description.
+   */
+  function ui_description() {
+    return t('Extend Linkit with file support (Managed files).');
+  }
+
+  /**
    * Build the search row description.
    *
    * If there is a "result_description", run it thro token_replace.
