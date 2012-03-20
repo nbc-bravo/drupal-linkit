@@ -99,6 +99,10 @@ function linkit_theme($existing, $type, $theme, $path) {
       'render element' => 'form',
       'file' => 'linkit.theme.inc'
     ),
+    '_linkit_theme_profile_form_table' => array(
+      'variables' => array(),
+      'file' => 'linkit.theme.inc'
+    ),
   );
 }
 
