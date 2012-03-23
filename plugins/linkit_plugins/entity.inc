@@ -34,8 +34,9 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   $plugins = array();
 
   foreach ($entities as $entity_type => $entity) {
-    // We can and will only use entities that have an URI CALLBACK defined.
-    if (!isset($entity['uri callback'])) {
+    // The entity must be linkit compatible and have an URI CALLBACK defined.
+    // See linkit_entity_info_alter().
+    if (!isset($entity['linkit']) || !$entity['linkit'] || !isset($entity['uri callback'])) {
       continue;
     }
 
@@ -45,12 +46,12 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
     $plugin['entity_type'] = $entity_type;
 
     // The handler class must exists.
-    if (linkit_entity_ctools_linkit_get_handler_file($entity_type, $plugin)) {
+    //if (linkit_entity_ctools_linkit_get_handler_file($entity_type, $plugin)) {
       $plugin['handler'] = array(
         'class' => 'LinkitPlugin' . drupal_ucfirst($entity_type),
         'file' => 'linkit-plugin-' . $entity_type . '.class.php',
       );
-    }
+    //}
     drupal_alter('linkit_plugin_entity', $plugin, $entity);
     $plugins[$parent . ':' . $entity_type] = $plugin;
   }
