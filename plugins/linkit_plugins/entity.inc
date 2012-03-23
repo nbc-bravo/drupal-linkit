@@ -43,12 +43,28 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
     $plugin['ui_description'] = t('Extend Linkit with @entity support.', array('@entity' => $entity_type));
     $plugin['name'] = $parent . ':' . $entity_type;
     $plugin['entity_type'] = $entity_type;
-    $plugin['handler'] = array(
-      'class' => 'LinkitPlugin' . drupal_ucfirst($entity_type),
-      'file' => 'linkit-plugin-' . $entity_type . '.class.php',
-    );
+
+    // The handler class must exists.
+    if (linkit_entity_ctools_linkit_get_handler_file($entity_type, $plugin)) {
+      $plugin['handler'] = array(
+        'class' => 'LinkitPlugin' . drupal_ucfirst($entity_type),
+        'file' => 'linkit-plugin-' . $entity_type . '.class.php',
+      );
+    }
+    drupal_alter('linkit_plugin_entity', $plugin, $entity);
     $plugins[$parent . ':' . $entity_type] = $plugin;
   }
 
+  drupal_alter('linkit_plugin_entitys', $plugins);
   return $plugins;
+}
+
+/**
+ * Find the handle class file.
+ */
+function linkit_entity_ctools_linkit_get_handler_file($entity_type, $plugin) {
+  $classname = 'LinkitPlugin' . drupal_ucfirst($entity_type);
+  $filename = 'linkit-plugin-' . $entity_type . '.class.php';
+
+  $path = $plugin['path'] . '/' . $filename;
 }
