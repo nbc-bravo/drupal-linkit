@@ -986,7 +986,7 @@ function linkit_extract_tokens($type) {
  *
  * Control which enteties that can be used by Linkit.
  * Other modules can easy implement this hook aswell and make their enteties
- * usable with Linkit.
+ * usable with Linkit or change directly in the the hook_entity_info().
  */
 function linkit_entity_info_alter(&$entity_info) {
   // An array of entity names that is allowed to be used in Linkit.
