@@ -17,7 +17,7 @@ function linkit_file_linkit_load_plugins($string) {
   while ($file = db_fetch_object($result)) {
     $matches['file'][] = array(
       'title' => $file->filename,
-      'path' => $file->filepath,
+      'path' => base_path().$file->filepath,
       'information' => array(
         'type' => 'File',
       ),
