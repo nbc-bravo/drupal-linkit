@@ -1,5 +1,10 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 6.x-1.11, 2012-03-26
+------------------------------
+Fixed issue #1421768: Missing basepath for file plugin.
+Fixed issue #1469392: Scrollbars to the popup
+
 Linkit 6.x-1.10, 2011-10-29
 ------------------------------
 #1055528 by anon: Added support for BUEditor and MarkdownEditor
