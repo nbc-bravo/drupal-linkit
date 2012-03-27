@@ -4,8 +4,6 @@
  * Define Linkit user plugin class.
  */
 class LinkitPluginUser extends LinkitPluginEntity {
-
-
   function __construct($plugin, $profile) {
     /**
      * The user entity doesn't add any label in their entity keys as they define a
