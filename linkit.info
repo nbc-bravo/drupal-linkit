@@ -7,4 +7,4 @@ dependencies[] = ctools
 
 ; Our plugins interfaces and abstract implementations.
 files[] = plugins/plugin.class.php
-files[] = plugins/linkit_pluings/linkit-plugin-entity.class.php
+files[] = plugins/linkit_plugins/linkit-plugin-entity.class.php
