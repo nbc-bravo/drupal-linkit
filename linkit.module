@@ -10,12 +10,6 @@
 define('LINKIT_DEFAULT_WEIGHT', 0);
 
 /**
- * The default profile machine name
- */
-define('LINKIT_DEFAULT_PROFILE_MACHINE_NAME', 'default');
-
-
-/**
  * Implements hook_menu().
  */
 function linkit_menu() {
@@ -917,19 +911,9 @@ function linkit_ctools_plugin_directory($module, $plugin) {
 function linkit_ctools_plugin_type() {
   $plugins['linkit_plugins'] = array(
     'child plugins' => TRUE,
-    'classes' => array('handler', 'entity fallback handler'),
-    'process' => 'linkit_linkit_plugins_process',
+    'classes' => array('handler'),
   );
   return $plugins;
-}
-
-/**
- * CTools callback; Process the behavoir plugins.
- */
-function linkit_linkit_plugins_process(&$plugin, $info) {
-  $plugin += array(
-    'description' => '',
-  );
 }
 
 /**
