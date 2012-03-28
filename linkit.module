@@ -249,12 +249,12 @@ function _linkit_autocomplete($search = NULL) {
 }
 
 /**
- * Perform internal autocomplete search
+ * Perform internal autocomplete search.
  *
  * @param $search_string
- *   The search string
+ *   The search string.
  * @return $results
- *   An array with the result objects
+ *   An array with the result objects.
  */
 function _linkit_autocomplete_search($search_string, $enabled_plugins) {
   $matches = array();
@@ -262,7 +262,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
     $profile = linkit_get_dashboard_profile();
 
     foreach ($enabled_plugins as $plugin) {
-      // Get an instance og the handler for this plugin.
+      // Get an instance of the handler for this plugin.
       $handler = linkit_get_plugin_handler($plugin, $profile);
       // If the handler is broken, just continue.
       if ($handler->broken()) {
@@ -270,7 +270,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
       }
       // Add the search string.
       $handler->setSearchString($search_string);
-      // Call the plugin seach metod.
+      // Call the plugin search metod.
       $results = $handler->autocomplete_callback();
       // Merge the results.
       $matches = array_merge($matches, $results);
