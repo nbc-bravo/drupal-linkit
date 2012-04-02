@@ -75,15 +75,17 @@ function theme_linkit_profiles_reorder($variables) {
   $header = array(t('Profile'), t('Roles'), t('Weight'));
   $rows = array();
 
-  foreach (element_children($form['profiles']) as $profile_name) {
-    $rows[] = array(
-      'data' => array(
-        drupal_render($form['profiles'][$profile_name]['name']),
-        drupal_render($form['profiles'][$profile_name]['roles']),
-        drupal_render($form['profiles'][$profile_name]['weight'])
-      ),
-      'class' => array('draggable', 'tabledrag-leaf'),
-    );
+  if (isset($form['profiles'])) {
+    foreach (element_children($form['profiles']) as $profile_name) {
+      $rows[] = array(
+        'data' => array(
+          drupal_render($form['profiles'][$profile_name]['name']),
+          drupal_render($form['profiles'][$profile_name]['roles']),
+          drupal_render($form['profiles'][$profile_name]['weight'])
+        ),
+        'class' => array('draggable', 'tabledrag-leaf'),
+      );
+    }
   }
 
   $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-profile-reorder'), 'sticky' => FALSE));
