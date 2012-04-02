@@ -33,6 +33,21 @@ class LinkitPluginTaxonomy_Term extends LinkitPluginEntity {
   }
 
   /**
+   * Settings for the term plugin.
+   */
+  function buildSettingsForm() {
+    $form = parent::buildSettingsForm();
+
+    // The entity plugin uses the entity name for the #token_types, but terms
+    // is a special case, its name is "Taxonomy_term" and the tokens are defined
+    // (in the taxonomy module) with just "term".
+    if (isset($form[$this->plugin['name']]['token_help']['help']['#token_types'])) {
+      $form[$this->plugin['name']]['token_help']['help']['#token_types'] = array('term');
+    }
+    return $form;
+  }
+
+  /**
    * The autocomplete callback function for the Linkit Taxonomy term plugin.
    */
   function autocomplete_callback() {
