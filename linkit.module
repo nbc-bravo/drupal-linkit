@@ -220,6 +220,7 @@ function linkit_library() {
     'title' => 'Linkit Field UI',
     'js' => array(
       $path . '/js/linkit.field.js' => array('group' => JS_DEFAULT),
+      $path . '/js/linkitFieldDialog.js' => array('group' => JS_DEFAULT),
     ),
     'dependencies' => array(
       array('linkit', 'linkit_base'),

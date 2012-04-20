@@ -17,41 +17,19 @@ Drupal.behaviors.linkit_field = {
     }
     $.each(settings.linkit.fields, function(field) {
 
-      // Create a "Better Autocomplete" object, see betterautocomplete.js
-      $('[name="' + field + '"]:not(.linkit-processed)', context).betterAutocomplete('init',
-        settings.linkit.autocompletePath,
-        settings.linkit.autocomplete,
-        { // Callbacks
-        select: function(result) {
-          // Only change the link text if it is empty
-          if (typeof result.disabled != 'undefined' && result.disabled) {
-            return false;
-          }
-          $('[name="' + field + '"]').val(function(index, value) {
-            return result.path;
-          });
-        },
-        constructURL: function(path, search) {
-          return path + encodeURIComponent(search);
-        },
-        insertSuggestionList: function($results, $input) {
-          var position = $input.position();
-          $results.width($input.innerWidth())
-            .css({
-              position: 'absolute',
-              left: parseInt(position.left, 10),
-              top: position.top + $input.outerHeight(true),
+      $('[name="' + field + '"]', context).once('linkit_field', function() {
+        $(this).click(function() {
+          // Set the editor object.
+          //Drupal.linkit.setEditor(editor);
+          // We dont have an editor here, but we need to give this instance a
+          // name.
+          Drupal.linkit.setEditorName('field');
+          // Set the name of the editor field, this is just for CKeditor.
+          Drupal.linkit.setEditorField($(this));
 
-              zIndex: 2000,
-              maxHeight: '330px',
-              // Visually indicate that results are in the topmost layer
-             boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
-            })
-            .hide()
-            .insertAfter($input);
-          }
-      })
-      .addClass('linkit-processed');
+          Drupal.linkit.dialog.buildDialog(settings.linkit.url.field);
+        });
+      });
     });
   }
 };
