@@ -11,14 +11,12 @@
  * - entity_type: Only required if the plugin extends LinkitPluginEntity. The
  *     entity type this plugin will be used for.
  * - handler: Describes the class to be used for this plugin.
- * - entity fallback handler: (optional) An array describing a class to use if
- *     the regular handler doesn't exists.
  */
 
 $plugin = array(
   'get child' => 'linkit_entity_ctools_linkit_get_child',
   'get children' => 'linkit_entity_ctools_linkit_get_children',
-  'entity fallback handler' => array(
+  'handler' => array(
     'class' => 'LinkitPluginEntity',
     'file' => 'linkit-plugin-entity.class.php',
   ),
@@ -34,8 +32,9 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   $plugins = array();
 
   foreach ($entities as $entity_type => $entity) {
-    // We can and will only use entities that have an URI CALLBACK defined.
-    if (!isset($entity['uri callback'])) {
+    // The entity must be linkit compatible and have an URI CALLBACK defined.
+    // See linkit_entity_info_alter().
+    if (!isset($entity['linkit']) || !$entity['linkit'] || !isset($entity['uri callback'])) {
       continue;
     }
 
@@ -43,12 +42,11 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
     $plugin['ui_description'] = t('Extend Linkit with @entity support.', array('@entity' => $entity_type));
     $plugin['name'] = $parent . ':' . $entity_type;
     $plugin['entity_type'] = $entity_type;
-    $plugin['handler'] = array(
-      'class' => 'LinkitPlugin' . drupal_ucfirst($entity_type),
-      'file' => 'linkit-plugin-' . $entity_type . '.class.php',
-    );
+
+    drupal_alter('linkit_plugin_entity', $plugin, $entity);
     $plugins[$parent . ':' . $entity_type] = $plugin;
   }
 
+  drupal_alter('linkit_plugin_entities', $plugins);
   return $plugins;
 }

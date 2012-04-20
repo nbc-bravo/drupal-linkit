@@ -103,6 +103,10 @@ function linkit_theme($existing, $type, $theme, $path) {
       'render element' => 'form',
       'file' => 'linkit.theme.inc'
     ),
+    '_linkit_theme_profile_form_table' => array(
+      'variables' => array(),
+      'file' => 'linkit.theme.inc'
+    ),
   );
 }
 
@@ -260,12 +264,12 @@ function _linkit_autocomplete($search = NULL) {
 }
 
 /**
- * Perform internal autocomplete search
+ * Perform internal autocomplete search.
  *
  * @param $search_string
- *   The search string
+ *   The search string.
  * @return $results
- *   An array with the result objects
+ *   An array with the result objects.
  */
 function _linkit_autocomplete_search($search_string, $enabled_plugins) {
   $matches = array();
@@ -273,7 +277,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
     $profile = linkit_get_dashboard_profile();
 
     foreach ($enabled_plugins as $plugin) {
-      // Get an instance og the handler for this plugin.
+      // Get an instance of the handler for this plugin.
       $handler = linkit_get_plugin_handler($plugin, $profile);
       // If the handler is broken, just continue.
       if ($handler->broken()) {
@@ -281,7 +285,7 @@ function _linkit_autocomplete_search($search_string, $enabled_plugins) {
       }
       // Add the search string.
       $handler->setSearchString($search_string);
-      // Call the plugin seach metod.
+      // Call the plugin search metod.
       $results = $handler->autocomplete_callback();
       // Merge the results.
       $matches = array_merge($matches, $results);
@@ -928,19 +932,9 @@ function linkit_ctools_plugin_directory($module, $plugin) {
 function linkit_ctools_plugin_type() {
   $plugins['linkit_plugins'] = array(
     'child plugins' => TRUE,
-    'classes' => array('handler', 'entity fallback handler'),
-    'process' => 'linkit_linkit_plugins_process',
+    'classes' => array('handler'),
   );
   return $plugins;
-}
-
-/**
- * CTools callback; Process the behavoir plugins.
- */
-function linkit_linkit_plugins_process(&$plugin, $info) {
-  $plugin += array(
-    'description' => '',
-  );
 }
 
 /**
@@ -990,4 +984,57 @@ function linkit_extract_tokens($type) {
   }
 
   return $available_tokens;
+}
+
+/**
+ * Implements hook_entity_info_alter();
+ *
+ * Control which enteties that can be used by Linkit.
+ * Other modules can easy implement this hook aswell and make their enteties
+ * usable with Linkit or change directly in the the hook_entity_info().
+ */
+function linkit_entity_info_alter(&$entity_info) {
+  // An array of entity names that is allowed to be used in Linkit.
+  $allowed = array('node', 'user', 'taxonomy_term', 'file');
+
+  foreach ($allowed as $entity_name) {
+    if (isset($entity_info[$entity_name])) {
+      $entity_info[$entity_name]['linkit'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_linkit_plugin_entities_alter().
+ *
+ * The default behavior for entities is that they will use the default entity
+ * plugin class, which will provide them with the basic methods they need.
+ *
+ * Tho there is some plugins that will extend those basic method with more
+ * advanced once, therefor the handlers for those plugins will have to be
+ * changed.
+ *
+ * @param array $plugins
+ *   An array of all entity plugins processed within Linkit entity plugin.
+ */
+function linkit_linkit_plugin_entities_alter(&$plugins) {
+  $alter_plugins = array(
+    'entity:node',
+    'entity:user',
+    'entity:taxonomy_term',
+    'entity:file',
+   );
+
+  $path = drupal_get_path('module', 'linkit') . '/plugins/linkit_plugins';
+
+  foreach ($alter_plugins as $plugin) {
+    if (isset($plugins[$plugin])) {
+      $handler = array(
+        'class' => 'LinkitPlugin' . drupal_ucfirst($plugins[$plugin]['entity_type']),
+        'file' => 'linkit-plugin-' . $plugins[$plugin]['entity_type'] . '.class.php',
+        'path' => $path,
+      );
+      $plugins[$plugin]['handler'] = $handler;
+    }
+  }
 }

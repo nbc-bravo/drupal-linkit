@@ -56,7 +56,8 @@ class LinkitPluginEntity extends LinkitPlugin {
     $this->entity_info = entity_get_info($this->plugin['entity_type']);
 
     // Set bundle key name.
-    if (isset($this->entity_info['entity keys']['bundle'])) {
+    if (isset($this->entity_info['entity keys']['bundle']) &&
+      !isset($this->entity_key_bundle)) {
       $this->entity_key_bundle = $this->entity_info['entity keys']['bundle'];
     }
 
@@ -118,7 +119,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
     // If the entities by this entity should be grouped by bundle, get the
     // name and append it to the group.
-    if (isset($this->conf['group_by_bundle']) && $this->conf['bundles']) {
+    if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);

@@ -199,6 +199,10 @@ Drupal.linkit.dialog.createDialog = function(src) {
 
       // Run the afterInit function.
       Drupal.linkit.editorDialog[linkitCache.editorName].afterInit();
+
+      // Set focus in the search field.
+      $('.linkit-wrapper #edit-linkit-search').focus();
+
     }
   });
 

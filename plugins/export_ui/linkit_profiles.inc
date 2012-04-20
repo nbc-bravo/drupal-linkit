@@ -318,49 +318,6 @@ function _linkit_build_role_associate_form_fields(&$form, $profile) {
 }
 
 /**
- * Helper function to render settings tables.
- *
- * @param $variables.
- * @param $type
- *   "plugin" or "attribute".
- */
-function _linkit_theme_profile_form_table($variables, $type) {
-  $rows = array();
-  $has_description = FALSE;
-
-  // Build table rows.
-  foreach ($variables['linkit_' . $type . '_listing'] as $delta => $element) {
-    $fields = array(
-      $element->title,
-      $element->weight_select,
-      $element->enabled
-    );
-
-    if (isset($element->description)) {
-      $has_description = TRUE;
-      $fields[] = $element->description;
-    }
-
-    $rows[$delta]['data'] = $fields;
-    $rows[$delta]['class'] = array('draggable', 'tabledrag-leaf');
-  }
-
-  drupal_add_tabledrag('linkit-' . $type, 'order', 'sibling', 'weight');
-
-  $header = array(
-    t('Name'),
-    t('Weight'),
-    t('Enabled'),
-  );
-
-  if ($has_description) {
-    $header[] = t('Description');
-  }
-
-  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'linkit-' . $type), 'sticky' => FALSE));
-}
-
-/**
  * Save callback for linkit_profiles_export_ui_form.
  *
  * @param array $form
@@ -426,13 +383,18 @@ function linkit_profiles_reorder() {
     );
   }
 
-  $form['helptext'] = array('#markup' => t('If a user have multiple roles, the profile weight will determine which profile to use. Lower weight will take precedence.'));
+  if (!$profiles) {
+    $form['helptext'] = array('#markup' => t('No profiles found.'));
+  }
+  else {
+    $form['helptext'] = array('#markup' => t('If a user have multiple roles, the profile weight will determine which profile to use. Lower weight will take precedence.'));
 
-  $form['actions']['#type'] = 'actions';
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+  }
   return $form;
 }
 
