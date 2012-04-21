@@ -46,6 +46,14 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
 
   // Add the linkit settings to the field instance form.
   if (in_array($form['#field']['type'], $allowed_field_types) && in_array($form['instance']['widget']['type']['#value'], $allowed_widget_types)) {
+    ctools_include('plugins');
+    if (isset($instance['settings']['linkit']['plugin'])) {
+      $selected_plugin = $instance['settings']['linkit']['plugin'];
+    }
+    else if (isset($form_state['values']['instance']['settings']['linkit']['plugin'])) {
+      $selected_plugin = $form_state['values']['instance']['settings']['linkit']['plugin'];
+    }
+
     $form['instance']['settings']['linkit'] = array(
       '#type' => 'fieldset',
       '#title' => t('Linkit field settings'),
@@ -71,7 +79,42 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
         ),
       ),
     );
+    $plugins = ctools_get_plugins('linkit', 'linkit_insert');
+
+    $options[] = 'BLABLA';
+    foreach ($plugins as $name => $plugin) {
+      $options[$name] = $plugin['name'];
+    }
+
+    $form['instance']['settings']['linkit']['plugin'] = array(
+      '#type' => 'select',
+      '#title' => t('Insert plugin'),
+      '#options' => $options,
+      '#ajax' => array(
+        'callback' => 'linkit_plugin_settings_callback',
+        'wrapper' => 'linkit_plugin_settings',
+      ),
+    );
+
+    $form['instance']['settings']['linkit']['plugin_settings'] = array(
+      '#type' => 'fieldset',
+      '#tree' => TRUE,
+      '#prefix' => '<div id="linkit_plugin_settings">',
+      '#suffix' => '</div>',
+    );
+
+    if (isset($selected_plugin)) {
+      $plugin = ctools_get_plugins('linkit', 'linkit_insert', $selected_plugin);
+      $plugin->settingsForm($form['instance']['settings']['linkit']['plugin_settings'], $form_state);
+    }
   }
+}
+
+/**
+ * Callback;
+ */
+function linkit_plugin_settings_callback($form, $form_state) {
+  return $form['instance']['settings']['linkit']['plugin_settings'];
 }
 
 /**
@@ -93,18 +136,22 @@ function linkit_field_widget_form_alter(&$element, &$form_state, $context) {
         break;
 
       case 'text_textfield':
-        $settings['fields'] = array(
-          $instance['field_name'] . '['  . $context['langcode']  . ']['  . $context['delta'] . '][value]' => 1,
-        );
+        $plugin = $instance['settings']['linkit']['insert_plugin'];
+        $plugin_settings = $instance['settings']['linkit']['plugin_settings'];
+        ctools_include('plugins');
+        $plugin = ctools_get_plugins('linkit', 'linkit_insert', $plugin);
+        //$plugin->process($instance, $element, $element['linkit']);
         break;
     }
-
+    _linkit_add_settings('field');
+/*
     if (isset($settings)) {
       $element['#attributes']['class'][] = 'linkit';
       // Add base settings.
-      _linkit_add_settings('field');
+
 
       drupal_add_js(array('linkit' => $settings), 'setting');
     }
+ */
   }
 }

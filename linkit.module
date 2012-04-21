@@ -934,6 +934,9 @@ function linkit_ctools_plugin_type() {
     'child plugins' => TRUE,
     'classes' => array('handler'),
   );
+  $plugins['linkit_insert'] = array(
+    'classes' => array('handler'),
+  );
   return $plugins;
 }
 
