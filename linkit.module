@@ -1032,7 +1032,7 @@ function linkit_linkit_plugin_entities_alter(&$plugins) {
     'entity:user',
     'entity:taxonomy_term',
     'entity:file',
-   );
+  );
 
   $path = drupal_get_path('module', 'linkit') . '/plugins/linkit_plugins';
 

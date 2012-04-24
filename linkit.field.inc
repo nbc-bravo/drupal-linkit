@@ -87,7 +87,7 @@ function linkit_process_widget(&$element) {
     );
 
     // Add fake button to the element suffix.
-    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-'.$element['#id'].'" href="#">Linkit</a>';
+    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $element['#id'] . '" href="#">Linkit</a>';
   }
 
   return $element;
