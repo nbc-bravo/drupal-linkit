@@ -3,6 +3,7 @@
  * Markdown insert plugin for Linkit.
  *
  * Notes: Markdown dont support any attributes exept "title".
+ * [An example](http://example.com/ "Title")
  */
 (function ($) {
 
@@ -10,8 +11,6 @@ Drupal.linkit.addInsertPlugin('markdown', {
   insert : function(data) {
     var linkitCache = Drupal.linkit.getLinkitCache(),
     pattern = '[!text](!url!title)',
-
-    //[An example](http://example.com/ "Title")
     args = {
       '!text' : linkitCache.link_tmp_title,
       '!url' : data.path,
