@@ -12,6 +12,7 @@
 function linkit_allowed_elements() {
   $allowed_elements = array(
     'textfield',
+    'textarea',
     'link_field',
   );
   drupal_alter('linkit_allowed_elements', $allowed_elements);
@@ -24,8 +25,9 @@ function linkit_allowed_elements() {
  */
 function linkit_allowed_field_types() {
   $allowed_field_types = array(
-    'link_field',
     'text',
+    'text_long',
+    'link_field',
   );
   drupal_alter('linkit_allowed_field_types', $allowed_field_types);
   return $allowed_field_types;
@@ -37,8 +39,9 @@ function linkit_allowed_field_types() {
  */
 function linkit_allowed_widget_types() {
   $allowed_widget_types = array(
-    'link_field',
     'text_textfield',
+    'text_textarea',
+    'link_field',
   );
   drupal_alter('linkit_allowed_widget_types', $allowed_widget_types);
   return $allowed_widget_types;

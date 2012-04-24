@@ -118,7 +118,7 @@ function linkit_element_info_alter(&$types) {
       $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
     }
   }
-
+  // Append a process function for the field integration.
   foreach (linkit_allowed_elements() as $element) {
     if (isset($types[$element])) {
       $types[$element]['#process'][] = 'linkit_process_widget';
