@@ -6,7 +6,7 @@
 // Create the linkit namespaces.
 Drupal.linkit = Drupal.linkit || {};
 Drupal.linkit.editorDialog = Drupal.linkit.editorDialog || {};
-Drupal.linkit.InsertPlugins = Drupal.linkit.InsertPlugins || {};
+Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 (function ($) {
 
@@ -95,14 +95,6 @@ Drupal.linkit.setEditorName = function (editorname) {
   Drupal.linkitCache.editorName = editorname;
 };
 
-Drupal.linkit.addPlugin = function(name, plugin) {
-  Drupal.linkit.insertPlugins[name] = plugin;
-}
-
-Drupal.linkit.getInsertPlugin = function(name) {
-  return
-}
-
 /**
  * Set the name of the field that has triggerd Linkit.
  */
@@ -130,5 +122,14 @@ Drupal.linkit.setEditorSelectedElement = function (element) {
 Drupal.linkit.getLinkitCache = function () {
   return Drupal.linkitCache;
 };
+
+
+Drupal.linkit.addPlugin = function(name, plugin) {
+  Drupal.linkit.insertPlugins[name] = plugin;
+}
+
+Drupal.linkit.getInsertPlugin = function(name) {
+  return Drupal.linkit.insertPlugins[name];
+}
 
 })(jQuery);

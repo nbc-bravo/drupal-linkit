@@ -1,5 +1,8 @@
+/**
+ * @File
+ */
 
-Drupal.linkit.addPlugin('linkit_insert_pattern', {
+Drupal.linkit.addPlugin('html_link', {
   insert : function(url, settings) {
     return settings.pattern.replace('%url', url);
   }
