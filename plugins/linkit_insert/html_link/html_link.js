@@ -13,11 +13,18 @@ Drupal.linkit.addInsertPlugin('html_link', {
       (data.attributes[name]) ? null : delete data.attributes[name];
     }
 
+    if (linkitCache.selection.text.length >= 1) {
+      var text = linkitCache.selection.text
+    }
+    else {
+      var text = linkitCache.link_tmp_title
+    }
+
     // Use document.createElement as it is mush fasten then $('<a/>).
     return $(document.createElement('a'))
     .attr(data.attributes)
     .attr('href', data.path)
-    .html(linkitCache.link_tmp_title)
+    .html(text)
     // Convert the element to a string.
     .get(0).outerHTML;
   }

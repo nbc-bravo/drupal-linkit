@@ -15,15 +15,15 @@ Drupal.linkit.editorDialog.field = {
    *   The link object.
    */
   insertLink : function(data) {
-    var linkitCache = Drupal.linkit.getLinkitCache();
-    var field = $('#' + linkitCache.editorField);
-    var field_settings = Drupal.settings.linkit.fields[linkitCache.editorField];
+    var linkitCache = Drupal.linkit.getLinkitCache(),
+      field = $('#' + linkitCache.editorField),
+      field_settings = Drupal.settings.linkit.fields[linkitCache.editorField],
 
-    // Call the insert plugin.
-    var link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
+      // Call the insert plugin.
+      link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
 
     // Insert the link.
-    field.val(link);
+    Drupal.behaviors.linkit_field.replaceSelection(field.get(0), linkitCache.selection, link);
   }
 };
 

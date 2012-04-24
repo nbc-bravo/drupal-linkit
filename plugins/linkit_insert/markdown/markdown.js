@@ -12,7 +12,7 @@ Drupal.linkit.addInsertPlugin('markdown', {
     var linkitCache = Drupal.linkit.getLinkitCache(),
     pattern = '[!text](!url!title)',
     args = {
-      '!text' : linkitCache.link_tmp_title,
+      '!text' : linkitCache.selection.text.length >= 1 ? linkitCache.selection.text : linkitCache.link_tmp_title,
       '!url' : data.path,
       '!title' : data.attributes.title ? ' "' + data.attributes.title + '"' : ''
     };
