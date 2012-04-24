@@ -16,16 +16,13 @@ Drupal.behaviors.linkit_field = {
       return false;
     }
     $.each(settings.linkit.fields, function(field) {
-      console.log(field);
       $('#' + field, context).once('linkit_field', function() {
         $('.linkit-field-' + field).click(function() {
-          // Set the editor object.
-          //Drupal.linkit.setEditor(editor);
           // We dont have an editor here, but we need to give this instance a
           // name.
           Drupal.linkit.setEditorName('field');
           // Set the name of the editor field, this is just for CKeditor.
-          Drupal.linkit.setEditorField('#' + field);
+          Drupal.linkit.setEditorField(field);
 
           Drupal.linkit.dialog.buildDialog(settings.linkit.url.field);
           return false;

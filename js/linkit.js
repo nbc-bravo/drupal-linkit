@@ -124,7 +124,7 @@ Drupal.linkit.getLinkitCache = function () {
 };
 
 
-Drupal.linkit.addPlugin = function(name, plugin) {
+Drupal.linkit.addInsertPlugin = function(name, plugin) {
   Drupal.linkit.insertPlugins[name] = plugin;
 }
 

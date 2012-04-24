@@ -16,9 +16,14 @@ Drupal.linkit.editorDialog.field = {
    */
   insertLink : function(data) {
     var linkitCache = Drupal.linkit.getLinkitCache();
+    var field = $('#' + linkitCache.editorField);
+    var field_settings = Drupal.settings.linkit.fields[linkitCache.editorField];
 
-    linkitCache.editorField.val(function( index, value ) {
-      return value + ' ' + data.path;
+    // Call the insert plugin.
+    var insert = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
+
+    field.val(function(index, value) {
+      return value + ' ' + insert;
     });
   }
 };
