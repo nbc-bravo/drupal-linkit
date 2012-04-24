@@ -1,5 +1,6 @@
 /**
- * @File
+ * @file
+ * HTML Link insert plugin for Linkit.
  */
 (function ($) {
 

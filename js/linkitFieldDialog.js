@@ -20,11 +20,10 @@ Drupal.linkit.editorDialog.field = {
     var field_settings = Drupal.settings.linkit.fields[linkitCache.editorField];
 
     // Call the insert plugin.
-    var insert = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
+    var link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
 
-    field.val(function(index, value) {
-      return value + ' ' + insert;
-    });
+    // Insert the link.
+    field.val(link);
   }
 };
 
