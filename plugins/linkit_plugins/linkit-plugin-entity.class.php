@@ -161,7 +161,11 @@ class LinkitPluginEntity extends LinkitPlugin {
     $this->query->propertyCondition($this->entity_field_label,
             '%' . db_like($this->serach_string) . '%', 'LIKE')
         ->addTag('linkit_entity_autocomplete')
-        ->addTag('linkit_' . $this->plugin['name'] . '_autocomplete');
+        ->addTag('linkit_' . $this->plugin['entity_type'] . '_autocomplete');
+
+    // Add access tag for the query.
+    // There is also a runtime access check that uses entity_access().
+    $this->query->addTag($this->plugin['entity_type'] . '_access');
 
     // Bundle check.
     if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {
@@ -183,10 +187,9 @@ class LinkitPluginEntity extends LinkitPlugin {
     $entities = entity_load($this->plugin['entity_type'], $ids);
 
     foreach ($entities AS $entity) {
-      // If we have the entity module enabled, we check the access againt the
-      // definded entity access callback.
-      if (module_exists('entity') && !entity_access('view', $this->plugin['entity_type'], $entity)) {
-       // continue;
+      // Check the access againt the definded entity access callback.
+      if (!entity_access('view', $this->plugin['entity_type'], $entity)) {
+        continue;
       }
 
       $matches[] = array(

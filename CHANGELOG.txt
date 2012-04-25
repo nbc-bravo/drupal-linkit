@@ -1,5 +1,14 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 7.x-2.3, 2012-04-25
+------------------------------
+- Added feature #1511966: Autofocus in the search field.
+- Fixed issue #1508846: Token module support for terms does not handle the right
+  tokens.
+- Added entity module as a new dependency.
+- Fixed issue #1508148: Term autocompletion by bundle doesn't work.
+- Fixed issue #1508826: Warning: Invalid argument supplied for foreach() in
+  element_children().
 
 Linkit 7.x-2.2, 2012-03-28
 ------------------------------
