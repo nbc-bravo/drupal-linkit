@@ -12,10 +12,17 @@ Drupal.linkit.addInsertPlugin('markdown', {
     var linkitCache = Drupal.linkit.getLinkitCache(),
     pattern = '[!text](!url!title)',
     args = {
-      '!text' : linkitCache.selection.text.length >= 1 ? linkitCache.selection.text : linkitCache.link_tmp_title,
       '!url' : data.path,
       '!title' : data.attributes.title ? ' "' + data.attributes.title + '"' : ''
     };
+
+    if (typeof linkitCache.selection != 'undefined' &&
+      linkitCache.selection.text.length >= 1) {
+      args['!text'] = linkitCache.selection.text;
+    }
+    else {
+      args['!text'] = linkitCache.link_tmp_title;
+    }
 
     return Drupal.formatString(pattern, args);
   }

@@ -58,6 +58,9 @@ Drupal.linkit.dialog.close = function () {
     Drupal.linkit.$searchInput.betterAutocomplete('destroy');
   }
   $('#linkit-modal').dialog('destroy').remove();
+
+  // Unset the linkit cache.
+  Drupal.linkitCache = {};
   return false;
 };
 

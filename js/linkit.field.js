@@ -24,9 +24,12 @@ Drupal.behaviors.linkit_field = {
           // Set the name of the editor field, this is just for CKeditor.
           Drupal.linkit.setEditorField(field);
 
-          var selection = Drupal.behaviors.linkit_field.getSelection($('#' + field).get(0));
-          // Save the selection.
-          Drupal.linkit.setEditorSelection(selection);
+          // Only care about selection if the element is a textarea.
+          if ($('textarea#' + field).length) {
+            var selection = Drupal.behaviors.linkit_field.getSelection($('#' + field).get(0));
+            // Save the selection.
+            Drupal.linkit.setEditorSelection(selection);
+          }
 
           Drupal.linkit.dialog.buildDialog(settings.linkit.url.field);
           return false;
@@ -76,6 +79,13 @@ Drupal.behaviors.linkit_field = {
     var start_pos = selection.start;
     var end_pos = start_pos + text.length;
     e.value = e.value.substr(0, start_pos) + text + e.value.substr(selection.end, e.value.length);
+  },
+
+   /**
+   * Replace the field value.
+   */
+  replaceFieldValue : function (e, text) {
+    e.value = text;
   }
 };
 

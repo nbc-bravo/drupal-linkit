@@ -22,8 +22,14 @@ Drupal.linkit.editorDialog.field = {
       // Call the insert plugin.
       link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
 
-    // Insert the link.
-    Drupal.behaviors.linkit_field.replaceSelection(field.get(0), linkitCache.selection, link);
+    if (typeof linkitCache.selection != 'undefined') {
+      // Replace the selection and insert the link there.
+      Drupal.behaviors.linkit_field.replaceSelection(field.get(0), linkitCache.selection, link);
+    }
+    else {
+      // Replace the field value.
+      Drupal.behaviors.linkit_field.replaceFieldValue(field.get(0), link);
+    }
   }
 };
 
