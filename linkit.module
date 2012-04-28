@@ -491,6 +491,7 @@ function linkit_dashboard_form($form, &$form_state) {
     '#title' => t('Target path'),
     '#description' => t('Examples: <strong>node/123</strong>, <strong>http://www.example.com/path#anchor</strong>'),
     '#required' => TRUE,
+    '#maxlength' => NULL,
     '#size' => 60,
     '#default_value' => '',
     '#weight' => -1,
