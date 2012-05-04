@@ -125,32 +125,10 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#title' => t('Enable Linkit support.'),
       '#default_value' => isset($instance['settings']['linkit']['enable'])
         ? $instance['settings']['linkit']['enable'] : 0,
+      '#description' => t('Do not use this for CKeditor and TinyMCE fields.'),
     );
 
-    // Make a list of all profiles.
-    $profiles = array();
-    foreach (linkit_profile_load_all() as $profile) {
-      $profiles[$profile->name] = $profile->admin_title;
-    }
-
-    // If Linkit is enabled on this field instance, there must be an assigned
-    // profile.
-    $form['instance']['settings']['linkit']['profile'] = array(
-      '#type' => 'select',
-      '#title' => t('Profile'),
-      '#options' => $profiles,
-      '#empty_option' => t('- Select a profile -'),
-      '#default_value' => isset($instance['settings']['linkit']['profile'])
-        ? $instance['settings']['linkit']['profile'] : '',
-      '#states' => array(
-        'invisible' => array(
-          'input[name="instance[settings][linkit][enable]"]' => array('checked' => FALSE),
-        ),
-      ),
-      //'#required' => TRUE,
-      // @TODO: This needs to be requeired then linkit is enabled on this field.
-    );
-
+    ctools_include('plugins');
     // Load all insert plugins.
     $plugins = ctools_get_plugins('linkit', 'linkit_insert');
     foreach ($plugins as $name => $plugin) {
