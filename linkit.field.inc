@@ -68,29 +68,45 @@ function linkit_process_widget(&$element) {
     // Try to load the insert plugin we have chosen to use.
     $plugin = ctools_get_plugins('linkit', 'linkit_insert', $instance['settings']['linkit']['insert_plugin']);
 
+    // Set the field ID.
+    $field_id = $element['#id'];
+    // Special treatment for link fields.
+    if ($element['#type'] == 'link_field') {
+      $field_id = $element['#id'] . '-url';
+    }
+
+    $field_js = array(
+      'data' => array(
+        'linkit' => array(
+          'fields' => array(
+            $field_id => array(
+              'insert_plugin' => $instance['settings']['linkit']['insert_plugin'],
+            ),
+          ),
+        ),
+      ),
+      'type' => 'setting',
+    );
+
+    // Spcial settings for link fields.
+    if ($element['#type'] == 'link_field') {
+      $field_js['data']['linkit']['fields'][$field_id]['no_slash'] = TRUE;
+    }
+
     // Attach js files and settings Linkit needs.
     $element += array(
       '#attached' => array(
         'js' => array(
           $plugin['javascript'],
-          array(
-            'data' => array(
-              'linkit' => array(
-                'fields' => array(
-                  $element['#id'] => array(
-                    'insert_plugin' => $instance['settings']['linkit']['insert_plugin'],
-                  ),
-                ),
-              ),
-            ),
-            'type' => 'setting',
-          ),
+          $field_js,
         ),
       ),
     );
 
+
+
     // Add fake button to the element suffix.
-    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $element['#id'] . '" href="#">Linkit</a>';
+    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $field_id . '" href="#">Linkit</a>';
   }
 
   return $element;

@@ -20,7 +20,7 @@ Drupal.linkit.editorDialog.field = {
       field_settings = Drupal.settings.linkit.fields[linkitCache.editorField],
 
       // Call the insert plugin.
-      link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data);
+      link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data, field_settings);
 
     if (typeof linkitCache.selection != 'undefined') {
       // Replace the selection and insert the link there.
