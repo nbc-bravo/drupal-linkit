@@ -1,5 +1,13 @@
 Linkit x.x-x.x, xxxx-xx-xx
 
+Linkit 7.x-2.4, 2012-05-04
+------------------------------
+- Fixed issue #1551276 Removed the maxlength attribute from the target path
+  field.
+- Added support for fields. #1462194
+- Added support for "insert pluings" on fields. #1462194
+- Fixed so install message isn't show in drupal itself is in install mode.
+
 Linkit 7.x-2.3, 2012-04-25
 ------------------------------
 - Added feature #1511966: Autofocus in the search field.
