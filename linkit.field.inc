@@ -147,9 +147,25 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
         'invisible' => array(
           'input[name="instance[settings][linkit][enable]"]' => array('checked' => FALSE),
         ),
+        'required' => array(
+          'input[name="instance[settings][linkit][enable]"]' => array('checked' => TRUE),
+        ),
       ),
-      //'#required' => TRUE,
-      // @TODO: This needs to be requeired then linkit is enabled on this field.
+      '#element_validate' => array('linkit_field_insert_pluing_validate'),
     );
+  }
+}
+
+/**
+ * Validation callback; From The insert plugin field on fields.
+ *
+ * Only validate this field if linkit is enabled on the instance.
+ */
+function linkit_field_insert_pluing_validate($element, &$form_state, $form) {
+  if (isset($form_state['values']['instance']['settings']['linkit']['enable'])
+    && $form_state['values']['instance']['settings']['linkit']['enable']) {
+    if (empty($element['#value'])) {
+      form_error($element, t('You must select an insert plugin.'));
+    }
   }
 }

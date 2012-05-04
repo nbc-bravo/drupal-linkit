@@ -15,7 +15,7 @@ define('LINKIT_DEFAULT_WEIGHT', 0);
 define('LINKIT_DEFAULT_PROFILE_MACHINE_NAME', 'default');
 
 // Include the file with the field UI functions.
-module_load_include('inc', 'linkit', 'linkit.field');
+require_once dirname(__FILE__) . '/linkit.field.inc';
 
 
 /**
