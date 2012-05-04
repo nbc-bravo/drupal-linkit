@@ -10,6 +10,15 @@
 define('LINKIT_DEFAULT_WEIGHT', 0);
 
 /**
+ * The default profile machine name
+ */
+define('LINKIT_DEFAULT_PROFILE_MACHINE_NAME', 'default');
+
+// Include the file with the field UI functions.
+require_once dirname(__FILE__) . '/linkit.field.inc';
+
+
+/**
  * Implements hook_menu().
  */
 function linkit_menu() {
@@ -109,6 +118,12 @@ function linkit_element_info_alter(&$types) {
       $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
     }
   }
+  // Append a process function for the field integration.
+  foreach (linkit_allowed_elements() as $element) {
+    if (isset($types[$element])) {
+      $types[$element]['#process'][] = 'linkit_process_widget';
+    }
+  }
 }
 
 /**
@@ -203,6 +218,18 @@ function linkit_library() {
     'title' => 'Linkit TinyMCE',
     'js' => array(
       $path . '/editors/tinymce/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+  );
+
+  // Linkit field ui script.
+  $libraries['linkit_field'] = array(
+    'title' => 'Linkit Field UI',
+    'js' => array(
+      $path . '/js/linkit.field.js' => array('group' => JS_DEFAULT),
+      $path . '/js/linkitFieldDialog.js' => array('group' => JS_DEFAULT),
+    ),
+    'dependencies' => array(
+      array('linkit', 'linkit_base'),
     ),
   );
 
@@ -553,7 +580,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
  * libraries we need.
  */
 function _linkit_add_settings($editor) {
-  static $globalsettings;
+  static $globalsettings, $set_urls;
   drupal_add_library('linkit', 'linkit_base');
   $profile = linkit_get_dashboard_profile();
 
@@ -577,11 +604,14 @@ function _linkit_add_settings($editor) {
     $globalsettings = TRUE;
   }
 
-  // Add dialog url for the editor.
-  $settings = array(
-    'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
-  );
-  drupal_add_js($settings, 'setting');
+  if (!isset($set_urls[$editor])) {
+    // Add dialog url for the editor.
+    $settings = array(
+      'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
+    );
+    drupal_add_js($settings, 'setting');
+    $set_urls[$editor] = TRUE;
+  }
 
   // Add the linkit library for the editor.
   drupal_add_library('linkit', 'linkit_' . $editor);
@@ -914,6 +944,9 @@ function linkit_ctools_plugin_type() {
     'child plugins' => TRUE,
     'classes' => array('handler'),
   );
+  $plugins['linkit_insert'] = array(
+    'classes' => array('handler'),
+  );
   return $plugins;
 }
 
@@ -1003,7 +1036,7 @@ function linkit_linkit_plugin_entities_alter(&$plugins) {
     'entity:user',
     'entity:taxonomy_term',
     'entity:file',
-   );
+  );
 
   $path = drupal_get_path('module', 'linkit') . '/plugins/linkit_plugins';
 

@@ -6,6 +6,7 @@
 // Create the linkit namespaces.
 Drupal.linkit = Drupal.linkit || {};
 Drupal.linkit.editorDialog = Drupal.linkit.editorDialog || {};
+Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 (function ($) {
 
@@ -121,5 +122,14 @@ Drupal.linkit.setEditorSelectedElement = function (element) {
 Drupal.linkit.getLinkitCache = function () {
   return Drupal.linkitCache;
 };
+
+
+Drupal.linkit.addInsertPlugin = function(name, plugin) {
+  Drupal.linkit.insertPlugins[name] = plugin;
+}
+
+Drupal.linkit.getInsertPlugin = function(name) {
+  return Drupal.linkit.insertPlugins[name];
+}
 
 })(jQuery);
