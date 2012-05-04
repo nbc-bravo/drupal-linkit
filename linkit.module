@@ -579,7 +579,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
  * libraries we need.
  */
 function _linkit_add_settings($editor) {
-  static $globalsettings;
+  static $globalsettings, $set_urls;
   drupal_add_library('linkit', 'linkit_base');
   $profile = linkit_get_dashboard_profile();
 
@@ -603,11 +603,14 @@ function _linkit_add_settings($editor) {
     $globalsettings = TRUE;
   }
 
-  // Add dialog url for the editor.
-  $settings = array(
-    'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
-  );
-  drupal_add_js($settings, 'setting');
+  if (!isset($set_urls[$editor])) {
+    // Add dialog url for the editor.
+    $settings = array(
+      'linkit' => array('url' => array($editor => url('linkit/dashboard/' . $editor))),
+    );
+    drupal_add_js($settings, 'setting');
+    $set_urls[$editor] = TRUE;
+  }
 
   // Add the linkit library for the editor.
   drupal_add_library('linkit', 'linkit_' . $editor);
