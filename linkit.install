@@ -79,11 +79,14 @@ function linkit_schema() {
  * Implements hook_install().
  */
 function linkit_install() {
-  // Linkit is installed, inform the user about that they should create a Linkit
-  // profile.
-  drupal_set_message(st('Linkit is successfully installed, you will have to
-    create a profile in order to use Linkit. Create your profile here !link',
-    array('!link' => l('admin/config/content/linkit', 'admin/config/content/linkit'))));
+  // Only show message if not in install mode.
+  if (!is_array($GLOBALS['install_state'])) {
+    // Linkit is installed, inform the user about that they should create a Linkit
+    // profile.
+    drupal_set_message(st('Linkit is successfully installed, you will have to
+      create a profile in order to use Linkit. Create your profile here !link',
+      array('!link' => l('admin/config/content/linkit', 'admin/config/content/linkit'))));
+  }
 }
 
 /**
