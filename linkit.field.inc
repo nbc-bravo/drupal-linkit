@@ -58,10 +58,8 @@ function linkit_process_widget(&$element) {
   $field = field_info_field($element['#field_name']);
   $instance = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
 
-  if (isset($instance['settings']['linkit'])) {
-
+  if (isset($instance['settings']['linkit']['enable']) && $instance['settings']['linkit']['enable']) {
     // Add base settings.
-    // @TODO: This is runned more then once?
     _linkit_add_settings('field');
 
     ctools_include('plugins');
