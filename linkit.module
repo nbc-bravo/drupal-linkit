@@ -1,5 +1,208 @@
 <?php
 /**
  * @file
- * Main file for linkit module.
+ * Main file for Linkit module.
  */
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function linkit_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && !empty($plugin)) {
+    return "plugins/" . $plugin;
+  }
+  if ($module == 'linkit' && !empty($plugin)) {
+    return "plugins/" . $plugin;
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_TYPE() to inform the plugin system that Linkit
+ * owns Linkit plugin types.
+ */
+function linkit_ctools_plugin_type() {
+  $plugins['linkit_search'] = array(
+    'child plugins' => TRUE,
+    'classes' => array('handler'),
+  );
+  $plugins['linkit_insert'] = array();
+  $plugins['linkit_attribute'] = array();
+  return $plugins;
+}
+
+/**
+ * Load a single Linkit profile.
+ *
+ * @param $name
+ *   A string with the name of the profile to load.
+ *
+ * @return
+ *   A LinkitProfile object.
+ */
+function linkit_profile_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
+  if (isset($result[$name])) {
+    return $result[$name];
+  }
+}
+
+/**
+ * Load all Linkit profiles.
+ *
+ * @return
+ *   An array with LinkitProfile objects.
+ */
+function linkit_profile_load_all() {
+  ctools_include('export');
+  $profiles = ctools_export_load_object('linkit_profiles');
+  return $profiles;
+}
+
+/**
+ * Fetch metadata for all Linkit search plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available Linkit search
+ *   plugins.
+ */
+function linkit_search_plugin_load_all() {
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('linkit', 'linkit_search');
+  // If you alter the plugin handler, be sure the new handler is registerd or
+  // you include it in some other way.
+  drupal_alter('linkit_search_plugins', $plugins);
+  return $plugins;
+}
+
+/**
+ * Fetch metadata for one Linkit search plugin by the given name.
+ *
+ * @param $plugin_name
+ *   A string with the name of the plugin to load.
+ *
+ * @return
+ *   An array with information about the search plugin.
+ */
+function linkit_search_plugin_load($plugin_name) {
+  ctools_include('plugins');
+  $plugin = ctools_get_plugins('linkit', 'linkit_search', $plugin_name);
+  // If you alter the plugin handler, be sure the new handler is registerd or
+  // you include it in some other way.
+  drupal_alter('linkit_search_plugin', $plugin);
+  return $plugin;
+}
+
+/**
+ * Fetch metadata for all Linkit insert plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available insert plugins.
+ */
+function linkit_insert_plugin_load_all() {
+  ctools_include('plugins');
+  // Load all insert plugins.
+  $plugins = ctools_get_plugins('linkit', 'linkit_insert');
+  return $plugins;
+}
+
+/**
+ * Fetch metadata for one Linkit insert plugin by the given name.
+ *
+ * @param $plugin_name
+ *   A string with the name of the plugin to load.
+ *
+ * @return
+ *   An array with information about the insert plugin.
+ */
+function linkit_insert_plugin_load($plugin_name) {
+  ctools_include('plugins');
+  // Load all insert plugins.
+  $plugins = ctools_get_plugins('linkit', 'linkit_insert', $plugin_name);
+  return $plugins;
+}
+
+/**
+ * Fetch metadata for all Linkit attribute plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available attribute plugins.
+ */
+function linkit_attribute_load_all() {
+  ctools_include('plugins');
+  // Load all attribute plugins.
+  $attributes = ctools_get_plugins('linkit', 'linkit_attribute');
+  return $attributes;
+}
+
+/**
+ * Implements hook_entity_info_alter();
+ *
+ * Control which enteties that can be used by Linkit search pluings.
+ * Other modules can easy implement this hook aswell and make their enteties
+ * usable with Linkit or change directly in the the hook_entity_info().
+ *
+ * @param $entity_info
+ *   The entity info array, keyed by entity name.
+ *
+ * @see hook_entity_info()
+ */
+function linkit_entity_info_alter(&$entity_info) {
+  // An array of entity names that is allowed to be used in Linkit.
+  $allowed = array('node', 'user', 'taxonomy_term', 'file');
+
+  foreach ($allowed as $entity_name) {
+    if (isset($entity_info[$entity_name])) {
+      $entity_info[$entity_name]['linkit'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_linkit_plugin_entities_alter().
+ *
+ * The default behavior for entities is that they will use the default entity
+ * search plugin class, which will provide them with the basic methods they
+ * need.
+ *
+ * Tho there is some search plugins that will extend those basic method with
+ * more advanced once, therefor the handlers for those plugins will have to be
+ * changed.
+ *
+ * @param $plugins
+ *   An array of all search plugins processed within Linkit entity plugin.
+ */
+function linkit_linkit_search_plugin_entities_alter(&$plugins) {
+  $alter_plugins = array(
+    'entity:node',
+    'entity:user',
+    'entity:taxonomy_term',
+    'entity:file',
+  );
+
+  $path = drupal_get_path('module', 'linkit') . '/plugins/linkit_search';
+
+  foreach ($alter_plugins as $plugin) {
+    if (isset($plugins[$plugin])) {
+      $handler = array(
+        'class' => 'LinkitSearchPlugin' . drupal_ucfirst($plugins[$plugin]['entity_type']),
+        'file' => 'linkit-search-' . $plugins[$plugin]['entity_type'] . '.class.php',
+        'path' => $path,
+      );
+      $plugins[$plugin]['handler'] = $handler;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function linkit_theme($existing, $type, $theme, $path) {
+  return array(
+    'linkit_plugin_form_table' => array(
+      'render element' => 'form',
+      'file' => 'includes/theme.inc',
+    ),
+  );
+}
+
