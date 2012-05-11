@@ -12,15 +12,40 @@
 interface LinkitSearchPluginInterface {
 
   /**
-   * Executes the search plugin query.
+   * Search plugin factory method.
    *
-   * @param $serach_string
+   * @param $plugin
+   *   A search pluing object.
+   *
+   * @param LinkitProfile $profile
+   *   (optional) A LinkitProfile object.
+   *
+   * @return
+   *   An instance of the search plugin class or an instance of the
+   *   LinkitSearchPluginBroken class.
+   */
+  public static function factory($plugin, LinkitProfile $profile = NULL);
+
+  /**
+   * Return a string representing this handler's name in the UI.
+   */
+  public function ui_title();
+
+  /**
+   * Return a string representing this handler's description in the UI.
+   */
+  public function ui_description();
+
+  /**
+   * Fetch search results based on the $search_string.
+   *
+   * @param $search_string
    *   A string that contains the text to search for.
    *
    * @return
    *   An array with search plugin results.
    */
-  public function execute($serach_string);
+  public function fetchResults($search_string);
 }
 
 /**
@@ -29,12 +54,27 @@ interface LinkitSearchPluginInterface {
 abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
 
   /**
+   * The plugin definition for this instance.
+   *
+   * @var array
+   */
+  protected $plugin;
+
+  /**
+   * The profile instance for this instance.
+   *
+   * @var LinkitProfile object
+   */
+  protected $profile;
+
+  /**
    * Initialize this search plugin with the search plugin and the profile.
    *
-   * @param array $plugin
-   *   The plugin array.
-   * @param object LinkitProfile $profile
-   *   The Linkit profile object.
+   * @param $plugin
+   *   A search pluing object.
+   *
+   * @param LinkitProfile $profile
+   *   A LinkitProfile object.
    */
   public function __construct($plugin, LinkitProfile $profile) {
     $this->plugin = $plugin;
@@ -42,17 +82,7 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
   }
 
   /**
-   * Search plugin factory method.
-   *
-   * @param $plugin
-   *   A search pluing object.
-   *
-   * @param LinkitProfile $profile
-   *   A LinkitProfile object.
-   *
-   * @return
-   *   An instance of the search plugin class or an instance of the
-   *   LinkitSearchPluginBroken class.
+   * Implements LinkitSearchPluginInterface::factory().
    */
   public static function factory($plugin, LinkitProfile $profile = NULL) {
     ctools_include('plugins');
@@ -63,7 +93,9 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
       throw new Exception('Handler class not found');
     }
 
-    if (class_exists($plugin['handler']['class'])) {
+    // Make sure that the handler class exists and that it has this class as one
+    // of its parents.
+    if (class_exists($plugin['handler']['class']) && is_subclass_of($plugin['handler']['class'], '__CLASS__')) {
       return new $plugin['handler']['class']($plugin, $profile);
     }
     else {
@@ -74,7 +106,7 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
   }
 
   /**
-   * Return a string representing this handler's name in the UI.
+   * Implements LinkitSearchPluginInterface::ui_title().
    */
   public function ui_title() {
     if (!isset($this->plugin['ui_title'])) {
@@ -84,65 +116,12 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
   }
 
   /**
-   * Return a string representing this handler's description in the UI.
+   * Implements LinkitSearchPluginInterface::ui_description().
    */
   public function ui_description() {
     if (isset($this->plugin['ui_description'])) {
       return check_plain($this->plugin['ui_description']);
     }
-  }
-
-  /**
-   * Build the label that will be used in the search result for each row.
-   */
-  protected function buildLabel($label) {
-    return check_plain($label);
-  }
-
-  /**
-   * Build an URL based in the path and the options.
-   */
-  protected function buildPath($path, $options = array()) {
-    return url($path, $options);
-  }
-
-  /**
-   * Build the search row description.
-   *
-   * If there is a "result_description", run it thro token_replace.
-   *
-   * @param object $data
-   *   An object that will be used in the token_place function
-   *
-   * @see token_replace()
-   */
-  protected function buildDescription($data) {
-    if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
-      return token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
-        $this->plugin_name => $data,
-      ));
-    }
-  }
-
-  /**
-   * Returns a string to use as the search result group name.
-   */
-  protected function buildGroup($group_name) {
-    return check_plain($group_name);
-  }
-
-  /**
-   * Returns a string with CSS classes that will be added to the search result
-   * row for this item.
-   *
-   * @return
-   *   A string with CSS classes
-   */
-  protected function buildRowClass($row_classes) {
-    if (is_array($row_classes)) {
-      $row_classes = implode(' ', $row_classes);
-    }
-    return $row_classes;
   }
 
   /**
@@ -163,17 +142,28 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
 }
 
 /**
- * A special handler to take the place of missing or broken handlers.
+ * A special handler to take the place of missing or broken Linkit search
+ * plugin handlers.
  */
 class LinkitSearchPluginBroken extends LinkitSearchPlugin {
 
+  /**
+   * Overrides LinkitSearchPlugin::ui_title().
+   */
   public function ui_title() { return t('Broken/missing handler'); }
 
+  /**
+   * Overrides LinkitSearchPlugin::ui_description().
+   */
   public function ui_description() {}
-  public function execute($serach_string) {}
 
   /**
-   * Determine if the handler is considered 'broken'.
+   * Implements LinkitSearchPluginInterface::fetchResults().
+   */
+  public function fetchResults($serach_string) {}
+
+  /**
+   * Overrides LinkitSearchPlugin::broken().
    */
   public function broken() { return TRUE; }
 }
