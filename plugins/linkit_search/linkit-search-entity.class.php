@@ -3,11 +3,16 @@
  * @file
  * Define Linkit entity plugin.
  */
+
+/**
+ * Reprecents an entity search plugin.
+ */
 class LinkitSearchPluginEntity extends LinkitSearchPlugin {
+
   /**
    * Entity field query instance.
    *
-   * @var Resource
+   * @var EntityFieldQuery Resource
    */
   var $query;
 
@@ -16,7 +21,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
    *
    * @var array
    */
-  var $entity_info;
+  var $entity_info = array();
 
   /**
    * The name of the property that contains the entity label.
@@ -36,23 +41,24 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   /**
    * Plugin specific settings.
    *
-   * @var arrayu
+   * @var array
    */
-  var $conf;
+  var $conf = array();
 
   /**
    * Initialize this plugin with the plugin, profile, and entity specific
    * variables.
    *
-   * @param object $profile
-   *   The Linkit profile to use.
    * @param array $plugin
    *   The plugin array.
+   *
+   * @param LinkitProfile object $profile
+   *   The Linkit profile to use.
    */
-  function __construct($plugin, $profile) {
+  function __construct($plugin, LinkitProfile $profile) {
     parent::__construct($plugin, $profile);
 
-    // Load the corresponding entity.
+    // Load the corresponding entity info.
     $this->entity_info = entity_get_info($this->plugin['entity_type']);
 
     // Set bundle key name.
@@ -72,48 +78,69 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   }
 
   /**
-   * Build the label that will be used in the search result for each row.
+   * Get the label of an entity.
+   *
+   * @param $entity
+   *   The entity to get the label from.
+   *
+   * @return
+   *   The entity label, or FALSE if not found.
    */
-  function buildLabel($entity) {
+  function crateLabel($entity) {
     return entity_label($this->plugin['entity_type'], $entity);
   }
 
   /**
-   * Build an URL based in the path and the options.
+   * Get the uri elements of an entity.
+   *
+   * @param $entity
+   *   The entity to get the path from.
+   *
+   * @param $options
+   *   An array of options that will be passed to url().
+   *
+   * @return
+   *   An array containing the 'path' and 'options' keys used to build the uri of
+   *   the entity, and matching the signature of url(). NULL if the entity has no
+   *   uri of its own.
    */
-  function buildPath($entity, $options = array()) {
+  function createPath($entity, $options = array()) {
     // Create the URI for the entity.
     $uri = entity_uri($this->plugin['entity_type'], $entity);
 
     // We have to set alias to TRUE as we don't want an alias back.
     $options += array('alias' => TRUE);
 
-    return parent::buildPath($uri['path'], $options);
+    return url($uri['path'], $options);
   }
 
   /**
-   * Build the search row description.
+   * Get the search row description.
    *
    * If there is a "result_description", run it thro token_replace.
    *
    * @param object $data
    *   An entity object that will be used in the token_place function.
    *
+   * @return
+   *   A string containing the row description.
+   *
    * @see token_replace()
    */
-  function buildDescription($data) {
+  function createDescription($data) {
     return token_replace(check_plain($this->conf['result_description']), array(
       $this->plugin['entity_type'] => $data,
     ));
   }
 
   /**
-   * When "group_by_bundle" is active, we need to add the bundle name to the
-   * group, else just return the entity label.
+   * Get a group text.
    *
-   * @return a string with the group name.
+   * @return
+   *   When "group_by_bundle" is active, we need to add the bundle name to the
+   *   group, else just return the entity label.
    */
-  function buildGroup($entity) {
+  function createGroup() {
     // Get the entity label.
     $group = $this->entity_info['label'];
 
@@ -121,7 +148,8 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     // name and append it to the group.
     if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
-      $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
+      // @TODO: Test that $this works, else use the $entity param.
+      $bundle_name = $bundles[$this->{$this->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
     }
     return $group;
@@ -138,28 +166,16 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     $this->query->propertyOrderBy($this->entity_field_label, 'ASC');
   }
 
-  /**
-   * The autocomplete callback function for the Linkit Entity plugin.
-   *
-   * @return
-   *   An associative array whose values are an
-   *   associative array containing:
-   *   - title: A string to use as the search result label.
-   *   - description: (optional) A string with additional information about the
-   *     result item.
-   *   - path: The URL to the item.
-   *   - group: (optional) A string with the group name for the result item.
-   *     Best practice is to use the plugin name as group name.
-   *   - addClass: (optional) A string with classes to add to the result row.
-   */
-  function execute($serach_string) {
+  public function fetchResults($serach_string) {
     // If the $serach_string is not a string, something is wrong and an empty
     // array is returned.
+    // @TODO: Why shouldnt this be a string?
     if (!is_string($serach_string)) {
       return array();
     }
 
     $matches = array();
+
     // Get the EntityFieldQuery instance.
     $this->getQueryInstance();
 
@@ -199,26 +215,17 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
       }
 
       $matches[] = array(
-        'title' => $this->buildLabel($entity),
-        'description' => $this->buildDescription($entity),
-        'path' => $this->buildPath($entity),
-        'group' => $this->buildGroup($entity),
-        'addClass' => $this->buildRowClass($entity),
+        'title' => $this->createLabel($entity),
+        'description' => $this->createDescription($entity),
+        'path' => $this->createPath($entity),
+        'group' => $this->createGroup(),
+        'addClass' => $this->createRowClass($entity),
       );
 
     }
     return $matches;
   }
 
-  /**
-   * Generate a settings form for this handler.
-   * Uses the standard Drupal FAPI.
-   * The element will be attached to the "data" key.
-   *
-   * @return
-   *   An array containing any custom form elements to be displayed in the
-   *   profile editing form
-   */
   function buildSettingsForm() {
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',

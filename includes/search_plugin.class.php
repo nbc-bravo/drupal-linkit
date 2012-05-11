@@ -43,7 +43,15 @@ interface LinkitSearchPluginInterface {
    *   A string that contains the text to search for.
    *
    * @return
-   *   An array with search plugin results.
+   *   An associative array whose values are an
+   *   associative array containing:
+   *   - title: A string to use as the search result label.
+   *   - description: (optional) A string with additional information about the
+   *     result item.
+   *   - path: The URL to the item.
+   *   - group: (optional) A string with the group name for the result item.
+   *     Best practice is to use the plugin name as group name.
+   *   - addClass: (optional) A string with classes to add to the result row..
    */
   public function fetchResults($search_string);
 }
