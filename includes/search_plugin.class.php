@@ -103,7 +103,7 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
 
     // Make sure that the handler class exists and that it has this class as one
     // of its parents.
-    if (class_exists($plugin['handler']['class']) && is_subclass_of($plugin['handler']['class'], '__CLASS__')) {
+    if (class_exists($plugin['handler']['class']) && is_subclass_of($plugin['handler']['class'], __CLASS__)) {
       return new $plugin['handler']['class']($plugin, $profile);
     }
     else {

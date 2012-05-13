@@ -1,13 +1,20 @@
 <?php
 /**
  * @file
- * Define Linkit term plugin class.
+ * Define Linkit term search plugin class.
  */
 
+/**
+ * Reprecents a Linkit term search plugin.
+ */
 class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
+
+  /**
+   * Overrides LinkitSearchPluginEntity::__construct().
+   */
   function __construct($plugin, $profile) {
     /**
-     * The term entity dont use the same column name as in the entity keys
+     * The term entity doesn't use the same column name as in the entity keys
      * bundle definition, so lets add it our self.
      */
     $this->entity_key_bundle = 'vid';
@@ -15,12 +22,9 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
   }
 
   /**
-   * When "group_by_bundle" is active, we need to add the bundle name to the
-   * group, else just return the entity label.
-   *
-   * @return a string with the group name.
+   * Overrides LinkitSearchPluginEntity::createGroup().
    */
-  function buildGroup($entity) {
+  function createGroup($entity) {
     // Get the entity label.
     $group = $this->entity_info['label'];
 
@@ -33,26 +37,11 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
   }
 
   /**
-   * Settings for the term plugin.
+   * Overrides LinkitSearchPluginEntity::fetchResults().
    */
-  function buildSettingsForm() {
-    $form = parent::buildSettingsForm();
-
-    // The entity plugin uses the entity name for the #token_types, but terms
-    // is a special case, its name is "Taxonomy_term" and the tokens are defined
-    // (in the taxonomy module) with just "term".
-    if (isset($form[$this->plugin['name']]['token_help']['help']['#token_types'])) {
-      $form[$this->plugin['name']]['token_help']['help']['#token_types'] = array('term');
-    }
-    return $form;
-  }
-
-  /**
-   * The autocomplete callback function for the Linkit Taxonomy term plugin.
-   */
-  function autocomplete_callback() {
-    // The term entity dont use the entity keys bundle definition, its using the
-    // vid instead, so lets 'translate' the bundle names to vids.
+  function fetchResults() {
+    // The term entity doesn't use the entity keys bundle definition, its using
+    // the vid instead, so lets 'translate' the bundle names to vids.
     if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {
       $bundles = array_filter($this->conf['bundles']);
 
@@ -68,6 +57,21 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
       $this->conf['bundles'] = $tmp_bundles;
     }
     // Call the parent.
-    return parent::autocomplete_callback();
+    return parent::fetchResults();
+  }
+
+  /**
+   * Overrides LinkitSearchPlugin::buildSettingsForm().
+   */
+  function buildSettingsForm() {
+    $form = parent::buildSettingsForm();
+
+    // The entity plugin uses the entity name for the #token_types, but terms
+    // is a special case, its name is "Taxonomy_term" and the tokens are defined
+    // (in the taxonomy module) with just "term".
+    if (isset($form[$this->plugin['name']]['token_help']['help']['#token_types'])) {
+      $form[$this->plugin['name']]['token_help']['help']['#token_types'] = array('term');
+    }
+    return $form;
   }
 }

@@ -1,18 +1,18 @@
 <?php
 /**
  * @file
- * Define Linkit node plugin class.
+ * Define Linkit node search plugin class.
+ */
+
+/**
+ * Reprecents a Linkit node search plugin.
  */
 class LinkitSearchPluginNode extends LinkitSearchPluginEntity {
 
   /**
-   * If we are inclunding unpublished nodes in the search results, and this
-   * entity is unpublished, we need to tell the user this.
-   *
-   * @return a string which will be used as the search result label for this
-   *   item.
+   * Overrides LinkitSearchPluginEntity::createLabel().
    */
-  function buildLabel($entity) {
+  function createLabel($entity) {
     $label = parent::buildLabel($entity);
     if ($this->conf['include_unpublished'] && $entity->status == NODE_NOT_PUBLISHED) {
       $label .= '<span class="status"> - ' . t('unpublished') . '</span>';
@@ -21,17 +21,18 @@ class LinkitSearchPluginNode extends LinkitSearchPluginEntity {
   }
 
   /**
-   * Returns a string with CSS classes that will be added to the search result
-   * row for this item.
+   * Overrides LinkitSearchPluginEntity::createRowClass().
+   *
+   * Adds an extra class if the node is unpublished.
    */
-  function buildRowClass($entity) {
+  function createRowClass($entity) {
     if ($this->conf['include_unpublished'] && $entity->status == NODE_NOT_PUBLISHED) {
       return 'unpublished-node';
     }
   }
 
   /**
-   * Start a new EntityFieldQuery instance.
+   * Overrides LinkitSearchPluginEntity::getQueryInstance().
    */
   function getQueryInstance() {
     // Call the parent getQueryInstance method.
@@ -43,13 +44,7 @@ class LinkitSearchPluginNode extends LinkitSearchPluginEntity {
   }
 
   /**
-   * Generate a settings form for this handler.
-   * Uses the standard Drupal FAPI.
-   * The element will be attached to the "data" key.
-   *
-   * @return
-   *   An array containing any custom form elements to be displayed in the
-   *   profile editing form.
+   * Overrides LinkitSearchPlugin::buildSettingsForm().
    */
   function buildSettingsForm() {
     // Get the parent settings form.

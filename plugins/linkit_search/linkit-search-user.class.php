@@ -1,9 +1,17 @@
 <?php
 /**
  * @file
- * Define Linkit user plugin class.
+ * Define Linkit user search plugin class.
+ */
+
+/**
+ * Reprecents a Linkit user search plugin.
  */
 class LinkitSearchPluginUser extends LinkitSearchPluginEntity {
+
+  /**
+   * Overrides LinkitSearchPluginEntity::__construct().
+   */
   function __construct($plugin, $profile) {
     /**
      * The user entity doesn't add any label in their entity keys as they define a

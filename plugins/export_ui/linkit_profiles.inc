@@ -101,7 +101,6 @@ function linkit_profiles_form_validate(&$form, &$form_state) {
  * @see linkit_profiles_form().
  */
 function linkit_profiles_form_submit(&$form, &$form_state) {
-  dsm($form_state);
 }
 
 /**

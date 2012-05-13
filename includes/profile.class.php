@@ -7,6 +7,4 @@
 /**
  * Linkit Profile class implementation.
  */
-class LinkitProfile {
-
-}
+class LinkitProfile {}

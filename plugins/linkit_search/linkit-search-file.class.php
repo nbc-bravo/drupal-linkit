@@ -1,37 +1,35 @@
 <?php
 /**
  * @file
- * Define Linkit file plugin class.
+ * Define Linkit file search plugin class.
+ */
+
+/**
+ * Reprecents a Linkit file search plugin.
  */
 class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
 
   /**
-   * Set the plugin ui title.
+   * Overrides LinkitSearchPlugin::ui_title().
    */
   function ui_title() {
     return t('Managed files');
   }
 
   /**
-   * Set the plugin ui description.
+   * Overrides LinkitSearchPlugin::ui_description().
    */
   function ui_description() {
     return t('Extend Linkit with file support (Managed files).');
   }
 
   /**
-   * Build the search row description.
-   *
-   * If there is a "result_description", run it thro token_replace.
-   *
-   * @param object $data
-   *   An entity object that will be used in the token_place function.
-   *
-   * @see token_replace()
+   * Overrides LinkitSearchPluginEntity::createDescription().
+   * @TODO: More comments in this method.
    */
-  function buildDescription($data) {
+  function createDescription($data) {
     $description_array = array();
-    //Get image info.
+    // Get image info.
     $imageinfo = image_get_info($data->uri);
 
     if ($this->conf['image_extra_info']['thumbnail']) {
@@ -59,11 +57,12 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
   }
 
   /**
-   * Adds the file scheme to the group if "group_by_scheme" is activated.
+   * Overrides LinkitSearchPluginEntity::createGroup().
    */
-  function buildGroup($entity) {
+  function createGroup($entity) {
     // The the standard group name.
     $group = parent::buildGroup($entity);
+
     // Add the scheme.
     if ($this->conf['group_by_scheme']) {
       // Get all stream wrappers.
@@ -74,23 +73,17 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
   }
 
   /**
-   * Start a new EntityFieldQuery instance.
+   * Overrides LinkitSearchPluginEntity::getQueryInstance().
    */
   function getQueryInstance() {
     // Call the parent getQueryInstance method.
     parent::getQueryInstance();
-    // We only what permanent files.
+    // Only search for permanent files.
     $this->query->propertyCondition('status', FILE_STATUS_PERMANENT);
   }
 
   /**
-   * Generate a settings form for this handler.
-   * Uses the standard Drupal FAPI.
-   * The element will be attached to the "data" key.
-   *
-   * @return
-   *   An array containing any custom form elements to be displayed in the
-   *   profile editing form.
+   * Overrides LinkitSearchPluginEntity::buildSettingsForm().
    */
   function buildSettingsForm() {
     $form = parent::buildSettingsForm();
@@ -121,6 +114,4 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
 
     return $form;
   }
-
-
 }

@@ -8,9 +8,11 @@
  * Plugin structure is an associative array containing:
  * - ui_title: The title of the plugin used in the admin UI.
  * - ui_description: A description used in the admin UI.
- * - entity_type: Only required if the plugin extends LinkitPluginEntity. The
+ * - entity_type: (Only required if the plugin extends LinkitPluginEntity) The
  *     entity type this plugin will be used for.
  * - handler: Describes the class to be used for this plugin.
+ *
+ * @TODO: Verify this structure.
  */
 
 $plugin = array(
@@ -22,11 +24,17 @@ $plugin = array(
   ),
 );
 
+/**
+ * Get a single Linkit search plugin.
+ */
 function linkit_entity_ctools_linkit_get_child($plugin, $parent, $child) {
   $plugins = linkit_entity_ctools_linkit_get_children($plugin, $parent);
   return $plugins[$parent . ':' . $child];
 }
 
+/**
+ * Get all child Linkit search plugins.
+ */
 function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   $entities = entity_get_info();
   $plugins = array();

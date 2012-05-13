@@ -171,6 +171,8 @@ function linkit_entity_info_alter(&$entity_info) {
  *
  * @param $plugins
  *   An array of all search plugins processed within Linkit entity plugin.
+ *
+ * @TODO: Rename plugin files to linkit_serach-ENTITY.class.php
  */
 function linkit_linkit_search_plugin_entities_alter(&$plugins) {
   $alter_plugins = array(

@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- * Define Linkit entity plugin.
+ * Define Linkit entity search plugin class.
  */
 
 /**
- * Reprecents an entity search plugin.
+ * Reprecents a Linkit entity search plugin.
  */
 class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
@@ -46,6 +46,8 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   var $conf = array();
 
   /**
+   * Overrides LinkitSearchPlugin::__construct().
+   *
    * Initialize this plugin with the plugin, profile, and entity specific
    * variables.
    *
@@ -78,7 +80,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   }
 
   /**
-   * Get the label of an entity.
+   * Create a label of an entity.
    *
    * @param $entity
    *   The entity to get the label from.
@@ -86,12 +88,12 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
    * @return
    *   The entity label, or FALSE if not found.
    */
-  function crateLabel($entity) {
+  function createLabel($entity) {
     return entity_label($this->plugin['entity_type'], $entity);
   }
 
   /**
-   * Get the uri elements of an entity.
+   * Create an uri for an entity.
    *
    * @param $entity
    *   The entity to get the path from.
@@ -115,7 +117,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   }
 
   /**
-   * Get the search row description.
+   * Create a search row description.
    *
    * If there is a "result_description", run it thro token_replace.
    *
@@ -134,13 +136,16 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   }
 
   /**
-   * Get a group text.
+   * Create a group text.
+   *
+   * @param $entity
+   *   The entity object.
    *
    * @return
    *   When "group_by_bundle" is active, we need to add the bundle name to the
    *   group, else just return the entity label.
    */
-  function createGroup() {
+  function createGroup($entity) {
     // Get the entity label.
     $group = $this->entity_info['label'];
 
@@ -149,10 +154,25 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
       // @TODO: Test that $this works, else use the $entity param.
-      $bundle_name = $bundles[$this->{$this->entity_key_bundle}]['label'];
+      $bundle_name = $bundles[$this->{$entity->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
     }
     return $group;
+  }
+
+  /**
+   * Create a row class to appaned to the search result row.
+   *
+   * @param $entity
+   *   The entity object.
+   *
+   * @return
+   *   A string to with classes.
+   *
+   * @TODO: Make the return an array.
+   */
+  function createRowClass($entity) {
+    return '';
   }
 
   /**
@@ -166,6 +186,9 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     $this->query->propertyOrderBy($this->entity_field_label, 'ASC');
   }
 
+  /**
+   * Implements LinkitSearchPluginInterface::fetchResults().
+   */
   public function fetchResults($serach_string) {
     // If the $serach_string is not a string, something is wrong and an empty
     // array is returned.
@@ -191,6 +214,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     // Bundle check.
     if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {
+      // @TODO: Fix this assigment in the condition.
       if ($bundles = array_filter($this->conf['bundles'])) {
         $this->query->propertyCondition($this->entity_key_bundle, $bundles, 'IN');
       }
@@ -226,6 +250,9 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     return $matches;
   }
 
+  /**
+   * Overrides LinkitSearchPlugin::buildSettingsForm().
+   */
   function buildSettingsForm() {
     $form[$this->plugin['name']] = array(
       '#type' => 'fieldset',
