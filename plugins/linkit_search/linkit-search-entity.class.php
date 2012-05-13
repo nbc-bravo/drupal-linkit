@@ -92,6 +92,25 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     return entity_label($this->plugin['entity_type'], $entity);
   }
 
+   /**
+   * Create a search row description.
+   *
+   * If there is a "result_description", run it thro token_replace.
+   *
+   * @param object $data
+   *   An entity object that will be used in the token_place function.
+   *
+   * @return
+   *   A string containing the row description.
+   *
+   * @see token_replace()
+   */
+  function createDescription($data) {
+    return token_replace(check_plain($this->conf['result_description']), array(
+      $this->plugin['entity_type'] => $data,
+    ));
+  }
+
   /**
    * Create an uri for an entity.
    *
@@ -114,25 +133,6 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     $options += array('alias' => TRUE);
 
     return url($uri['path'], $options);
-  }
-
-  /**
-   * Create a search row description.
-   *
-   * If there is a "result_description", run it thro token_replace.
-   *
-   * @param object $data
-   *   An entity object that will be used in the token_place function.
-   *
-   * @return
-   *   A string containing the row description.
-   *
-   * @see token_replace()
-   */
-  function createDescription($data) {
-    return token_replace(check_plain($this->conf['result_description']), array(
-      $this->plugin['entity_type'] => $data,
-    ));
   }
 
   /**

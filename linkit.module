@@ -25,9 +25,24 @@ function linkit_ctools_plugin_type() {
     'child plugins' => TRUE,
     'classes' => array('handler'),
   );
-  $plugins['linkit_insert'] = array();
+  $plugins['linkit_insert'] = array(
+    'process' => array(
+      'function' => 'linkit_insert_plugin_process',
+    ),
+  );
   $plugins['linkit_attribute'] = array();
   return $plugins;
+}
+
+/**
+ * Provide defaults for insert pluings.
+ */
+function linkit_insert_plugin_process(&$plugin, $info) {
+  // Javascript files can be located in the same directory as the plugins .inc
+  // file, and then the plugin path should be added to its uri.
+  if (!file_exists($plugin['javascript'])) {
+    $plugin['javascript'] = $plugin['path'] . '/' . $plugin['javascript'];
+  }
 }
 
 /**

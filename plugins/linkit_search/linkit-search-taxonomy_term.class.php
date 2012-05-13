@@ -39,7 +39,7 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
   /**
    * Overrides LinkitSearchPluginEntity::fetchResults().
    */
-  function fetchResults() {
+  function fetchResults($serach_string) {
     // The term entity doesn't use the entity keys bundle definition, its using
     // the vid instead, so lets 'translate' the bundle names to vids.
     if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {

@@ -1,6 +1,6 @@
 /**
  * @file
- * HTML Link insert plugin for Linkit.
+ * Raw HTML insert plugin for Linkit.
  */
 (function ($) {
 Drupal.linkit.addInsertPlugin('raw_url',  {
