@@ -61,8 +61,7 @@ function linkit_profiles_form(&$form, &$form_state) {
     '#default_value' => isset($profile->data['autocomplete']['charLimit']) ? $profile->data['autocomplete']['charLimit'] : '3',
     '#size' => 5,
     '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
-    //'#element_validate' => array('linkit_isnumeric_validate'),
-    // @TODO: Add validation above.
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
   $form['data']['autocomplete']['wait'] = array(
@@ -72,9 +71,8 @@ function linkit_profiles_form(&$form, &$form_state) {
     '#size' => 5,
     '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
     '#field_suffix' => t('ms'),
-    //'#element_validate' => array('linkit_isnumeric_validate'),
-    // @TODO: Add validation above.
-  );
+    '#element_validate' => array('linkit_isnumeric_validate'),
+);
 
   $form['data']['autocomplete']['remoteTimeout'] = array(
     '#title' => t('Remote timeout'),
@@ -83,8 +81,7 @@ function linkit_profiles_form(&$form, &$form_state) {
     '#size' => 5,
     '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
     '#field_suffix' => t('ms'),
-    //'#element_validate' => array('linkit_isnumeric_validate'),
-    // @TODO: Add validation above.
+    '#element_validate' => array('linkit_isnumeric_validate'),
   );
 }
 
@@ -297,4 +294,16 @@ function linkit_extract_tokens($type) {
   }
 
   return $available_tokens;
+}
+
+/**
+ * Element validate callback for fields that should be numeric.
+ *
+ * This function is assigned as an #element_validate callback in
+ * linkit_profiles_form().
+ */
+function linkit_isnumeric_validate($element, &$form_state, $form) {
+  if (!empty($element['#value']) && !is_numeric($element['#value'])) {
+    form_error($element, $element['#title'] . ' should only contains numbers.');
+  }
 }

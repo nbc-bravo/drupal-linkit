@@ -38,8 +38,8 @@ function linkit_ctools_plugin_type() {
  * Provide defaults for insert pluings.
  */
 function linkit_insert_plugin_process(&$plugin, $info) {
-  // Javascript files can be located in the same directory as the plugins .inc
-  // file, and then the plugin path should be added to its uri.
+  // The plugin javascript can be just a filename or a full path,
+  // in case it's just a filename, add the plugin path.
   if (!file_exists($plugin['javascript'])) {
     $plugin['javascript'] = $plugin['path'] . '/' . $plugin['javascript'];
   }
@@ -223,3 +223,16 @@ function linkit_theme($existing, $type, $theme, $path) {
   );
 }
 
+/**
+ * Implements hook_menu_alter().
+ */
+function linkit_menu_alter(&$items) {
+  // Override the default titles that ctools export_ui sets.
+  // This way there is less code compared to define this in the plugin array.
+  $items['admin/config/content/linkit/add']['title'] = 'Add new profile';
+  $items['admin/config/content/linkit/import']['title'] = 'Import profiles';
+
+  // Make tabs instead of action links.
+  $items['admin/config/content/linkit/add']['type'] = MENU_LOCAL_TASK;
+  $items['admin/config/content/linkit/import']['type'] = MENU_LOCAL_TASK;
+}

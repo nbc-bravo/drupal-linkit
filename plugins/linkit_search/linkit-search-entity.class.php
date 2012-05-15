@@ -153,7 +153,6 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     // name and append it to the group.
     if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
-      // @TODO: Test that $this works, else use the $entity param.
       $bundle_name = $bundles[$this->{$entity->entity_key_bundle}]['label'];
       $group .= ' · ' . check_plain($bundle_name);
     }
