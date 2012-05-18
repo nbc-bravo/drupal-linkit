@@ -19,6 +19,8 @@ $plugin = array(
   'title plural' => t('Linkit profiles'),
   'title singular proper' => t('Linkit profile'),
   'title plural proper' => t('Linkit profiles'),
+
+  'handler' => 'linkit_profiles',
 );
 
 /**
@@ -306,35 +308,4 @@ function linkit_isnumeric_validate($element, &$form_state, $form) {
   if (!empty($element['#value']) && !is_numeric($element['#value'])) {
     form_error($element, $element['#title'] . ' should only contains numbers.');
   }
-}
-
-/**
- * Menu callback; List Linkit profiles.
- */
-function linkit_export_ui_list_profiles() {
-  $profiles = linkit_profile_load_all();
-
-  $rows = array();
-  foreach ($profiles as $profile) {
-    $rows[] = array(
-      array('data' => check_plain($profile->admin_title)),
-      array('data' => 'Storage'),
-      array('data' => 'Operation'),
-
-    );
-  }
-
-  $header = array();
-  $header[] = array('data' => t('Title'), 'class' => array('ctools-export-ui-title'));
-  $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
-  $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
-
-  $table = array(
-    'header' => $header,
-    'rows' => $rows,
-    'attributes' => array('id' => 'ctools-export-ui-list-items'),
-    'empty' => 'No profiles.',
-  );
-
-  return theme('table', $table);
 }

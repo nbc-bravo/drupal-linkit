@@ -227,10 +227,6 @@ function linkit_theme($existing, $type, $theme, $path) {
  * Implements hook_menu_alter().
  */
 function linkit_menu_alter(&$items) {
-  // Change list callbacks for export_ui (Linkit profiles).
-  $items['admin/config/content/linkit']['page callback'] = 'linkit_export_ui_list_profiles';
-  $items['admin/config/content/linkit/list']['page callback'] = 'linkit_export_ui_list_profiles';
-
   // Override the default titles that ctools export_ui sets.
   // This way there is less code compared to define this in the plugin array.
   $items['admin/config/content/linkit/add']['title'] = 'Add new profile';
