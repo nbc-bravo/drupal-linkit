@@ -33,7 +33,10 @@ $plugin = array(
  */
 function linkit_profiles_form(&$form, &$form_state) {
   // Set data as a tree.
-  $form['data']['#tree'] = TRUE;
+  $form['data'] = array(
+    '#tree' => TRUE,
+    '#type' => 'vertical_tabs',
+  );
 
   $profile = $form_state['item'];
 
@@ -46,45 +49,8 @@ function linkit_profiles_form(&$form, &$form_state) {
   // Append attribute plugin form element to the profile form.
   _linkit_build_attribute_plugin_form_fields($form, $profile);
 
-  // @TODO: Move autocomplete settings to its own function.
-  $form['data']['autocomplete'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Autocomplete options'),
-    '#description' => t('Linkit uses !bac which may be configured with focus on performance.', array('!bac' => l('Better Autocomplete', 'https://github.com/betamos/Better-Autocomplete'))),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#tree' => TRUE,
-    '#weight' => 100,
-  );
-
-  $form['data']['autocomplete']['charLimit'] = array(
-    '#title' => t('Character limit'),
-    '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['charLimit']) ? $profile->data['autocomplete']['charLimit'] : '3',
-    '#size' => 5,
-    '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
-    '#element_validate' => array('linkit_isnumeric_validate'),
-  );
-
-  $form['data']['autocomplete']['wait'] = array(
-    '#title' => t('Key press delay'),
-    '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '350',
-    '#size' => 5,
-    '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
-    '#field_suffix' => t('ms'),
-    '#element_validate' => array('linkit_isnumeric_validate'),
-);
-
-  $form['data']['autocomplete']['remoteTimeout'] = array(
-    '#title' => t('Remote timeout'),
-    '#type' => 'textfield',
-    '#default_value' => isset($profile->data['autocomplete']['remoteTimeout']) ? $profile->data['autocomplete']['remoteTimeout'] : '10000',
-    '#size' => 5,
-    '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
-    '#field_suffix' => t('ms'),
-    '#element_validate' => array('linkit_isnumeric_validate'),
-  );
+  // Append autocomplete (BAC) form element to the profile form.
+  _linkit_build_autocomplete_form_fields($form, $profile);
 }
 
 /**
@@ -106,7 +72,7 @@ function linkit_profiles_form_submit(&$form, &$form_state) {
  * Append search plugin form element to the profile form.
  * @see linkit_profiles_form().
  *
- * @param $profile
+ * @param LinkitProfile $profile
  *   A profile object contains all settings for the profile.
  */
 function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile) {
@@ -181,10 +147,10 @@ function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile)
  * Append insert plugin form element to the profile form.
  * @see linkit_profiles_form().
  *
- * @param $profile
+ * @param LinkitProfile $profile
  *   A profile object contains all settings for the profile.
  */
-function _linkit_build_insert_plugin_form_fields(&$form, $profile) {
+function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile) {
   // Make a list of all insert pluings.
   $insert_pluings = array();
   foreach (linkit_insert_plugin_load_all() as $name => $plugin) {
@@ -216,10 +182,10 @@ function _linkit_build_insert_plugin_form_fields(&$form, $profile) {
  * Append attribute plugin form element to the profile form.
  * @see linkit_profiles_form().
  *
- * @param $profile
+ * @param LinkitProfile $profile
  *   A profile object contains all settings for the profile.
  */
-function _linkit_build_attribute_plugin_form_fields(&$form, $profile) {
+function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profile) {
   // Load all attribute pluings.
   $attributes = linkit_attribute_load_all();
 
@@ -267,6 +233,54 @@ function _linkit_build_attribute_plugin_form_fields(&$form, $profile) {
   foreach ($tmp AS $name => $element) {
     $form['data']['attribute_plugins_fieldset']['attribute_plugins'][$name] = $element;
   }
+}
+
+/**
+ * Append autocomplete (BAC) form element to the profile form.
+ * @see linkit_profiles_form().
+ *
+ * @param LinkitProfile $profile
+ *   A profile object contains all settings for the profile.
+ */
+function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) {
+  $form['data']['autocomplete'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Autocomplete options'),
+    '#description' => t('Linkit uses !bac which may be configured with focus on performance.', array('!bac' => l('Better Autocomplete', 'https://github.com/betamos/Better-Autocomplete'))),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+    '#weight' => 100,
+  );
+
+  $form['data']['autocomplete']['charLimit'] = array(
+    '#title' => t('Character limit'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile->data['autocomplete']['charLimit']) ? $profile->data['autocomplete']['charLimit'] : '3',
+    '#size' => 5,
+    '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
+  );
+
+  $form['data']['autocomplete']['wait'] = array(
+    '#title' => t('Key press delay'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '350',
+    '#size' => 5,
+    '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
+    '#field_suffix' => t('ms'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
+  );
+
+  $form['data']['autocomplete']['remoteTimeout'] = array(
+    '#title' => t('Remote timeout'),
+    '#type' => 'textfield',
+    '#default_value' => isset($profile->data['autocomplete']['remoteTimeout']) ? $profile->data['autocomplete']['remoteTimeout'] : '10000',
+    '#size' => 5,
+    '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
+    '#field_suffix' => t('ms'),
+    '#element_validate' => array('linkit_isnumeric_validate'),
+  );
 }
 
 /**
