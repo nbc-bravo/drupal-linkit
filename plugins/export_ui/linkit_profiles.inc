@@ -217,7 +217,8 @@ function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profi
   $form['data']['attribute_plugins_fieldset'] = array(
     '#type' => 'fieldset',
     '#title' => t('Attributes'),
-    '#description' => t('Attributes is HTML attributes.'),
+    '#description' => t('Attributes is HTML attributes that will be attached to
+      the insert plugin.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => FALSE,
@@ -258,6 +259,10 @@ function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profi
   foreach ($tmp AS $name => $element) {
     $form['data']['attribute_plugins_fieldset']['attribute_plugins'][$name] = $element;
   }
+
+  $form['data']['attribute_plugins_fieldset']['attribute_plugins_info'] = array(
+    '#markup' => 'Keep in mind that not all attributes can be used by all insert pluings.',
+  );
 }
 
 /**
@@ -271,7 +276,9 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
   $form['data']['autocomplete'] = array(
     '#type' => 'fieldset',
     '#title' => t('Autocomplete options'),
-    '#description' => t('Linkit uses !bac which may be configured with focus on performance.', array('!bac' => l('Better Autocomplete', 'https://github.com/betamos/Better-Autocomplete'))),
+    '#description' => t('Linkit uses !bac which may be configured with focus on
+      performance.', array('!bac' => l('Better Autocomplete',
+      'https://github.com/betamos/Better-Autocomplete'))),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
@@ -283,7 +290,8 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['charLimit']) ? $profile->data['autocomplete']['charLimit'] : '3',
     '#size' => 5,
-    '#description' => t('Minimum number of characters to perform server polling. A higher value reduces server load. <em>Default: 3</em>'),
+    '#description' => t('Minimum number of characters to perform server polling.
+      A higher value reduces server load. <em>Default: 3</em>'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
 
@@ -292,7 +300,8 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['wait']) ? $profile->data['autocomplete']['wait'] : '350',
     '#size' => 5,
-    '#description' => t('Time from last key press to poll the server. A higher value reduces server load. <em>Default: 350</em>'),
+    '#description' => t('Time from last key press to poll the server. A higher
+      value reduces server load. <em>Default: 350</em>'),
     '#field_suffix' => t('ms'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
@@ -302,7 +311,8 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
     '#type' => 'textfield',
     '#default_value' => isset($profile->data['autocomplete']['remoteTimeout']) ? $profile->data['autocomplete']['remoteTimeout'] : '10000',
     '#size' => 5,
-    '#description' => t('Client side timeout for a request to the server. <em>Default: 10000</em>'),
+    '#description' => t('Client side timeout for a request to the server.
+      <em>Default: 10000</em>'),
     '#field_suffix' => t('ms'),
     '#element_validate' => array('linkit_isnumeric_validate'),
   );
