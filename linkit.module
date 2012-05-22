@@ -249,3 +249,103 @@ function linkit_menu_alter(&$items) {
   $items['admin/config/content/linkit/add']['type'] = MENU_LOCAL_TASK;
   $items['admin/config/content/linkit/import']['type'] = MENU_LOCAL_TASK;
 }
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * @TODO: Document why we are doing this.
+ * @see linkit_element_info_alter().
+ */
+function linkit_module_implements_alter(&$implementations, $hook){
+  if ($hook == 'element_info_alter') {
+    $group = $implementations['linkit'];
+    unset($implementations['linkit']);
+    $implementations['linkit'] = $group;
+  }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function linkit_element_info_alter(&$types) {
+  // Append a process function for the field integration.
+  foreach (linkit_get_allowed_field_elements() as $element) {
+    if (isset($types[$element])) {
+      $types[$element]['#process'][] = 'linkit_process_element';
+    }
+  }
+}
+
+/**
+ * Implements hook_library().
+ */
+function linkit_library() {
+  $path = drupal_get_path('module', 'linkit');
+
+  // Linkit base
+  $libraries['linkit_base'] = array(
+    'website' => 'http://drupal.org/project/linkit',
+    'version' => '7.3',
+    'title' => 'Linkit base',
+    'js' => array(
+      $path . '/js/linkit.js' => array('group' => JS_DEFAULT),
+      $path . '/js/linkit.dialog.js' => array('group' => JS_DEFAULT),
+      // Add global settings for Linkit
+      array(
+        'type' => 'setting',
+        'data' => array('linkit' => array('foo' => 'bar')),
+      ),
+    ),
+    'dependencies' => array(
+      array('system', 'ui.dialog'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function linkit_menu() {
+  $items = array();
+
+  // $TODO: Document this.
+  $items['linkit/dashboard'] = array(
+    'title' => 'Linkit',
+    'description' => 'Dashboard',
+    'page callback' => '_linkit_dashboard',
+    'access callback' => TRUE, // @TODO: Tell users why TRUE.
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+};
+
+/**
+ * Creates the dialog dashboard.
+ *
+ * We don't call drupal_get_form() in the menu callback as we don't want to
+ * return the rendered form, we just want to print it as it is.
+ */
+function _linkit_dashboard() {
+  $form = drupal_get_form('linkit_dashboard_form');
+  print drupal_render($form);
+}
+
+/**
+ * Implements hook_form().
+ */
+function linkit_dashboard_form($form, &$form_state) {
+  $form['linkit_search'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#maxlength' => 255,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -10,
+    // @TODO: ATTACH BAC HERE
+  );
+
+  return $form;
+}
