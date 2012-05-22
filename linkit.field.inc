@@ -158,7 +158,7 @@ function linkit_field_profile_validate($element, &$form_state, $form) {
 /**
  * Process callback.
  */
-function linkit_process_widget(&$element) {
+function linkit_process_field_element(&$element) {
   // Only proceed if the field is attached to an entity.
   if (!isset($element['#entity_type'])) {
     return $element;

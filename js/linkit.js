@@ -10,15 +10,14 @@ Drupal.linkit = Drupal.linkit || {};
 
 Drupal.behaviors.linkit = {
   attach: function(context, settings) {
-    console.log(settings);
     // If there is no fields, just stop here.
     if (settings.linkit.fields == null) {
       return false;
     }
-    $.each(settings.linkit.fields, function(field) {
-      $('#' + field, context).once('linkit_field', function() {
-        $('.linkit-field-' + field).click(function() {
-          Drupal.linkit.dialog.buildDialog('/linkit/dashboard');
+    $.each(settings.linkit.fields, function(field_name, field) {
+      $('#' + field_name, context).once('linkit_field', function() {
+        $('.linkit-field-' + field_name).click(function() {
+          Drupal.linkit.dialog.buildDialog('/linkit/dashboard/' + field.profile);
           return false;
         });
       });
