@@ -100,7 +100,7 @@ Drupal.behaviors.linkitDialogButtons = {
     $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
-      Drupal.linkit.editorDialog[linkitCache.editorName].insertLink(Drupal.linkit.dialog.getLink());
+      Drupal.linkit.source[linkitCache.source].insertLink(Drupal.linkit.dialog.getLink());
       // Close the dialog.
       Drupal.linkit.dialog.close();
       return false;
@@ -110,5 +110,39 @@ Drupal.behaviors.linkitDialogButtons = {
   }
 };
 
+/**
+ * Retrieve a link object by extracting values from the form.
+ *
+ * @return
+ *   The link object.
+ *
+ * @see Drupal.linkit.dialog.populateFields.
+ */
+  Drupal.linkit.dialog.getLink = function() {
+    var link = {
+      path: $('#linkit-modal #edit-linkit-path').val(),
+      attributes: {}
+    };
+    $.each(Drupal.linkit.dialog.additionalAttributes(), function(f, name) {
+     link.attributes[name] = $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val();
+    });
+  return link;
+};
+
+/**
+ * Retrieve a list of the currently available additional attributes in the
+ * dashboard. The attribute "href" is excluded.
+ *
+ * @return
+ *   An array with the names of the attributes.
+ */
+Drupal.linkit.dialog.additionalAttributes = function() {
+  var attributes = [];
+  $('#linkit-modal #edit-linkit-attributes .linkit-attribute').each(function() {
+    // Remove the 'linkit_' prefix.
+    attributes.push($(this).attr('name').substr(7));
+  });
+  return attributes;
+};
 
 })(jQuery);
