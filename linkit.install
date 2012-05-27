@@ -17,7 +17,7 @@ function linkit_schema() {
       'key name' => 'Name',
       'primary key' => 'pid',
       'object' => 'LinkitProfile',
-      //'object factory' => '',
+      'object factory' => 'linkit_profile_object_factory',
       'identifier' => 'linkit_profile',
       'status' => 'linkit_profiles_status',
       'load callback' => 'linkit_profile_load',

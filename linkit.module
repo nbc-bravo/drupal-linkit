@@ -89,6 +89,28 @@ function linkit_profile_load_all() {
 }
 
 /**
+ * Alter how the LinkitProfile object is created.
+ *
+ * @return
+ *   A LinkitProfile object.
+ */
+function linkit_profile_object_factory($schema, $data) {
+  ctools_include('export');
+  $export = $schema['export'];
+
+  // Create the LinkitProfile object.
+  $object = new $export['object'];
+
+  // Call the unpack object that ctools provide to take care of unserialization
+  // and potential joins.
+  $object = _ctools_export_unpack_object($schema, $data, $object);
+
+  // Call the profile init function.
+  $object->init($object->data);
+  return $object;
+}
+
+/**
  * Temporary saves the active profile. Active means that the user is working
  * with the profile in the dialog.
  *
@@ -181,11 +203,18 @@ function linkit_insert_plugin_load($plugin_name) {
  * @return
  *   An array of arrays with information about all available attribute plugins.
  */
-function linkit_attribute_load_all() {
+function linkit_attribute_plugin_load_all() {
   ctools_include('plugins');
   // Load all attribute plugins.
   $attributes = ctools_get_plugins('linkit', 'linkit_attribute');
   return $attributes;
+}
+
+function linkit_attribute_plugin_load($plugin_name) {
+  ctools_include('plugins');
+  // Load all insert plugins.
+  $plugins = ctools_get_plugins('linkit', 'linkit_attribute', $plugin_name);
+  return $plugins;
 }
 
 /**
@@ -323,6 +352,7 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
+      array('system', 'drupal.collapse'),
     ),
   );
 
@@ -382,5 +412,28 @@ function linkit_dashboard_form($form, &$form_state) {
     // @TODO: ATTACH BAC HERE
   );
 
+  // If we have enabled attributes, lets put them inside a fieldset.
+  if (count($profile->getAttributes())) {
+    // Create the container fieldset.
+    $form['linkit_attributes'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Attributes'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 10,
+    );
+    // Append the attributes info the fieldset.
+    foreach ($profile->getAttributes() AS $name => $attribute) {
+      // Add 'linkit_' prefix to ensure that is uniq.
+      $form['linkit_attributes']['linkit_' . $name] = $attribute;
+    }
+  }
+
+  $form['linkit_insert'] = array(
+    '#type' => 'button',
+    '#value' => t('Insert link'),
+    '#suffix' => '<a id="linkit-cancel" href="#">' . t('Cancel') . '</a>',
+    '#weight' => 100,
+  );
   return $form;
 }

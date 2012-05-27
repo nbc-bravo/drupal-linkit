@@ -37,12 +37,15 @@ Drupal.linkit.dialog.createDialog = function(src) {
     success : function(data) {
       // Insert the respons.
       $linkitModal.append(data);
+
       // Delete exsisting throbbers.
       $('.ajax-progress-throbber', $linkitModal).remove();
 
       // Set focus in the search field.
       $('.linkit-wrapper #edit-linkit-search').focus();
 
+      // Run all the behaviors again for this new context.
+      Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
     }
   });
 

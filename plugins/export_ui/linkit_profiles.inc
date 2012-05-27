@@ -212,7 +212,7 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
  */
 function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profile) {
   // Load all attribute pluings.
-  $attributes = linkit_attribute_load_all();
+  $attributes = linkit_attribute_plugin_load_all();
 
   $form['data']['attribute_plugins_fieldset'] = array(
     '#type' => 'fieldset',
