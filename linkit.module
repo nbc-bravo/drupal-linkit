@@ -412,6 +412,16 @@ function linkit_dashboard_form($form, &$form_state) {
     // @TODO: ATTACH BAC HERE
   );
 
+  $form['linkit_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Target path'),
+    '#required' => TRUE,
+    '#maxlength' => NULL,
+    '#size' => 60,
+    '#default_value' => '',
+    '#weight' => -1,
+  );
+
   // If we have enabled attributes, lets put them inside a fieldset.
   if (count($profile->getAttributes())) {
     // Create the container fieldset.

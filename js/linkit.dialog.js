@@ -16,6 +16,8 @@ Drupal.linkit.dialog.buildDialog = function (src) {
   Drupal.linkit.dialog.createDialog(src)
   // Create jQuery UI Dialog.
   .dialog(Drupal.linkit.dialog.dialogOptions())
+  // Remove the title bar from the dialog.
+  .siblings(".ui-dialog-titlebar").remove();
 };
 
 /**
@@ -86,5 +88,27 @@ Drupal.linkit.dialog.close = function () {
   Drupal.linkitCache = {};
   return false;
 };
+
+/**
+ * jQuery dialog buttons is located outside the IFRAME where Linkit dashboard
+ * is shown and they cant trigger events in the IFRAME.
+ * Our own buttons for inserting a link and cancel is inside that IFRAME and
+ * can't destroy the dialog, so we have to bind our buttons to the dialog button.
+ */
+Drupal.behaviors.linkitDialogButtons = {
+  attach: function (context, settings) {
+    $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
+      var linkitCache = Drupal.linkit.getLinkitCache();
+      // Call the insertLink() function.
+      Drupal.linkit.editorDialog[linkitCache.editorName].insertLink(Drupal.linkit.dialog.getLink());
+      // Close the dialog.
+      Drupal.linkit.dialog.close();
+      return false;
+    });
+
+    $('#linkit-modal #linkit-cancel', context).bind('click', Drupal.linkit.dialog.close);
+  }
+};
+
 
 })(jQuery);
