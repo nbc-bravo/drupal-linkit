@@ -169,6 +169,11 @@ function linkit_process_field_element(&$element) {
 
   if (isset($instance['settings']['linkit']['enable']) && $instance['settings']['linkit']['enable']) {
 
+    // Load the profile.
+    $profile = linkit_profile_load($instance['settings']['linkit']['profile']);
+    // Load the insert plugin for the profile.
+    $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
+
     // Set the field ID.
     $field_id = $element['#id'];
 
@@ -184,6 +189,8 @@ function linkit_process_field_element(&$element) {
           'fields' => array(
             $field_id => array(
               'profile' => $instance['settings']['linkit']['profile'],
+              'insert_plugin' => $profile->data['insert_plugin']['plugin'],
+              'url_method' => $profile->data['insert_plugin']['url_method'],
             ),
           ),
         ),
@@ -198,8 +205,10 @@ function linkit_process_field_element(&$element) {
       '#attached' => array(
         'library' => array(
            array('linkit', 'linkit_base'),
+           array('linkit', 'linkit_field'),
         ),
         'js' => array(
+          $insert_plugin['javascript'],
           $field_js,
         ),
       ),
