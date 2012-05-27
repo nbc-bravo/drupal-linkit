@@ -374,6 +374,24 @@ function linkit_library() {
     $library += $common;
   }
 
+  // Linkit BAC
+  // @TODO: Move this out of Linkit.
+  $libraries['linkit_bac'] = array(
+    'website' => 'https://github.com/betamos/Better-Autocomplete',
+    'version' => '1.0',
+    'title' => 'Better autocomplete',
+    'js' => array(
+      $path . '/better-autocomplete/jquery.better-autocomplete.js' => array('group' => JS_LIBRARY),
+      array(
+        'type' => 'setting',
+        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE)))),
+      ),
+    ),
+    'css' => array(
+      $path . '/better-autocomplete/better-autocomplete.css' => array('group' => CSS_DEFAULT),
+    ),
+  );
+
   return $libraries;
 }
 
