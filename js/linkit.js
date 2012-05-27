@@ -5,24 +5,41 @@
 
 // Create the Linkit namespaces.
 Drupal.linkit = Drupal.linkit || {};
+Drupal.linkitCache = Drupal.linkitCache || {};
+Drupal.linkit.source = Drupal.linkit.source || {};
+Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 (function ($) {
 
 Drupal.behaviors.linkit = {
-  attach: function(context, settings) {
-    // If there is no fields, just stop here.
-    if (settings.linkit.fields == null) {
-      return false;
-    }
-    $.each(settings.linkit.fields, function(field_name, field) {
-      $('#' + field_name, context).once('linkit_field', function() {
-        $('.linkit-field-' + field_name).click(function() {
-          Drupal.linkit.dialog.buildDialog('/linkit/dashboard/' + field.profile);
-          return false;
-        });
-      });
-    });
-  }
+  attach: function(context, settings) {}
 };
 
+/**
+ * @TODO: Document this.
+ */
+Drupal.linkitCacheAdd = function (name, value) {
+  Drupal.linkitCache[name] = value;
+};
+
+/**
+ * @TODO: Document this.
+ */
+Drupal.linkit.getLinkitCache = function () {
+  return Drupal.linkitCache;
+};
+
+/**
+ * @TODO: Document this.
+ */
+Drupal.linkit.addInsertPlugin = function(name, plugin) {
+  Drupal.linkit.insertPlugins[name] = plugin;
+}
+
+/**
+ * @TODO: Document this.
+ */
+Drupal.linkit.getInsertPlugin = function(name) {
+  return Drupal.linkit.insertPlugins[name];
+}
 })(jQuery);
