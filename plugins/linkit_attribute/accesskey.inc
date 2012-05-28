@@ -12,6 +12,9 @@ $plugin = array(
 /**
  * Create a FAPI element.
  *
+ * @param array $plugin
+ *   This is the plugin definition.
+ *
  * @param array $settings
  *   An array of settings for this attribute. This is from the profile settings.
  *
@@ -20,10 +23,10 @@ $plugin = array(
  *
  * @see LinkitProfile::setAttributes()
  */
-function linkit_attribute_plugin_accesskey($settings = array()) {
+function linkit_attribute_plugin_accesskey($plugin, $settings = array()) {
   return array(
     '#type' => 'textfield',
-    '#title' => 'accesskey',
+    '#title' => $plugin['name'],
     '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
