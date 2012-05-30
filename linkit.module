@@ -353,9 +353,13 @@ function linkit_library() {
         'data' => array('linkit' => array('foo' => 'bar')),
       ),
     ),
+    'css' => array(
+      $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
+    ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
       array('system', 'drupal.collapse'),
+      array('linkit', 'linkit_bac'),
     ),
   );
 
@@ -384,7 +388,8 @@ function linkit_library() {
       $path . '/better-autocomplete/jquery.better-autocomplete.js' => array('group' => JS_LIBRARY),
       array(
         'type' => 'setting',
-        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete', array('query' => array('s' => ''), 'absolute' => TRUE)))),
+        // ___profile___ is just a placeholder.
+        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array('s' => ''), 'absolute' => TRUE)))),
       ),
     ),
     'css' => array(
@@ -411,6 +416,16 @@ function linkit_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  // @TODO: Document this.
+  $items['linkit/autocomplete/%linkit_profile'] = array(
+    'title' => 'Linkit autocomplete response function',
+    'description' => 'Dashboard',
+    'page callback' => '_linkit_autocomplete',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 };
 
@@ -429,6 +444,7 @@ function _linkit_dashboard(LinkitProfile $profile) {
   // Get the dashboard form.
   $form = drupal_get_form('linkit_dashboard_form');
   print drupal_render($form);
+  drupal_exit();
 }
 
 /**
@@ -482,4 +498,12 @@ function linkit_dashboard_form($form, &$form_state) {
     '#weight' => 100,
   );
   return $form;
+}
+
+/**
+ *
+ */
+function _linkit_autocomplete($profile) {
+  print drupal_json_output(array());
+  drupal_exit();
 }

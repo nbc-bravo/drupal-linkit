@@ -35,7 +35,7 @@ class LinkitProfile {
 
         // Call the callback to get the FAPI element.
         if (isset($attribute_plugin['callback']) && function_exists($attribute_plugin['callback'])) {
-          $attribute_html = $attribute_plugin['callback']($attribute);
+          $attribute_html = $attribute_plugin['callback']($attribute_plugin, $attribute);
           $this->attributes[$attribute_name] = $attribute_html;
         }
       }
@@ -43,7 +43,6 @@ class LinkitProfile {
   }
 
   /**
-   *
    * @return
    *   An array with all active attributes for this profile.
    */

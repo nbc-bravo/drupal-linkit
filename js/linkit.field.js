@@ -19,11 +19,14 @@ Drupal.behaviors.linkit_field = {
     $.each(settings.linkit.fields, function(field_name, field) {
       $('#' + field_name, context).once('linkit_field', function() {
         $('.linkit-field-' + field_name).click(function() {
-          // Add source.
-          Drupal.linkitCacheAdd('source', 'field');
+          // Set the source type.
+          Drupal.linkitCacheAdd('source_type', 'field');
 
-          // Set the name of the field.
-          Drupal.linkitCacheAdd('field', field_name);
+          // Set the name of the source.
+          Drupal.linkitCacheAdd('source', field_name);
+
+          // Set profile.
+          Drupal.linkitCacheAdd('profile', field.profile);
 
           // Only care about selection if the element is a textarea.
           if ($('textarea#' + field_name).length) {
@@ -103,19 +106,19 @@ Drupal.linkit.source.field = {
    */
   insertLink : function(data) {
     var linkitCache = Drupal.linkit.getLinkitCache(),
-      field = $('#' + linkitCache.field),
-      field_settings = Drupal.settings.linkit.fields[linkitCache.field],
+      source = $('#' + linkitCache.source),
+      field_settings = Drupal.settings.linkit.fields[linkitCache.source],
 
       // Call the insert plugin.
       link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data, field_settings);
 
     if (typeof linkitCache.selection != 'undefined') {
       // Replace the selection and insert the link there.
-      Drupal.behaviors.linkit_field.replaceSelection(field.get(0), linkitCache.selection, link);
+      Drupal.behaviors.linkit_field.replaceSelection(source.get(0), linkitCache.selection, link);
     }
     else {
       // Replace the field value.
-      Drupal.behaviors.linkit_field.replaceFieldValue(field.get(0), link);
+      Drupal.behaviors.linkit_field.replaceFieldValue(source.get(0), link);
     }
   }
 };

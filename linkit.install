@@ -22,7 +22,6 @@ function linkit_schema() {
       'status' => 'linkit_profiles_status',
       'load callback' => 'linkit_profile_load',
       'load all callback' => 'linkit_profile_load_all',
-      'save callback' => 'linkit_profile_save',
       'bulk export' => TRUE,
       'api' => array(
         'owner' => 'linkit',

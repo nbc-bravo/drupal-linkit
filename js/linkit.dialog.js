@@ -24,7 +24,11 @@ Drupal.linkit.dialog.buildDialog = function (src) {
  * Return the Iframe that we use in the dialog.
  */
 Drupal.linkit.dialog.createDialog = function(src) {
-  var $linkitModal = $('<div />').attr('id', 'linkit-modal');
+  var $linkitModal = $('<div />').attr('id', 'linkit-modal'),
+      linkitCache = Drupal.linkit.getLinkitCache();
+
+  // Replace the URL placeholder with the profile to use fot the BAC calls.
+  Drupal.settings.linkit.autocompletePath = Drupal.settings.linkit.autocompletePath.replace('___profile___', linkitCache.profile);
 
   // Create a dialog dig in the <body>.
   $('body').append($linkitModal);
@@ -100,7 +104,7 @@ Drupal.behaviors.linkitDialogButtons = {
     $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
-      Drupal.linkit.source[linkitCache.source].insertLink(Drupal.linkit.dialog.getLink());
+      Drupal.linkit.source[linkitCache.source_type].insertLink(Drupal.linkit.dialog.getLink());
       // Close the dialog.
       Drupal.linkit.dialog.close();
       return false;

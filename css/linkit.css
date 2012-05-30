@@ -1,0 +1,34 @@
+/**
+ * @file
+ * Linkit styles.
+ */
+
+#linkit-modal { padding:20px; }
+
+#linkit-modal #edit-linkit-link.with_imce { margin-bottom:10px; }
+
+#linkit-modal #edit-linkit-path,
+#linkit-modal #edit-linkit-search {
+  font-size:1em;
+  height:2em;
+  padding:3px 25px 3px 5px;
+  width:440px;
+}
+
+.linkit-wrapper {
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  border-radius:5px;
+}
+
+/*
+#linkit-modal #edit-linkit-attributes .form-item {
+  float:left;
+  margin-right:20px;
+  width:200px;
+}
+
+#linkit-modal #edit-linkit-attributes .form-item .linkit-attribute {
+  width:100
+}
+*/
