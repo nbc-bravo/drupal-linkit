@@ -14,6 +14,11 @@ define('LINKIT_URL_METHOD_NO_SLASH', 0);
  */
 define('LINKIT_URL_METHOD_ADD_SLASH', 1);
 
+/**
+ * Defines which query string key Better autocomplete will just.
+ */
+define('LINKIT_BAC_QUERY_KEY', 's');
+
 // Include the file with the field functions.
 require_once dirname(__FILE__) . '/linkit.field.inc';
 
@@ -389,7 +394,7 @@ function linkit_library() {
       array(
         'type' => 'setting',
         // ___profile___ is just a placeholder.
-        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array('s' => ''), 'absolute' => TRUE)))),
+        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)))),
       ),
     ),
     'css' => array(
