@@ -415,7 +415,7 @@ function linkit_menu() {
   $items['linkit/dashboard/%linkit_profile'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
-    'page callback' => '_linkit_dashboard',
+    'page callback' => 'linkit_dashboard_page',
     'page arguments' => array(2),
     'access callback' => TRUE, // @TODO: Tell users why TRUE.
     'type' => MENU_CALLBACK,
@@ -440,10 +440,10 @@ function linkit_menu() {
  * We don't call drupal_get_form() in the menu callback as we don't want to
  * return the rendered form, we just want to print it as it is.
  *
- * @param string $profile
+ * @param $profile
  *   A LinkitProfile object.
  */
-function _linkit_dashboard(LinkitProfile $profile) {
+function linkit_dashboard_page(LinkitProfile $profile) {
   // Set the active Linkit profile.
   linkit_set_active_profile($profile);
   // Get the dashboard form.
