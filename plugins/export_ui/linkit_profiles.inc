@@ -136,7 +136,7 @@ function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile)
   }
 
   // Sort by weight.
-  uasort($tmp, '_linkit_sort_plugins_by_weight');
+  uasort($tmp, '_linkit_sort_plugins_by_weight_default_value');
 
   foreach ($tmp AS $name => $element) {
     $form['data']['search_plugins_fieldset']['search_plugins'][$name] = $element;
@@ -254,7 +254,7 @@ function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profi
   }
 
   // Sort by weight.
-  uasort($tmp, '_linkit_sort_plugins_by_weight');
+  uasort($tmp, '_linkit_sort_plugins_by_weight_default_value');
 
   foreach ($tmp AS $name => $element) {
     $form['data']['attribute_plugins_fieldset']['attribute_plugins'][$name] = $element;
@@ -319,9 +319,9 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
 }
 
 /**
- * Function used by uasort to sort pluing arrays by weight.
+ * Function used by uasort to sort pluing arrays by the weight default value.
  */
-function _linkit_sort_plugins_by_weight($a, $b) {
+function _linkit_sort_plugins_by_weight_default_value($a, $b) {
   return $a["weight"]['#default_value'] >= $b["weight"]['#default_value'];
 }
 
