@@ -13,7 +13,7 @@ class LinkitSearchPluginNode extends LinkitSearchPluginEntity {
    * Overrides LinkitSearchPluginEntity::createLabel().
    */
   function createLabel($entity) {
-    $label = parent::buildLabel($entity);
+    $label = parent::createLabel($entity);
     if ($this->conf['include_unpublished'] && $entity->status == NODE_NOT_PUBLISHED) {
       $label .= '<span class="status"> - ' . t('unpublished') . '</span>';
     }

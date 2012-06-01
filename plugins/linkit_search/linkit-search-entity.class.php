@@ -241,7 +241,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
         'title' => $this->createLabel($entity),
         'description' => $this->createDescription($entity),
         'path' => $this->createPath($entity),
-        'group' => $this->createGroup(),
+        'group' => $this->createGroup($entity),
         'addClass' => $this->createRowClass($entity),
       );
 
