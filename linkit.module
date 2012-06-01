@@ -98,6 +98,8 @@ function linkit_profile_load_all() {
  *
  * @return
  *   A LinkitProfile object.
+ *
+ * @TODO: Can we do this better? No init function? Factory function?
  */
 function linkit_profile_object_factory($schema, $data) {
   ctools_include('export');
@@ -111,7 +113,7 @@ function linkit_profile_object_factory($schema, $data) {
   $object = _ctools_export_unpack_object($schema, $data, $object);
 
   // Call the profile init function.
-  $object->init($object->data);
+  $object->init($object);
   return $object;
 }
 
@@ -153,6 +155,13 @@ function linkit_search_plugin_load_all() {
   // you include it in some other way.
   drupal_alter('linkit_search_plugins', $plugins);
   return $plugins;
+}
+
+/**
+ * Function used by uasort to sort plugins by weight.
+ */
+function linkit_sort_plugins_by_weight($a, $b) {
+  return $a["weight"] >= $b["weight"];
 }
 
 /**
@@ -520,7 +529,7 @@ function linkit_autocomplete(LinkitProfile $profile) {
   $results = array();
 
   // Let the Linkit search pluings do their job.
-  $results += linkit_autocomplete_search_plugins($search_string);
+  $results = array_merge($results, linkit_autocomplete_search_plugins($search_string));
 
   // If there is results from the Linkit search pluings, dont care about
   // searching for absolute URL's results.
@@ -533,7 +542,7 @@ function linkit_autocomplete(LinkitProfile $profile) {
 
     // This seems to be an absolute URL.
     if (isset($parts['scheme']) || isset($parts['host'])) {
-      $results += linkit_autocomplete_absolute_url($search_string, $parts);
+      $results = array_merge($results, linkit_autocomplete_absolute_url($search_string, $parts));
     }
   }
 
@@ -565,6 +574,13 @@ function linkit_autocomplete(LinkitProfile $profile) {
 function linkit_autocomplete_search_plugins($search_string) {
   $matches = array();
   $profile = linkit_get_active_profile();
+
+  // Get matches from all search pluings.
+  foreach ($profile->getEnabledSerachPluings() as $plugin_name => $plugin) {
+    $matches = array_merge($matches, $plugin->fetchResults($search_string));
+  }
+
+  return $matches;
 }
 
 /**
@@ -574,7 +590,7 @@ function linkit_autocomplete_search_plugins($search_string) {
  * @param $search_string
  *   The search string that should be scanned.
  *
- * @return $path_info
+ * @return
  *   An associative array containing:
  *   - url: The same as the argument $url, untouched.
  *   - target: Either "internal" or "external".
