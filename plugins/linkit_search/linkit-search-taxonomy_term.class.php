@@ -57,7 +57,7 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
       $this->conf['bundles'] = $tmp_bundles;
     }
     // Call the parent.
-    return parent::fetchResults();
+    return parent::fetchResults($serach_string);
   }
 
   /**
