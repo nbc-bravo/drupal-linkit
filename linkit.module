@@ -420,17 +420,18 @@ function linkit_library() {
 function linkit_menu() {
   $items = array();
 
-  // @TODO: Document this.
+  // This is the Linkit dashboard menu callback.
   $items['linkit/dashboard/%linkit_profile'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
     'page callback' => 'linkit_dashboard_page',
     'page arguments' => array(2),
-    'access callback' => TRUE, // @TODO: Tell users why TRUE.
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
 
-  // @TODO: Document this.
+  // The autocomplete callback, the search_string is found in the $_GET array
+  // so dont pass that to the page callback.
   $items['linkit/autocomplete/%linkit_profile'] = array(
     'title' => 'Linkit autocomplete response function',
     'page callback' => 'linkit_autocomplete',

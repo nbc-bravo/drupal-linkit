@@ -25,13 +25,16 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
 
   /**
    * Overrides LinkitSearchPluginEntity::createDescription().
-   * @TODO: More comments in this method.
+   *
+   * If the file is an image, a small thumbnail can be added to the description.
+   * Also, image dimensions can be shown.
    */
   function createDescription($data) {
     $description_array = array();
     // Get image info.
     $imageinfo = image_get_info($data->uri);
 
+    // Add small thumbnail to the description.
     if ($this->conf['image_extra_info']['thumbnail']) {
       $image = $imageinfo ? theme_image_style(array(
           'width' => $imageinfo['width'],
@@ -41,12 +44,14 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
         )) : '';
     }
 
+    // Add image dimensions to the description.
     if ($this->conf['image_extra_info']['dimensions'] && !empty($imageinfo)) {
       $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
     }
 
     $description_array[] = parent::buildDescription($data);
 
+    // Add tiel files scheme to the description.
     if ($this->conf['show_scheme']) {
       $description_array[] = file_uri_scheme($data->uri) . '://';
     }

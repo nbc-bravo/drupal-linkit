@@ -11,10 +11,7 @@
  * - entity_type: (Only required if the plugin extends LinkitPluginEntity) The
  *     entity type this plugin will be used for.
  * - handler: Describes the class to be used for this plugin.
- *
- * @TODO: Verify this structure.
  */
-
 $plugin = array(
   'get child' => 'linkit_entity_ctools_linkit_get_child',
   'get children' => 'linkit_entity_ctools_linkit_get_children',

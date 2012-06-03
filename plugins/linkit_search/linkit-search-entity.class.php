@@ -168,8 +168,6 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
    *
    * @return
    *   A string to with classes.
-   *
-   * @TODO: Make the return an array.
    */
   function createRowClass($entity) {
     return '';
@@ -192,11 +190,6 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   public function fetchResults($serach_string) {
     // If the $serach_string is not a string, something is wrong and an empty
     // array is returned.
-    // @TODO: Why shouldnt this be a string?
-    if (!is_string($serach_string)) {
-      return array();
-    }
-
     $matches = array();
 
     // Get the EntityFieldQuery instance.
@@ -214,8 +207,8 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     // Bundle check.
     if (isset($this->entity_key_bundle) && isset($this->conf['bundles']) ) {
-      // @TODO: Fix this assigment in the condition.
-      if ($bundles = array_filter($this->conf['bundles'])) {
+      $bundles = array_filter($this->conf['bundles']);
+      if ($bundles) {
         $this->query->propertyCondition($this->entity_key_bundle, $bundles, 'IN');
       }
     }

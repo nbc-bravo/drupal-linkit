@@ -59,37 +59,39 @@ Drupal.behaviors.linkit = {
     });
 
     $('#linkit-modal .form-text.required', context).bind({
-      //keyup: Drupal.linkit.dialog.requiredFieldsValidation,
-      //change: Drupal.linkit.dialog.requiredFieldsValidation
+      keyup: Drupal.linkit.dialog.requiredFieldsValidation,
+      change: Drupal.linkit.dialog.requiredFieldsValidation
     });
 
-    //Drupal.linkit.dialog.requiredFieldsValidation();
+    Drupal.linkit.dialog.requiredFieldsValidation();
   }
 };
 
 /**
- * @TODO: Document this.
+ * For many reasons Linkit needs to temporary save data that it will be using
+ * later on. One if the biggest reasons is how IE handle text selections and
+ * focus.
  */
 Drupal.linkitCacheAdd = function (name, value) {
   Drupal.linkitCache[name] = value;
 };
 
 /**
- * @TODO: Document this.
+ * Get the Linkit cache variable.
  */
 Drupal.linkit.getLinkitCache = function () {
   return Drupal.linkitCache;
 };
 
 /**
- * @TODO: Document this.
+ * Add new insert pluings.
  */
 Drupal.linkit.addInsertPlugin = function(name, plugin) {
   Drupal.linkit.insertPlugins[name] = plugin;
 }
 
 /**
- * @TODO: Document this.
+ * Get an insert plugin.
  */
 Drupal.linkit.getInsertPlugin = function(name) {
   return Drupal.linkit.insertPlugins[name];
