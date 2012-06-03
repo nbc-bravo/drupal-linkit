@@ -523,12 +523,22 @@ function linkit_autocomplete(LinkitProfile $profile) {
   // Set the active Linkit profile.
   linkit_set_active_profile($profile);
 
-  // @TODO: Check if we need check_url here or if check_plain will do the work.
-  $search_string = check_url($_GET[LINKIT_BAC_QUERY_KEY]);
+  // This is not sanitized until it is used within output.
+  $search_string = $_GET[LINKIT_BAC_QUERY_KEY];
 
   $results = array();
 
-  // Let the Linkit search pluings do their job.
+  // Special for link to frontpage.
+  if (strpos($search_string, 'front') !== FALSE) {
+    $results = array_merge($results, array(
+      'title' => t('Frontpage'),
+      'description' => 'The frontpage for this site.',
+      'path' => url('<front>'),
+      'group' => t('System'),
+    ));
+  }
+
+  // Let the Linkit search plugins do their job.
   $results = array_merge($results, linkit_autocomplete_search_plugins($search_string));
 
   // If there is results from the Linkit search pluings, dont care about
@@ -590,9 +600,12 @@ function linkit_autocomplete_search_plugins($search_string) {
  * @param $search_string
  *   The search string that should be scanned.
  *
+ * @param $parts
+ *   An array of URL parts from parse_url().
+ *
  * @return
  *   An associative array containing:
- *   - url: The same as the argument $url, untouched.
+ *   - url: The same as the argument $search_string, untouched.
  *   - target: Either "internal" or "external".
  *   - requested_path: If internal, the path requested relative to Drupal root.
  *     The only exception is when frontpage is referred directly, then it will
@@ -603,16 +616,9 @@ function linkit_autocomplete_search_plugins($search_string) {
  *     Typically it is not needed for searching and is just reappended back
  *     when processing of the path is done. It could e.g. look like
  *     "?foo=bar#anchor".
- *   - safe_url: If external, and the protocol is http or https, this will be
- *     the original url, stripped from everything that could potentially be
- *     dangerous. E.g. "http://user:pass@example.org/settings?evilaction=true"
- *     will become "http://example.org/settings".
  */
-function linkit_parse_url($search_string) {
+function linkit_parse_url($search_string, $parts) {
   global $base_url;
-
-  // Make a new array, this will hold the components from parse_url() and our
-  // own "Linkit" components.
   $path_info = array();
 
   // Append the original components from parse_url() to our array.
@@ -638,18 +644,34 @@ function linkit_parse_url($search_string) {
     unset($path_info['query']['q']);
   }
 
+  // Load all local stream wrappers. The $path_info['scheme'] will be tested
+  // against this later to ensure it is local.
+  $local_stream_wrappers = file_get_stream_wrappers(STREAM_WRAPPERS_LOCAL);
+
   // Internal URL.
-  // @TODO: Handle https and other schemes here?
-  if (trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/') == $base_url) {
+  // We can not use the url_is_external() as this treats all absolute links as
+  // external and treats all stream wrappers as internal.
+  $local_url = trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/') == $base_url;
+  $local_stream_wrapper = isset($local_stream_wrappers[$path_info['scheme']]);
+
+  if ($local_url || $local_stream_wrapper) {
     $path_info['target'] = 'internal';
+
+    // If this is seems to be a valid local stream wrapper string, force the
+    // $path_info['path'] to be set to the file_url.
+    if ($local_stream_wrapper) {
+      $path_info = array_merge($path_info, parse_url(file_create_url($path_info['url'])));
+    }
 
     // Remove the subdirectory name from the path if the site is installed in
     // subdirectory. It will be added again by the url() function.
+    // @TODO: What do we do here?
     if (base_path() != "/") {
       $path_info['path'] = trim(preg_replace(base_path(), '', $path_info['path'], 1), '/');
     }
 
     // Trim the path from slashes.
+    // @TODO: How to handle this with the new URL settings?
     $path_info['path'] = trim($path_info['path'], '/');
 
     // If we have an empty path, and an internal target, we can assume that the
@@ -664,6 +686,7 @@ function linkit_parse_url($search_string) {
       // Not an alias, so keep the original value.
       $processed_path = $path_info['path'];
     }
+
     // Add the "real" system path (not the alias) if the current user have
     // access to the URL.
     $path_info['system_path'] = drupal_valid_path($processed_path) ? $processed_path : FALSE;
@@ -671,11 +694,7 @@ function linkit_parse_url($search_string) {
   // External URL
   else {
     $path_info['target'] = 'external';
-    if (preg_match('~^https?$~', $parts['scheme'])) {
-      $path_info['safe_url'] = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-    }
   }
-
   return $path_info;
 }
 
@@ -686,20 +705,19 @@ function linkit_parse_url($search_string) {
  * @param $search_string
  *   The search string.
  *
+ * @param $parts
+ *   An array of URL parts from parse_url().
+ *
  * @return
  *   A result object. This is an associative array which consists of:
- *   - title: The title of the result
+ *   - title: The title of the result.
  *   - description: The description of the result (may contain HTML).
  *   - path: The target path which will be inserted as the href in the link.
  *   - addClass: A CSS class that will be added to the DOM result item.
  */
-function linkit_autocomplete_absolute_url($search_string) {
+function linkit_autocomplete_absolute_url($search_string, $parts) {
   // Retrieve relevant information about the search string and if its a URL.
-  $path_info = linkit_scan_url($search_string);
-
-  if (!$path_info) {
-    return FALSE;
-  }
+  $path_info = linkit_parse_url($search_string, $parts);
 
   // Do we have Clean URLS activated.
   $clean_urls = !empty($GLOBALS['conf']['clean_url']);
@@ -716,7 +734,7 @@ function linkit_autocomplete_absolute_url($search_string) {
 
   $result = array();
 
-  if (isset($path_info['system_path']) && (bool) $path_info['system_path']) {
+  if (isset($path_info['system_path']) && $path_info['system_path'] !== FALSE) {
     $menu_item = menu_get_item($path_info['system_path']);
     $result = array(
       'path' => url($path_info['system_path'], $url_options),
@@ -744,5 +762,6 @@ function linkit_autocomplete_absolute_url($search_string) {
       'addClass' => 'status-notice',
     );
   }
-  return $result;
+  // Return the results in an array as BAC will need to have it that way.
+  return array($result);
 }
