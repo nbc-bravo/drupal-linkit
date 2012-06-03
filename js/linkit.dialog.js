@@ -149,4 +149,47 @@ Drupal.linkit.dialog.additionalAttributes = function() {
   return attributes;
 };
 
+/**
+ * Populate fields on the dashboard.
+ *
+ * @param link
+ *   An object with the following properties (all are optional):
+ *   - path: The anchor's href.
+ *   - text: The text that should be linked. Has no effect if already set.
+ *   - attributes: An object with additional attributes for the anchor element.
+ */
+Drupal.linkit.dialog.populateFields = function(link) {
+  link = link || {};
+  link.attributes = link.attributes || {};
+  $('#linkit-modal #edit-linkit-path').val(link.path);
+  $.each(link.attributes, function(name, value) {
+    $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val(value);
+  });
+  Drupal.linkit.dialog.requiredFieldsValidation();
+};
+
+/**
+ * Check for mandatory text fields in the form and disable for submissions
+ * if any of the fields are empty.
+ */
+Drupal.linkit.dialog.requiredFieldsValidation = function() {
+  var allowed = true;
+  $('#linkit-modal .form-text.required').each(function() {
+    if (!$(this).val()) {
+      allowed = false;
+      return false;
+    }
+  });
+  if (allowed) {
+    $('#linkit-modal #edit-linkit-insert')
+      .removeAttr('disabled')
+      .removeClass('form-button-disabled');
+  }
+  else {
+    $('#linkit-modal #edit-linkit-insert')
+      .attr('disabled', 'disabled')
+      .addClass('form-button-disabled');
+  }
+};
+
 })(jQuery);
