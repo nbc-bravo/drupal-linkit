@@ -117,22 +117,23 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
    * @param $entity
    *   The entity to get the path from.
    *
-   * @param $options
-   *   An array of options that will be passed to url().
-   *
    * @return
-   *   An array containing the 'path' and 'options' keys used to build the uri of
-   *   the entity, and matching the signature of url(). NULL if the entity has no
+   *   A string containing the path of the entity, NULL if the entity has no
    *   uri of its own.
    */
-  function createPath($entity, $options = array()) {
+  function createPath($entity) {
     // Create the URI for the entity.
     $uri = entity_uri($this->plugin['entity_type'], $entity);
 
-    // We have to set alias to TRUE as we don't want an alias back.
-    $options += array('alias' => TRUE);
-
-    return url($uri['path'], $options);
+    // Add slash or not based on the profile settings.
+    if ($this->profile->data['insert_plugin']['url_method'] == LINKIT_URL_METHOD_NO_SLASH) {
+      return $uri['path'];
+    }
+    elseif ($this->profile->data['insert_plugin']['url_method'] == LINKIT_URL_METHOD_ADD_SLASH) {
+      // We have to set alias to TRUE as we don't want an alias back.
+      $options += array('alias' => TRUE);
+      return url($uri['path'], $options);
+    }
   }
 
   /**
