@@ -110,7 +110,6 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#description' => t('Do not use this for CKeditor and TinyMCE fields.'),
     );
 
-
     $profiles = linkit_profile_load_all();
     $options = array();
     foreach ($profiles as $profile) {
@@ -178,7 +177,6 @@ function linkit_process_field_element(&$element) {
     $field_id = $element['#id'];
 
     // Special treatment for link fields.
-    // @TODO: Add this suffix to the insert plugin JS file instead.
     if ($element['#type'] == 'link_field') {
       $field_id = $element['#id'] . '-url';
     }
@@ -204,7 +202,7 @@ function linkit_process_field_element(&$element) {
     $element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 
-    // Add fake button to the element suffix.
+    // Add Linkit dialog button to the element suffix.
     $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $field_id . '" href="#">' . t('Search') . '</a>';
   }
 
