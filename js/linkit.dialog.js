@@ -32,7 +32,6 @@ Drupal.linkit.dialog.createDialog = function(src) {
 
   // Create a dialog dig in the <body>.
   $('body').append($linkitModal);
-  // @TODO: Fix error handling for the ajax request.
   $.ajax({
     url : src,
     beforeSend : function() {

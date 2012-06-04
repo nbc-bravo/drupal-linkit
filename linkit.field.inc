@@ -199,20 +199,10 @@ function linkit_process_field_element(&$element) {
     );
 
     // Attach js files and settings Linkit needs.
-    // @TODO: Is this safe? What will happend if $element[#attached][library] is
-    // already set?
-    $element += array(
-      '#attached' => array(
-        'library' => array(
-           array('linkit', 'linkit_base'),
-           array('linkit', 'linkit_field'),
-        ),
-        'js' => array(
-          $insert_plugin['javascript'],
-          $field_js,
-        ),
-      ),
-    );
+    $element['#attached']['library'][] = array('linkit', 'linkit_base');
+    $element['#attached']['library'][] = array('linkit', 'linkit_field');
+    $element['#attached']['js'][] = $insert_plugin['javascript'];
+    $element['#attached']['js'][] = $field_js;
 
     // Add fake button to the element suffix.
     $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $field_id . '" href="#">' . t('Search') . '</a>';
