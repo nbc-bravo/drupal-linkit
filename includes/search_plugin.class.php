@@ -24,7 +24,7 @@ interface LinkitSearchPluginInterface {
    *   An instance of the search plugin class or an instance of the
    *   LinkitSearchPluginBroken class.
    */
-  public static function factory($plugin, LinkitProfile $profile = NULL);
+  public static function factory($plugin, LinkitProfile $profile);
 
   /**
    * Return a string representing this handler's name in the UI.
@@ -92,7 +92,7 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
   /**
    * Implements LinkitSearchPluginInterface::factory().
    */
-  public static function factory($plugin, LinkitProfile $profile = NULL) {
+  public static function factory($plugin, LinkitProfile $profile) {
     ctools_include('plugins');
 
     // Make sure there is a handler class set in the plugin defintion.

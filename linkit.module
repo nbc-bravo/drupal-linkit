@@ -94,30 +94,6 @@ function linkit_profile_load_all() {
 }
 
 /**
- * Alter how the LinkitProfile object is created.
- *
- * @return
- *   A LinkitProfile object.
- *
- * @TODO: Can we do this better? No init function? Factory function?
- */
-function linkit_profile_object_factory($schema, $data) {
-  ctools_include('export');
-  $export = $schema['export'];
-
-  // Create the LinkitProfile object.
-  $object = new $export['object'];
-
-  // Call the unpack object that ctools provide to take care of unserialization
-  // and potential joins.
-  $object = _ctools_export_unpack_object($schema, $data, $object);
-
-  // Call the profile init function.
-  $object->init($object);
-  return $object;
-}
-
-/**
  * Temporary saves the active profile. Active means that the user is working
  * with the profile in the dialog.
  *
