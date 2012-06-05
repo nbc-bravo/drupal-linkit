@@ -555,8 +555,7 @@ function linkit_autocomplete(LinkitProfile $profile) {
  *   The search string.
  *
  * @return
- *   An array with the results objects.
- *   // @TODO: If no results?
+ *   An array with the results objects, or an empty array if no results.
  */
 function linkit_autocomplete_search_plugins($search_string) {
   $matches = array();
