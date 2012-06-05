@@ -10,18 +10,18 @@
 class LinkitProfile {
 
   /**
-   * The active profile.
+   * The profile data (settings).
    *
-   * @var array Profile data (settings).
+   * @var array
    */
   public $data;
 
   /**
-   * All active attributes for this profile.
+   * All enabled attributes for this profile.
    *
    * @var array
    */
-  protected $attributes;
+  protected $enabled_attribute_plugins;
 
   /**
    * All enabled search pluings for this profile.
@@ -31,9 +31,9 @@ class LinkitProfile {
   protected $enabled_serach_pluings;
 
   /**
-   * Set all active attribures.
+   * Set all enabled attribure plugins.
    */
-  public function setAttributes() {
+  public function setEnabledAttributePlugins() {
     foreach ($this->data['attribute_plugins'] as $attribute_name => $attribute) {
       if ($attribute['enabled']) {
         // Load the attribute plugin.
@@ -42,7 +42,7 @@ class LinkitProfile {
         // Call the callback to get the FAPI element.
         if (isset($attribute_plugin['callback']) && function_exists($attribute_plugin['callback'])) {
           $attribute_html = $attribute_plugin['callback']($attribute_plugin, $attribute);
-          $this->attributes[$attribute_name] = $attribute_html;
+          $this->enabled_attribute_plugins[$attribute_name] = $attribute_html;
         }
       }
     }
@@ -70,18 +70,18 @@ class LinkitProfile {
 
   /**
    * @return
-   *   An array with all active attributes for this profile.
+   *   An array with all enabled attribute plugins for this profile.
    */
-  public function getAttributes() {
-    if (!isset($this->attributes)) {
-      $this->setAttributes();
+  public function getEnabledAttributePlugins() {
+    if (!isset($this->enabled_attribute_plugins)) {
+      $this->setEnabledAttributePlugins();
     }
-    return $this->attributes;
+    return $this->enabled_attribute_plugins;
   }
 
   /**
    * @return
-   *   An array with all active attributes for this profile.
+   *   An array with all enabled search plugins for this profile.
    */
   public function getEnabledSerachPluings() {
      if (!isset($this->enabled_serach_pluings)) {
