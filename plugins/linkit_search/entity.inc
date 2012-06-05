@@ -17,7 +17,7 @@ $plugin = array(
   'get children' => 'linkit_entity_ctools_linkit_get_children',
   'handler' => array(
     'class' => 'LinkitSearchPluginEntity',
-    'file' => 'linkit-search-entity.class.php',
+    'file' => 'entity.class.php',
   ),
 );
 

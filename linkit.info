@@ -5,4 +5,4 @@ core = 7.x
 ; Our classes, interfaces and abstract implementations.
 files[] = includes/profile.class.php
 files[] = includes/search_plugin.class.php
-files[] = plugins/linkit_search/linkit-search-entity.class.php
+files[] = plugins/linkit_search/entity.class.php

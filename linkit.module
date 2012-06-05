@@ -243,8 +243,6 @@ function linkit_entity_info_alter(&$entity_info) {
  *
  * @param $plugins
  *   An array of all search plugins processed within Linkit entity plugin.
- *
- * @TODO: Rename plugin files to linkit_serach-ENTITY.class.php
  */
 function linkit_linkit_search_plugin_entities_alter(&$plugins) {
   $alter_plugins = array(
@@ -260,7 +258,7 @@ function linkit_linkit_search_plugin_entities_alter(&$plugins) {
     if (isset($plugins[$plugin])) {
       $handler = array(
         'class' => 'LinkitSearchPlugin' . drupal_ucfirst($plugins[$plugin]['entity_type']),
-        'file' => 'linkit-search-' . $plugins[$plugin]['entity_type'] . '.class.php',
+        'file' => $plugins[$plugin]['entity_type'] . '.class.php',
         'path' => $path,
       );
       $plugins[$plugin]['handler'] = $handler;
