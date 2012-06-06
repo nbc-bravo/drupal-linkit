@@ -18,6 +18,12 @@ Drupal.linkit.dialog.buildDialog = function (src) {
   .dialog(Drupal.linkit.dialog.dialogOptions())
   // Remove the title bar from the dialog.
   .siblings(".ui-dialog-titlebar").remove();
+
+  // Move the dialog when the main window moves.
+  $(window).bind("scroll resize", function() {
+    $('#linkit-modal').dialog('option', 'position', ['center', 50]);
+  });
+
 };
 
 /**
@@ -46,6 +52,8 @@ Drupal.linkit.dialog.createDialog = function(src) {
       // Delete exsisting throbbers.
       $('.ajax-progress-throbber', $linkitModal).remove();
 
+      $('#linkit-modal').dialog('option', 'position', ['center', 50]);
+
       // Set focus in the search field.
       $('.linkit-wrapper #edit-linkit-search').focus();
 
@@ -67,7 +75,7 @@ Drupal.linkit.dialog.dialogOptions = function() {
     draggable: false,
     resizable: false,
     width: 520,
-    position: 'center',
+    position: ['center', 50],
     overlay: {
       backgroundColor: '#000000',
       opacity: 0.4
