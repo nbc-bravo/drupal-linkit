@@ -23,7 +23,6 @@ Drupal.linkit.dialog.buildDialog = function (src) {
   $(window).bind("scroll resize", function() {
     $('#linkit-modal').dialog('option', 'position', ['center', 50]);
   });
-
 };
 
 /**

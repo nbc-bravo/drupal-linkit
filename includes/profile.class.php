@@ -63,7 +63,10 @@ class LinkitProfile {
         // Get a Linkit serach plugin object.
         $search_plugin = LinkitSearchPlugin::factory($plugin_definition, $this);
 
-        $this->enabled_serach_pluings[$plugin_name] = $search_plugin;
+        // Only register none broken plugins.
+        if ($search_plugin->broken() !== TRUE) {
+          $this->enabled_serach_pluings[$plugin_name] = $search_plugin;
+        }
       }
     }
   }

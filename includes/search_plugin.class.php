@@ -95,12 +95,6 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
   public static function factory($plugin, LinkitProfile $profile) {
     ctools_include('plugins');
 
-    // Make sure there is a handler class set in the plugin defintion.
-    // @TODO: Test this exception.
-    if (!isset($plugin['handler']['class'])) {
-      throw new Exception('Handler class not found');
-    }
-
     // Make sure that the handler class exists and that it has this class as one
     // of its parents.
     if (class_exists($plugin['handler']['class']) && is_subclass_of($plugin['handler']['class'], __CLASS__)) {
