@@ -5,8 +5,6 @@
 
 #linkit-modal { padding:20px; }
 
-#linkit-modal #edit-linkit-link.with_imce { margin-bottom:10px; }
-
 #linkit-modal #edit-linkit-path,
 #linkit-modal #edit-linkit-search {
   font-size:1em;
@@ -15,20 +13,44 @@
   width:440px;
 }
 
+#linkit-modal .description,
+#linkit-modal a.fieldset-title {
+  color:#999;
+}
+
+#linkit-modal .form-item input,
+#linkit-modal .form-item select,
+#linkit-modal .form-wrapper {
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  border-radius:5px;
+}
+
 .linkit-wrapper {
   -moz-border-radius:5px;
   -webkit-border-radius:5px;
   border-radius:5px;
 }
 
-/*
-#linkit-modal #edit-linkit-attributes .form-item {
-  float:left;
-  margin-right:20px;
-  width:200px;
+#linkit-modal #edit-linkit-attributes .form-item  {
+  overflow:hidden;
+  padding:0;
 }
 
-#linkit-modal #edit-linkit-attributes .form-item .linkit-attribute {
-  width:100
+#linkit-modal label {
+  color:#666;
+  font-size:11px;
 }
-*/
+
+#linkit-modal #edit-linkit-attributes .form-item label {
+  float:left;
+  width:150px;
+  margin-right:1em;
+}
+
+#linkit-modal #edit-linkit-attributes .form-item input,
+#linkit-modal #edit-linkit-attributes .form-item select {
+  float:left;
+  width:260px;
+  padding:5px;
+}

@@ -256,6 +256,8 @@ function linkit_linkit_search_plugin_entities_alter(&$plugins) {
 
   foreach ($alter_plugins as $plugin) {
     if (isset($plugins[$plugin])) {
+      // Those classes is included in Linkit so there is no need to check that
+      // they exists.
       $handler = array(
         'class' => 'LinkitSearchPlugin' . drupal_ucfirst($plugins[$plugin]['entity_type']),
         'file' => $plugins[$plugin]['entity_type'] . '.class.php',
@@ -444,7 +446,8 @@ function linkit_dashboard_form($form, &$form_state) {
 
   $form['linkit_search'] = array(
     '#type' => 'textfield',
-    '#title' => t('Search'),
+    '#title' => t('Search for content.'),
+    '#description' => t('Start typing to find content or paste a URL.'),
     '#maxlength' => 255,
     '#size' => 60,
     '#default_value' => '',
@@ -454,7 +457,8 @@ function linkit_dashboard_form($form, &$form_state) {
 
   $form['linkit_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Target path'),
+    '#title' => t('Link URL'),
+    '#description' => t('This will be populated by the search, or you can fill it in yourself.'),
     '#required' => TRUE,
     '#maxlength' => NULL,
     '#size' => 60,
@@ -467,7 +471,7 @@ function linkit_dashboard_form($form, &$form_state) {
     // Create the container fieldset.
     $form['linkit_attributes'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Attributes'),
+      '#title' => t('Options'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#weight' => 10,
