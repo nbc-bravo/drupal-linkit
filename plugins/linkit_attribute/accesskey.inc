@@ -5,7 +5,7 @@
  */
 
 $plugin = array(
-  'name' => t('Accesskey'),
+  'name' => t('Access key'),
   'callback' => 'linkit_attribute_plugin_accesskey',
 );
 

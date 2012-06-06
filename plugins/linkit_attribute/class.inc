@@ -5,7 +5,7 @@
  */
 
 $plugin = array(
-  'name' => t('Class'),
+  'name' => t('Classes'),
   'callback' => 'linkit_attribute_plugin_class',
 );
 

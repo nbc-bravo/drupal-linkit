@@ -5,7 +5,7 @@
  */
 
 $plugin = array(
-  'name' => t('Rel'),
+  'name' => t('Relationship'),
   'callback' => 'linkit_attribute_plugin_rel',
 );
 
