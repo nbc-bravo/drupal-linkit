@@ -743,3 +743,28 @@ function linkit_autocomplete_absolute_url($search_string, $parts) {
   // Return the results in an array as BAC will need to have it that way.
   return array($result);
 }
+
+/**
+ * Implements hook_image_default_styles().
+ *
+ * @return
+ *   An array of image styles, keyed by the style name.
+ */
+function linkit_image_default_styles() {
+  $styles = array();
+
+  $styles['linkit_thumb'] = array(
+    'effects' => array(
+      array(
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => 50,
+          'height' => 50,
+          'upscale' => 0,
+        ),
+        'weight' => 0,
+      ),
+    ),
+  );
+  return $styles;
+}
