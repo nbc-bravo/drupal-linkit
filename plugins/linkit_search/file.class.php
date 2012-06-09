@@ -49,7 +49,7 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
       $description_array[] = $imageinfo['width'] . 'x' . $imageinfo['height'] . 'px';
     }
 
-    $description_array[] = parent::buildDescription($data);
+    $description_array[] = parent::createDescription($data);
 
     // Add tiel files scheme to the description.
     if ($this->conf['show_scheme']) {
@@ -66,7 +66,7 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
    */
   function createGroup($entity) {
     // The the standard group name.
-    $group = parent::buildGroup($entity);
+    $group = parent::createGroup($entity);
 
     // Add the scheme.
     if ($this->conf['group_by_scheme']) {
