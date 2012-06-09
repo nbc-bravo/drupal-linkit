@@ -298,9 +298,9 @@ function linkit_menu_alter(&$items) {
  * Implements hook_module_implements_alter().
  *
  * @TODO: Document why we are doing this.
- * @see linkit_element_info_alter().
+ * @see linkit_element_info_alter()
  */
-function linkit_module_implements_alter(&$implementations, $hook){
+function linkit_module_implements_alter(&$implementations, $hook) {
   if ($hook == 'element_info_alter') {
     $group = $implementations['linkit'];
     unset($implementations['linkit']);

@@ -143,7 +143,7 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
  * Validation callback; Only validate the profile field if linkit is enabled on
  * the instance.
  *
- * @see linkit_form_field_ui_field_edit_form_alter().
+ * @see linkit_form_field_ui_field_edit_form_alter()
  */
 function linkit_field_profile_validate($element, &$form_state, $form) {
   if (isset($form_state['values']['instance']['settings']['linkit']['enable'])

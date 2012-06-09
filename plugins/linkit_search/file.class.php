@@ -106,7 +106,7 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
     );
 
     $image_extra_info_options = array(
-      'thumbnail' => t('Show thumbnails <em>(using the image style !linkit_thumb_link)</em>', array('!linkit_thumb_link' => l('linkit_thumb', 'admin/config/media/image-styles/edit/linkit_thumb'))),
+      'thumbnail' => t('Show thumbnails <em>(using the image style !linkit_thumb_link)</em>', array('!linkit_thumb_link' => l(t('linkit_thumb'), 'admin/config/media/image-styles/edit/linkit_thumb'))),
       'dimensions' => t('Show pixel dimensions'),
     );
 

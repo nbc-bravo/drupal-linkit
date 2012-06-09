@@ -87,10 +87,9 @@ class LinkitProfile {
    *   An array with all enabled search plugins for this profile.
    */
   public function getEnabledSerachPluings() {
-     if (!isset($this->enabled_serach_pluings)) {
+    if (!isset($this->enabled_serach_pluings)) {
       $this->setEnabledSerachPluings();
     }
     return $this->enabled_serach_pluings;
   }
-
 }
