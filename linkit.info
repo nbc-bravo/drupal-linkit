@@ -1,6 +1,8 @@
 name = Linkit
 description = Provides an easy interface for inserting links.
 core = 7.x
+dependencies[] = ctools
+dependencies[] = entity
 
 ; Our classes, interfaces and abstract implementations.
 files[] = includes/profile.class.php
