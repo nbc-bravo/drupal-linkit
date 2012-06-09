@@ -227,7 +227,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     foreach ($entities AS $entity) {
       // Check the access againt the definded entity access callback.
-      if (!entity_access('view', $this->plugin['entity_type'], $entity)) {
+      if (entity_access('view', $this->plugin['entity_type'], $entity) === FALSE) {
         continue;
       }
 
