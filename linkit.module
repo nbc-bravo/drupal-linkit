@@ -575,15 +575,15 @@ function linkit_autocomplete_search_plugins($search_string) {
  * Retrieve relevant information about a URL. Specifically this function is
  * usable for internal (absolute) URL:s, but it also works for external URL:s.
  *
- * @param $search_string
- *   The search string that should be scanned.
+ * @param $url
+ *   The search string (URL) that should be scanned.
  *
  * @param $parts
  *   An array of URL parts from parse_url().
  *
  * @return
  *   An associative array containing:
- *   - url: The same as the argument $search_string, untouched.
+ *   - url: The same as the argument $url, untouched.
  *   - target: Either "internal" or "external".
  *   - requested_path: If internal, the path requested relative to Drupal root.
  *     The only exception is when frontpage is referred directly, then it will
@@ -595,18 +595,21 @@ function linkit_autocomplete_search_plugins($search_string) {
  *     when processing of the path is done. It could e.g. look like
  *     "?foo=bar#anchor".
  */
-function linkit_parse_url($search_string, $parts) {
+function linkit_parse_url($url, $parts) {
   global $base_url;
+
+  // Make a new array, this will hold the components from parse_url() and our
+  // own "Linkit" components.
   $path_info = array();
 
   // Append the original components from parse_url() to our array.
   $path_info += $parts;
 
   // Save the whole URL.
-  $path_info['url'] = $search_string;
+  $path_info['url'] = $url;
 
   if (!isset($path_info['query'])) {
-    $path_info['query'] ='';
+    $path_info['query'] = '';
   }
 
   // Convert the query string to an array as Drupal can only handle querys as
@@ -627,12 +630,14 @@ function linkit_parse_url($search_string, $parts) {
   $local_stream_wrappers = file_get_stream_wrappers(STREAM_WRAPPERS_LOCAL);
 
   // Internal URL.
-  // We can not use the url_is_external() as this treats all absolute links as
+  // We can not use the url_is_external() as it treats all absolute links as
   // external and treats all stream wrappers as internal.
   $local_url = trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/') == $base_url;
   $local_stream_wrapper = isset($local_stream_wrappers[$path_info['scheme']]);
-
+  //@TODO: maybe file_valid_uri() ?
+  
   if ($local_url || $local_stream_wrapper) {
+    // Set target as internal.
     $path_info['target'] = 'internal';
 
     // If this is seems to be a valid local stream wrapper string, force the
@@ -641,15 +646,7 @@ function linkit_parse_url($search_string, $parts) {
       $path_info = array_merge($path_info, parse_url(file_create_url($path_info['url'])));
     }
 
-    // Remove the subdirectory name from the path if the site is installed in
-    // subdirectory. It will be added again by the url() function.
-    // @TODO: What do we do here?
-    if (base_path() != "/") {
-      $path_info['path'] = trim(preg_replace(base_path(), '', $path_info['path'], 1), '/');
-    }
-
     // Trim the path from slashes.
-    // @TODO: How to handle this with the new URL settings?
     $path_info['path'] = trim($path_info['path'], '/');
 
     // If we have an empty path, and an internal target, we can assume that the
@@ -659,20 +656,32 @@ function linkit_parse_url($search_string, $parts) {
       $path_info['path'] = variable_get('site_frontpage', 'node');
     }
 
-    // Check if the path already is an alias.
-    if (!$processed_path = drupal_lookup_path('source', $path_info['path'])) {
-      // Not an alias, so keep the original value.
-      $processed_path = $path_info['path'];
-    }
+    // Try converting the path to an internal Drupal path.
+    $internal_url = drupal_get_normal_path($path_info['path']);
 
     // Add the "real" system path (not the alias) if the current user have
     // access to the URL.
-    $path_info['system_path'] = drupal_valid_path($processed_path) ? $processed_path : FALSE;
+    $path_info['system_path'] = drupal_valid_path($internal_url) ? $internal_url : FALSE;
+
+    $menu_item = menu_get_item($path_info['system_path']);
+    if ($menu_item) {
+      $path_info['menu']['path'] = $menu_item['path'];
+      $path_info['menu']['description'] = check_plain($menu_item['description']);
+      $path_info['menu']['title'] = check_plain($menu_item['title']);
+    }
+    // If we have a valid stream wrapper URL, find out the internal url.
+    if ($local_stream_wrapper) {
+      $path_info['system_path'] = $path_info['path'];
+      $path_info['menu']['path'] = $path_info['path'];
+      $path_info['menu']['description'] = '';
+      $path_info['menu']['title'] = '';
+    }
   }
-  // External URL
   else {
+    // Set target as external.
     $path_info['target'] = 'external';
   }
+
   return $path_info;
 }
 
@@ -680,8 +689,8 @@ function linkit_parse_url($search_string, $parts) {
  * Retrieve the result object from an absolute URL. Both internal and external
  * paths work.
  *
- * @param $search_string
- *   The search string.
+ * @param $url
+ *   The search string which seems to be an URL.
  *
  * @param $parts
  *   An array of URL parts from parse_url().
@@ -693,45 +702,40 @@ function linkit_parse_url($search_string, $parts) {
  *   - path: The target path which will be inserted as the href in the link.
  *   - addClass: A CSS class that will be added to the DOM result item.
  */
-function linkit_autocomplete_absolute_url($search_string, $parts) {
+function linkit_autocomplete_absolute_url($url, $parts) {
+  $result = array();
+
   // Retrieve relevant information about the search string and if its a URL.
-  $path_info = linkit_parse_url($search_string, $parts);
+  $path_info = linkit_parse_url($url, $parts);
 
-  // Do we have Clean URLS activated.
-  $clean_urls = !empty($GLOBALS['conf']['clean_url']);
-
-  // Set default options to pass with the url() function.
-  $url_options = array(
-    'alias' => TRUE,
-  );
-
+  // Set default options to pass with the url() function if the URL is internal.
+  $url_options = array();
   // Add the URL frament.
   $url_options['fragment'] = isset($path_info['fragment']) ? $path_info['fragment'] : '';
   // Add the URL query.
   $url_options['query'] = isset($path_info['query']) ? $path_info['query'] : '';
 
-  $result = array();
-
+  // The URL is registerd by Drupal (Internal).
   if (isset($path_info['system_path']) && $path_info['system_path'] !== FALSE) {
-    $menu_item = menu_get_item($path_info['system_path']);
+
     $result = array(
-      'path' => url($path_info['system_path'], $url_options),
-      'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path_info['system_path']),
-      'description' => 'This is an internal path.',
+      'path' => url($menu_item['path'], $url_options),  // @TODO: Handle insert_plugin settings.
+      'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($menu_item['path']),
+      'description' => check_plain($menu_item['description']) . ' This is an internal path.',
       'addClass' => 'status-ok',
     );
   }
-  // No plugin result, but the URL seems to be internal. Either we do not have
-  // access to it or it does not exists.
+  // No internal menu result, but the URL seems to be internal. Either we do not
+  // have access to it or it does not exists.
   elseif ($path_info['target'] == 'internal') {
     $result = array(
-      'path' => url($path_info['path'], $url_options),
+      'path' => url($path_info['path'], $url_options), // @TODO: Handle insert_plugin settings.
       'title' => 'Page not found',
       'description' => 'This page does not exist or you do not have access to it.',
       'addClass' => 'status-warning',
     );
   }
-  // No plugin result, and the URL seems to be external.
+  // The URL seems to be external.
   elseif ($path_info['target'] == 'external') {
     $result = array(
       'title' => 'No information available',
@@ -740,6 +744,7 @@ function linkit_autocomplete_absolute_url($search_string, $parts) {
       'addClass' => 'status-notice',
     );
   }
+
   // Return the results in an array as BAC will need to have it that way.
   return array($result);
 }
@@ -767,4 +772,24 @@ function linkit_image_default_styles() {
     ),
   );
   return $styles;
+}
+
+function linkit_init() {
+  /*
+  global $menu_admin;
+  $profile = linkit_profile_load('test');
+  $_GET[LINKIT_BAC_QUERY_KEY] = 'public://lorem.jpg';
+  linkit_autocomplete($profile);
+
+  $_GET[LINKIT_BAC_QUERY_KEY] = 'http://lpprofile.server.dev/node/4';
+  linkit_autocomplete($profile);
+
+
+  $menu_admin = TRUE;
+  $item = menu_get_item('public://lorem.jpg');
+  $menu_admin = FALSE;
+  dvm(drupal_realpath('public://lorem.jpg'));
+  dvm(drupal_realpath('sites/default/files/lorem.jpg'));
+  dvm($item);
+  */
 }
