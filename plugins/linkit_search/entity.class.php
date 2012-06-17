@@ -131,8 +131,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     }
     elseif ($this->profile->data['insert_plugin']['url_method'] == LINKIT_URL_METHOD_ADD_SLASH) {
       // We have to set alias to TRUE as we don't want an alias back.
-      $options += array('alias' => TRUE);
-      return url($uri['path'], $options);
+      return url($uri['path'], array('alias' => TRUE));
     }
   }
 
