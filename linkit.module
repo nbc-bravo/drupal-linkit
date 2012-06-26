@@ -386,7 +386,8 @@ function linkit_wysiwyg_plugin($editor, $version) {
   switch ($editor) {
     case 'tinymce':      
       $plugins['linkit'] = array(
-        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/editor_plugin.js',
+        'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/',
+        'filename' => 'editor_plugin.js',
         'buttons' => array('linkit' => t('Linkit')),
         'url' => 'http://drupal.org/project/linkit',
         'load' => TRUE,
