@@ -136,7 +136,8 @@
       // We have not selected any link element so lets create a new one.
       var ranges = selection.getRanges( true );
       if (ranges.length == 1 && ranges[0].collapsed) {
-        var text = new CKEDITOR.dom.text(Drupal.linkitCache.link_tmp_title, editor.document);
+        var content = (Drupal.linkitCache.link_tmp_title) ? Drupal.linkitCache.link_tmp_title : data.path;
+        var text = new CKEDITOR.dom.text(content, editor.document);
         ranges[0].insertNode(text);
         ranges[0].selectNodeContents(text);
         selection.selectRanges(ranges);
