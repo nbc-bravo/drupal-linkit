@@ -858,12 +858,6 @@ function linkit_profile_load($name) {
     ctools_include('export');
     $result = ctools_export_load_object('linkit_profiles', 'names', array($name));
     if (isset($result[$name])) {
-      if (!is_array($result[$name]->data)) {
-        $result[$name]->data = unserialize($result[$name]->data);
-      }
-      if (!is_array($result[$name]->role_rids)) {
-        $result[$name]->role_rids = unserialize($result[$name]->role_rids);
-      }
       $cache[$name] = $result[$name];
     }
     else {
@@ -879,14 +873,6 @@ function linkit_profile_load($name) {
 function linkit_profile_load_all() {
   ctools_include('export');
   $profiles = ctools_export_load_object('linkit_profiles');
-  foreach ($profiles as &$profile) {
-    if (!is_array($profile->data)) {
-      $profile->data = unserialize($profile->data);
-    }
-    if (!is_array($profile->role_rids)) {
-      $profile->role_rids = unserialize($profile->role_rids);
-    }
-  }
   return $profiles;
 }
 
@@ -912,14 +898,6 @@ function linkit_profile_save($profile) {
     $update = array();
     $profile->export_type = EXPORT_IN_DATABASE;
   }
-
-  if (is_array($profile->data)) {
-    $profile->data = serialize($profile->data);
-  }
-  if (is_array($profile->role_rids)) {
-    $profile->role_rids = serialize($profile->role_rids);
-  }
-
   return drupal_write_record('linkit_profiles', $profile, $update);
 }
 
