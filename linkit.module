@@ -635,7 +635,7 @@ function linkit_parse_url($url, $parts) {
   $local_url = trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/') == $base_url;
   $local_stream_wrapper = isset($local_stream_wrappers[$path_info['scheme']]);
   //@TODO: maybe file_valid_uri() ?
-  
+
   if ($local_url || $local_stream_wrapper) {
     // Set target as internal.
     $path_info['target'] = 'internal';
@@ -665,7 +665,7 @@ function linkit_parse_url($url, $parts) {
 
     $menu_item = menu_get_item($path_info['system_path']);
     if ($menu_item) {
-      $path_info['menu']['path'] = $menu_item['path'];
+      $path_info['menu']['path'] = $path_info['system_path'];
       $path_info['menu']['description'] = check_plain($menu_item['description']);
       $path_info['menu']['title'] = check_plain($menu_item['title']);
     }
@@ -673,8 +673,8 @@ function linkit_parse_url($url, $parts) {
     if ($local_stream_wrapper) {
       $path_info['system_path'] = $path_info['path'];
       $path_info['menu']['path'] = $path_info['path'];
-      $path_info['menu']['description'] = '';
-      $path_info['menu']['title'] = '';
+      $path_info['menu']['description'] = 'This funciton is not fully integrated yet.';
+      $path_info['menu']['title'] = 'This funciton is not fully integrated yet.';
     }
   }
   else {
@@ -716,12 +716,11 @@ function linkit_autocomplete_absolute_url($url, $parts) {
   $url_options['query'] = isset($path_info['query']) ? $path_info['query'] : '';
 
   // The URL is registerd by Drupal (Internal).
-  if (isset($path_info['system_path']) && $path_info['system_path'] !== FALSE) {
-
+  if (isset($path_info['menu']) && $path_info['system_path'] !== FALSE) {
     $result = array(
-      'path' => url($menu_item['path'], $url_options),  // @TODO: Handle insert_plugin settings.
-      'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($menu_item['path']),
-      'description' => check_plain($menu_item['description']) . ' This is an internal path.',
+      'path' => url($path_info['menu']['path'], $url_options),  // @TODO: Handle insert_plugin settings.
+      'title' => $path_info['menu']['title'] ? check_plain($path_info['menu']['title']) : check_plain($path_info['menu']['path']),
+      'description' => check_plain($path_info['menu']['description']) . ' This is an internal path.',
       'addClass' => 'status-ok',
     );
   }
