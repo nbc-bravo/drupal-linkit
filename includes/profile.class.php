@@ -72,6 +72,8 @@ class LinkitProfile {
   }
 
   /**
+   * Construct an array with all the enabled attribute pluings for this profile.
+   *
    * @return
    *   An array with all enabled attribute plugins for this profile.
    */
@@ -83,6 +85,8 @@ class LinkitProfile {
   }
 
   /**
+   * Construct an array with all enabled search plugins for this profile.
+   *
    * @return
    *   An array with all enabled search plugins for this profile.
    */
