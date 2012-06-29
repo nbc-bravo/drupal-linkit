@@ -37,6 +37,8 @@
   overflow:visible;
 }
 
+#linkit-modal fieldset.form-wrapper { width:470px; }
+
 #linkit-modal #edit-linkit-attributes .form-item  {
   overflow:hidden;
   padding:0;
