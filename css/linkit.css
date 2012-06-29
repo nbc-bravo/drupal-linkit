@@ -3,7 +3,10 @@
  * Linkit styles.
  */
 
-#linkit-modal { padding:20px; }
+#linkit-modal {
+  padding:20px;
+  overflow:visible;
+}
 
 #linkit-modal #edit-linkit-path,
 #linkit-modal #edit-linkit-search {
@@ -24,12 +27,14 @@
   -moz-border-radius:5px;
   -webkit-border-radius:5px;
   border-radius:5px;
+  outline:none;
 }
 
 .linkit-wrapper {
   -moz-border-radius:5px;
   -webkit-border-radius:5px;
   border-radius:5px;
+  overflow:visible;
 }
 
 #linkit-modal #edit-linkit-attributes .form-item  {
@@ -56,7 +61,10 @@
 }
 
 /* Additional status types */
-
+.better-autocomplete {
+    background-color: transparent;
+    border-bottom: none;
+}
 .better-autocomplete > .result.status-ok {
   background: #397928;
   border-top-color: #6ba15d;
@@ -97,4 +105,9 @@
   clear: both;
   visibility: hidden;
   font-size: 0;
+}
+
+.better-autocomplete li:last-child {
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
 }

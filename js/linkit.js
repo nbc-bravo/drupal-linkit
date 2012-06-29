@@ -43,18 +43,17 @@ Drupal.behaviors.linkit = {
         return path + encodeURIComponent(search);
       },
       insertSuggestionList: function($results, $input) {
-        $results.width($input.outerWidth() - 2) // Subtract border width.
+        var top = $input.position().top + $input.outerHeight() - 5;
+        $results.width($input.outerWidth())
           .css({
             position: 'absolute',
-            left: $input.offset().left,
-            top: $input.offset().top + $input.outerHeight(),
+            left: $input.position().left,
+            top: top,
             zIndex: 2000,
-            maxHeight: '330px',
-            // Visually indicate that results are in the topmost layer
-            boxShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
+            maxHeight: $(window).height() - (top + 20)
           })
           .hide()
-          .insertAfter($('#linkit-modal', context).parent());
+          .insertAfter($input);
         }
     });
 
