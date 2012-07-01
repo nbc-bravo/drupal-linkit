@@ -23,6 +23,18 @@ define('LINKIT_BAC_QUERY_KEY', 's');
 require_once dirname(__FILE__) . '/linkit.field.inc';
 
 /**
+ * Implements hook_permission().
+ */
+function linkit_permission() {
+ return array(
+    'administer linkit' => array(
+      'title' => t('Administer Linkit'),
+      'description' => t('Perform administration tasks for Linkit.'),
+    ),
+  );
+}
+
+/**
  * Implements hook_ctools_plugin_directory().
  */
 function linkit_ctools_plugin_directory($module, $plugin) {
