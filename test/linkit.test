@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ */
+
+class LinkitProfileCRUDTestCase extends DrupalWebTestCase {
+  public $permissions = array(
+    'administer linkit',
+  );
+
+  public $account;
+
+  /**
+   * Definition.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Linkit Profile CRUD',
+      'description' => 'Test that a Linkit prodfile can be created/updated/deleted.',
+      'group' => 'Linkit'
+    );
+  }
+
+  function setUp() {
+    parent::setUp('ctools', 'entity', 'linkit');
+    $this->account = $this->drupalCreateUser($this->permissions);
+    $this->drupalLogin($this->account);
+  }
+
+  /**
+   * Helper method to creats a Linkit profile.
+   */
+  protected function _createProfile($custom_profile = array()) {
+    $profile = array(
+      'name' => 'test_profile',
+      'admin_title' => 'Test Profile',
+      'admin_description' => 'This is a test description for the Test Profile.',
+      'data[insert_plugin][plugin]' => 'raw_url',
+    );
+    $profile = array_merge($profile, $custom_profile);
+
+    $this->drupalPost('admin/config/content/linkit/add', $profile, t('Save'));
+
+    return $profile;
+  }
+
+  /**
+   * Create a profile.
+   */
+  public function testCreateProfile() {
+    // Create a profile.
+    $profile = $this->_createProfile();
+
+    $this->assertRaw(t('!title has been created.', array('!title' => $profile['name'])), 'The new profile was created.');
+
+    // Go to the edit page.
+    $this->drupalGet('admin/config/content/linkit/list/' . $profile['name'] . '/edit');
+
+     // Test that the given values are saved.
+    foreach ($profile as $form_key => $value) {
+      $this->assertFieldByName($form_key, $value);
+    }
+  }
+
+  /**
+   * Update a profile.
+   */
+  public function testUpdateProfile() {
+    // Create a profile.
+    $profile = $this->_createProfile();
+
+    // Go to the edit page.
+    $this->drupalGet('admin/config/content/linkit/list/' . $profile['name'] . '/edit');
+
+    $profile_update = array(
+      'admin_title' => 'Test Profile updated',
+      'admin_description' => 'This is a updated test description for the Test Profile updated.',
+      'data[insert_plugin][plugin]' => 'raw_url',
+    );
+
+    $this->drupalPost(NULL, $profile_update, t('Save'));
+
+    // Go to the edit page again.
+    $this->drupalGet('admin/config/content/linkit/list/' . $profile['name'] . '/edit');
+
+    // Merge the update data with the original one.
+    $profile = array_merge($profile, $profile_update);
+
+     // Test that the given values are saved.
+    foreach ($profile as $form_key => $value) {
+      $this->assertFieldByName($form_key, $value);
+    }
+  }
+
+  /**
+   * Read a profile.
+   */
+  public function testReadProfile() {
+    // Create a profile.
+    $profile = $this->_createProfile();
+
+    // Go to the edit page.
+    $this->drupalGet('admin/config/content/linkit/list/' . $profile['name'] . '/edit');
+
+     // Test that the given values are saved.
+    foreach ($profile as $form_key => $value) {
+      $this->assertFieldByName($form_key, $value);
+    }
+  }
+
+  /**
+   * Delete a profile.
+   */
+  public function testDeleteProfile() {
+    // Create a profile that we will delete.
+    $profile = $this->_createProfile();
+
+    $this->drupalPost('/admin/config/content/linkit/list/' . $profile['name'] . '/delete', array(), t('Delete'));
+
+    $this->assertRaw(t('The item has been deleted.'), 'The profile was deleted.');
+  }
+}

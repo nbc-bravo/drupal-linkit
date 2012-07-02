@@ -8,3 +8,6 @@ dependencies[] = entity
 files[] = includes/profile.class.php
 files[] = includes/search_plugin.class.php
 files[] = plugins/linkit_search/entity.class.php
+
+; Test files
+files[] = test/linkit.test
