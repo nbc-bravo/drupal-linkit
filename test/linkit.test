@@ -169,3 +169,105 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     $this->assertRaw(t('The item has been deleted.'), 'The profile was deleted.');
   }
 }
+
+/**
+ * Test the linkit_profile_load() function.
+ */
+class LinkitProfileLoadTestCase extends LinkitTestCase {
+
+  /**
+   * Definition.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Linkit Profile Load',
+      'description' => 'Test the linkit_profile_load() function.',
+      'group' => 'Linkit'
+    );
+  }
+
+  function setUp() {
+    parent::setUp();
+  }
+
+  /**
+   * Load a profile that doesn't exists.
+   */
+  public function testLoadNonExistingProfile() {
+    // Load a profile that doesn't exists.
+    $loaded_profile = linkit_profile_load('my_none_existing_profile');
+
+    $this->assertFalse($loaded_profile, 'FALSE is returned when loading a non existing profile.');
+  }
+
+  /**
+   * Load one profile.
+   */
+  public function testLoadProfile() {
+    // Create an user account so we can create a profile.
+    $this->account = $this->drupalCreateUser($this->admin_permissions);
+    $this->drupalLogin($this->account);
+
+    // Create a profile that we will load.
+    $profile = $this->createProfile();
+
+    // Load the saved profile.
+    $loaded_profile = linkit_profile_load($profile['name']);
+
+    $this->assertTrue($loaded_profile, 'Profile was successfully loaded.');
+  }
+}
+
+/**
+ * Test the linkit_profile_load_all() function.
+ */
+class LinkitProfileLoadAllTestCase extends LinkitTestCase {
+
+  /**
+   * Definition.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Linkit Profile Load All',
+      'description' => 'Test the linkit_profile_load_all() function.',
+      'group' => 'Linkit'
+    );
+  }
+
+  function setUp() {
+    parent::setUp();
+  }
+
+   /**
+   * Load all profiles when no profiles exists.
+   */
+  public function testLoadProfilesNoProfilesExists() {
+    // Load all profiles.
+    $loaded_profile = linkit_profile_load_all();
+    $this->assertIdentical($loaded_profile, array(), 'Empty array is returned when loading all profiles and there are no profiles.');
+  }
+
+  /**
+   * Load all profile.
+   */
+  public function testLoadAllProfiles() {
+    // Create an user account so we can create profiles.
+    $this->account = $this->drupalCreateUser($this->admin_permissions);
+    $this->drupalLogin($this->account);
+
+    // Create profiles that we will load.
+    $this->createProfile(array('name' => 'test_1'));
+    $this->createProfile(array('name' => 'test_2'));
+    $this->createProfile(array('name' => 'test_3'));
+
+    // We have to clear the static variables here as we have in the
+    // testLoadProfilesNoProfilesExists test function asked for profiles where
+    // there were no profiles.
+    drupal_static_reset('ctools_export_load_object');
+    drupal_static_reset('ctools_export_load_object_all');
+
+    // Load all profiles.
+    $loaded_profiles = linkit_profile_load_all();
+    $this->assertEqual(count($loaded_profiles), 3, 'All profile were successfully loaded.');
+  }
+}
