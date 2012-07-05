@@ -248,7 +248,7 @@ class LinkitProfileLoadAllTestCase extends LinkitTestCase {
   }
 
   /**
-   * Load all profile.
+   * Load all profiles.
    */
   public function testLoadAllProfiles() {
     // Create an user account so we can create profiles.
@@ -269,5 +269,36 @@ class LinkitProfileLoadAllTestCase extends LinkitTestCase {
     // Load all profiles.
     $loaded_profiles = linkit_profile_load_all();
     $this->assertEqual(count($loaded_profiles), 3, 'All profile were successfully loaded.');
+  }
+}
+
+/**
+ * Test the the node search plugin.
+ */
+class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
+
+  /**
+   * Definition.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Linkit Search plugin (Node)',
+      'description' => 'Test the the node search plugin.',
+      'group' => 'Linkit'
+    );
+  }
+
+  function setUp() {
+    parent::setUp();
+  }
+
+  public function testSearchPlugin() {
+    // Skapa plain profil med node search
+    // Skapa 2 noder som är rätt
+    // Skapa en som är fel.
+    // Testa tokens
+    // Testa bundle filter
+    // Testa unpublished
+    // Testa group by bundle
   }
 }
