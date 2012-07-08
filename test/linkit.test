@@ -408,4 +408,37 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
     // Assert that the class 'unpublished-node' appears in the response.
     $this->assertRaw('unpublished-node', 'The class "unpublished-node" was found in the results.');
   }
+
+  /**
+   * Test group by bundle.
+   */
+  public function testGroupbyBundle() {
+    $this->_profile->data['entity:node']['group_by_bundle'] = 1;
+    $this->updateProfile();
+
+    // Call the autocomplete helper method.
+    $res = $this->_autocompleteCall();
+
+    // Check that the bundle title appear in the response.
+    $this->assertNoRaw('Node · Article', 'Article bundle was found in the results.');
+    $this->assertNoRaw('Node · Basic page', 'Basic page bundle was found in the results.');
+  }
+
+  /**
+   * Test bundle filter.
+   */
+  public function testBundleFilter() {
+    $this->_profile->data['entity:node']['bundles'] = array(
+      'article' => 'article',
+    );
+
+    $this->updateProfile();
+
+    // Call the autocomplete helper method.
+    $res = $this->_autocompleteCall();
+
+    // Check that the bundle title appear in the response.
+    $this->assertRaw('Lorem article', 'Article bundle was found in the results.');
+    $this->assertNoRaw('Lorem page', 'Basic page bundle was not found in the results.');
+  }
 }
