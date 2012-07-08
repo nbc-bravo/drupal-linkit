@@ -36,6 +36,7 @@ Drupal.behaviors.linkit_field = {
           }
 
           //Drupal.linkit.dialog.buildDialog(settings.linkit.url.field);
+          // @TODO: Fix this.
           Drupal.linkit.dialog.buildDialog('/linkit/dashboard/' + field.profile);
           return false;
         });
