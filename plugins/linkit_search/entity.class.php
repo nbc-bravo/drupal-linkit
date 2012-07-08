@@ -263,7 +263,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     // A short description in within the serach result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
-      '#title' => t('Result format'),
+      '#title' => t('Result description'),
       '#type' => 'textfield',
       '#default_value' => isset($this->conf['result_description']) ? $this->conf['result_description'] : '',
       '#size' => 120,
