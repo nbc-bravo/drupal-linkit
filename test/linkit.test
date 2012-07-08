@@ -31,7 +31,7 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
    *
    * @var LinkitProfile object
    */
-  public $profile;
+  public $_profile;
 
   function setUp() {
     parent::setUp('ctools', 'entity', 'linkit');
@@ -64,7 +64,7 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
     ctools_export_crud_save('linkit_profiles', $profile);
 
     // Load and return the saved profile.
-    return linkit_profile_load($profile->name);
+    $this->_profile = linkit_profile_load($profile->name);
   }
 
   /**
@@ -74,10 +74,10 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
     ctools_include('export');
 
     // Save the changes to the profile.
-    ctools_export_crud_save('linkit_profiles', $this->profile);
+    ctools_export_crud_save('linkit_profiles', $this->_profile);
 
     // Load the saved profile.
-    $this->profile = linkit_profile_load($this->profile->name);
+    $this->_profile = linkit_profile_load($this->_profile->name);
   }
 }
 
@@ -137,10 +137,10 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
    */
   public function testReadProfileUI() {
     // Create a profile.
-    $profile = $this->createProfile();
+    $this->createProfile();
 
     // Go to the edit page.
-    $this->drupalGet('admin/config/content/linkit/list/' . $profile->name . '/edit');
+    $this->drupalGet('admin/config/content/linkit/list/' . $this->_profile->name . '/edit');
     $this->assertResponse(200);
 
      // Test that the given values are saved.
@@ -154,7 +154,7 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
    */
   public function testUpdateProfileUI() {
     // Create a profile.
-    $profile = $this->createProfile(array(
+    $this->createProfile(array(
       'data' => array(
         'autocomplete' => array(
           'charLimit' => 3,
@@ -165,7 +165,7 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     ));
 
     // Go to the edit page.
-    $this->drupalGet('admin/config/content/linkit/list/' . $profile->name . '/edit');
+    $this->drupalGet('admin/config/content/linkit/list/' . $this->_profile->name . '/edit');
     $this->assertResponse(200);
 
     $profile_update = array(
@@ -180,7 +180,7 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     $this->drupalPost(NULL, $profile_update, t('Save'));
 
     // Go to the edit page again.
-    $this->drupalGet('admin/config/content/linkit/list/' . $profile->name . '/edit');
+    $this->drupalGet('admin/config/content/linkit/list/' . $this->_profile->name . '/edit');
     $this->assertResponse(200);
 
     // Test that the given values are saved.
@@ -194,10 +194,10 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
    */
   public function testDeleteProfileUI() {
     // Create a profile that we will delete.
-    $profile = $this->createProfile();
+    $this->createProfile();
 
     // Delete the created profile.
-    $this->drupalPost('/admin/config/content/linkit/list/' . $profile->name . '/delete', array(), t('Delete'));
+    $this->drupalPost('/admin/config/content/linkit/list/' . $this->_profile->name . '/delete', array(), t('Delete'));
 
     $this->assertRaw(t('The item has been deleted.'), 'The profile was deleted.');
   }
@@ -242,10 +242,10 @@ class LinkitProfileLoadTestCase extends LinkitTestCase {
     $this->drupalLogin($this->account);
 
     // Create a profile that we will load.
-    $profile = $this->createProfile();
+    $this->createProfile();
 
     // Load the saved profile.
-    $loaded_profile = linkit_profile_load($profile->name);
+    $loaded_profile = linkit_profile_load($this->_profile->name);
 
     $this->assertTrue($loaded_profile, 'Profile was successfully loaded.');
   }
@@ -332,7 +332,7 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
     parent::setUp();
 
     // Create a basic profile.
-    $this->profile = $this->createProfile(array(
+    $this->_profile = $this->createProfile(array(
       'data' => array(
         'search_plugins' => array(
           'entity:node' => array(
@@ -359,7 +359,7 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
    */
   private function _autocompleteCall() {
     // Call the autocomplete.
-    $path = 'linkit/autocomplete/' . $this->profile->name;
+    $path = 'linkit/autocomplete/' . $this->_profile->name;
     $response = $this->drupalGetAJAX($path, array('query' => array(LINKIT_BAC_QUERY_KEY => $this->search_string)));
 
     $this->assertNotNull($response, 'The JSON respone is seems to be ok.');
@@ -390,7 +390,7 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
 
     $this->assert('debug', 'Try include unpublished nodes.', 'Debug');
     // Tell the profile to include unpublished nodes.
-    $this->profile->data['entity:node']['include_unpublished'] = 1;
+    $this->_profile->data['entity:node']['include_unpublished'] = 1;
     $this->updateProfile();
 
     // In order to see unpublished nodes in the result, the user must also have
@@ -401,7 +401,7 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
     $this->drupalLogin($this->account);
 
     // Call the autocomplete helper method.
-    $response = $this->_autocompleteCall();
+    $this->_autocompleteCall();
 
     // Assert that the unpublished title appears in the response.
     $this->assertRaw('Ipsum Lorem Ipsum', 'Unpublished node title was found in the results.');
