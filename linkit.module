@@ -424,7 +424,7 @@ function linkit_menu() {
     'title' => 'Linkit autocomplete response function',
     'page callback' => 'linkit_autocomplete',
     'page arguments' => array(2),
-    'access arguments' => array('access content'),
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
 
