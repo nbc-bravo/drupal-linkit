@@ -332,7 +332,7 @@ class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
     parent::setUp();
 
     // Create a basic profile.
-    $this->_profile = $this->createProfile(array(
+    $this->createProfile(array(
       'data' => array(
         'search_plugins' => array(
           'entity:node' => array(
