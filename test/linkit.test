@@ -79,6 +79,19 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
     // Load the saved profile.
     $this->_profile = linkit_profile_load($this->_profile->name);
   }
+
+  /**
+   * Helper method to process the autocomplete call.
+   */
+  protected function autocompleteCall() {
+    // Call the autocomplete.
+    $path = 'linkit/autocomplete/' . $this->_profile->name;
+    $response = $this->drupalGetAJAX($path, array('query' => array(LINKIT_BAC_QUERY_KEY => $this->search_string)));
+    $this->assertResponse(200);
+
+    $this->assertNotNull($response, 'The JSON respone is seems to be ok.');
+    return $response;
+  }
 }
 
 /**
@@ -305,140 +318,4 @@ class LinkitProfileLoadAllTestCase extends LinkitTestCase {
   }
 }
 
-/**
- * Test the the node search plugin.
- */
-class LinkitSerachPluginNodeTestCase extends LinkitTestCase {
 
-  /**
-   * The string to search for.
-   *
-   * @var string
-   */
-  protected $search_string = 'Lorem';
-
-  /**
-   * Definition.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Linkit Search plugin (Node)',
-      'description' => 'Test the the node search plugin.',
-      'group' => 'Linkit'
-    );
-  }
-
-  function setUp() {
-    parent::setUp();
-
-    // Create a basic profile.
-    $this->createProfile(array(
-      'data' => array(
-        'search_plugins' => array(
-          'entity:node' => array(
-            'enabled' => 1,
-            'weight' => 0,
-          ),
-        ),
-        'entity:node' => array(
-          'result_description' => '',
-          'bundles' => array(),
-          'group_by_bundle' => 0,
-          'include_unpublished' => 0,
-        ),
-      )
-    ));
-
-    $this->drupalCreateNode(array('type' => 'article', 'title' => 'Lorem article'));
-    $this->drupalCreateNode(array('type' => 'page', 'title' => 'Lorem page'));
-    $this->drupalCreateNode(array('type' => 'page', 'title' => 'Ipsum Lorem Ipsum', 'status' => NODE_NOT_PUBLISHED));
-  }
-
-  /**
-   * Helper method to process the autocomplete call.
-   */
-  private function _autocompleteCall() {
-    // Call the autocomplete.
-    $path = 'linkit/autocomplete/' . $this->_profile->name;
-    $response = $this->drupalGetAJAX($path, array('query' => array(LINKIT_BAC_QUERY_KEY => $this->search_string)));
-
-    $this->assertNotNull($response, 'The JSON respone is seems to be ok.');
-    return $response;
-  }
-
-  /**
-   * Test that we get results back which is valid.
-   */
-  public function testBasicResults() {
-    // Call the autocomplete helper method.
-    $this->_autocompleteCall();
-
-    // Check that the published node titles appears in the response.
-    $this->assertRaw('Lorem article', 'First node title was found in the results.');
-    $this->assertRaw('Lorem page', 'Second node title was found in the results.');
-  }
-
-  /**
-   * Test how node states are handled.
-   */
-  public function testUnpublishedItems() {
-    // Call the autocomplete helper method.
-    $this->_autocompleteCall();
-
-    // Check that the unpublished node title doesn't appear in the response.
-    $this->assertNoRaw('Ipsum Lorem Ipsum', 'Unpublished node title was not found in the results.');
-
-    $this->assert('debug', 'Try include unpublished nodes.', 'Debug');
-    // Tell the profile to include unpublished nodes.
-    $this->_profile->data['entity:node']['include_unpublished'] = 1;
-    $this->updateProfile();
-
-    // In order to see unpublished nodes in the result, the user must also have
-    // permission to see unpublished nodes.
-    // We give the user 'bypass node access' permission as we don't crated the
-    // nodes with this user.
-    $this->account = $this->drupalCreateUser(array('bypass node access'));
-    $this->drupalLogin($this->account);
-
-    // Call the autocomplete helper method.
-    $this->_autocompleteCall();
-
-    // Assert that the unpublished title appears in the response.
-    $this->assertRaw('Ipsum Lorem Ipsum', 'Unpublished node title was found in the results.');
-    // Assert that the class 'unpublished-node' appears in the response.
-    $this->assertRaw('unpublished-node', 'The class "unpublished-node" was found in the results.');
-  }
-
-  /**
-   * Test group by bundle.
-   */
-  public function testGroupbyBundle() {
-    $this->_profile->data['entity:node']['group_by_bundle'] = 1;
-    $this->updateProfile();
-
-    // Call the autocomplete helper method.
-    $res = $this->_autocompleteCall();
-
-    // Check that the bundle title appear in the response.
-    $this->assertNoRaw('Node · Article', 'Article bundle was found in the results.');
-    $this->assertNoRaw('Node · Basic page', 'Basic page bundle was found in the results.');
-  }
-
-  /**
-   * Test bundle filter.
-   */
-  public function testBundleFilter() {
-    $this->_profile->data['entity:node']['bundles'] = array(
-      'article' => 'article',
-    );
-
-    $this->updateProfile();
-
-    // Call the autocomplete helper method.
-    $res = $this->_autocompleteCall();
-
-    // Check that the bundle title appear in the response.
-    $this->assertRaw('Lorem article', 'Article bundle was found in the results.');
-    $this->assertNoRaw('Lorem page', 'Basic page bundle was not found in the results.');
-  }
-}
