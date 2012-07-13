@@ -55,11 +55,10 @@ class LinkitSerachPluginUserTestCase extends LinkitSerachPluginTestCase {
     if (!isset($edit['name'])) {
       $edit['name'] = $this->randomName();
     }
-    if (!isset($edit['status'])) {
-      $edit['status'] = 1;
-    }
+
     $edit['mail']   = $edit['name'] . '@example.com';
     $edit['pass']   = user_password();
+    $edit['status'] = 1;
 
     $account = user_save(drupal_anonymous_user(), $edit);
 
