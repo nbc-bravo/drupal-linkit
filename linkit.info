@@ -11,6 +11,7 @@ files[] = plugins/linkit_search/entity.class.php
 
 ; Test files
 files[] = test/linkit.test
+files[] = test/linkit_profile.test
 files[] = test/linkit_search_plugin.test
 files[] = test/linkit_search_plugin_node.test
 files[] = test/linkit_search_plugin_user.test
