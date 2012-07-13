@@ -119,8 +119,8 @@ class LinkitSerachPluginNodeTestCase extends LinkitSerachPluginTestCase {
     $this->autocompleteCall();
 
     // Assert that the bundle title appear in the response.
-    $this->assertNoRaw('"group": "Node · ' . $node_type_name_1, 'Bundle name in group was found in the result array.');
-    $this->assertNoRaw('"group": "Node · ' . $node_type_name_2, 'Bundle name in group was found in the result array.');
+    $this->assertRaw('"group":"Node - ' . $node_type_name_1, 'Bundle name in group was found in the result array.');
+    $this->assertRaw('"group":"Node - ' . $node_type_name_2, 'Bundle name in group was found in the result array.');
   }
 
   /**
