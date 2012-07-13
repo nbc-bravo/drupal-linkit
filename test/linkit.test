@@ -33,8 +33,10 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
    */
   public $_profile;
 
-  function setUp() {
-    parent::setUp('ctools', 'entity', 'linkit');
+  function setUp($extra_modules = array()) {
+    $modules = array('ctools', 'entity', 'linkit');
+    $modules += $extra_modules;
+    parent::setUp($modules);
   }
 
   /**
