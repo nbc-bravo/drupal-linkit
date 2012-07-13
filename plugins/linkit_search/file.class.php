@@ -72,7 +72,7 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
     if ($this->conf['group_by_scheme']) {
       // Get all stream wrappers.
       $stream_wrapper = file_get_stream_wrappers();
-      $group .= ' · ' . $stream_wrapper[file_uri_scheme($entity->uri)]['name'];
+      $group .= ' - ' . $stream_wrapper[file_uri_scheme($entity->uri)]['name'];
     }
     return $group;
   }

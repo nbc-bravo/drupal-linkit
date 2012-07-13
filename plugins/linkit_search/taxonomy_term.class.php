@@ -22,6 +22,15 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
   }
 
   /**
+   * Overrides LinkitSearchPluginEntity::createDescription().
+   */
+  function createDescription($data) {
+    return token_replace(check_plain($this->conf['result_description']), array(
+      'term' => $data,
+    ));
+  }
+
+  /**
    * Overrides LinkitSearchPluginEntity::createGroup().
    */
   function createGroup($entity) {
@@ -31,7 +40,7 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
     if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->vocabulary_machine_name]['label'];
-      $group .= ' · ' . check_plain($bundle_name);
+      $group .= ' - ' . check_plain($bundle_name);
     }
     return $group;
   }
@@ -69,8 +78,17 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
     // The entity plugin uses the entity name for the #token_types, but terms
     // is a special case, its name is "Taxonomy_term" and the tokens are defined
     // (in the taxonomy module) with just "term".
+
+    // If the token modules is installed.
     if (isset($form[$this->plugin['name']]['token_help']['help']['#token_types'])) {
       $form[$this->plugin['name']]['token_help']['help']['#token_types'] = array('term');
+    }
+    // If the token module is not installed, use the orignal tokens provided by
+    // Drupal core.
+    else {
+      // Get supported tokens for the term entity type.
+      $tokens = linkit_extract_tokens('term');
+      $form[$this->plugin['name']]['result_description']['#description'] = t('Available tokens: %tokens.', array('%tokens' => implode(', ', $tokens)));
     }
     return $form;
   }

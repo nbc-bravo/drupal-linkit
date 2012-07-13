@@ -154,7 +154,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     if (isset($this->conf['group_by_bundle']) && $this->conf['group_by_bundle']) {
       $bundles = $this->entity_info['bundles'];
       $bundle_name = $bundles[$entity->{$this->entity_key_bundle}]['label'];
-      $group .= ' · ' . check_plain($bundle_name);
+      $group .= ' - ' . check_plain($bundle_name);
     }
     return $group;
   }
