@@ -20,7 +20,7 @@ class LinkitSerachPluginTaxonomyTermTestCase extends LinkitSerachPluginTestCase 
     );
   }
 
-  function setUp() {
+  function setUp($extra_modules = array()) {
     parent::setUp(array('taxonomy'));
 
     // Create a basic profile.

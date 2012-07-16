@@ -30,8 +30,8 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     );
   }
 
-  function setUp() {
-    parent::setUp();
+  function setUp($extra_modules = array()) {
+    parent::setUp($extra_modules);
   }
 
   /**

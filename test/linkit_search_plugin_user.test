@@ -20,8 +20,8 @@ class LinkitSerachPluginUserTestCase extends LinkitSerachPluginTestCase {
     );
   }
 
-  function setUp() {
-    parent::setUp();
+  function setUp($extra_modules = array()) {
+    parent::setUp($extra_modules);
 
     // Create a basic profile.
     $this->createProfile(array(
