@@ -58,7 +58,7 @@ abstract class LinkitTestCase extends SimpleTestCloneTestCase {
     if (!isset($profile->data['insert_plugin'])) {
       $profile->data['insert_plugin'] = array(
         'plugin' => 'raw_url',
-        'url_method' => LINKIT_URL_METHOD_ADD_SLASH,
+        'url_method' => LINKIT_URL_METHOD_RAW,
       );
     }
 
