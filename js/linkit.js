@@ -21,7 +21,7 @@ Drupal.behaviors.linkit = {
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     Drupal.linkit.$searchInput.betterAutocomplete('init',
-      settings.linkit.autocompletePath,
+      settings.linkit.autocompletePathParsed,
       settings.linkit.autocomplete,
       { // Callbacks
       select: function(result) {

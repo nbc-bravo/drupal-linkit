@@ -182,29 +182,39 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
   );
 
   $form['data']['insert_plugin']['url_method'] = array(
-    '#title' => t('Add a slash (/) in the beginning of the URL?'),
+    '#title' => t("Insert paths as:"),
     '#type' => 'radios',
     '#title_display' => 'before',
     '#options' => array(
-      LINKIT_URL_METHOD_ADD_SLASH => t('Yes, add a slash in the beginning of the URL'),
-      LINKIT_URL_METHOD_NO_SLASH => t('No'),
+      LINKIT_URL_METHOD_RAW => t('Raw paths'),
+      LINKIT_URL_METHOD_RAW_SLASH => t('Raw paths, with a slash (/) in the beginning.'),
     ),
-    LINKIT_URL_METHOD_ADD_SLASH => array(
-      '#description' => t("This is the default behavior, it will insert url's
-        like %example_link.<br/>These will work without the need for a input filter,
-        but might fail after moving a site, or on
-        multilingual sites.", array('%example_link' => '/node/123')),
+    LINKIT_URL_METHOD_RAW => array(
+      '#description' => t('This will insert Drupal internal paths like
+         %example_link which is probably what you want if you are going to use
+         this profile together with <strong>fields</strong>.
+         <br/>If used in textareas, these paths typically need to be formatted
+         using a input filter, but provides more flexibility in a multilingual
+         site or when moving a site.', array('%example_link' => 'node/123')),
     ),
-    LINKIT_URL_METHOD_NO_SLASH => array(
-      '#description' => t("It will insert Drupal internal paths like
-        %example_link.<br/>These typically need to be formatted using a input filter,
-        but provides more flexibility in a multilingual site or when moving a
-        site.", array('%example_link' => 'node/123')),
+    LINKIT_URL_METHOD_RAW_SLASH => array(
+      '#description' => t('This is the default behavior, it will insert paths
+         like %example_link.<br/>These will work <strong>without the need for a input filter</strong>,
+         but might fail after moving a site, or on multilingual sites.',
+         array('%example_link' => '/node/123')),
     ),
     '#default_value' =>  isset($profile->data['insert_plugin']['url_method']) ?
-      $profile->data['insert_plugin']['url_method'] : LINKIT_URL_METHOD_ADD_SLASH,
-    '#description' => t('This will have no effect on already created links.'),
+      $profile->data['insert_plugin']['url_method'] : LINKIT_URL_METHOD_RAW_SLASH,
+    '#description' => t('These will have no effect on already created links.'),
   );
+
+  if (module_exists('path')) {
+    $form['data']['insert_plugin']['url_method']['#options'][LINKIT_URL_METHOD_ALIAS] = t('Alias paths');
+    $form['data']['insert_plugin']['url_method'][LINKIT_URL_METHOD_ALIAS] = array(
+      '#description' => t('This will insert the alias for the result item.
+        <br/>The paths will be runned thru the <em>url()</em> function.', array('%example_link' => 'node/123')),
+    );
+  }
 }
 
 /**

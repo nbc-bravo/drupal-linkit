@@ -33,7 +33,7 @@ Drupal.linkit.dialog.createDialog = function(src) {
       linkitCache = Drupal.linkit.getLinkitCache();
 
   // Replace the URL placeholder with the profile to use fot the BAC calls.
-  Drupal.settings.linkit.autocompletePath = Drupal.settings.linkit.autocompletePath.replace('___profile___', linkitCache.profile);
+  Drupal.settings.linkit.autocompletePathParsed = Drupal.settings.linkit.autocompletePath.replace('___profile___', linkitCache.profile);
 
   // Create a dialog dig in the <body>.
   $('body').append($linkitModal);

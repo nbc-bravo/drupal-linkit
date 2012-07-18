@@ -34,10 +34,7 @@ Drupal.behaviors.linkit_field = {
             // Save the selection.
             Drupal.linkitCacheAdd('selection', selection);
           }
-
-          //Drupal.linkit.dialog.buildDialog(settings.linkit.url.field);
-          // @TODO: Fix this.
-          Drupal.linkit.dialog.buildDialog('/linkit/dashboard/' + field.profile);
+          Drupal.linkit.dialog.buildDialog(Drupal.settings.linkit.dashboardPath + field.profile);
           return false;
         });
       });

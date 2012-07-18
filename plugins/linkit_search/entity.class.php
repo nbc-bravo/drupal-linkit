@@ -125,14 +125,20 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     // Create the URI for the entity.
     $uri = entity_uri($this->plugin['entity_type'], $entity);
 
-    // Add slash or not based on the profile settings.
-    if ($this->profile->data['insert_plugin']['url_method'] == LINKIT_URL_METHOD_NO_SLASH) {
-      return $uri['path'];
+    switch ($this->profile->data['insert_plugin']['url_method']) {
+      case LINKIT_URL_METHOD_RAW:
+        $path = $uri['path'];
+       break;
+     case LINKIT_URL_METHOD_RAW_SLASH:
+       $path = url($uri['path'], array('alias' => TRUE));
+       break;
+     case LINKIT_URL_METHOD_ALIAS:
+       $path = url($uri['path']);
+       break;
     }
-    elseif ($this->profile->data['insert_plugin']['url_method'] == LINKIT_URL_METHOD_ADD_SLASH) {
-      // We have to set alias to TRUE as we don't want an alias back.
-      return url($uri['path'], array('alias' => TRUE));
-    }
+
+    return $path;
+
   }
 
   /**

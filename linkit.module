@@ -5,14 +5,20 @@
  */
 
 /**
- * Denotes that urls should be constructed without prepending a slash.
+ * Denotes that urls should be constructed as it is (raw).
  */
-define('LINKIT_URL_METHOD_NO_SLASH', 0);
+define('LINKIT_URL_METHOD_RAW', 1);
 
 /**
- * Denotes that urls should be constructed with a prepending slash.
+ * Denotes that urls should be constructed as it is (raw) with a prepending
+ * slash.
  */
-define('LINKIT_URL_METHOD_ADD_SLASH', 1);
+define('LINKIT_URL_METHOD_RAW_SLASH', 2);
+
+/**
+ * Denotes that paths should be constructed as an alias.
+ */
+define('LINKIT_URL_METHOD_ALIAS', 3);
 
 /**
  * Defines which query string key Better autocomplete will just.
@@ -391,7 +397,10 @@ function linkit_library() {
       array(
         'type' => 'setting',
         // ___profile___ is just a placeholder.
-        'data' => array('linkit' => array('autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)))),
+        'data' => array('linkit' => array(
+          'autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)),
+          'dashboardPath' => url('linkit/dashboard/'),
+        )),
       ),
     ),
     'css' => array(
