@@ -5,25 +5,40 @@
  */
 
 /**
- * Denotes that urls should be constructed as it is (raw).
+ * Define that urls should be constructed as it is (raw).
  */
 define('LINKIT_URL_METHOD_RAW', 1);
 
 /**
- * Denotes that urls should be constructed as it is (raw) with a prepending
+ * Define that urls should be constructed as it is (raw) with a prepending
  * slash.
  */
 define('LINKIT_URL_METHOD_RAW_SLASH', 2);
 
 /**
- * Denotes that paths should be constructed as an alias.
+ * Define that paths should be constructed as an alias.
  */
 define('LINKIT_URL_METHOD_ALIAS', 3);
 
 /**
- * Defines which query string key Better autocomplete will just.
+ * Define which query string key Better autocomplete will just.
  */
 define('LINKIT_BAC_QUERY_KEY', 's');
+
+/**
+ * Define the minimum number of characters to perform server polling.
+ */
+define('LINKIT_CHAR_LIMIT', 3);
+
+/**
+ * Define the time from last key press to poll the server.
+ */
+define('LINKIT_WAIT', 350);
+
+/**
+ * Define the client side timeout for a request to the server.
+ */
+define('LINKIT_REMOTE_TIMEOUT', 10000);
 
 // Include the file with the field functions.
 require_once dirname(__FILE__) . '/linkit.field.inc';

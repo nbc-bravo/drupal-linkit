@@ -69,9 +69,9 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     $this->createProfile(array(
       'data' => array(
         'autocomplete' => array(
-          'charLimit' => 3,
-          'wait' => 350,
-          'remoteTimeout' => 10000,
+          'charLimit' => LINKIT_CHAR_LIMIT,
+          'wait' => LINKIT_WAIT,
+          'remoteTimeout' => LINKIT_REMOTE_TIMEOUT,
         ),
       ),
     ));
