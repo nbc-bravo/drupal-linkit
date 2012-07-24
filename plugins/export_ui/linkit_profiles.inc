@@ -91,7 +91,7 @@ function linkit_profiles_export_ui_form(&$form, &$form_state) {
     );
 
     $form['data']['imce']['use_imce'] = array(
-      '#title' => t('Enable !imce file picking', array('!imce' => l(t('IMCE'), 'admin/config/media/imce'))),
+      '#title' => t('Enable IMCE file picking'),
       '#type' => 'checkbox',
       '#default_value' => isset($profile->data['imce']['use_imce']) ? $profile->data['imce']['use_imce'] : '',
       '#description' => t('Note that only public files are supported.'),
