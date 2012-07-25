@@ -49,7 +49,9 @@ Drupal.behaviors.linkit = {
             position: 'absolute',
             left: $input.position().left,
             top: top,
-            zIndex: 2000,
+            // High value because of other overlays like
+            // wysiwyg fullscreen (TinyMCE) mode.
+            zIndex: 211000,
             maxHeight: $(window).height() - (top + 20)
           })
           .hide()
