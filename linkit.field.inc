@@ -189,6 +189,7 @@ function linkit_process_field_element($element, $edit, &$form_state) {
               'profile' => $instance['settings']['linkit']['profile'],
               'insert_plugin' => $profile->data['insert_plugin']['plugin'],
               'url_method' => $profile->data['insert_plugin']['url_method'],
+              // @TODO: Add autocomplete settings.
             ),
           ),
         ),

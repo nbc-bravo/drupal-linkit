@@ -3,9 +3,6 @@
  * Linkit field ui functions
  */
 
-// Create the Linkit field namespaces.
-Drupal.linkit.field = Drupal.linkit.field || {};
-
 (function ($) {
 
 Drupal.behaviors.linkit_field = {
@@ -20,9 +17,9 @@ Drupal.behaviors.linkit_field = {
       $('#' + field_name, context).once('linkit_field', function() {
         $('.linkit-field-' + field_name).click(function() {
           // Set the source type.
-          Drupal.linkitCacheAdd('source_type', 'field');
+          Drupal.linkitCacheAdd('helper', 'field');
 
-          // Set the name of the source.
+          // Set the name of the source field.
           Drupal.linkitCacheAdd('source', field_name);
 
           // Set profile.
@@ -30,7 +27,7 @@ Drupal.behaviors.linkit_field = {
 
           // Only care about selection if the element is a textarea.
           if ($('textarea#' + field_name).length) {
-            var selection = Drupal.behaviors.linkit_field.getSelection($('#' + field_name).get(0));
+            var selection =  Drupal.linkit.getDialogHelper('field').getSelection($('#' + field_name).get(0));
             // Save the selection.
             Drupal.linkitCacheAdd('selection', selection);
           }
@@ -39,6 +36,38 @@ Drupal.behaviors.linkit_field = {
         });
       });
     });
+  }
+};
+
+/**
+ * Linkit field dialog helper.
+ */
+Drupal.linkit.registerDialogHelper('field', {
+  init : function() {},
+  afterInit : function () {},
+
+  /**
+   * Insert the link into the field.
+   *
+   * @param {Object} link
+   *   The link object.
+   */
+  insertLink : function(data) {
+    var linkitCache = Drupal.linkit.getLinkitCache(),
+      source = $('#' + linkitCache.source),
+      field_settings = Drupal.settings.linkit.fields[linkitCache.source],
+
+    // Call the insert plugin.
+    link = Drupal.linkit.getInsertPlugin(field_settings.insert_plugin).insert(data, field_settings);
+
+    if (typeof linkitCache.selection != 'undefined') {
+      // Replace the selection and insert the link there.
+      this.replaceSelection(source.get(0), linkitCache.selection, link);
+    }
+    else {
+      // Replace the field value.
+      this.replaceFieldValue(source.get(0), link);
+    }
   },
 
   /**
@@ -89,35 +118,6 @@ Drupal.behaviors.linkit_field = {
    */
   replaceFieldValue : function (e, text) {
     e.value = text;
-  }
-};
-
-/**
- * Linkit field dialog helper.
- */
-Drupal.linkit.registerDialogHelper('field', {
-  /**
-   * Insert the link into the field.
-   *
-   * @param {Object} link
-   *   The link object.
-   */
-  insertLink : function(data) {
-    var linkitCache = Drupal.linkit.getLinkitCache(),
-      source = $('#' + linkitCache.source),
-      field_settings = Drupal.settings.linkit.fields[linkitCache.source],
-
-      // Call the insert plugin.
-      link = Drupal.linkit.getInsertPlugin(field_settings.insert_plugin).insert(data, field_settings);
-
-    if (typeof linkitCache.selection != 'undefined') {
-      // Replace the selection and insert the link there.
-      Drupal.behaviors.linkit_field.replaceSelection(source.get(0), linkitCache.selection, link);
-    }
-    else {
-      // Replace the field value.
-      Drupal.behaviors.linkit_field.replaceFieldValue(source.get(0), link);
-    }
   }
 });
 

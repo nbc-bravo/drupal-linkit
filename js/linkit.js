@@ -104,4 +104,11 @@ Drupal.linkit.getInsertPlugin = function(name) {
 Drupal.linkit.registerDialogHelper = function(name, helper) {
   Drupal.linkit.dialogHelper[name] = helper;
 }
+
+/**
+ * Register new dialog helper.
+ */
+Drupal.linkit.getDialogHelper = function(name) {
+  return Drupal.linkit.dialogHelper[name];
+}
 })(jQuery);

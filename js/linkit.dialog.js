@@ -59,13 +59,11 @@ Drupal.linkit.dialog.createDialog = function(src) {
       // Run all the behaviors again for this new context.
       Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
 
-       // Run the afterInit function.
-       if (typeof Drupal.linkit.dialogHelper[linkitCache.helper] !== 'undefined' &&
-          typeof Drupal.linkit.dialogHelper[linkitCache.helper].afterInit !== 'undefined') {
-         Drupal.linkit.dialogHelper[linkitCache.helper].afterInit();
-       }
-        // Set focus in the search field.
-       $('.linkit-wrapper #edit-linkit-search').focus();
+      // Run the afterInit function.
+      Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
+
+      // Set focus in the search field.
+      $('.linkit-wrapper #edit-linkit-search').focus();
     }
   });
 
@@ -119,7 +117,7 @@ Drupal.behaviors.linkitDialogButtons = {
     $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
-      Drupal.linkit.dialogHelper[linkitCache.helper].insertLink(Drupal.linkit.dialog.getLink());
+      Drupal.linkit.getDialogHelper(linkitCache.helper).insertLink(Drupal.linkit.dialog.getLink());
       // Close the dialog.
       Drupal.linkit.dialog.close();
       return false;

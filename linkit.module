@@ -922,6 +922,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
 
     // Attach js files and settings Linkit needs.
     $element['#attached']['library'][] = array('linkit', 'linkit_base');
+    // @TODO: Add linkit_$editor lib here?
     $element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 
