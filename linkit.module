@@ -351,6 +351,18 @@ function linkit_element_info_alter(&$types) {
       $types[$element]['#process'][] = 'linkit_process_field_element';
     }
   }
+
+  if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
+    if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
+      $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
+    }
+  }
+
+  if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
+    if (in_array('wysiwyg_pre_render_text_format', $types['text_format']['#pre_render'])) {
+      $types['text_format']['#process'][] = 'linkit_pre_render_editor_element';
+    }
+  }
 }
 
 /**
@@ -397,6 +409,22 @@ function linkit_library() {
     ),
   );
 
+  // Linkit ckeditor dialog script.
+  $libraries['linkit_ckeditor'] = array(
+    'title' => 'Linkit CKeditor',
+    'js' => array(
+      $path . '/editors/ckeditor/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+  );
+
+  // Linkit tinymce dialog script.
+  $libraries['linkit_tinymce'] = array(
+    'title' => 'Linkit TinyMCE',
+    'js' => array(
+      $path . '/editors/tinymce/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+  );
+
   foreach ($libraries as &$library) {
     $library += $common;
   }
@@ -422,6 +450,8 @@ function linkit_library() {
       $path . '/better-autocomplete/better-autocomplete.css' => array('group' => CSS_DEFAULT),
     ),
   );
+
+
 
   return $libraries;
 }
@@ -827,4 +857,95 @@ function linkit_init() {
   dvm(drupal_realpath('sites/default/files/lorem.jpg'));
   dvm($item);
   */
+}
+
+/**
+ * Implements hook_wysiwyg_plugin().
+ */
+function linkit_wysiwyg_plugin($editor, $version) {
+  $plugin = array();
+
+  $plugin['linkit'] = array(
+    'path' => drupal_get_path('module', 'linkit') . '/editors/' . $editor,
+    'buttons' => array('linkit' => t('Linkit')),
+    'url' => 'http://drupal.org/project/linkit',
+    'load' => TRUE,
+  );
+
+  // TinyMCE needs to know the filename.
+  if ($editor == 'tinymce') {
+    $plugin['linkit']['filename'] = 'editor_plugin.js';
+  }
+
+  // Add the base library.
+  drupal_add_library('linkit', 'linkit_base');
+  // Add the linkit library for the editor.
+  drupal_add_library('linkit', 'linkit_' . $editor);
+
+  return $plugin;
+}
+
+/**
+ * Add Linkit settings to pages where we have an editor element.
+ */
+function linkit_pre_render_editor_element($element, $edit, &$form_state) {
+  static $processed;
+
+  if (!isset($processed[$element['#id']])) {
+    // Load the profile that is assign to this text format.
+    $profile = linkit_profile_load_by_format($element['#format']);
+
+    // Load the insert plugin for the profile.
+    $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
+
+    // Set the field ID.
+    $field_id = $element['#id'] . '-value';
+
+    // Add caseSensitive
+    //$settings[$field_id]['autocomplete'] += array('caseSensitive' => TRUE);
+
+    $field_js = array(
+      'data' => array(
+        'linkit' => array(
+          'fields' => array(
+            $field_id => array(
+              'profile' => $profile->name,
+              'insert_plugin' => $profile->data['insert_plugin']['plugin'],
+              'url_method' => $profile->data['insert_plugin']['url_method'],
+              'autocomplete' => array_filter($profile->data['autocomplete']),
+            ),
+          ),
+        ),
+      ),
+      'type' => 'setting',
+    );
+
+    // Attach js files and settings Linkit needs.
+    $element['#attached']['library'][] = array('linkit', 'linkit_base');
+    $element['#attached']['js'][] = $insert_plugin['javascript'];
+    $element['#attached']['js'][] = $field_js;
+
+    $processed[$element['#id']] = TRUE;
+  }
+
+  return $element;
+}
+
+/**
+ * Load a profile assig to a text format.
+ *
+ * @param $format
+ *   A string with the format machine name.
+ *
+ * @return
+ *   A LinkitProfile object or FALSE if no profile is found.
+ */
+function linkit_profile_load_by_format($format) {
+  $profiles = linkit_profile_load_all();
+  foreach ($profiles as $profile) {
+    if (is_array($profile->data['text_format']) && in_array($format, array_filter($profile->data['text_format']))) {
+      return $profile;
+    }
+  }
+  return FALSE;
 }

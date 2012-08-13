@@ -51,6 +51,11 @@ function linkit_profiles_form(&$form, &$form_state) {
 
   // Append autocomplete (BAC) form element to the profile form.
   _linkit_build_autocomplete_form_fields($form, $profile);
+
+  if (module_exists('wysiwyg') || module_exists('ckeditor')) {
+    // Append text format form element to the profile form.
+    _linkit_build_text_foramt_form_fields($form, $profile);
+  }
 }
 
 /**
@@ -68,6 +73,40 @@ function linkit_profiles_form_validate(&$form, &$form_state) {
  * @see linkit_profiles_form()
  */
 function linkit_profiles_form_submit(&$form, &$form_state) {
+}
+
+/**
+ * Append text foramt form element to the profile form.
+ *
+ * @param LinkitProfile $profile
+ *   A profile object contains all settings for the profile.
+ *
+ * @see linkit_profiles_form()
+ */
+function _linkit_build_text_foramt_form_fields(&$form, LinkitProfile $profile) {
+   $form['data']['text_format'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Text foramts'),
+    '#description' => t('Attach this profile to one or more text formats. This is only used by editors like TinyMCE and CKEditor.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  $formats = array();
+  foreach(filter_formats() as $format) {
+    $formats[$format->format] = $format->name;
+  }
+
+  $form['data']['text_format']['format'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Formats'),
+    '#options' => $formats,
+    '#empty_option' => t('- Select a text format -'),
+    '#default_value' => isset($profile->data['text_format'])
+      ? $profile->data['text_format'] : '',
+    '#parents' => array('data', 'text_format'),
+  );
 }
 
 /**
@@ -176,7 +215,7 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
     '#title' => t('Insert plugin'),
     '#options' => $insert_pluings,
     '#empty_option' => t('- Select an insert plugin -'),
-    '#default_value' => isset($profile->data['insert_plugin'])
+    '#default_value' => isset($profile->data['insert_plugin']['plugin'])
       ? $profile->data['insert_plugin'] : '',
     '#required' => TRUE,
   );

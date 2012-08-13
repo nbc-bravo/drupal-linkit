@@ -5,9 +5,9 @@
 
 // Create the Linkit namespaces.
 Drupal.linkit = Drupal.linkit || {};
-Drupal.linkit.source = Drupal.linkit.source || {};
-Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 Drupal.linkitCache = Drupal.linkitCache || {};
+Drupal.linkit.dialogHelper = Drupal.linkit.dialogHelper || {};
+Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 (function ($) {
 
@@ -96,5 +96,12 @@ Drupal.linkit.addInsertPlugin = function(name, plugin) {
  */
 Drupal.linkit.getInsertPlugin = function(name) {
   return Drupal.linkit.insertPlugins[name];
+}
+
+/**
+ * Register new dialog helper.
+ */
+Drupal.linkit.registerDialogHelper = function(name, helper) {
+  Drupal.linkit.dialogHelper[name] = helper;
 }
 })(jQuery);

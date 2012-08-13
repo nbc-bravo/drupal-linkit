@@ -95,7 +95,7 @@ Drupal.behaviors.linkit_field = {
 /**
  * Linkit field dialog helper.
  */
-Drupal.linkit.source.field = {
+Drupal.linkit.registerDialogHelper('field', {
   /**
    * Insert the link into the field.
    *
@@ -108,7 +108,7 @@ Drupal.linkit.source.field = {
       field_settings = Drupal.settings.linkit.fields[linkitCache.source],
 
       // Call the insert plugin.
-      link = Drupal.linkit.insertPlugins[field_settings.insert_plugin].insert(data, field_settings);
+      link = Drupal.linkit.getInsertPlugin(field_settings.insert_plugin).insert(data, field_settings);
 
     if (typeof linkitCache.selection != 'undefined') {
       // Replace the selection and insert the link there.
@@ -119,6 +119,6 @@ Drupal.linkit.source.field = {
       Drupal.behaviors.linkit_field.replaceFieldValue(source.get(0), link);
     }
   }
-};
+});
 
 })(jQuery);
