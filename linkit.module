@@ -895,6 +895,11 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
     // Load the profile that is assign to this text format.
     $profile = linkit_profile_load_by_format($element['#format']);
 
+    // If we dont have any profile, lets just return the element.
+    if (!$profile) {
+      return $element;
+    }
+
     // Load the insert plugin for the profile.
     $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
 
