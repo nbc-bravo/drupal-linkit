@@ -907,7 +907,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
     $field_id = $element['#id'] . '-value';
 
     // Add caseSensitive
-    //$settings[$field_id]['autocomplete'] += array('caseSensitive' => TRUE);
+    $profile->data['autocomplete'] += array('caseSensitive' => TRUE);
 
     $field_js = array(
       'data' => array(

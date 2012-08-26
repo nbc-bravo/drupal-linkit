@@ -26,6 +26,9 @@
           var profile = Drupal.settings.linkit.fields[editor.name].profile;
           Drupal.linkitCacheAdd('profile', profile);
 
+          // Set the name of the source field..
+          Drupal.linkitCacheAdd('source', editor.name);
+
           // Set the source type.
           Drupal.linkitCacheAdd('helper', 'ckeditor');
 

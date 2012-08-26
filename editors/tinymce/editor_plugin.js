@@ -16,6 +16,9 @@
         var profile = Drupal.settings.linkit.fields[editor.id].profile;
         Drupal.linkitCacheAdd('profile', profile);
 
+        // Set the name of the source field..
+        Drupal.linkitCacheAdd('source', editor.id);
+
         // Set the source type.
         Drupal.linkitCacheAdd('helper', 'tinymce');
 

@@ -17,12 +17,15 @@ Drupal.behaviors.linkit = {
       return;
     }
 
+    // Get the cached variables.
+    var linkitCache = Drupal.linkit.getLinkitCache();
+
     Drupal.linkit.$searchInput = $('#linkit-modal #edit-linkit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     Drupal.linkit.$searchInput.betterAutocomplete('init',
       settings.linkit.autocompletePathParsed,
-      settings.linkit.autocomplete,
+      settings.linkit.fields[linkitCache.source].autocomplete,
       { // Callbacks
       select: function(result) {
         // Only change the link text if it is empty
