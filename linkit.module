@@ -252,7 +252,7 @@ function _linkit_dashboard($editor) {
  * Autocomplete callback function.
  */
 function _linkit_autocomplete($search = NULL) {
-  $search = check_url($_GET['s']);
+  $search = $_GET['s'];
   $enabled_plugins = linkit_get_profile_plugins();
 
   // Absolute URL
