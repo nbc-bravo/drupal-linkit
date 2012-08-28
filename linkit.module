@@ -839,26 +839,6 @@ function linkit_image_default_styles() {
   return $styles;
 }
 
-function linkit_init() {
-  /*
-  global $menu_admin;
-  $profile = linkit_profile_load('test');
-  $_GET[LINKIT_BAC_QUERY_KEY] = 'public://lorem.jpg';
-  linkit_autocomplete($profile);
-
-  $_GET[LINKIT_BAC_QUERY_KEY] = 'http://lpprofile.server.dev/node/4';
-  linkit_autocomplete($profile);
-
-
-  $menu_admin = TRUE;
-  $item = menu_get_item('public://lorem.jpg');
-  $menu_admin = FALSE;
-  dvm(drupal_realpath('public://lorem.jpg'));
-  dvm(drupal_realpath('sites/default/files/lorem.jpg'));
-  dvm($item);
-  */
-}
-
 /**
  * Implements hook_wysiwyg_plugin().
  */
