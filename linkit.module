@@ -241,29 +241,6 @@ function linkit_attribute_plugin_load($plugin_name) {
 }
 
 /**
- * Implements hook_entity_info_alter();
- *
- * Control which enteties that can be used by Linkit search pluings.
- * Other modules can easy implement this hook aswell and make their enteties
- * usable with Linkit or change directly in the the hook_entity_info().
- *
- * @param $entity_info
- *   The entity info array, keyed by entity name.
- *
- * @see hook_entity_info()
- */
-function linkit_entity_info_alter(&$entity_info) {
-  // An array of entity names that is allowed to be used in Linkit.
-  $allowed = array('node', 'user', 'taxonomy_term', 'file');
-
-  foreach ($allowed as $entity_name) {
-    if (isset($entity_info[$entity_name])) {
-      $entity_info[$entity_name]['linkit'] = TRUE;
-    }
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function linkit_theme($existing, $type, $theme, $path) {

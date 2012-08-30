@@ -46,9 +46,8 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   );
 
   foreach ($entities as $entity_type => $entity) {
-    // The entity must be linkit compatible and have an URI CALLBACK defined.
-    // See linkit_entity_info_alter().
-    if (!isset($entity['linkit']) || !$entity['linkit'] || !isset($entity['uri callback'])) {
+    // The entity must have an URI CALLBACK defined.
+    if (!isset($entity['uri callback'])) {
       continue;
     }
 
