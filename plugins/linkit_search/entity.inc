@@ -36,6 +36,15 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   $entities = entity_get_info();
   $plugins = array();
 
+  // The alternative plugins is extensions of the provided
+  // LinkitSearchPluginEntity class provided by Linkit.
+  $alternative_plugins = array(
+    'entity:node',
+    'entity:user',
+    'entity:taxonomy_term',
+    'entity:file',
+  );
+
   foreach ($entities as $entity_type => $entity) {
     // The entity must be linkit compatible and have an URI CALLBACK defined.
     // See linkit_entity_info_alter().
@@ -48,6 +57,14 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
     $plugin['name'] = $parent . ':' . $entity_type;
     $plugin['entity_type'] = $entity_type;
 
+    // If there is an alternative search class for this entity, change the handler.
+    if (in_array('entity:' . $entity_type, $alternative_plugins)) {
+      $handler = array(
+        'class' => 'LinkitSearchPlugin' . drupal_ucfirst($entity_type),
+        'file' => $entity_type . '.class.php',
+      );
+      $plugin['handler'] = $handler;
+    }
     drupal_alter('linkit_search_plugin_entity', $plugin, $entity);
     $plugins[$parent . ':' . $entity_type] = $plugin;
   }

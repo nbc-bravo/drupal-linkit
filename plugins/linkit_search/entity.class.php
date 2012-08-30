@@ -71,6 +71,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     // Set the label field name.
     if (!isset($this->entity_field_label)) {
+
       $this->entity_field_label = $this->entity_info['entity keys']['label'];
     }
 

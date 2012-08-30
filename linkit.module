@@ -264,44 +264,6 @@ function linkit_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Implements hook_linkit_plugin_entities_alter().
- *
- * The default behavior for entities is that they will use the default entity
- * search plugin class, which will provide them with the basic methods they
- * need.
- *
- * Tho there is some search plugins that will extend those basic method with
- * more advanced once, therefor the handlers for those plugins will have to be
- * changed.
- *
- * @param $plugins
- *   An array of all search plugins processed within Linkit entity plugin.
- */
-function linkit_linkit_search_plugin_entities_alter(&$plugins) {
-  $alter_plugins = array(
-    'entity:node',
-    'entity:user',
-    'entity:taxonomy_term',
-    'entity:file',
-  );
-
-  $path = drupal_get_path('module', 'linkit') . '/plugins/linkit_search';
-
-  foreach ($alter_plugins as $plugin) {
-    if (isset($plugins[$plugin])) {
-      // Those classes is included in Linkit so there is no need to check that
-      // they exists.
-      $handler = array(
-        'class' => 'LinkitSearchPlugin' . drupal_ucfirst($plugins[$plugin]['entity_type']),
-        'file' => $plugins[$plugin]['entity_type'] . '.class.php',
-        'path' => $path,
-      );
-      $plugins[$plugin]['handler'] = $handler;
-    }
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function linkit_theme($existing, $type, $theme, $path) {
