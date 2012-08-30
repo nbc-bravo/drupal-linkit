@@ -104,7 +104,7 @@ function _linkit_build_text_foramt_form_fields(&$form, LinkitProfile $profile) {
     '#options' => $formats,
     '#empty_option' => t('- Select a text format -'),
     '#default_value' => isset($profile->data['text_format'])
-      ? $profile->data['text_format'] : '',
+      ? $profile->data['text_format'] : array(),
     '#parents' => array('data', 'text_format'),
   );
 }
