@@ -7,8 +7,8 @@
 /**
  * Abstract class for Linkit testing.
  */
-abstract class LinkitTestCase extends SimpleTestCloneTestCase {
-//abstract class LinkitTestCase extends DrupalWebTestCase {
+//abstract class LinkitTestCase extends SimpleTestCloneTestCase {
+abstract class LinkitTestCase extends DrupalWebTestCase {
 
   /**
    * Permissions to apply to administers.
