@@ -8,7 +8,7 @@
  * need.
  *
  * Tho there can be some search plugins that will extend those basic method with
- * more advanced once, therefor the handlers for those plugins will have to be
+ * more advanced once, therefore the handlers for those plugins will have to be
  * changed.
  *
  * Make sure that your classes is included in the regisrty.
