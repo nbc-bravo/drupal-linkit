@@ -32,18 +32,21 @@ $plugin = array(
  *   An associative array containing the current state of the form.
  */
 function linkit_profiles_form(&$form, &$form_state) {
+  $profile = $form_state['item'];
+
   // Set data as a tree.
   $form['data'] = array(
     '#tree' => TRUE,
     '#type' => 'vertical_tabs',
   );
 
-  $profile = $form_state['item'];
+  // Append profile type settings to the profile form.
+  _linkit_build_profile_type_form_fields($form, $profile);
 
   // Append search plugin form element to the profile form.
   _linkit_build_search_plugin_form_fields($form, $profile);
 
-   // Append insert plugin form element to the profile form.
+  // Append insert plugin form element to the profile form.
   _linkit_build_insert_plugin_form_fields($form, $profile);
 
   // Append attribute plugin form element to the profile form.
@@ -51,11 +54,6 @@ function linkit_profiles_form(&$form, &$form_state) {
 
   // Append autocomplete (BAC) form element to the profile form.
   _linkit_build_autocomplete_form_fields($form, $profile);
-
-  if (module_exists('wysiwyg') || module_exists('ckeditor')) {
-    // Append text format form element to the profile form.
-    _linkit_build_text_format_form_fields($form, $profile);
-  }
 }
 
 /**
@@ -63,34 +61,50 @@ function linkit_profiles_form(&$form, &$form_state) {
  *
  * @see linkit_profiles_form()
  */
-function linkit_profiles_form_validate(&$form, &$form_state) {
-}
-
+function linkit_profiles_form_validate(&$form, &$form_state) { }
 
 /**
  * Linkit profile submit callback.
  *
  * @see linkit_profiles_form()
  */
-function linkit_profiles_form_submit(&$form, &$form_state) {
-}
+function linkit_profiles_form_submit(&$form, &$form_state) { }
 
 /**
- * Append text format form element to the profile form.
+ * Append profile type form element to the profile form.
  *
  * @param LinkitProfile $profile
  *   A profile object contains all settings for the profile.
  *
  * @see linkit_profiles_form()
  */
-function _linkit_build_text_format_form_fields(&$form, LinkitProfile $profile) {
-   $form['data']['text_format'] = array(
+function _linkit_build_profile_type_form_fields(&$form, LinkitProfile $profile) {
+  $form['data']['profile_type'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Text formats'),
-    '#description' => t('Attach this profile to one or more text formats. This is only used by editors like TinyMCE and CKEditor.'),
+    '#title' => t('Profile type'),
+    '#description' => t(''),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#tree' => TRUE,
+    '#tree' => FALSE,
+  );
+
+  $form['data']['profile_type']['profile_type'] = array(
+    '#title' => t("This profile will be used with"),
+    '#type' => 'radios',
+    '#title_display' => 'before',
+    '#options' => array(
+      'editor' => t('Editors'),
+      'field' => t('Fields'),
+    ),
+    'editor' => array(
+      '#description' => t('This profile will be used with editors like CKeditor or TinyMCE.'),
+    ),
+    'field' => array(
+      '#description' => t('This profile will be used with fields that do not have any editors.'),
+    ),
+    '#default_value' =>  isset($profile->profile_type) ? $profile->profile_type : 'editor',
+    '#required' => TRUE,
+    '#parents' => array('profile_type'),
   );
 
   $formats = array();
@@ -98,14 +112,20 @@ function _linkit_build_text_format_form_fields(&$form, LinkitProfile $profile) {
     $formats[$format->format] = $format->name;
   }
 
-  $form['data']['text_format']['format'] = array(
+  $form['data']['profile_type']['text_formats'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Formats'),
+    '#title' => t('Attach this profile to one or more text formats'),
     '#options' => $formats,
-    '#empty_option' => t('- Select a text format -'),
-    '#default_value' => isset($profile->data['text_format'])
-      ? $profile->data['text_format'] : array(),
-    '#parents' => array('data', 'text_format'),
+    '#empty_option' => t('- Select one or more text format- '),
+    '#default_value' => isset($profile->data['text_formats'])
+      ? $profile->data['text_formats'] : array(),
+    '#description' => t('.'),
+    '#states' => array(
+      'visible' => array(
+        'input[name="profile_type"]' => array('value' => 'editor'),
+      ),
+    ),
+    '#parents' => array('data', 'text_formats'),
   );
 }
 

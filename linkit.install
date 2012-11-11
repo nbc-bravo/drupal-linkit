@@ -54,6 +54,12 @@ function linkit_schema() {
         'size' => 'medium',
         'description' => 'Administrative description for this profile.',
       ),
+      'profile_type' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'The profile type.',
+      ),
       'data' => array(
         'type' => 'blob',
         'size' => 'big',
