@@ -7,7 +7,7 @@
 /**
  * Test the the user search plugin.
  */
-class LinkitSerachPluginUserTestCase extends LinkitSerachPluginTestCase {
+class LinkitsearchPluginUserTestCase extends LinkitsearchPluginTestCase {
 
   /**
    * Definition.

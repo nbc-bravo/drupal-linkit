@@ -40,7 +40,7 @@ function linkit_profiles_form(&$form, &$form_state) {
 
   $profile = $form_state['item'];
 
-  // Append serach plugin form element to the profile form.
+  // Append search plugin form element to the profile form.
   _linkit_build_search_plugin_form_fields($form, $profile);
 
    // Append insert plugin form element to the profile form.
@@ -54,7 +54,7 @@ function linkit_profiles_form(&$form, &$form_state) {
 
   if (module_exists('wysiwyg') || module_exists('ckeditor')) {
     // Append text format form element to the profile form.
-    _linkit_build_text_foramt_form_fields($form, $profile);
+    _linkit_build_text_format_form_fields($form, $profile);
   }
 }
 
@@ -76,17 +76,17 @@ function linkit_profiles_form_submit(&$form, &$form_state) {
 }
 
 /**
- * Append text foramt form element to the profile form.
+ * Append text format form element to the profile form.
  *
  * @param LinkitProfile $profile
  *   A profile object contains all settings for the profile.
  *
  * @see linkit_profiles_form()
  */
-function _linkit_build_text_foramt_form_fields(&$form, LinkitProfile $profile) {
+function _linkit_build_text_format_form_fields(&$form, LinkitProfile $profile) {
    $form['data']['text_format'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Text foramts'),
+    '#title' => t('Text formats'),
     '#description' => t('Attach this profile to one or more text formats. This is only used by editors like TinyMCE and CKEditor.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
@@ -118,12 +118,12 @@ function _linkit_build_text_foramt_form_fields(&$form, LinkitProfile $profile) {
  * @see linkit_profiles_form()
  */
 function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile) {
-  // Load all search pluings.
+  // Load all search plugins.
   $search_plugins = linkit_search_plugin_load_all();
 
   $form['data']['search_plugins_fieldset'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Search pluings'),
+    '#title' => t('Search plugins'),
     '#description' => t('Linkit is all about the search plugins. They define what content Linkit will present in the autocomplete search field.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
@@ -168,7 +168,7 @@ function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile)
         ? $profile->data['search_plugins'][$name]['weight'] : '',
     );
 
-    // Append the search pluing specific settings.
+    // Append the search plugin specific settings.
     $plugin_specific_settings = $plugin->buildSettingsForm();
 
     if ($plugin_specific_settings) {
@@ -194,10 +194,10 @@ function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile)
  * @see linkit_profiles_form()
  */
 function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile) {
-  // Make a list of all insert pluings.
-  $insert_pluings = array();
+  // Make a list of all insert plugins.
+  $insert_plugins = array();
   foreach (linkit_insert_plugin_load_all() as $name => $plugin) {
-    $insert_pluings[$name] = $plugin['name'];
+    $insert_plugins[$name] = $plugin['name'];
   }
 
   $form['data']['insert_plugin'] = array(
@@ -213,7 +213,7 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
   $form['data']['insert_plugin']['plugin'] = array(
     '#type' => 'select',
     '#title' => t('Insert plugin'),
-    '#options' => $insert_pluings,
+    '#options' => $insert_plugins,
     '#empty_option' => t('- Select an insert plugin -'),
     '#default_value' => isset($profile->data['insert_plugin']['plugin'])
       ? $profile->data['insert_plugin'] : '',
@@ -265,7 +265,7 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
  * @see linkit_profiles_form()
  */
 function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profile) {
-  // Load all attribute pluings.
+  // Load all attribute plugins.
   $attributes = linkit_attribute_plugin_load_all();
 
   $form['data']['attribute_plugins_fieldset'] = array(
@@ -315,7 +315,7 @@ function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profi
   }
 
   $form['data']['attribute_plugins_fieldset']['attribute_plugins_info'] = array(
-    '#markup' => 'Keep in mind that not all attributes can be used by all insert pluings.',
+    '#markup' => 'Keep in mind that not all attributes can be used by all insert plugins.',
   );
 }
 
@@ -374,7 +374,7 @@ function _linkit_build_autocomplete_form_fields(&$form, LinkitProfile $profile) 
 }
 
 /**
- * Function used by uasort to sort pluing arrays by the weight default value.
+ * Function used by uasort to sort plugin arrays by the weight default value.
  */
 function _linkit_sort_plugins_by_weight_default_value($a, $b) {
   return $a["weight"]['#default_value'] >= $b["weight"]['#default_value'];

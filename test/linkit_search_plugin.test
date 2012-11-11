@@ -7,7 +7,7 @@
 /**
  * Search plugin test helper class.
  */
-abstract class LinkitSerachPluginTestCase extends LinkitTestCase {
+abstract class LinkitsearchPluginTestCase extends LinkitTestCase {
   /**
    * The string to search for when doing autocomplete calls.
    *

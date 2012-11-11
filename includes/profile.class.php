@@ -24,11 +24,11 @@ class LinkitProfile {
   protected $enabled_attribute_plugins;
 
   /**
-   * All enabled search pluings for this profile.
+   * All enabled search plugins for this profile.
    *
    * @var array
    */
-  protected $enabled_serach_pluings;
+  protected $enabled_search_plugins;
 
   /**
    * Set all enabled attribure plugins.
@@ -49,9 +49,9 @@ class LinkitProfile {
   }
 
   /**
-   * Set all enabled search pluings.
+   * Set all enabled search plugins.
    */
-  public function setEnabledSerachPluings() {
+  public function setEnabledsearchPlugins() {
     // Sort plugins by weight.
     uasort($this->data['search_plugins'], 'linkit_sort_plugins_by_weight');
 
@@ -60,19 +60,19 @@ class LinkitProfile {
         // Load plugin definition.
         $plugin_definition = linkit_search_plugin_load($plugin_name);
 
-        // Get a Linkit serach plugin object.
+        // Get a Linkit search plugin object.
         $search_plugin = LinkitSearchPlugin::factory($plugin_definition, $this);
 
         // Only register none broken plugins.
         if ($search_plugin->broken() !== TRUE) {
-          $this->enabled_serach_pluings[$plugin_name] = $search_plugin;
+          $this->enabled_search_plugins[$plugin_name] = $search_plugin;
         }
       }
     }
   }
 
   /**
-   * Construct an array with all the enabled attribute pluings for this profile.
+   * Construct an array with all the enabled attribute plugins for this profile.
    *
    * @return
    *   An array with all enabled attribute plugins for this profile.
@@ -90,10 +90,10 @@ class LinkitProfile {
    * @return
    *   An array with all enabled search plugins for this profile.
    */
-  public function getEnabledSerachPluings() {
-    if (!isset($this->enabled_serach_pluings)) {
-      $this->setEnabledSerachPluings();
+  public function getEnabledsearchPlugins() {
+    if (!isset($this->enabled_search_plugins)) {
+      $this->setEnabledsearchPlugins();
     }
-    return $this->enabled_serach_pluings;
+    return $this->enabled_search_plugins;
   }
 }

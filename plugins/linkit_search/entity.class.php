@@ -193,8 +193,8 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
   /**
    * Implements LinkitSearchPluginInterface::fetchResults().
    */
-  public function fetchResults($serach_string) {
-    // If the $serach_string is not a string, something is wrong and an empty
+  public function fetchResults($search_string) {
+    // If the $search_string is not a string, something is wrong and an empty
     // array is returned.
     $matches = array();
 
@@ -203,7 +203,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
 
     // Add the search condition to the query object.
     $this->query->propertyCondition($this->entity_field_label,
-            '%' . db_like($serach_string) . '%', 'LIKE')
+            '%' . db_like($search_string) . '%', 'LIKE')
         ->addTag('linkit_entity_autocomplete')
         ->addTag('linkit_' . $this->plugin['entity_type'] . '_autocomplete');
 
@@ -268,7 +268,7 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     // Get supported tokens for the entity type.
     $tokens = linkit_extract_tokens($this->plugin['entity_type']);
 
-    // A short description in within the serach result for each row.
+    // A short description in within the search result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
       '#title' => t('Result description'),
       '#type' => 'textfield',

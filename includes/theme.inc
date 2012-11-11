@@ -5,7 +5,7 @@
  */
 
 /**
- * Theme callback for the search/attribute pluings in linkit_profiles_form.
+ * Theme callback for the search/attribute plugins in linkit_profiles_form.
  */
 function theme_linkit_plugin_form_table($variables) {
   $form = $variables['form'];

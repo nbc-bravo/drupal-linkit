@@ -7,7 +7,7 @@
 /**
  * Test the the taxonomy term search plugin.
  */
-class LinkitSerachPluginTaxonomyTermTestCase extends LinkitSerachPluginTestCase {
+class LinkitsearchPluginTaxonomyTermTestCase extends LinkitsearchPluginTestCase {
 
   /**
    * Definition.

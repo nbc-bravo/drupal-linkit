@@ -15,7 +15,7 @@ interface LinkitSearchPluginInterface {
    * Search plugin factory method.
    *
    * @param $plugin
-   *   A search pluing object.
+   *   A search plugin object.
    *
    * @param LinkitProfile $profile
    *   (optional) A LinkitProfile object.
@@ -57,7 +57,7 @@ interface LinkitSearchPluginInterface {
 }
 
 /**
- * Base class for Linkit search pluings.
+ * Base class for Linkit search plugins.
  */
 abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
 
@@ -79,7 +79,7 @@ abstract class LinkitSearchPlugin implements LinkitSearchPluginInterface {
    * Initialize this search plugin with the search plugin and the profile.
    *
    * @param $plugin
-   *   A search pluing object.
+   *   A search plugin object.
    *
    * @param LinkitProfile $profile
    *   A LinkitProfile object.
@@ -162,7 +162,7 @@ class LinkitSearchPluginBroken extends LinkitSearchPlugin {
   /**
    * Implements LinkitSearchPluginInterface::fetchResults().
    */
-  public function fetchResults($serach_string) {}
+  public function fetchResults($search_string) {}
 
   /**
    * Overrides LinkitSearchPlugin::broken().
