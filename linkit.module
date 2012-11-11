@@ -246,6 +246,7 @@ function linkit_library() {
 function _linkit_dashboard($editor) {
   $form = drupal_get_form('linkit_dashboard_form');
   print drupal_render($form);
+  drupal_exit();
 }
 
 /**
@@ -267,6 +268,7 @@ function _linkit_autocomplete($search = NULL) {
     ));
   }
   drupal_json_output($results);
+  drupal_exit();
 }
 
 /**
