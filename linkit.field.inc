@@ -110,7 +110,7 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#description' => t('Do not use this for CKeditor and TinyMCE fields.'),
     );
 
-    $profiles = linkit_profile_load_all();
+    $profiles = linkit_profile_field_load_all();
     $options = array();
     foreach ($profiles as $profile) {
       $options[$profile->name] = $profile->admin_title;

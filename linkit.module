@@ -127,6 +127,38 @@ function linkit_profile_load_all() {
 }
 
 /**
+ * Load all Linkit profiles that is for fields.
+ *
+ * @return
+ *   An array with LinkitProfile objects.
+ */
+function linkit_profile_field_load_all() {
+  $profiles = linkit_profile_load_all();
+  foreach ($profiles as &$profile) {
+    if ($profile->profile_type != "field") {
+      $profile = FALSE;
+    }
+  }
+  return array_filter($profiles);
+}
+
+/**
+ * Load all Linkit profiles that is for editors.
+ *
+ * @return
+ *   An array with LinkitProfile objects.
+ */
+function linkit_profile_editor_load_all() {
+  $profiles = linkit_profile_load_all();
+  foreach ($profiles as &$profile) {
+    if ($profile->profile_type != "editor") {
+      $profile = FALSE;
+    }
+  }
+  return array_filter($profiles);
+}
+
+/**
  * Temporary saves the active profile. Active means that the user is working
  * with the profile in the dialog.
  *
