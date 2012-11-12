@@ -72,6 +72,11 @@ function linkit_schema() {
     'unique keys' => array(
       'name' => array('name'),
     ),
+    'indexes' => array(
+      'pid' => array('pid'),
+      'name' => array('name'),
+      'profile_type' => array('profile_type'),
+    ),
   );
   return $schema;
 }
