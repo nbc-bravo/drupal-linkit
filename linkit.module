@@ -840,7 +840,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
  * Add Linkit settings to pages where we have an editor element.
  */
 function linkit_pre_render_editor_element($element, $edit, &$form_state) {
-  static $processed;
+  static $processed = array();
 
   if (!isset($processed[$element['#id']])) {
     // Load the profile that is assign to this text format.
@@ -889,7 +889,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
 }
 
 /**
- * Load a profile assig to a text format.
+ * Load a profile assigned to a text format.
  *
  * @param $format
  *   A string with the format machine name.
@@ -900,7 +900,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
 function linkit_profile_load_by_format($format) {
   $profiles = linkit_profile_load_all();
   foreach ($profiles as $profile) {
-    if (is_array($profile->data['text_format']) && in_array($format, array_filter($profile->data['text_format']))) {
+    if (is_array($profile->data['text_formats']) && in_array($format, array_filter($profile->data['text_formats']))) {
       return $profile;
     }
   }
