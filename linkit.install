@@ -74,7 +74,6 @@ function linkit_schema() {
     ),
     'indexes' => array(
       'pid' => array('pid'),
-      'name' => array('name'),
       'profile_type' => array('profile_type'),
     ),
   );
