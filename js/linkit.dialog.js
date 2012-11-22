@@ -37,35 +37,37 @@ Drupal.linkit.dialog.createDialog = function(src) {
 
   // Create a dialog dig in the <body>.
   $('body').append($linkitModal);
-  $.ajax({
-    url : src,
-    beforeSend : function() {
-      // Add new throbber
-      var throbber = $('<div class="ajax-progress ajax-progress-throbber"><div class="throbber">&nbsp;</div></div>');
-      $linkitModal.append(throbber);
-    },
-    success : function(data) {
-      // Insert the respons.
-      $linkitModal.append(data);
 
-      // Delete exsisting throbbers.
-      $('.ajax-progress-throbber', $linkitModal).remove();
+  // Create the AJAX object.
+  Drupal.ajax['linkit-modal'] = new Drupal.ajax('linkit-modal', $('linkit-modal'), {url : src});
 
-      $('#linkit-modal').dialog('option', 'position', ['center', 50]);
+  // @TODO: Jquery 1.5 accept success setting to be an array of functions.
+  // But we have to wait for jquery to get updated in Drupal core.
+  // In the meantime we have to override it.
+  Drupal.ajax['linkit-modal'].options.success = function (response, status) {
+    if (typeof response == 'string') {
+      response = $.parseJSON(response);
+    }
 
-      // Set focus in the search field.
-      $('.linkit-wrapper #edit-linkit-search').focus();
+    // Call the ajax success method.
+    Drupal.ajax['linkit-modal'].success(response, status);
 
-      // Run all the behaviors again for this new context.
-      Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
+    var linkitCache = Drupal.linkit.getLinkitCache();
 
-      // Run the afterInit function.
+    // Run all the behaviors again for this new context.
+    //Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
+
+    // Run the afterInit function.
       Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
 
-      // Set focus in the search field.
-      $('.linkit-wrapper #edit-linkit-search').focus();
-    }
-  });
+    // Set focus in the search field.
+    $('.linkit-wrapper #edit-linkit-search').focus();
+
+    $('#linkit-modal').dialog('option', 'position', ['center', 50]);
+  };
+
+  // Call the ajax.eventResponse method to trigger the ajax to run.
+  Drupal.ajax['linkit-modal'].eventResponse(Drupal.ajax['linkit-modal'].element, null);
 
   return $linkitModal;
 };
@@ -92,8 +94,6 @@ Drupal.linkit.dialog.dialogOptions = function() {
 
 /**
  * Close the Linkit dialog.
- * Return false so the default browser behavior will not submit the form in the
- * dialog.
  */
 Drupal.linkit.dialog.close = function () {
   if (Drupal.linkit.$searchInput) {
@@ -103,18 +103,14 @@ Drupal.linkit.dialog.close = function () {
 
   // Unset the linkit cache.
   Drupal.linkitCache = {};
-  return false;
 };
 
 /**
- * jQuery dialog buttons is located outside the IFRAME where Linkit dashboard
- * is shown and they cant trigger events in the IFRAME.
- * Our own buttons for inserting a link and cancel is inside that IFRAME and
- * can't destroy the dialog, so we have to bind our buttons to the dialog button.
+ * We have to bind our buttons to the dialog.
  */
 Drupal.behaviors.linkitDialogButtons = {
   attach: function (context, settings) {
-    $('#linkit-modal #linkit-dashboard-form', context).submit(function() {
+    $('#edit-linkit-insert', context).click(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
       Drupal.linkit.getDialogHelper(linkitCache.helper).insertLink(Drupal.linkit.dialog.getLink());
@@ -123,7 +119,7 @@ Drupal.behaviors.linkitDialogButtons = {
       return false;
     });
 
-    $('#linkit-modal #linkit-cancel', context).bind('click', Drupal.linkit.dialog.close);
+    $('#linkit-cancel', context).bind('click', Drupal.linkit.dialog.close);
   }
 };
 

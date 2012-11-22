@@ -42,6 +42,9 @@ class LinkitProfile {
         // Call the callback to get the FAPI element.
         if (isset($attribute_plugin['callback']) && function_exists($attribute_plugin['callback'])) {
           $attribute_html = $attribute_plugin['callback']($attribute_plugin, $attribute);
+          // Add Linkit specific class, this is used by the editor JS scripts.
+          $attribute_html['#attributes']['class'][] = 'linkit-attribute';
+
           $this->enabled_attribute_plugins[$attribute_name] = $attribute_html;
         }
       }

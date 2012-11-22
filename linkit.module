@@ -364,7 +364,6 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
-      array('system', 'drupal.collapse'),
       array('linkit', 'linkit_bac'),
     ),
   );
@@ -437,10 +436,14 @@ function linkit_menu() {
   $items['linkit/dashboard/%linkit_profile'] = array(
     'title' => 'Linkit',
     'description' => 'Dashboard',
+    'delivery callback' => 'ajax_deliver',
     'page callback' => 'linkit_dashboard_page',
     'page arguments' => array(2),
     'access callback' => TRUE,
+    'theme callback' => 'ajax_base_page_theme',
     'type' => MENU_CALLBACK,
+    'file path' => 'includes',
+    'file' => 'form.inc',
   );
 
   // The autocomplete callback, the search_string is found in the $_GET array
@@ -468,16 +471,34 @@ function linkit_menu() {
 function linkit_dashboard_page(LinkitProfile $profile) {
   // Set the active Linkit profile.
   linkit_set_active_profile($profile);
-  // Get the dashboard form.
+  //The dashboard isn't really a form.
+  // See comment in linkit_dashboard_form() for more info.
   $form = drupal_get_form('linkit_dashboard_form');
-  print drupal_render($form);
-  drupal_exit();
+
+  return array(
+    '#type' => 'ajax',
+    '#commands' =>  array(
+      ajax_command_html('#linkit-modal', '<div id="linkit-dashboard-form">' . drupal_render($form) . '</div>'),
+    ),
+  );
 }
 
 /**
- * Implements hook_form().
+ * Create the dashboard page.
  */
 function linkit_dashboard_form($form, &$form_state) {
+  // The use of a form here is insignificant as we are not submitting any data.
+  // A form here just cause trouble because it can be submitted and will do new
+  // request to the action of the form.
+  // In normal cases this isn't really a problem as the javascript is preventing
+  // the form to be submitted, but in case of a javascript error, this event
+  // can't be prevented.
+  // We still have to use the FAPI to build this "form", as we want proper
+  // classes and ids on the elements and take advantage of all the good parts of
+  // the form generation.
+  // So, just make sure the form tags dont get rendered.
+  $form['#theme_wrappers'] = array();
+
   // Get the active Linkit profile.
   $profile = linkit_get_active_profile();
 

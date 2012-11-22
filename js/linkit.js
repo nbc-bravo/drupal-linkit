@@ -13,14 +13,14 @@ Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 Drupal.behaviors.linkit = {
   attach: function(context, settings) {
-    if ($('#linkit-modal #edit-linkit-search', context).length == 0) {
+    if ($('#edit-linkit-search', context).length == 0) {
       return;
     }
 
     // Get the cached variables.
     var linkitCache = Drupal.linkit.getLinkitCache();
 
-    Drupal.linkit.$searchInput = $('#linkit-modal #edit-linkit-search', context);
+    Drupal.linkit.$searchInput = $('#edit-linkit-search', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     Drupal.linkit.$searchInput.betterAutocomplete('init',
@@ -40,7 +40,7 @@ Drupal.behaviors.linkit = {
         // Store the result title (Used when no selection is made bythe user).
         Drupal.linkitCacheAdd('link_tmp_title', result.title);
 
-       $('#linkit-modal #edit-linkit-path').focus();
+       $('#edit-linkit-path', context).focus();
       },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
