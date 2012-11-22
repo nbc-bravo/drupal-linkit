@@ -323,6 +323,7 @@ function linkit_element_info_alter(&$types) {
     }
   }
 
+  // @TODO: Is this code in use?
   if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
       $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
@@ -356,7 +357,11 @@ function linkit_library() {
       // Add global settings for Linkit.
       array(
         'type' => 'setting',
-        'data' => array('linkit' => array('foo' => 'bar')),
+        // ___profile___ is just a placeholder.
+        'data' => array('linkit' => array(
+          'autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)),
+          'dashboardPath' => url('linkit/dashboard/'),
+        )),
       ),
     ),
     'css' => array(
@@ -364,7 +369,6 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
-      array('linkit', 'linkit_bac'),
     ),
   );
 
@@ -400,28 +404,17 @@ function linkit_library() {
   }
 
   // Linkit BAC
-  // @TODO: Move this out of Linkit.
   $libraries['linkit_bac'] = array(
     'website' => 'https://github.com/betamos/Better-Autocomplete',
     'version' => '1.0',
     'title' => 'Better autocomplete',
     'js' => array(
       $path . '/better-autocomplete/jquery.better-autocomplete.js' => array('group' => JS_LIBRARY),
-      array(
-        'type' => 'setting',
-        // ___profile___ is just a placeholder.
-        'data' => array('linkit' => array(
-          'autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)),
-          'dashboardPath' => url('linkit/dashboard/'),
-        )),
-      ),
     ),
     'css' => array(
       $path . '/better-autocomplete/better-autocomplete.css' => array('group' => CSS_DEFAULT),
     ),
   );
-
-
 
   return $libraries;
 }
@@ -510,7 +503,11 @@ function linkit_dashboard_form($form, &$form_state) {
     '#size' => 60,
     '#default_value' => '',
     '#weight' => -10,
-    // @TODO: ATTACH BAC HERE
+    '#attached' => array(
+      'library' => array(
+        array('linkit', 'linkit_bac'),
+      ),
+    ),
   );
 
   $form['linkit_path'] = array(
