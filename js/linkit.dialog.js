@@ -54,11 +54,8 @@ Drupal.linkit.dialog.createDialog = function(src) {
 
     var linkitCache = Drupal.linkit.getLinkitCache();
 
-    // Run all the behaviors again for this new context.
-    //Drupal.attachBehaviors($('.linkit-wrapper'), Drupal.settings);
-
     // Run the afterInit function.
-      Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
+    Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
 
     // Set focus in the search field.
     $('.linkit-wrapper #edit-linkit-search').focus();
