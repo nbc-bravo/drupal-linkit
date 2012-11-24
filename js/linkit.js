@@ -71,6 +71,23 @@ Drupal.behaviors.linkit = {
   }
 };
 
+Drupal.behaviors.linkit_change_profile = {
+  attach: function(context, settings) {
+   // Create the AJAX object.
+/*
+   $('#edit-profile .form-radio').each(function() {
+     var element_settings = {};
+    element_settings.callback = "linkit_change_profile";
+    element_settings.event = 'click';
+    element_settings.wrapper = "checkboxes-div";
+    element_settings.url = '/system/ajax';
+    var base = $(this).attr('id');
+    Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
+   });
+*/
+  }
+}
+
 /**
  * For many reasons Linkit needs to temporary save data that it will be using
  * later on. One if the biggest reasons is how IE handle text selections and

@@ -467,13 +467,18 @@ function linkit_dashboard_page(LinkitProfile $profile) {
   //The dashboard isn't really a form.
   // See comment in linkit_dashboard_form() for more info.
   $form = drupal_get_form('linkit_dashboard_form');
-
+  //$change_profile = drupal_get_form('linkit_dashboad_profile_change_form');
   return array(
     '#type' => 'ajax',
     '#commands' =>  array(
-      ajax_command_html('#linkit-modal', '<div id="linkit-dashboard-form">' . drupal_render($form) . '</div>'),
+      ajax_command_html('#linkit-modal', drupal_render($form)),
+      ajax_command_prepend('#linkit-modal', theme('status_messages')),
     ),
   );
+}
+
+function linkit_change_profile($form, $form_state) {
+  return $form['linkit_container'];
 }
 
 /**
@@ -490,12 +495,58 @@ function linkit_dashboard_form($form, &$form_state) {
   // classes and ids on the elements and take advantage of all the good parts of
   // the form generation.
   // So, just make sure the form tags dont get rendered.
-  $form['#theme_wrappers'] = array();
+  //$form['#theme_wrappers'] = array();
 
   // Get the active Linkit profile.
-  $profile = linkit_get_active_profile();
+  if (!empty($form_state['values']['profile'])) {
+    $profile = linkit_profile_load($form_state['values']['profile']);
+    linkit_set_active_profile($profile);
+  }
+  $active_profile = linkit_get_active_profile();
 
-  $form['linkit_search'] = array(
+    $profiles = linkit_profile_editor_load_all();
+
+  $_profiles = array();
+  foreach ($profiles as $profile) {
+    $_profiles[$profile->name] = check_plain($profile->admin_title);
+  }
+
+  $form['profile'] = array(
+    '#type' => 'radios',
+    '#title' => t('Select profile to use'),
+    '#default_value' => $active_profile->name,
+    '#weight' => -100,
+    '#options' => $_profiles,
+    '#ajax' => array(
+      'callback' => 'linkit_change_profile',
+      'wrapper' => 'checkboxes-div',
+      'method' => 'replaceWith',
+      'effect' => 'fade',
+      'event' => 'click',
+    ),
+  );
+
+  foreach ($profiles as $profile) {
+    $form['profile'] += array(
+      $profile->admin_name => array(
+        '#description' => check_markup($profile->admin_description),
+      )
+    );
+  }
+
+  $form['linkit_container'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'lalalala',
+      ),
+    ),
+    '#weight' => 100,
+    '#prefix' => '<div id="checkboxes-div">',
+    '#suffix' => '</div>',
+  );
+
+  $form['linkit_container']['linkit_search'] = array(
     '#type' => 'textfield',
     '#title' => t('Search for content.'),
     '#description' => t('Start typing to find content or paste a URL.'),
@@ -503,6 +554,11 @@ function linkit_dashboard_form($form, &$form_state) {
     '#size' => 60,
     '#default_value' => '',
     '#weight' => -10,
+    '#attributes' => array(
+      'class' => array(
+        'linkit-search-element',
+      ),
+    ),
     '#attached' => array(
       'library' => array(
         array('linkit', 'linkit_bac'),
@@ -510,7 +566,7 @@ function linkit_dashboard_form($form, &$form_state) {
     ),
   );
 
-  $form['linkit_path'] = array(
+  $form['linkit_container']['linkit_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Link URL'),
     '#description' => t('This will be populated by the search, or you can fill it in yourself.'),
@@ -522,9 +578,9 @@ function linkit_dashboard_form($form, &$form_state) {
   );
 
   // If we have enabled attributes, lets put them inside a fieldset.
-  if (count($profile->getEnabledAttributePlugins())) {
+  if (count($active_profile->getEnabledAttributePlugins())) {
     // Create the container fieldset.
-    $form['linkit_attributes'] = array(
+    $form['linkit_container']['linkit_attributes'] = array(
       '#type' => 'fieldset',
       '#title' => t('Options'),
       '#collapsible' => TRUE,
@@ -532,13 +588,13 @@ function linkit_dashboard_form($form, &$form_state) {
       '#weight' => 10,
     );
     // Append the attributes info the fieldset.
-    foreach ($profile->getEnabledAttributePlugins() AS $name => $attribute) {
+    foreach ($active_profile->getEnabledAttributePlugins() AS $name => $attribute) {
       // Add 'linkit_' prefix to ensure that is uniq.
-      $form['linkit_attributes']['linkit_' . $name] = $attribute;
+      $form['linkit_container']['linkit_attributes']['linkit_' . $name] = $attribute;
     }
   }
 
-  $form['linkit_insert'] = array(
+  $form['linkit_container']['linkit_insert'] = array(
     '#type' => 'button',
     '#value' => t('Insert link'),
     '#suffix' => '<a id="linkit-cancel" href="#">' . t('Cancel') . '</a>',
