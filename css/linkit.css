@@ -4,12 +4,16 @@
  */
 
 #linkit-modal {
-  padding:20px;
   overflow:visible;
+  padding:20px;
 }
 
-#linkit-modal #edit-linkit-path,
-#linkit-modal #edit-linkit-search {
+#linkit-modal.progress-disabled {
+  padding:0;
+}
+
+#linkit-modal .linkit-search-element,
+#linkit-modal .linkit-path-element {
   font-size:1em;
   height:2em;
   padding:3px 25px 3px 5px;
@@ -35,11 +39,15 @@
   -webkit-border-radius:5px;
   border-radius:5px;
   overflow:visible;
+  border:none;
+  padding:0;
 }
 
-#linkit-modal fieldset.form-wrapper { width:470px; }
+#linkit-modal fieldset.form-wrapper {
+  width:470px;
+}
 
-#linkit-modal #edit-linkit-attributes .form-item  {
+#linkit-modal .linkit-attributes .form-item  {
   overflow:hidden;
   padding:0;
 }
@@ -49,23 +57,69 @@
   font-size:11px;
 }
 
-#linkit-modal #edit-linkit-attributes .form-item label {
+#linkit-modal .linkit-attributes .form-item label {
   float:left;
-  width:150px;
   margin-right:1em;
+  width:150px;
 }
 
-#linkit-modal #edit-linkit-attributes .form-item input,
-#linkit-modal #edit-linkit-attributes .form-item select {
+#linkit-modal .linkit-attributes .form-item input,
+#linkit-modal .linkit-attributes .form-item select {
   float:left;
-  width:260px;
   padding:5px;
+  width:260px;
+}
+
+.linkit-wrapper > .ajax-progress {
+  padding:20px;
+}
+
+#linkit-profile-changer {
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  border-top:5px solid #eee;
+  left:0;
+  position:absolute;
+  top:0;
+  z-index:1;
+  width:100%;
+}
+
+#linkit-profile-changer > div.form-item {
+  background-color:#EEE;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  color:#999;
+  display:none;
+  margin:0;
+  padding:20px;
+  z-index:1;
+}
+
+#linkit-profile-changer-toggler {
+  background-color:#EEE;
+  -moz-border-radius-bottomleft:5px;
+  -webkit-border-bottom-left-radius:5px;
+  border-bottom-left-radius:5px;
+  -webkit-border-bottom-right-radius:5px;
+  -moz-border-radius-bottomright:5px;
+  border-bottom-right-radius:5px;
+  color:#999;
+  cursor:pointer;
+  float:right;
+  font-size:10px;
+  font-weight:bold;
+  margin-right:30px;
+  text-align:center;
+  width:100px;
 }
 
 /* Additional status types */
 .better-autocomplete {
-    background-color: transparent;
-    border-bottom: none;
+  background-color: transparent;
+  border-bottom: none;
 }
 .better-autocomplete > .result.status-ok {
   background: #397928;
@@ -101,15 +155,15 @@
 }
 
 .better-autocomplete > .result > p:after {
+  clear: both;
   content: ".";
   display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
   font-size: 0;
+  height: 0;
+  visibility: hidden;
 }
 
 .better-autocomplete li:last-child {
-  border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }

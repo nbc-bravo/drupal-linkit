@@ -19,6 +19,43 @@ Drupal.linkit.dialog.buildDialog = function (src) {
   // Remove the title bar from the dialog.
   .siblings(".ui-dialog-titlebar").remove();
 
+  // Create the AJAX object.
+  var ajax_settings = {};
+  ajax_settings.event = 'alinkitevent';
+  ajax_settings.url = src;
+  ajax_settings.progress = {
+    type: 'throbber',
+    message : Drupal.t('Loading Linkit dashboard...')
+  };
+
+  Drupal.ajax['linkit-modal'] = new Drupal.ajax('linkit-modal', $('#linkit-modal')[0], ajax_settings);
+
+  // @TODO: Jquery 1.5 accept success setting to be an array of functions.
+  // But we have to wait for jquery to get updated in Drupal core.
+  // In the meantime we have to override it.
+  Drupal.ajax['linkit-modal'].options.success = function (response, status) {
+    if (typeof response == 'string') {
+      response = $.parseJSON(response);
+    }
+
+    // Call the ajax success method.
+    Drupal.ajax['linkit-modal'].success(response, status);
+
+    var linkitCache = Drupal.linkit.getLinkitCache();
+
+    // Run the afterInit function.
+    Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
+
+    // Set focus in the search field.
+    $('#linkit-modal .linkit-search-element').focus();
+
+    $('#linkit-modal').dialog('option', 'position', ['center', 50]);
+  };
+
+  // Call the ajax.eventResponse method to trigger the ajax to run.
+  Drupal.ajax['linkit-modal'].eventResponse(Drupal.ajax['linkit-modal'].element, null);
+
+
   // Move the dialog when the main window moves.
   $(window).bind("scroll resize", function() {
     $('#linkit-modal').dialog('option', 'position', ['center', 50]);
@@ -38,34 +75,6 @@ Drupal.linkit.dialog.createDialog = function(src) {
   // Create a dialog dig in the <body>.
   $('body').append($linkitModal);
 
-  // Create the AJAX object.
-  Drupal.ajax['linkit-modal'] = new Drupal.ajax('linkit-modal', $('linkit-modal'), {url : src});
-
-  // @TODO: Jquery 1.5 accept success setting to be an array of functions.
-  // But we have to wait for jquery to get updated in Drupal core.
-  // In the meantime we have to override it.
-  Drupal.ajax['linkit-modal'].options.success = function (response, status) {
-    if (typeof response == 'string') {
-      response = $.parseJSON(response);
-    }
-
-    // Call the ajax success method.
-    Drupal.ajax['linkit-modal'].success(response, status);
-
-    var linkitCache = Drupal.linkit.getLinkitCache();
-
-    // Run the afterInit function.
-    Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
-
-    // Set focus in the search field.
-    $('.linkit-wrapper #edit-linkit-search').focus();
-
-    $('#linkit-modal').dialog('option', 'position', ['center', 50]);
-  };
-
-  // Call the ajax.eventResponse method to trigger the ajax to run.
-  Drupal.ajax['linkit-modal'].eventResponse(Drupal.ajax['linkit-modal'].element, null);
-
   return $linkitModal;
 };
 
@@ -84,6 +93,7 @@ Drupal.linkit.dialog.dialogOptions = function() {
       backgroundColor: '#000000',
       opacity: 0.4
     },
+    minHeight: 0,
     zIndex : 210000,
     close: Drupal.linkit.dialog.close
   };
@@ -107,7 +117,7 @@ Drupal.linkit.dialog.close = function () {
  */
 Drupal.behaviors.linkitDialogButtons = {
   attach: function (context, settings) {
-    $('#edit-linkit-insert', context).click(function() {
+    $('.linkit-insert', context).click(function() {
       var linkitCache = Drupal.linkit.getLinkitCache();
       // Call the insertLink() function.
       Drupal.linkit.getDialogHelper(linkitCache.helper).insertLink(Drupal.linkit.dialog.getLink());
@@ -130,11 +140,11 @@ Drupal.behaviors.linkitDialogButtons = {
  */
   Drupal.linkit.dialog.getLink = function() {
     var link = {
-      path: $('#linkit-modal #edit-linkit-path').val(),
+      path: $('#linkit-modal .linkit-path-element').val(),
       attributes: {}
     };
     $.each(Drupal.linkit.dialog.additionalAttributes(), function(f, name) {
-     link.attributes[name] = $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val();
+     link.attributes[name] = $('#linkit-modal .linkit-attributes .linkit-attribute-' + name).val();
     });
   return link;
 };
@@ -148,7 +158,7 @@ Drupal.behaviors.linkitDialogButtons = {
  */
 Drupal.linkit.dialog.additionalAttributes = function() {
   var attributes = [];
-  $('#linkit-modal #edit-linkit-attributes .linkit-attribute').each(function() {
+  $('#linkit-modal .linkit-attributes .linkit-attribute').each(function() {
     // Remove the 'linkit_' prefix.
     attributes.push($(this).attr('name').substr(7));
   });
@@ -167,9 +177,9 @@ Drupal.linkit.dialog.additionalAttributes = function() {
 Drupal.linkit.dialog.populateFields = function(link) {
   link = link || {};
   link.attributes = link.attributes || {};
-  $('#linkit-modal #edit-linkit-path').val(link.path);
+  $('#linkit-modal .linkit-path-element').val(link.path);
   $.each(link.attributes, function(name, value) {
-    $('#linkit-modal #edit-linkit-attributes #edit-linkit-' + name).val(value);
+    $('#linkit-modal .linkit-attributes .linkit-attribute-' + name).val(value);
   });
   Drupal.linkit.dialog.requiredFieldsValidation();
 };
@@ -180,19 +190,19 @@ Drupal.linkit.dialog.populateFields = function(link) {
  */
 Drupal.linkit.dialog.requiredFieldsValidation = function() {
   var allowed = true;
-  $('#linkit-modal .form-text.required').each(function() {
+  $('#linkit-modal .required').each(function() {
     if (!$(this).val()) {
       allowed = false;
       return false;
     }
   });
   if (allowed) {
-    $('#linkit-modal #edit-linkit-insert')
+    $('#linkit-modal .linkit-insert')
       .removeAttr('disabled')
       .removeClass('form-button-disabled');
   }
   else {
-    $('#linkit-modal #edit-linkit-insert')
+    $('#linkit-modal .linkit-insert')
       .attr('disabled', 'disabled')
       .addClass('form-button-disabled');
   }

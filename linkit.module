@@ -524,11 +524,13 @@ function linkit_dashboard_form($form, &$form_state) {
       'effect' => 'fade',
       'event' => 'click',
     ),
+    '#prefix' => '<div id="linkit-profile-changer">',
+    '#suffix' => '</div>',
   );
 
   foreach ($profiles as $profile) {
     $form['profile'] += array(
-      $profile->admin_name => array(
+      $profile->name => array(
         '#description' => check_markup($profile->admin_description),
       )
     );
@@ -575,6 +577,11 @@ function linkit_dashboard_form($form, &$form_state) {
     '#size' => 60,
     '#default_value' => '',
     '#weight' => -1,
+    '#attributes' => array(
+      'class' => array(
+        'linkit-path-element',
+      ),
+    ),
   );
 
   // If we have enabled attributes, lets put them inside a fieldset.
@@ -586,10 +593,17 @@ function linkit_dashboard_form($form, &$form_state) {
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#weight' => 10,
+      '#attributes' => array(
+        'class' => array(
+          'linkit-attributes',
+        ),
+      ),
     );
     // Append the attributes info the fieldset.
     foreach ($active_profile->getEnabledAttributePlugins() AS $name => $attribute) {
-      // Add 'linkit_' prefix to ensure that is uniq.
+      // Add a class to all items.
+      $attribute['#attributes']['class'][] = 'linkit-attribute-' . $name;
+      // Add 'linkit_' prefix to ensure that is unique.
       $form['linkit_container']['linkit_attributes']['linkit_' . $name] = $attribute;
     }
   }
@@ -599,6 +613,11 @@ function linkit_dashboard_form($form, &$form_state) {
     '#value' => t('Insert link'),
     '#suffix' => '<a id="linkit-cancel" href="#">' . t('Cancel') . '</a>',
     '#weight' => 100,
+    '#attributes' => array(
+      'class' => array(
+        'linkit-insert',
+      ),
+    ),
   );
   return $form;
 }

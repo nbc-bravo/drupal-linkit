@@ -13,14 +13,14 @@ Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 Drupal.behaviors.linkit = {
   attach: function(context, settings) {
-    if ($('#edit-linkit-search', context).length == 0) {
+    if ($('.linkit-search-element', context).length == 0) {
       return;
     }
 
     // Get the cached variables.
     var linkitCache = Drupal.linkit.getLinkitCache();
 
-    Drupal.linkit.$searchInput = $('#edit-linkit-search', context);
+    Drupal.linkit.$searchInput = $('.linkit-search-element', context);
 
     // Create a "Better Autocomplete" object, see betterautocomplete.js
     Drupal.linkit.$searchInput.betterAutocomplete('init',
@@ -28,6 +28,9 @@ Drupal.behaviors.linkit = {
       settings.linkit.fields[linkitCache.source].autocomplete,
       { // Callbacks
       select: function(result) {
+        if(typeof result == 'undefined') {
+          return false;
+        }
         // Only change the link text if it is empty
         if (typeof result.disabled != 'undefined' && result.disabled) {
           return false;
@@ -40,7 +43,7 @@ Drupal.behaviors.linkit = {
         // Store the result title (Used when no selection is made bythe user).
         Drupal.linkitCacheAdd('link_tmp_title', result.title);
 
-       $('#edit-linkit-path', context).focus();
+       $('.linkit-path-element', context).focus();
       },
       constructURL: function(path, search) {
         return path + encodeURIComponent(search);
@@ -62,7 +65,7 @@ Drupal.behaviors.linkit = {
         }
     });
 
-    $('#linkit-modal .form-text.required', context).bind({
+    $('.required', context).bind({
       keyup: Drupal.linkit.dialog.requiredFieldsValidation,
       change: Drupal.linkit.dialog.requiredFieldsValidation
     });
@@ -73,18 +76,14 @@ Drupal.behaviors.linkit = {
 
 Drupal.behaviors.linkit_change_profile = {
   attach: function(context, settings) {
-   // Create the AJAX object.
-/*
-   $('#edit-profile .form-radio').each(function() {
-     var element_settings = {};
-    element_settings.callback = "linkit_change_profile";
-    element_settings.event = 'click';
-    element_settings.wrapper = "checkboxes-div";
-    element_settings.url = '/system/ajax';
-    var base = $(this).attr('id');
-    Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
-   });
-*/
+    $('#linkit-profile-changer > div.form-item', context).once('linkit_change_profile', function() {
+      var target = $(this);
+      var toggler = $('<div id="linkit-profile-changer-toggler"></div>').html(Drupal.t('Change profile')).click(function() {
+        console.log('click');
+        target.slideToggle();
+      });
+      $(this).after(toggler);
+    });
   }
 }
 
