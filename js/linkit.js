@@ -79,10 +79,31 @@ Drupal.behaviors.linkit_change_profile = {
     $('#linkit-profile-changer > div.form-item', context).once('linkit_change_profile', function() {
       var target = $(this);
       var toggler = $('<div id="linkit-profile-changer-toggler"></div>').html(Drupal.t('Change profile')).click(function() {
-        console.log('click');
         target.slideToggle();
       });
       $(this).after(toggler);
+    });
+
+    $('#linkit-profile-changer .form-radio', context).each(function() {
+      var id = $(this).attr('id');
+      var profile = $(this).val();
+      if (typeof Drupal.ajax[id] != 'undefined') {
+        // @TODO: Jquery 1.5 accept success setting to be an array of functions.
+        // But we have to wait for jquery to get updated in Drupal core.
+        // In the meantime we have to override it.
+        Drupal.ajax[id].options.success = function (response, status) {
+          if (typeof response == 'string') {
+            response = $.parseJSON(response);
+          }
+
+          // Call the ajax success method.
+          Drupal.ajax[id].success(response, status);
+          $('#linkit-profile-changer > div.form-item').slideToggle();
+
+          Drupal.linkitCacheAdd('profile', profile);
+
+        };
+      }
     });
   }
 }
