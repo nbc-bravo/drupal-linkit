@@ -319,7 +319,7 @@ function linkit_element_info_alter(&$types) {
   // Append a process function for the field integration.
   foreach (linkit_get_allowed_field_elements() as $element) {
     if (isset($types[$element])) {
-      $types[$element]['#process'][] = 'linkit_process_field_element';
+      //$types[$element]['#process'][] = 'linkit_process_field_element';
     }
   }
 
@@ -349,11 +349,10 @@ function linkit_library() {
   );
 
   // Linkit base
-  $libraries['linkit_base'] = array(
+  $libraries['base'] = array(
     'title' => 'Linkit base',
     'js' => array(
-      $path . '/js/linkit.js' => array('group' => JS_DEFAULT),
-      $path . '/js/linkit.dialog.js' => array('group' => JS_DEFAULT),
+      $path . '/js/linkit.js' => array('group' => JS_DEFAULT, 'weight' => -1),
       // Add global settings for Linkit.
       array(
         'type' => 'setting',
@@ -364,27 +363,24 @@ function linkit_library() {
         )),
       ),
     ),
-    'css' => array(
-      $path . '/css/linkit.css' => array('group' => CSS_DEFAULT),
-    ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
     ),
   );
 
   // Linkit field ui script.
-  $libraries['linkit_field'] = array(
+  $libraries['field'] = array(
     'title' => 'Linkit Field UI',
     'js' => array(
       $path . '/js/linkit.field.js' => array('group' => JS_DEFAULT),
     ),
     'dependencies' => array(
-      array('linkit', 'linkit_base'),
+      array('linkit', 'base'),
     ),
   );
 
   // Linkit ckeditor dialog script.
-  $libraries['linkit_ckeditor'] = array(
+  $libraries['ckeditor'] = array(
     'title' => 'Linkit CKeditor',
     'js' => array(
       $path . '/editors/ckeditor/linkitDialog.js' => array('group' => JS_DEFAULT),
@@ -392,7 +388,7 @@ function linkit_library() {
   );
 
   // Linkit tinymce dialog script.
-  $libraries['linkit_tinymce'] = array(
+  $libraries['tinymce'] = array(
     'title' => 'Linkit TinyMCE',
     'js' => array(
       $path . '/editors/tinymce/linkitDialog.js' => array('group' => JS_DEFAULT),
@@ -404,7 +400,7 @@ function linkit_library() {
   }
 
   // Linkit BAC
-  $libraries['linkit_bac'] = array(
+  $libraries['bac'] = array(
     'website' => 'https://github.com/betamos/Better-Autocomplete',
     'version' => '1.0',
     'title' => 'Better autocomplete',
@@ -497,6 +493,14 @@ function linkit_dashboard_form($form, &$form_state) {
   // So, just make sure the form tags dont get rendered.
   //$form['#theme_wrappers'] = array();
 
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'linkit') . '/css/linkit.css',
+  );
+
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'linkit') . '/js/linkit.dashboard.js',
+  );
+
   // Get the active Linkit profile.
   if (!empty($form_state['values']['profile'])) {
     $profile = linkit_profile_load($form_state['values']['profile']);
@@ -563,7 +567,7 @@ function linkit_dashboard_form($form, &$form_state) {
     ),
     '#attached' => array(
       'library' => array(
-        array('linkit', 'linkit_bac'),
+        array('linkit', 'bac'),
       ),
     ),
   );
@@ -922,9 +926,9 @@ function linkit_wysiwyg_plugin($editor, $version) {
   }
 
   // Add the base library.
-  drupal_add_library('linkit', 'linkit_base');
+  //drupal_add_library('linkit', 'linkit_base');
   // Add the linkit library for the editor.
-  drupal_add_library('linkit', 'linkit_' . $editor);
+  drupal_add_library('linkit', $editor);
 
   return $plugin;
 }
@@ -945,13 +949,13 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
     }
 
     // Load the insert plugin for the profile.
-    $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
+    //$insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
 
     // Set the field ID.
     $field_id = $element['#id'] . '-value';
 
     // Add caseSensitive
-    $profile->data['autocomplete'] += array('caseSensitive' => TRUE);
+    //$profile->data['autocomplete'] += array('caseSensitive' => TRUE);
 
     $field_js = array(
       'data' => array(
@@ -959,9 +963,9 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
           'fields' => array(
             $field_id => array(
               'profile' => $profile->name,
-              'insert_plugin' => $profile->data['insert_plugin']['plugin'],
-              'url_method' => $profile->data['insert_plugin']['url_method'],
-              'autocomplete' => array_filter($profile->data['autocomplete']),
+              //'insert_plugin' => $profile->data['insert_plugin']['plugin'],
+              //'url_method' => $profile->data['insert_plugin']['url_method'],
+              //'autocomplete' => array_filter($profile->data['autocomplete']),
             ),
           ),
         ),
@@ -969,10 +973,10 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
       'type' => 'setting',
     );
 
-    // Attach js files and settings Linkit needs.
-    $element['#attached']['library'][] = array('linkit', 'linkit_base');
+    // Attach the linkit_base librar
+    $element['#attached']['library'][] = array('linkit', 'base');
     // @TODO: Add linkit_$editor lib here?
-    $element['#attached']['js'][] = $insert_plugin['javascript'];
+    //$element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 
     $processed[$element['#id']] = TRUE;

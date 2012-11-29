@@ -21,18 +21,18 @@
       editor.addCommand( 'linkit', {
         exec : function () {
           // Set the editor object.
-          Drupal.linkitCacheAdd('editor' , editor);
+          //Drupal.linkitCacheAdd('editor' , editor);
           // Set profile.
           var profile = Drupal.settings.linkit.fields[editor.name].profile;
-          Drupal.linkitCacheAdd('profile', profile);
+          //Drupal.linkitCacheAdd('profile', profile);
 
           // Set the name of the source field..
-          Drupal.linkitCacheAdd('source', editor.name);
+          //Drupal.linkitCacheAdd('source', editor.name);
 
           // Set the source type.
-          Drupal.linkitCacheAdd('helper', 'ckeditor');
+          //Drupal.linkitCacheAdd('helper', 'ckeditor');
 
-          var linkitCache = Drupal.linkit.getLinkitCache();
+          //var linkitCache = Drupal.linkit.getLinkitCache();
           // Unlock the selecton for IE.
           if (CKEDITOR.env.ie && typeof linkitCache.selection !== 'undefined') {
             linkitCache.selection.unlock();
@@ -51,9 +51,9 @@
           }
 
           // Save the selection.
-          Drupal.linkitCacheAdd('selection', selection);
+          //Drupal.linkitCacheAdd('selection', selection);
 
-          var linkitCache = Drupal.linkit.getLinkitCache();
+          //var linkitCache = Drupal.linkit.getLinkitCache();
 
           // Lock the selecton for IE.
           if (CKEDITOR.env.ie) {
@@ -61,9 +61,9 @@
           }
 
           // Save the selected element.
-          Drupal.linkitCacheAdd('selectedElement' , element);
+          //Drupal.linkitCacheAdd('selectedElement' , element);
 
-          Drupal.linkit.dialog.buildDialog(Drupal.settings.linkit.dashboardPath  + profile);
+          Drupal.linkit.createModal(profile);
         }
       });
 
