@@ -493,27 +493,31 @@ function linkit_dashboard_form($form, &$form_state) {
   // So, just make sure the form tags dont get rendered.
   //$form['#theme_wrappers'] = array();
 
+  // Get the active Linkit profile.
+  if (!empty($form_state['values']['profile'])) {
+    $profile = linkit_profile_load($form_state['values']['profile']);
+    linkit_set_active_profile($profile);
+  }
+
+  $active_profile = linkit_get_active_profile();
+  $profiles = linkit_profile_editor_load_all();
+
+  $_profiles = array();
+  foreach ($profiles as $profile) {
+    $_profiles[$profile->name] = check_plain($profile->admin_title);
+  }
+
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'linkit') . '/css/linkit.css',
   );
 
   $form['#attached']['js'] = array(
     drupal_get_path('module', 'linkit') . '/js/linkit.dashboard.js',
+    /*array(
+      'data' => array('linkit' => array('profile' => $active_profile->name)),
+      'type' => 'setting',
+    )*/
   );
-
-  // Get the active Linkit profile.
-  if (!empty($form_state['values']['profile'])) {
-    $profile = linkit_profile_load($form_state['values']['profile']);
-    linkit_set_active_profile($profile);
-  }
-  $active_profile = linkit_get_active_profile();
-
-    $profiles = linkit_profile_editor_load_all();
-
-  $_profiles = array();
-  foreach ($profiles as $profile) {
-    $_profiles[$profile->name] = check_plain($profile->admin_title);
-  }
 
   $form['profile'] = array(
     '#type' => 'radios',

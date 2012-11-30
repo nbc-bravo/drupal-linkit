@@ -110,6 +110,9 @@ Drupal.linkit.getDashboard = function (profile) {
     $('#linkit-modal .linkit-search-element').focus();
   };
 
+  // Update the autocomplete url.
+  Drupal.settings.linkit.autocompletePathParsed = Drupal.settings.linkit.autocompletePath.replace('___profile___', profile);
+
   // Trigger the ajax event.
   $('#linkit-modal').trigger('LinkitDashboard');
 }
