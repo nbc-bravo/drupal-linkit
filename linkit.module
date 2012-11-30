@@ -495,8 +495,7 @@ function linkit_dashboard_form($form, &$form_state) {
 
   // Get the active Linkit profile.
   if (!empty($form_state['values']['profile'])) {
-    $profile = linkit_profile_load($form_state['values']['profile']);
-    linkit_set_active_profile($profile);
+    linkit_set_active_profile(linkit_profile_load($form_state['values']['profile']));
   }
 
   $active_profile = linkit_get_active_profile();
@@ -513,10 +512,6 @@ function linkit_dashboard_form($form, &$form_state) {
 
   $form['#attached']['js'] = array(
     drupal_get_path('module', 'linkit') . '/js/linkit.dashboard.js',
-    /*array(
-      'data' => array('linkit' => array('profile' => $active_profile->name)),
-      'type' => 'setting',
-    )*/
   );
 
   $form['profile'] = array(
@@ -527,7 +522,7 @@ function linkit_dashboard_form($form, &$form_state) {
     '#options' => $_profiles,
     '#ajax' => array(
       'callback' => 'linkit_change_profile',
-      'wrapper' => 'checkboxes-div',
+      'wrapper' => 'linkit-dashbaord-ajax-wrapper',
       'method' => 'replaceWith',
       'effect' => 'fade',
       'event' => 'click',
@@ -546,14 +541,22 @@ function linkit_dashboard_form($form, &$form_state) {
 
   $form['linkit_container'] = array(
     '#type' => 'container',
-    '#attributes' => array(
-      'class' => array(
-        'lalalala',
+    '#weight' => 100,
+    '#prefix' => '<div id="linkit-dashbaord-ajax-wrapper">',
+    '#suffix' => '</div>',
+    '#attached' => array(
+      'js' => array(
+        array(
+          'data' => array(
+            'linkit' => array(
+              'profile' => $active_profile->name,
+              'autocomplete' => array_filter($active_profile->data['autocomplete']),
+            ),
+          ),
+          'type' => 'setting',
+        )
       ),
     ),
-    '#weight' => 100,
-    '#prefix' => '<div id="checkboxes-div">',
-    '#suffix' => '</div>',
   );
 
   $form['linkit_container']['linkit_search'] = array(
@@ -574,6 +577,8 @@ function linkit_dashboard_form($form, &$form_state) {
         array('linkit', 'bac'),
       ),
     ),
+    // Used to show the search throbber
+    '#field_suffix' => '',
   );
 
   $form['linkit_container']['linkit_path'] = array(
@@ -929,8 +934,6 @@ function linkit_wysiwyg_plugin($editor, $version) {
     $plugin['linkit']['filename'] = 'editor_plugin.js';
   }
 
-  // Add the base library.
-  //drupal_add_library('linkit', 'linkit_base');
   // Add the linkit library for the editor.
   drupal_add_library('linkit', $editor);
 

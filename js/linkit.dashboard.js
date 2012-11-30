@@ -156,7 +156,7 @@ Drupal.behaviors.linkitSearch = {
         }
       }
 
-      searchElement.betterAutocomplete('init', settings.linkit.autocompletePathParsed, {}, callbacks);
+      searchElement.betterAutocomplete('init', settings.linkit.autocompletePathParsed, settings.linkit.autocomplete, callbacks);
     });
   }
 };
