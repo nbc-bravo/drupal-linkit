@@ -577,8 +577,6 @@ function linkit_dashboard_form($form, &$form_state) {
         array('linkit', 'bac'),
       ),
     ),
-    // Used to show the search throbber
-    '#field_suffix' => '',
   );
 
   $form['linkit_container']['linkit_path'] = array(

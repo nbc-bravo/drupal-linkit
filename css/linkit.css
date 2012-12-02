@@ -18,15 +18,13 @@
   height:2em;
   padding:3px 25px 3px 5px;
   width:440px;
+   background-image: none;
 }
 
-#linkit-modal .form-item-linkit-search .field-suffix {
-  background-image:url(/misc/throbber.gif);
-  background-position:100% 2px;
+#linkit-modal .linkit-search-element.fetching {
+  background-image:url(../throbber.gif);
+  background-position:98% -8px;
   background-repeat:no-repeat;
-  display:block;
-  width:15px;
-  height:15px;
 }
 
 
@@ -126,6 +124,15 @@
   width:100px;
 }
 
+.linkit-wrapper .ajax-progress .throbber {
+  background-image:url(../throbber.gif);
+  background-position:98% -16px;
+  background-repeat:no-repeat;
+  height: 16px;
+  margin: 2px;
+  width: 16px;
+}
+
 /* Additional status types */
 .better-autocomplete {
   background-color: transparent;
@@ -176,4 +183,5 @@
 .better-autocomplete li:last-child {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+  border-bottom: 1px solid #BFBFBF;
 }
