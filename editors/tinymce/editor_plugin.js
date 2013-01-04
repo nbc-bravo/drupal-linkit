@@ -11,23 +11,23 @@
       // Register commands
       editor.addCommand('mceLinkit', function() {
         // Set the editor object.
-        Drupal.linkitCacheAdd('editor' , editor);
+        Drupal.settings.linkit.currentInstance.editor = editor;
         // Set profile.
-        var profile = Drupal.settings.linkit.fields[editor.id].profile;
-        Drupal.linkitCacheAdd('profile', profile);
+        Drupal.settings.linkit.currentInstance.profile = Drupal.settings.linkit.fields[editor.id].profile;
 
         // Set the name of the source field..
-        Drupal.linkitCacheAdd('source', editor.id);
+        Drupal.settings.linkit.currentInstance.source = editor.id;
 
         // Set the source type.
-        Drupal.linkitCacheAdd('helper', 'tinymce');
+        Drupal.settings.linkit.currentInstance.helper = 'tinymce';
 
         // Stores the current editor selection for later restoration. This can
         // be useful since some browsers looses it's selection if a control
         // element is selected/focused inside the dialogs.
         editor.windowManager.bookmark = editor.selection.getBookmark(1);
 
-        Drupal.linkit.dialog.buildDialog(Drupal.settings.linkit.dashboardPath  + profile);
+        // Create the modal.
+        Drupal.linkit.createModal();
       });
 
       // Register buttons

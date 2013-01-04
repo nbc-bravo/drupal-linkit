@@ -7,12 +7,13 @@
 
 // Create the Linkit namespaces.
 Drupal.linkit = Drupal.linkit || {};
+Drupal.linkit.currentInstance = Drupal.linkit.currentInstance || {};
 Drupal.linkit.dialogHelper = Drupal.linkit.dialogHelper || {};
 
 /**
  * Create the modal dialog.
  */
-Drupal.linkit.createModal = function(profile) {
+Drupal.linkit.createModal = function() {
   // Create the modal dialog element.
   Drupal.linkit.createModalElement()
   // Create jQuery UI Dialog.
@@ -26,7 +27,7 @@ Drupal.linkit.createModal = function(profile) {
   });
 
   // Get modal content.
-  Drupal.linkit.getDashboard(profile);
+  Drupal.linkit.getDashboard();
 }
 
 /**
@@ -65,24 +66,20 @@ Drupal.linkit.modalOptions = function() {
 }
 
 /**
- * Close the Linkit modal and destroy the BAC session.
+ * Close the Linkit modal.
  */
 Drupal.linkit.modalClose = function () {
-  if (Drupal.linkit.$searchInput) {
-    Drupal.linkit.$searchInput.betterAutocomplete('destroy');
-  }
-
   $('#linkit-modal').dialog('destroy').remove();
 };
 
 /**
  *
  */
-Drupal.linkit.getDashboard = function (profile) {
+Drupal.linkit.getDashboard = function () {
   // Create the AJAX object.
   var ajax_settings = {};
   ajax_settings.event = 'LinkitDashboard';
-  ajax_settings.url = Drupal.settings.linkit.dashboardPath + profile;
+  ajax_settings.url = Drupal.settings.linkit.dashboardPath +  Drupal.settings.linkit.currentInstance.profile;
   ajax_settings.progress = {
     type: 'throbber',
     message : Drupal.t('Loading Linkit dashboard...')
@@ -100,18 +97,17 @@ Drupal.linkit.getDashboard = function (profile) {
 
     // Call the ajax success method.
     Drupal.ajax['linkit-modal'].success(response, status);
-
-    // var linkitCache = Drupal.linkit.getLinkitCache();
-
     // Run the afterInit function.
-    //Drupal.linkit.getDialogHelper(linkitCache.helper).afterInit();
+    var helper = Drupal.settings.linkit.currentInstance.helper;
+    Drupal.linkit.getDialogHelper(helper).afterInit();
 
     // Set focus in the search field.
     $('#linkit-modal .linkit-search-element').focus();
   };
 
   // Update the autocomplete url.
-  Drupal.settings.linkit.autocompletePathParsed = Drupal.settings.linkit.autocompletePath.replace('___profile___', profile);
+  Drupal.settings.linkit.currentInstance.autocompletePathParsed =
+    Drupal.settings.linkit.autocompletePath.replace('___profile___',  Drupal.settings.linkit.currentInstance.profile);
 
   // Trigger the ajax event.
   $('#linkit-modal').trigger('LinkitDashboard');

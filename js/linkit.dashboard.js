@@ -8,17 +8,21 @@
 Drupal.behaviors.linkitDashboard = {
   attach: function (context, settings) {
     // Bind the insert link button.
-    $('.linkit-insert', context).click(function() {
-      var linkitCache = Drupal.linkit.getLinkitCache();
-      // Call the insertLink() function.
-      //Drupal.linkit.getDialogHelper(linkitCache.helper).insertLink(Drupal.linkit.dialog.getLink());
-      // Close the dialog.
-      Drupal.linkit.modalClose;
-      return false;
+    $('.linkit-insert', context).once('linkit-insert', function() {
+      $('.linkit-insert', context).click(function() {
+        // Call the insertLink() function.
+        Drupal.linkit.getDialogHelper(Drupal.settings.linkit.currentInstance.helper).insertLink(Drupal.linkit.getLink());
+
+        // Close the dialog.
+        Drupal.linkit.modalClose();
+        return false;
+      });
     });
 
     // Bind the close link.
-    $('#linkit-cancel', context).bind('click', Drupal.linkit.modalClose);
+    $('#linkit-cancel', context).once('linkit-cancel', function() {
+      $('#linkit-cancel', context).bind('click', Drupal.linkit.modalClose);
+    });
 
     // Run required field validation.
     Drupal.linkit.requiredFieldsValidation();
@@ -74,6 +78,39 @@ Drupal.linkit.populateFields = function(link) {
   Drupal.linkit.requiredFieldsValidation();
 };
 
+/**
+ * Retrieve a link object by extracting values from the form.
+ *
+ * @return
+ *   The link object.
+ */
+ Drupal.linkit.getLink = function() {
+    var link = {
+      path: $('#linkit-modal .linkit-path-element ').val(),
+      attributes: {}
+    };
+    $.each(Drupal.linkit.additionalAttributes(), function(f, name) {
+     link.attributes[name] = $('#linkit-modal .linkit-attributes .linkit-attribute-' + name).val();
+    });
+  return link;
+};
+
+/**
+ * Retrieve a list of the currently available additional attributes in the
+ * dashboard. The attribute "href" is excluded.
+ *
+ * @return
+ *   An array with the names of the attributes.
+ */
+Drupal.linkit.additionalAttributes = function() {
+  var attributes = [];
+  $('#linkit-modal .linkit-attributes .linkit-attribute').each(function() {
+    // Remove the 'linkit_' prefix.
+    attributes.push($(this).attr('name').substr(7));
+  });
+  return attributes;
+};
+
 Drupal.linkit.profileChanger = function(context) {
   $('#linkit-profile-changer > div.form-item', context).once('linkit-change-profile', function() {
     var target = $(this);
@@ -97,14 +134,12 @@ Drupal.linkit.profileChanger = function(context) {
           response = $.parseJSON(response);
         }
 
+        // Update the autocomplete url.
+        Drupal.settings.linkit.currentInstance.autocompletePathParsed = Drupal.settings.linkit.autocompletePath.replace('___profile___', profile);
+
         // Call the ajax success method.
         Drupal.ajax[id].success(response, status);
         $('#linkit-profile-changer > div.form-item').slideToggle();
-
-        //Drupal.linkitCacheAdd('profile', profile);
-
-        // Update the autocomplete url.
-        Drupal.settings.linkit.autocompletePathParsed = Drupal.settings.linkit.autocompletePath.replace('___profile___', profile);
       };
     }
   });
@@ -112,10 +147,10 @@ Drupal.linkit.profileChanger = function(context) {
 
 Drupal.behaviors.linkitSearch = {
   attach: function(context, settings) {
+
     $('.linkit-search-element', context).once('linkit-search', function() {
       // Create a synonym for this to reduce code confusion.
-      var searchElement = $(this);
-
+      var searchElement = $('.linkit-search-element', context);
       var callbacks = {
         constructURL: function(path, search) {
           return path + encodeURIComponent(search);
@@ -149,14 +184,14 @@ Drupal.behaviors.linkitSearch = {
             path: result.path
           });
 
-          // Store the result title (Used when no selection is made bythe user).
-          //Drupal.linkitCacheAdd('link_tmp_title', result.title);
+          // Store the result title (Used when no selection is made by the user).
+          Drupal.settings.linkit.currentInstance.linkContent = result.title;
 
           $('.linkit-path-element', context).focus();
         }
       }
 
-      searchElement.betterAutocomplete('init', settings.linkit.autocompletePathParsed, settings.linkit.autocomplete, callbacks);
+      searchElement.betterAutocomplete('init', Drupal.settings.linkit.currentInstance.autocompletePathParsed, Drupal.settings.linkit.currentInstance.autocomplete, callbacks);
     });
   }
 };

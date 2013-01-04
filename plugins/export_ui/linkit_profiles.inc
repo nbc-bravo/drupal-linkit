@@ -214,7 +214,7 @@ function _linkit_build_search_plugin_form_fields(&$form, LinkitProfile $profile)
  * @see linkit_profiles_form()
  *
  * @TODO: Insert pluings should only be used when dealing with fields as it
- * make no sence to have them when using a wysiwyg editor.
+ * makes no sence to have them when using a wysiwyg editor.
  */
 function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile) {
   // Make a list of all insert plugins.

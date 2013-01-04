@@ -11,25 +11,25 @@ Drupal.linkit.registerDialogHelper('ckeditor', {
    * Prepare the dialog after init.
    */
   afterInit : function () {
-    var linkitCache = Drupal.linkit.getLinkitCache();
+     var editor = Drupal.settings.linkit.currentInstance.editor;
+     var element = CKEDITOR.plugins.link.getSelectedLink( editor );
 
     // If we have selected a link element, lets populate the fields in the
-    // dialog with the values from that link element.
-    if (linkitCache.selectedElement) {
+    // modal with the values from that link element.
+    if (element) {
       link = {
-        path: (linkitCache.selectedElement  && (linkitCache.selectedElement.data('cke-saved-href') || linkitCache.selectedElement.getAttribute('href'))) || '',
+        path: element.data('cke-saved-href') || element.getAttribute('href') || '',
         attributes: {}
       },
-      // Get all attributes that have fields in the dialog.
-      additionalAttributes = Drupal.linkit.dialog.additionalAttributes();
+      // Get all attributes that have fields in the modal.
+      additionalAttributes = Drupal.linkit.additionalAttributes();
 
       for (var i = 0; i < additionalAttributes.length; i++) {
-        link.attributes[additionalAttributes[i]] =
-        linkitCache.selectedElement.getAttribute(additionalAttributes[i]);
-      };
+        link.attributes[additionalAttributes[i]] = element.getAttribute(additionalAttributes[i]);
+      }
 
       // Populate the fields.
-      Drupal.linkit.dialog.populateFields(link);
+      Drupal.linkit.populateFields(link);
     }
   },
 
@@ -40,8 +40,8 @@ Drupal.linkit.registerDialogHelper('ckeditor', {
    *   The link object.
    */
   insertLink : function(link) {
-    var linkitCache = Drupal.linkit.getLinkitCache();
-    CKEDITOR.tools.callFunction(linkitCache.editor._.linkitFnNum, link, linkitCache.editor);
+    var editor = Drupal.settings.linkit.currentInstance.editor;
+    CKEDITOR.tools.callFunction(editor._.linkitFnNum, link, editor);
   }
 });
 

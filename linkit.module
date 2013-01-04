@@ -357,10 +357,13 @@ function linkit_library() {
       array(
         'type' => 'setting',
         // ___profile___ is just a placeholder.
-        'data' => array('linkit' => array(
-          'autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)),
-          'dashboardPath' => url('linkit/dashboard/'),
-        )),
+        'data' => array(
+          'linkit' => array(
+            'autocompletePath' => url('linkit/autocomplete/___profile___', array('query' => array(LINKIT_BAC_QUERY_KEY => ''), 'absolute' => TRUE)),
+            'dashboardPath' => url('linkit/dashboard/'),
+            'currentInstance' => new stdClass(),
+          ),
+        ),
       ),
     ),
     'dependencies' => array(
@@ -460,7 +463,7 @@ function linkit_menu() {
 function linkit_dashboard_page(LinkitProfile $profile) {
   // Set the active Linkit profile.
   linkit_set_active_profile($profile);
-  //The dashboard isn't really a form.
+  // The dashboard isn't really a form.
   // See comment in linkit_dashboard_form() for more info.
   $form = drupal_get_form('linkit_dashboard_form');
   //$change_profile = drupal_get_form('linkit_dashboad_profile_change_form');
@@ -473,6 +476,11 @@ function linkit_dashboard_page(LinkitProfile $profile) {
   );
 }
 
+/**
+ * Ajax Form callback;
+ *
+ * Returns the Linkit "form" when changing profile.
+ */
 function linkit_change_profile($form, $form_state) {
   return $form['linkit_container'];
 }
@@ -506,10 +514,12 @@ function linkit_dashboard_form($form, &$form_state) {
     $_profiles[$profile->name] = check_plain($profile->admin_title);
   }
 
+  // Attach css to the form.
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'linkit') . '/css/linkit.css',
   );
 
+  // Attach js to the form.
   $form['#attached']['js'] = array(
     drupal_get_path('module', 'linkit') . '/js/linkit.dashboard.js',
   );
@@ -549,8 +559,10 @@ function linkit_dashboard_form($form, &$form_state) {
         array(
           'data' => array(
             'linkit' => array(
-              'profile' => $active_profile->name,
-              'autocomplete' => array_filter($active_profile->data['autocomplete']),
+              'currentInstance' => array(
+                'profile' => $active_profile->name,
+                'autocomplete' => array_filter($active_profile->data['autocomplete']),
+              ),
             ),
           ),
           'type' => 'setting',
@@ -953,14 +965,8 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
       return $element;
     }
 
-    // Load the insert plugin for the profile.
-    //$insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
-
     // Set the field ID.
     $field_id = $element['#id'] . '-value';
-
-    // Add caseSensitive
-    //$profile->data['autocomplete'] += array('caseSensitive' => TRUE);
 
     $field_js = array(
       'data' => array(
@@ -968,9 +974,6 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
           'fields' => array(
             $field_id => array(
               'profile' => $profile->name,
-              //'insert_plugin' => $profile->data['insert_plugin']['plugin'],
-              //'url_method' => $profile->data['insert_plugin']['url_method'],
-              //'autocomplete' => array_filter($profile->data['autocomplete']),
             ),
           ),
         ),
@@ -980,8 +983,6 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
 
     // Attach the linkit_base librar
     $element['#attached']['library'][] = array('linkit', 'base');
-    // @TODO: Add linkit_$editor lib here?
-    //$element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 
     $processed[$element['#id']] = TRUE;

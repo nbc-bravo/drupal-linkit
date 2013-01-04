@@ -6,7 +6,7 @@
 (function ($) {
   CKEDITOR.plugins.add( 'linkit', {
 
-    requires : [ 'fakeobjects' ],
+    requires : [ 'fakeobjects', 'link' ],
 
     init: function( editor ) {
 
@@ -21,29 +21,20 @@
       editor.addCommand( 'linkit', {
         exec : function () {
           // Set the editor object.
-          //Drupal.linkitCacheAdd('editor' , editor);
+          Drupal.settings.linkit.currentInstance.editor = editor;
           // Set profile.
-          var profile = Drupal.settings.linkit.fields[editor.name].profile;
-          //Drupal.linkitCacheAdd('profile', profile);
-
-          // Set the name of the source field..
-          //Drupal.linkitCacheAdd('source', editor.name);
-
+          Drupal.settings.linkit.currentInstance.profile = Drupal.settings.linkit.fields[editor.name].profile;
+          // Set the name of the source field.
+          Drupal.settings.linkit.currentInstance.source = editor.name;
           // Set the source type.
-          //Drupal.linkitCacheAdd('helper', 'ckeditor');
-
-          //var linkitCache = Drupal.linkit.getLinkitCache();
-          // Unlock the selecton for IE.
-          if (CKEDITOR.env.ie && typeof linkitCache.selection !== 'undefined') {
-            linkitCache.selection.unlock();
-          }
+          Drupal.settings.linkit.currentInstance.helper = 'ckeditor';
 
           var selection = editor.getSelection(),
-              element = null;
+            element = null;
 
           // If we have selected a link element, we what to grab its attributes
           // so we can inserten them into the Linkit form in the  dialog.
-          if ((element = CKEDITOR.plugins.linkit.getSelectedLink(editor)) && element.hasAttribute('href')) {
+          if ((element = CKEDITOR.plugins.link.getSelectedLink(editor)) && element.hasAttribute('href')) {
             selection.selectElement(element);
           }
           else {
@@ -51,19 +42,18 @@
           }
 
           // Save the selection.
-          //Drupal.linkitCacheAdd('selection', selection);
-
-          //var linkitCache = Drupal.linkit.getLinkitCache();
+          Drupal.settings.linkit.currentInstance.selection = selection;
 
           // Lock the selecton for IE.
-          if (CKEDITOR.env.ie) {
-            linkitCache.selection.lock();
+          if (CKEDITOR.env.ie && typeof selection !== 'undefined') {
+            selection.lock();
           }
 
           // Save the selected element.
-          //Drupal.linkitCacheAdd('selectedElement' , element);
+          Drupal.settings.linkit.currentInstance.selectedElement = element;
 
-          Drupal.linkit.createModal(profile);
+          // Create the modal.
+          Drupal.linkit.createModal();
         }
       });
 
@@ -93,59 +83,36 @@
         });
       }
 
-      // Register an extra fucntion, this will be used in the popup.
+      // Register an extra fucntion, this will be used in the modal.
       editor._.linkitFnNum = CKEDITOR.tools.addFunction( insertLink, editor );
     }
 
   });
 
-  CKEDITOR.plugins.linkit = {
-    getSelectedLink : function(editor) {
-      try {
-        var selection = editor.getSelection();
-        if (selection.getType() == CKEDITOR.SELECTION_ELEMENT) {
-          var selectedElement = selection.getSelectedElement();
-          if (selectedElement.is('a')) {
-            return selectedElement;
-          }
-        }
-
-        var range = selection.getRanges( true )[ 0 ];
-        range.shrink(CKEDITOR.SHRINK_TEXT);
-        var root = range.getCommonAncestor();
-        return root.getAscendant('a', true);
-      }
-      catch (e) { return null; }
-    }
-  };
-
   /**
-   *
+   * Create or update a link element in the editor.
    */
   function insertLink(data, editor) {
-    var linkitCache = Drupal.linkit.getLinkitCache(),
-        selection = editor.getSelection();
+    var selection = editor.getSelection();
 
     data.path = CKEDITOR.tools.trim(data.path);
-
     // Browser need the "href" for copy/paste link to work. (CKEDITOR ISSUE #6641)
     data.attributes['data-cke-saved-href'] = data.path;
 
-    if (!linkitCache.selectedElement) {
+    if (!Drupal.settings.linkit.currentInstance.selectedElement) {
       // We have not selected any link element so lets create a new one.
       var ranges = selection.getRanges( true );
       if (ranges.length == 1 && ranges[0].collapsed) {
-        var content = (Drupal.linkitCache.link_tmp_title) ? Drupal.linkitCache.link_tmp_title : data.path;
+        var content = (Drupal.settings.linkit.currentInstance.linkContent) ? Drupal.settings.linkit.currentInstance.linkContent : data.path;
         var text = new CKEDITOR.dom.text(content, editor.document);
         ranges[0].insertNode(text);
         ranges[0].selectNodeContents(text);
         selection.selectRanges(ranges);
       }
-
       // Delete all attributes that are empty.
       data.attributes.href = data.path;
       for (name in data.attributes) {
-        (data.attributes[name]) ? null : delete data.attributes[name];
+        data.attributes[name] ? null : delete data.attributes[name];
       }
       // Apply style.
       var style = new CKEDITOR.style({element : 'a', attributes : data.attributes});
@@ -153,9 +120,8 @@
       style.apply(editor.document);
     }
     else {
+      var element = Drupal.settings.linkit.currentInstance.selectedElement;
       // We are editing an existing link, so just overwrite the attributes.
-      var element = linkitCache.selectedElement;
-
       element.setAttribute('href', data.path);
       element.setAttribute('data-cke-saved-href', data.path);
       for (name in data.attributes) {
@@ -163,10 +129,13 @@
           element.setAttribute(name, data.attributes[name]) :
           element.removeAttribute(name);
       }
+      selection.selectElement( element );
     }
+
     // Unlock the selection.
-    selection.unlock();
-    delete linkitCache.selectedElement;
-  };
+    if (CKEDITOR.env.ie && typeof selection !== 'undefined') {
+      selection.unlock();
+    }
+  }
 
 })(jQuery);
