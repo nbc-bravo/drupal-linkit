@@ -967,7 +967,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
   static $processed = array();
 
   if (!isset($processed[$element['#id']])) {
-    // Load the profile that is assign to this text format.
+    // Load the first profile that is assign to this text format.
     $profile = linkit_profile_load_by_format($element['#format']);
 
     // If we dont have any profile, lets just return the element.
@@ -1002,7 +1002,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
 }
 
 /**
- * Load a profile assigned to a text format.
+ * Load the first profile assigned to a text format.
  *
  * @param $format
  *   A string with the format machine name.
