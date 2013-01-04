@@ -61,14 +61,33 @@ function linkit_profiles_form(&$form, &$form_state) {
  *
  * @see linkit_profiles_form()
  */
-function linkit_profiles_form_validate(&$form, &$form_state) { }
+function linkit_profiles_form_validate(&$form, &$form_state) {
+  // If the profile type is field, then insert plugin is required.
+  if ($form_state['values']['profile_type'] == LINKIT_PROFILE_TYPE_FIELD
+    && empty($form_state['values']['data']['insert_plugin']['plugin'])) {
+    form_set_error('data][insert_plugin][plugin', t('You have to select a insert plugin for profiles used with fields.'));
+  }
+}
 
 /**
  * Linkit profile submit callback.
  *
  * @see linkit_profiles_form()
  */
-function linkit_profiles_form_submit(&$form, &$form_state) { }
+function linkit_profiles_form_submit(&$form, &$form_state) {
+  // Unset some variables used by "field profiles" to make it clean.
+  if ($form_state['values']['profile_type'] == LINKIT_PROFILE_TYPE_EDITOR) {
+    unset($form_state['values']['data']['insert_plugin']['plugin']);
+  }
+
+  // Unset some variables used by "editor profiles" to make it clean.
+  if ($form_state['values']['profile_type'] == LINKIT_PROFILE_TYPE_FIELD) {
+    unset($form_state['values']['data']['text_formats']);
+  }
+
+  // Unset active tab state, we dont need to save this.
+  unset($form_state['values']['data']['data__active_tab']);
+}
 
 /**
  * Append profile type form element to the profile form.
@@ -225,7 +244,7 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
 
   $form['data']['insert_plugin'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Insert plugin'),
+    '#title' => t('Insert methods'),
     '#description' => t(''),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
@@ -240,7 +259,14 @@ function _linkit_build_insert_plugin_form_fields(&$form, LinkitProfile $profile)
     '#empty_option' => t('- Select an insert plugin -'),
     '#default_value' => isset($profile->data['insert_plugin']['plugin'])
       ? $profile->data['insert_plugin'] : '',
-    '#required' => TRUE,
+    '#states' => array(
+      'visible' => array(
+        'input[name="profile_type"]' => array('value' => LINKIT_PROFILE_TYPE_FIELD),
+      ),
+      'required' => array(
+        'input[name="profile_type"]' => array('value' => LINKIT_PROFILE_TYPE_FIELD),
+      ),
+    ),
   );
 
   $form['data']['insert_plugin']['url_method'] = array(
