@@ -93,13 +93,13 @@ function _linkit_build_profile_type_form_fields(&$form, LinkitProfile $profile) 
     '#type' => 'radios',
     '#title_display' => 'before',
     '#options' => array(
-      'editor' => t('Editors'),
-      'field' => t('Fields'),
+      LINKIT_PROFILE_TYPE_EDITOR => t('Editors'),
+      LINKIT_PROFILE_TYPE_FIELD => t('Fields'),
     ),
-    'editor' => array(
+    LINKIT_PROFILE_TYPE_EDITOR => array(
       '#description' => t('This profile will be used with editors like CKeditor or TinyMCE.'),
     ),
-    'field' => array(
+    LINKIT_PROFILE_TYPE_FIELD => array(
       '#description' => t('This profile will be used with fields that do not have any editors.'),
     ),
     '#default_value' =>  isset($profile->profile_type) ? $profile->profile_type : 'editor',
@@ -122,7 +122,7 @@ function _linkit_build_profile_type_form_fields(&$form, LinkitProfile $profile) 
     '#description' => t('.'),
     '#states' => array(
       'visible' => array(
-        'input[name="profile_type"]' => array('value' => 'editor'),
+        'input[name="profile_type"]' => array('value' => LINKIT_PROFILE_TYPE_EDITOR),
       ),
     ),
     '#parents' => array('data', 'text_formats'),

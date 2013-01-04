@@ -42,14 +42,14 @@ class linkit_profiles extends ctools_export_ui {
       $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => array('ctools-export-ui-title'));
     }
 
-    // Load the insert plugin definition.
-    $insert_plugin = linkit_insert_plugin_load($item->data['insert_plugin']['plugin']);
-    $this->rows[$name]['data'][] = array('data' => check_plain($insert_plugin['name']), 'class' => array('linkit-export-ui-insert-plugin'));
+    // Profile type.
+    $this->rows[$name]['data'][] = array('data' => linkit_get_profile_type($item->profile_type), 'class' => array('linkit-export-ui-profile-type'));
 
+    // Storage.
     $this->rows[$name]['data'][] = array('data' => check_plain($item->{$schema['export']['export type string']}), 'class' => array('ctools-export-ui-storage'));
 
+    // Operations.
     $ops = theme('links__ctools_dropbutton', array('links' => $operations, 'attributes' => array('class' => array('links', 'inline'))));
-
     $this->rows[$name]['data'][] = array('data' => $ops, 'class' => array('ctools-export-ui-operations'));
 
     // Add an automatic mouseover of the description if one exists.
@@ -59,7 +59,7 @@ class linkit_profiles extends ctools_export_ui {
   function list_table_header() {
     $header = array();
     $header[] = array('data' => t('Title'), 'class' => array('ctools-export-ui-title'));
-    $header[] = array('data' => t('Insert plugin'), 'class' => array('linkit-export-ui-insert-plugin'));
+    $header[] = array('data' => t('Profile type'), 'class' => array('ctools-export-ui-profile-type'));
     $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
     $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
     return $header;

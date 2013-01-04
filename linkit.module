@@ -40,6 +40,16 @@ define('LINKIT_WAIT', 350);
  */
 define('LINKIT_REMOTE_TIMEOUT', 10000);
 
+/**
+ * Define the profile type editor.
+ */
+define('LINKIT_PROFILE_TYPE_EDITOR', 1);
+
+/**
+ * Define the profile type field.
+ */
+define('LINKIT_PROFILE_TYPE_FIELD', 2);
+
 // Include the file with the field functions.
 require_once dirname(__FILE__) . '/linkit.field.inc';
 
@@ -1008,4 +1018,18 @@ function linkit_profile_load_by_format($format) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Get profile type.
+ */
+function linkit_get_profile_type($type) {
+  switch ($type) {
+    case LINKIT_PROFILE_TYPE_EDITOR:
+      return t('Editor');
+    case LINKIT_PROFILE_TYPE_FIELD:
+      return t('Field');
+   default:
+      return t('Can not find the profile type');
+  }
 }
