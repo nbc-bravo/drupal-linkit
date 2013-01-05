@@ -58,7 +58,6 @@ Drupal.linkit.registerDialogHelper('field', {
    * @param {Object} link
    *   The link object.
    */
-
   insertLink : function(data) {
     var source = $('#' + Drupal.settings.linkit.currentInstance.source),
       field_settings = Drupal.settings.linkit.fields[Drupal.settings.linkit.currentInstance.source],
