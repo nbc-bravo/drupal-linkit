@@ -3,10 +3,9 @@
  * Raw HTML insert plugin for Linkit.
  */
 (function ($) {
-Drupal.linkit.addInsertPlugin('raw_url',  {
+Drupal.linkit.registerInsertPlugin('raw_url',  {
   insert : function(data, settings) {
     return data.path;
   }
 });
-
 })(jQuery);

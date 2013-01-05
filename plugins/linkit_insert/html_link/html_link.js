@@ -4,7 +4,7 @@
  */
 (function ($) {
 
-Drupal.linkit.addInsertPlugin('html_link', {
+Drupal.linkit.registerInsertPlugin('html_link', {
   insert : function(data) {
     var linkitCache = Drupal.linkit.getLinkitCache(),
     text;

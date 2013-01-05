@@ -198,8 +198,8 @@ function linkit_process_field_element($element, $edit, &$form_state) {
     );
 
     // Attach js files and settings Linkit needs.
-    $element['#attached']['library'][] = array('linkit', 'linkit_base');
-    $element['#attached']['library'][] = array('linkit', 'linkit_field');
+    $element['#attached']['library'][] = array('linkit', 'base');
+    $element['#attached']['library'][] = array('linkit', 'field');
     $element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 

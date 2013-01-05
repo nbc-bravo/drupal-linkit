@@ -145,7 +145,7 @@ function linkit_profile_load_all() {
 function linkit_profile_field_load_all() {
   $profiles = linkit_profile_load_all();
   foreach ($profiles as &$profile) {
-    if ($profile->profile_type != "field") {
+    if ($profile->profile_type != LINKIT_PROFILE_TYPE_FIELD) {
       $profile = FALSE;
     }
   }
@@ -161,7 +161,7 @@ function linkit_profile_field_load_all() {
 function linkit_profile_editor_load_all() {
   $profiles = linkit_profile_load_all();
   foreach ($profiles as &$profile) {
-    if ($profile->profile_type != "editor") {
+    if ($profile->profile_type != LINKIT_PROFILE_TYPE_EDITOR) {
       $profile = FALSE;
     }
   }
@@ -329,7 +329,7 @@ function linkit_element_info_alter(&$types) {
   // Append a process function for the field integration.
   foreach (linkit_get_allowed_field_elements() as $element) {
     if (isset($types[$element])) {
-      //$types[$element]['#process'][] = 'linkit_process_field_element';
+      $types[$element]['#process'][] = 'linkit_process_field_element';
     }
   }
 

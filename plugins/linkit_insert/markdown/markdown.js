@@ -7,7 +7,7 @@
  */
 (function ($) {
 
-Drupal.linkit.addInsertPlugin('markdown', {
+Drupal.linkit.registerInsertPlugin('markdown', {
   insert : function(data) {
     var linkitCache = Drupal.linkit.getLinkitCache(),
     pattern = '[!text](!url!title)',

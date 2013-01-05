@@ -27,8 +27,10 @@ Drupal.behaviors.linkitDashboard = {
     // Run required field validation.
     Drupal.linkit.requiredFieldsValidation();
 
-    // Make the profile changer
-    Drupal.linkit.profileChanger(context);
+    if (!Drupal.settings.linkit.currentInstance.suppressProfileChanger) {
+      // Make the profile changer
+      Drupal.linkit.profileChanger(context);
+    }
   }
 };
 

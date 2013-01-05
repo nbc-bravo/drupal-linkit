@@ -16,23 +16,29 @@ Drupal.behaviors.linkit_field = {
     $.each(settings.linkit.fields, function(field_name, field) {
       $('#' + field_name, context).once('linkit_field', function() {
         $('.linkit-field-' + field_name).click(function() {
-          // Set the source type.
-          Drupal.linkitCacheAdd('helper', 'field');
-
-          // Set the name of the source field.
-          Drupal.linkitCacheAdd('source', field_name);
-
           // Set profile.
-          Drupal.linkitCacheAdd('profile', field.profile);
+          Drupal.settings.linkit.currentInstance.profile = Drupal.settings.linkit.fields[field_name].profile;
+
+          // Set the name of the source field..
+          Drupal.settings.linkit.currentInstance.source = field_name;
+
+          // Set the source type.
+          Drupal.settings.linkit.currentInstance.helper = 'field';
 
           // Only care about selection if the element is a textarea.
           if ($('textarea#' + field_name).length) {
             var selection =  Drupal.linkit.getDialogHelper('field').getSelection($('#' + field_name).get(0));
             // Save the selection.
-            Drupal.linkitCacheAdd('selection', selection);
+            Drupal.settings.linkit.currentInstance.selection = selection;
           }
-          Drupal.linkit.dialog.buildDialog(Drupal.settings.linkit.dashboardPath + field.profile);
-          return false;
+
+          // Suppress profile changer.
+          Drupal.settings.linkit.currentInstance.suppressProfileChanger = true;
+
+          // Create the modal.
+          Drupal.linkit.createModal();
+
+         return false;
         });
       });
     });
@@ -52,17 +58,17 @@ Drupal.linkit.registerDialogHelper('field', {
    * @param {Object} link
    *   The link object.
    */
+
   insertLink : function(data) {
-    var linkitCache = Drupal.linkit.getLinkitCache(),
-      source = $('#' + linkitCache.source),
-      field_settings = Drupal.settings.linkit.fields[linkitCache.source],
+    var source = $('#' + Drupal.settings.linkit.currentInstance.source),
+      field_settings = Drupal.settings.linkit.fields[Drupal.settings.linkit.currentInstance.source],
 
     // Call the insert plugin.
     link = Drupal.linkit.getInsertPlugin(field_settings.insert_plugin).insert(data, field_settings);
 
-    if (typeof linkitCache.selection != 'undefined') {
+    if (typeof Drupal.settings.linkit.currentInstance.selection != 'undefined') {
       // Replace the selection and insert the link there.
-      this.replaceSelection(source.get(0), linkitCache.selection, link);
+      this.replaceSelection(source.get(0), Drupal.settings.linkit.currentInstance.selection, link);
     }
     else {
       // Replace the field value.

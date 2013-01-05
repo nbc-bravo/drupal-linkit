@@ -9,6 +9,7 @@
 Drupal.linkit = Drupal.linkit || {};
 Drupal.linkit.currentInstance = Drupal.linkit.currentInstance || {};
 Drupal.linkit.dialogHelper = Drupal.linkit.dialogHelper || {};
+Drupal.linkit.insertPlugins = Drupal.linkit.insertPlugins || {};
 
 /**
  * Create the modal dialog.
@@ -70,6 +71,9 @@ Drupal.linkit.modalOptions = function() {
  */
 Drupal.linkit.modalClose = function () {
   $('#linkit-modal').dialog('destroy').remove();
+  // Make sure the current intstance settings are removed when the modal is
+  // closed.
+  Drupal.settings.linkit.currentInstance = {};
 };
 
 /**
@@ -121,10 +125,24 @@ Drupal.linkit.registerDialogHelper = function(name, helper) {
 }
 
 /**
- * Register new dialog helper.
+ * Get a dialog helper.
  */
 Drupal.linkit.getDialogHelper = function(name) {
   return Drupal.linkit.dialogHelper[name];
+}
+
+/**
+ * Register new insert plugins.
+ */
+Drupal.linkit.registerInsertPlugin = function(name, plugin) {
+  Drupal.linkit.insertPlugins[name] = plugin;
+}
+
+/**
+ * Get an insert plugin.
+ */
+Drupal.linkit.getInsertPlugin = function(name) {
+  return Drupal.linkit.insertPlugins[name];
 }
 
 })(jQuery);
