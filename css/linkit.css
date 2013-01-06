@@ -14,11 +14,11 @@
 
 #linkit-modal .linkit-search-element,
 #linkit-modal .linkit-path-element {
+  background-image: none;
   font-size:1em;
   height:2em;
   padding:3px 25px 3px 5px;
   width:440px;
-   background-image: none;
 }
 
 #linkit-modal .linkit-search-element.fetching {
@@ -26,7 +26,6 @@
   background-position:98% -8px;
   background-repeat:no-repeat;
 }
-
 
 #linkit-modal .description,
 #linkit-modal a.fieldset-title {

@@ -150,9 +150,9 @@ Drupal.linkit.profileChanger = function(context) {
 Drupal.behaviors.linkitSearch = {
   attach: function(context, settings) {
 
-    $('.linkit-search-element', context).once('linkit-search', function() {
+    $('.linkit-search-element').once('linkit-search', function() {
       // Create a synonym for this to reduce code confusion.
-      var searchElement = $('.linkit-search-element', context);
+      var searchElement = $('.linkit-search-element');
       var callbacks = {
         constructURL: function(path, search) {
           return path + encodeURIComponent(search);
@@ -160,6 +160,7 @@ Drupal.behaviors.linkitSearch = {
 
         insertSuggestionList: function($results, $input) {
           var top = $input.position().top + $input.outerHeight() - 5;
+
           $results.width($input.outerWidth()).css({
             position: 'absolute',
             left: $input.position().left,
