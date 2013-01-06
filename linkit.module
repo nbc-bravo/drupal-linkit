@@ -534,29 +534,31 @@ function linkit_dashboard_form($form, &$form_state) {
     drupal_get_path('module', 'linkit') . '/js/linkit.dashboard.js',
   );
 
-  $form['profile'] = array(
-    '#type' => 'radios',
-    '#title' => t('Select profile to use'),
-    '#default_value' => $active_profile->name,
-    '#weight' => -100,
-    '#options' => $_profiles,
-    '#ajax' => array(
-      'callback' => 'linkit_change_profile',
-      'wrapper' => 'linkit-dashbaord-ajax-wrapper',
-      'method' => 'replaceWith',
-      'effect' => 'fade',
-      'event' => 'click',
-    ),
-    '#prefix' => '<div id="linkit-profile-changer">',
-    '#suffix' => '</div>',
-  );
-
-  foreach ($profiles as $profile) {
-    $form['profile'] += array(
-      $profile->name => array(
-        '#description' => check_markup($profile->admin_description),
-      )
+  if ($active_profile->profile_type == LINKIT_PROFILE_TYPE_EDITOR) {
+    $form['profile'] = array(
+      '#type' => 'radios',
+      '#title' => t('Select profile to use'),
+      '#default_value' => $active_profile->name,
+      '#weight' => -100,
+      '#options' => $_profiles,
+      '#ajax' => array(
+        'callback' => 'linkit_change_profile',
+        'wrapper' => 'linkit-dashbaord-ajax-wrapper',
+        'method' => 'replaceWith',
+        'effect' => 'fade',
+        'event' => 'click',
+      ),
+      '#prefix' => '<div id="linkit-profile-changer">',
+      '#suffix' => '</div>',
     );
+
+    foreach ($profiles as $profile) {
+      $form['profile'] += array(
+        $profile->name => array(
+          '#description' => check_markup($profile->admin_description),
+        )
+      );
+    }
   }
 
   $form['linkit_container'] = array(
