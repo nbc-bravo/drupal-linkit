@@ -92,10 +92,7 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
     if (isset($this->profile->data[$this->plugin['name']]['result_description'])) {
       $description =  token_replace(check_plain($this->profile->data[$this->plugin['name']]['result_description']), array(
         $this->plugin_name => $data,
-      ));
-
-      // Hide tokens that still haven't been replaced.
-      $description = preg_replace('/\[[^\s\[\]:]*:[^\s\[\]]*\]/x', '', $description);
+      ), array('clear' => TRUE));
       return $description;
     }
   }
