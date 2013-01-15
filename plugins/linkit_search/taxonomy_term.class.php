@@ -25,9 +25,13 @@ class LinkitSearchPluginTaxonomy_Term extends LinkitSearchPluginEntity {
    * Overrides LinkitSearchPluginEntity::createDescription().
    */
   function createDescription($data) {
-    return token_replace(check_plain($this->conf['result_description']), array(
+    $description = token_replace(check_plain($this->conf['result_description']), array(
       'term' => $data,
     ));
+
+    // Hide tokens that still haven't been replaced.
+    $description = preg_replace('/\[[^\s\[\]:]*:[^\s\[\]]*\]/x', '', $description);
+    return $description;
   }
 
   /**
