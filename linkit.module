@@ -1013,7 +1013,7 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
  *   A LinkitProfile object or FALSE if no profile is found.
  */
 function linkit_profile_load_by_format($format) {
-  $profiles = linkit_profile_load_all();
+  $profiles = linkit_profile_editor_load_all();
   foreach ($profiles as $profile) {
     if (is_array($profile->data['text_formats']) && in_array($format, array_filter($profile->data['text_formats']))) {
       return $profile;
