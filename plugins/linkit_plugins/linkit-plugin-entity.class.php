@@ -102,9 +102,13 @@ class LinkitPluginEntity extends LinkitPlugin {
    * @see token_replace()
    */
   function buildDescription($data) {
-    return token_replace(check_plain($this->conf['result_description']), array(
+    $description = token_replace(check_plain($this->conf['result_description']), array(
       $this->plugin['entity_type'] => $data,
     ));
+
+    // Hide tokens that still haven't been replaced.
+    $description = preg_replace('/\[[^\s\[\]:]*:[^\s\[\]]*\]/x', '', $description);
+    return $description;
   }
 
   /**
