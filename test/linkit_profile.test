@@ -16,7 +16,7 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
      'name' => 'test_profile',
      'admin_title' => 'Test Profile',
      'admin_description' => 'This is a description for the Test Profile.',
-     'data[insert_plugin][plugin]' => 'raw_url',
+     'profile_type' => LINKIT_PROFILE_TYPE_EDITOR,
    );
 
   /**
@@ -83,7 +83,6 @@ class LinkitProfileUICRUDTestCase extends LinkitTestCase {
     $profile_update = array(
       'admin_title' => 'Test Profile updated',
       'admin_description' => 'This is a updated description for the Test Profile updated.',
-      'data[insert_plugin][plugin]' => 'html_link',
       'data[autocomplete][charLimit]' => 4,
       'data[autocomplete][wait]' => 3500,
       'data[autocomplete][remoteTimeout]' => 1000,

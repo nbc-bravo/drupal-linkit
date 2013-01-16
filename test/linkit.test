@@ -55,7 +55,11 @@ abstract class LinkitTestCase extends DrupalWebTestCase {
       $profile->data += $extra['data'];
     }
 
-    if (!isset($profile->data['insert_plugin'])) {
+    if (empty($profile->data['profile_type'])) {
+      $profile->profile_type = LINKIT_PROFILE_TYPE_EDITOR;
+    }
+
+    if (!isset($profile->data['insert_plugin']) && $profile->profile_type == LINKIT_PROFILE_TYPE_FIELD) {
       $profile->data['insert_plugin'] = array(
         'plugin' => 'raw_url',
         'url_method' => LINKIT_URL_METHOD_RAW,
