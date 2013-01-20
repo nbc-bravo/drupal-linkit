@@ -127,20 +127,32 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
     // Create the URI for the entity.
     $uri = entity_uri($this->plugin['entity_type'], $entity);
 
+    $options = array();
+    // Handle multilingual sites.
+    if (isset($entity->language) && $entity->language != LANGUAGE_NONE && drupal_multilingual() && language_negotiation_get_any(LOCALE_LANGUAGE_NEGOTIATION_URL)) {
+      $languages = language_list('enabled');
+      // Only use enabled languages.
+      $languages = $languages[1];
+
+      if ($languages && isset($languages[$entity->language])) {
+        $options['language'] = $languages[$entity->language];
+      }
+    }
+
     switch ($this->profile->data['insert_plugin']['url_method']) {
       case LINKIT_URL_METHOD_RAW:
         $path = $uri['path'];
        break;
      case LINKIT_URL_METHOD_RAW_SLASH:
-       $path = url($uri['path'], array('alias' => TRUE));
+       $options['alias'] = TRUE;
+       $path = url($uri['path'], $options);
        break;
      case LINKIT_URL_METHOD_ALIAS:
-       $path = url($uri['path']);
+       $path = url($uri['path'],  $options);
        break;
     }
 
     return $path;
-
   }
 
   /**
