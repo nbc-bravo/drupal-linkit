@@ -885,7 +885,7 @@ function linkit_autocomplete_absolute_url($url, $parts) {
     $result = array(
       'path' => url($path_info['menu']['path'], $url_options),  // @TODO: Handle insert_plugin settings.
       'title' => $path_info['menu']['title'] ? check_plain($path_info['menu']['title']) : check_plain($path_info['menu']['path']),
-      'description' => check_plain($path_info['menu']['description']) . ' This is an internal path.',
+      'description' => check_plain($path_info['menu']['description']) . ' ' . t('This is an internal path.'),
       'addClass' => 'status-ok',
     );
   }
@@ -894,16 +894,16 @@ function linkit_autocomplete_absolute_url($url, $parts) {
   elseif ($path_info['target'] == 'internal') {
     $result = array(
       'path' => url($path_info['path'], $url_options), // @TODO: Handle insert_plugin settings.
-      'title' => 'Page not found',
-      'description' => 'This page does not exist or you do not have access to it.',
+      'title' => t('Page not found'),
+      'description' => t('This page does not exist or you do not have access to it.'),
       'addClass' => 'status-warning',
     );
   }
   // The URL seems to be external.
   elseif ($path_info['target'] == 'external') {
     $result = array(
-      'title' => 'No information available',
-      'description' => 'This is an external URL, but we don\'t know where it leads.',
+      'title' => t('No information available'),
+      'description' => t('This is an external URL, but we don\'t know where it leads.'),
       'path' => $path_info['url'],
       'addClass' => 'status-notice',
     );
