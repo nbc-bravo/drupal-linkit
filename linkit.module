@@ -461,7 +461,7 @@ function _linkit_result_from_url($url, $enabled_plugins) {
     $result = array(
       'path' => url($path_info['system_path'], $url_options),
       'title' => $menu_item['title'] ? check_plain($menu_item['title']) : check_plain($path_info['system_path']),
-      'description' => 'This is an internal path.',
+      'description' => t('This is an internal path.'),
       'addClass' => 'status-ok',
     );
   }
@@ -470,16 +470,16 @@ function _linkit_result_from_url($url, $enabled_plugins) {
   elseif ($path_info['target'] == 'internal') {
     $result = array(
       'path' => url($path_info['path'], $url_options),
-      'title' => 'Page not found',
-      'description' => 'This page does not exist or you do not have access to it.',
+      'title' => t('Page not found'),
+      'description' => t('This page does not exist or you do not have access to it.'),
       'addClass' => 'status-warning',
     );
   }
   // No plugin result, and the URL seems to be external.
   elseif ($path_info['target'] == 'external') {
     $result = array(
-      'title' => 'No information available',
-      'description' => 'This is an external URL, but we don\'t know where it leads.',
+      'title' => t('No information available'),
+      'description' => t("This is an external URL, but we don't know where it leads."),
       'path' => $path_info['url'],
       'addClass' => 'status-notice',
     );
