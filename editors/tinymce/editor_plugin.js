@@ -10,6 +10,11 @@
 
       // Register commands
       editor.addCommand('mceLinkit', function() {
+        if (typeof Drupal.settings.linkit === 'undefined') {
+          alert(Drupal.t('Could not find the Linkit profile.'));
+          return ;
+        }
+
         // Set the editor object.
         Drupal.settings.linkit.currentInstance.editor = editor;
         // Set profile.

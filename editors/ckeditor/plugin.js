@@ -4,12 +4,12 @@
  */
 
 (function ($) {
+
   CKEDITOR.plugins.add( 'linkit', {
 
     requires : [ 'fakeobjects', 'link' ],
 
     init: function( editor ) {
-
       // Add Button.
       editor.ui.addButton( 'linkit', {
         label: 'Linkit',
@@ -20,6 +20,11 @@
       // Add Command.
       editor.addCommand( 'linkit', {
         exec : function () {
+          if (typeof Drupal.settings.linkit === 'undefined') {
+            alert(Drupal.t('Could not find the Linkit profile.'));
+            return ;
+          }
+
           // Set the editor object.
           Drupal.settings.linkit.currentInstance.editor = editor;
           // Set profile.

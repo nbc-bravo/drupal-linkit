@@ -4,6 +4,11 @@
  */
 (function ($) {
 
+// Abort if Drupal.linkit is not defined.
+if (typeof Drupal.linkit === 'undefined') {
+  return ;
+}
+
 Drupal.linkit.registerDialogHelper('ckeditor', {
   init : function() {},
 
