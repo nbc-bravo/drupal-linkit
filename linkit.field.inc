@@ -136,6 +136,14 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       ),
       '#element_validate' => array('linkit_field_profile_validate'),
     );
+
+    // Enable Linkit on this field instance.
+    $form['instance']['settings']['linkit']['button_text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Button text that activates linkit modal.'),
+      '#default_value' => isset($instance['settings']['linkit']['button_text'])
+        ? $instance['settings']['linkit']['button_text'] : 'Search',
+    );
   }
 }
 
@@ -157,7 +165,7 @@ function linkit_field_profile_validate($element, &$form_state, $form) {
 /**
  * Process callback.
  */
-function linkit_process_field_element($element, $edit, &$form_state) {
+function linkit_process_field_element($element, &$form_state, &$complete_form) {
   // Only proceed if the field is attached to an entity.
   if (!isset($element['#entity_type'])) {
     return $element;
@@ -203,8 +211,9 @@ function linkit_process_field_element($element, $edit, &$form_state) {
     $element['#attached']['js'][] = $insert_plugin['javascript'];
     $element['#attached']['js'][] = $field_js;
 
+    $button_text = !empty($instance['settings']['linkit']['button_text']) ? $instance['settings']['linkit']['button_text'] : t('Search');
     // Add Linkit dialog button to the element suffix.
-    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $field_id . '" href="#">' . t('Search') . '</a>';
+    $element['#field_suffix'] = '<a class="button linkit-field-button linkit-field-' . $field_id . '" href="#">' . $button_text . '</a>';
   }
 
   return $element;
