@@ -378,6 +378,7 @@ function linkit_library() {
     ),
     'dependencies' => array(
       array('system', 'ui.dialog'),
+      array('system', 'drupal.ajax'),
     ),
   );
 
