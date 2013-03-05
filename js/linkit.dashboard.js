@@ -24,6 +24,11 @@ Drupal.behaviors.linkitDashboard = {
       $('#linkit-cancel', context).bind('click', Drupal.linkit.modalClose);
     });
 
+    // Run the validation if the path field is populated directly.
+    $('#edit-linkit-path', context).keyup(function(){
+      Drupal.linkit.requiredFieldsValidation();
+    });
+
     // Run required field validation.
     Drupal.linkit.requiredFieldsValidation();
 
