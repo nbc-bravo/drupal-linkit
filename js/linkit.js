@@ -29,7 +29,7 @@ Drupal.linkit.createModal = function() {
 
   // Get modal content.
   Drupal.linkit.getDashboard();
-}
+};
 
 /**
  * Create and append the modal element.
@@ -43,7 +43,7 @@ Drupal.linkit.createModalElement = function() {
   $('body').append(linkitModal);
 
   return linkitModal;
-}
+};
 
 /**
  * Default jQuery dialog options used when creating the Linkit modal.
@@ -64,7 +64,7 @@ Drupal.linkit.modalOptions = function() {
     zIndex : 210000,
     close: Drupal.linkit.modalClose
   };
-}
+};
 
 /**
  * Close the Linkit modal.
@@ -115,34 +115,34 @@ Drupal.linkit.getDashboard = function () {
 
   // Trigger the ajax event.
   $('#linkit-modal').trigger('LinkitDashboard');
-}
+};
 
 /**
  * Register new dialog helper.
  */
 Drupal.linkit.registerDialogHelper = function(name, helper) {
   Drupal.linkit.dialogHelper[name] = helper;
-}
+};
 
 /**
  * Get a dialog helper.
  */
 Drupal.linkit.getDialogHelper = function(name) {
   return Drupal.linkit.dialogHelper[name];
-}
+};
 
 /**
  * Register new insert plugins.
  */
 Drupal.linkit.registerInsertPlugin = function(name, plugin) {
   Drupal.linkit.insertPlugins[name] = plugin;
-}
+};
 
 /**
  * Get an insert plugin.
  */
 Drupal.linkit.getInsertPlugin = function(name) {
   return Drupal.linkit.insertPlugins[name];
-}
+};
 
 })(jQuery);

@@ -333,13 +333,16 @@ function linkit_element_info_alter(&$types) {
     }
   }
 
-  // @TODO: Is this code in use?
+  // Used when using ckeditor module.
   if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
-      $types['text_format']['#pre_render'][] = 'linkit_pre_render_ckeditor_element';
+      $types['text_format']['#pre_render'][] = 'linkit_pre_render_editor_element';
+      // Add the linkit library for the editor.
+      drupal_add_library('linkit', 'ckeditor');
     }
   }
 
+  // Used when using wysiwyg module.
   if (isset($types['text_format']['#pre_render']) && is_array($types['text_format']['#pre_render'])) {
     if (in_array('wysiwyg_pre_render_text_format', $types['text_format']['#pre_render'])) {
       $types['text_format']['#process'][] = 'linkit_pre_render_editor_element';
@@ -989,7 +992,7 @@ function linkit_ckeditor_plugin() {
 /**
  * Add Linkit settings to pages where we have an editor element.
  */
-function linkit_pre_render_editor_element($element, $edit, &$form_state) {
+function linkit_pre_render_editor_element($element) {
   static $processed = array();
 
   if (!isset($processed[$element['#id']])) {
