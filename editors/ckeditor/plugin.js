@@ -106,14 +106,14 @@
 
     if (!Drupal.settings.linkit.currentInstance.selectedElement) {
       // We have not selected any link element so lets create a new one.
-      var ranges = selection.getRanges( true );
-      if (ranges.length == 1 && ranges[0].collapsed) {
+      var range = selection.getRanges(1)[0];
+      if (range.collapsed) {
         var content = (Drupal.settings.linkit.currentInstance.linkContent) ? Drupal.settings.linkit.currentInstance.linkContent : data.path;
-        var text = new CKEDITOR.dom.text(content, editor.document);
-        ranges[0].insertNode(text);
-        ranges[0].selectNodeContents(text);
-        selection.selectRanges(ranges);
+        var text = new CKEDITOR.dom.text(content , editor.document );
+        range.insertNode(text);
+        range.selectNodeContents(text);
       }
+
       // Delete all attributes that are empty.
       data.attributes.href = data.path;
       for (name in data.attributes) {
@@ -122,7 +122,8 @@
       // Apply style.
       var style = new CKEDITOR.style({element : 'a', attributes : data.attributes});
       style.type = CKEDITOR.STYLE_INLINE;
-      style.apply(editor.document);
+      style.applyToRange(range);
+      range.select();
     }
     else {
       var element = Drupal.settings.linkit.currentInstance.selectedElement;
