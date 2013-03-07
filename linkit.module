@@ -994,6 +994,16 @@ function linkit_pre_render_editor_element($element, $edit, &$form_state) {
       'type' => 'setting',
     );
 
+    // Configure Linkit to have an IMCE selector.
+    if (module_invoke('imce', 'access') && isset($profile->data['imce']) && $profile->data['imce'] == 1) {
+      $field_js['data']['linkit']['IMCEurl'] = url('imce', array('query' => array(
+        'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
+        'absolute' => TRUE,
+       )));
+      // We will only serv public files with IMCE.
+      $field_js['data']['linkit']['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
+    }
+
     // Attach the linkit_base librar
     $element['#attached']['library'][] = array('linkit', 'base');
     $element['#attached']['js'][] = $field_js;

@@ -52,6 +52,11 @@ function linkit_profiles_form(&$form, &$form_state) {
   // Append attribute plugin form element to the profile form.
   _linkit_build_attribute_plugin_form_fields($form, $profile);
 
+  // Append IMCE plugin form element to the profile form.
+  if (module_exists('imce')) {
+    _linkit_build_imce_form_fields($form, $profile);
+  }
+
   // Append autocomplete (BAC) form element to the profile form.
   _linkit_build_autocomplete_form_fields($form, $profile);
 }
@@ -365,6 +370,36 @@ function _linkit_build_attribute_plugin_form_fields(&$form, LinkitProfile $profi
 
   $form['data']['attribute_plugins_fieldset']['attribute_plugins_info'] = array(
     '#markup' => 'Keep in mind that not all attributes can be used by all insert plugins.',
+  );
+}
+
+/**
+ * Append IMCE plugin form element to the profile form.
+ *
+ * @param LinkitProfile $profile
+ *   A profile object contains all settings for the profile.
+ *
+ * @see linkit_profiles_form()
+ */
+function _linkit_build_imce_form_fields(&$form, LinkitProfile $profile) {
+
+  $form['data']['imce'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('IMCE File Picker'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+    '#weight' => 80,
+  );
+
+  $form['data']['imce']['use_imce'] = array(
+    '#title' => t('Enable !imce File Picker', array('!imce' => l(t('IMCE'),
+      'admin/config/media/imce'))),
+    '#type' => 'checkbox',
+    '#description' => t('Note that only public files are supported.'),
+    '#default_value' => isset($profile->data['imce'])
+        ? $profile->data['imce'] : FALSE,
+    '#parents' => array('data', 'imce'),
   );
 }
 

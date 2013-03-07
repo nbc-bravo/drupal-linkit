@@ -36,6 +36,17 @@ Drupal.behaviors.linkitDashboard = {
       // Make the profile changer
       Drupal.linkit.profileChanger(context);
     }
+    if (Drupal.settings.linkit.IMCEurl && !$('#linkit-imce', context).length) {
+      var $imceButton = $('<input />')
+        .attr({type: 'button', id: 'linkit-imce', name: 'linkit-imce'})
+        .addClass('form-submit')
+        .val(Drupal.t('Open file browser'))
+        .insertAfter($('.form-item-linkit-search', context))
+        .click(function(e) {
+          e.preventDefault();
+          Drupal.linkit.openFileBrowser();
+        });
+    }
   }
 };
 
@@ -61,6 +72,30 @@ Drupal.linkit.requiredFieldsValidation = function() {
       .attr('disabled', 'disabled')
       .addClass('form-button-disabled');
   }
+};
+
+/**
+ * Open the IMCE file browser
+ */
+Drupal.linkit.openFileBrowser = function () {
+  window.open(decodeURIComponent(Drupal.settings.linkit.IMCEurl), '', 'width=760,height=560,resizable=1');
+};
+
+/**
+ * When a file is inserted through IMCE, this function is called.
+ * See IMCE api for details.
+ *
+ * @param file
+ *   The file object that was selected inside IMCE
+ * @param win
+ *   The IMCE window object
+ */
+Drupal.linkit.IMCECallback = function(file, win) {
+  Drupal.linkit.populateFields({
+     path: win.imce.decode(Drupal.settings.basePath +
+         Drupal.settings.linkit.publicFilesDirectory + '/' + file.relpath)
+  });
+  win.close();
 };
 
 /**
