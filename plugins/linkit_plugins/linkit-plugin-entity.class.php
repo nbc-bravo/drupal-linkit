@@ -160,7 +160,7 @@ class LinkitPluginEntity extends LinkitPlugin {
 
     // Add the search condition to the query object.
     $this->query->propertyCondition($this->entity_field_label,
-            '%' . db_like($this->serach_string) . '%', 'LIKE')
+            '%' . db_like($this->search_string) . '%', 'LIKE')
         ->addTag('linkit_entity_autocomplete')
         ->addTag('linkit_' . $this->plugin['entity_type'] . '_autocomplete');
 
@@ -231,7 +231,7 @@ class LinkitPluginEntity extends LinkitPlugin {
     // Get supported tokens for the entity type.
     $tokens = linkit_extract_tokens($this->plugin['entity_type']);
 
-    // A short description in within the serach result for each row.
+    // A short description in within the search result for each row.
     $form[$this->plugin['name']]['result_description'] = array(
       '#title' => t('Result format'),
       '#type' => 'textfield',

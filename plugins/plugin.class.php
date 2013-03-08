@@ -58,10 +58,10 @@ abstract class LinkitPlugin implements LinkitPluginInterface {
   /**
    * Set the search string.
    *
-   * @param string $serach_string.
+   * @param string $search_string.
    */
-  function setSearchString($serach_string) {
-    $this->serach_string = $serach_string;
+  function setSearchString($search_string) {
+    $this->search_string = $search_string;
   }
 
   /**
