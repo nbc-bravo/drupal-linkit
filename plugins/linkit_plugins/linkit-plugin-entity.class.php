@@ -105,7 +105,55 @@ class LinkitPluginEntity extends LinkitPlugin {
     $description = token_replace(check_plain($this->conf['result_description']), array(
       $this->plugin['entity_type'] => $data,
     ), array('clear' => TRUE));
+
+    if (isset($this->conf['reverse_menu_trail']) && $this->conf['reverse_menu_trail']) {
+      $description .= $this->buildReverseMenuTrail($data);
+    }
+
     return $description;
+  }
+
+  /**
+   * Builds a reverse menu trail for the entity.
+   *
+   * @param object $data
+   *   An entity object.
+   */
+  function buildReverseMenuTrail($data) {
+    $vars = array();
+    $output = '';
+
+    $uri = entity_uri($this->plugin['entity_type'], $data);
+
+    if (isset($uri['path'])) {
+
+      $menu_link_fields = array('link_title', 'link_path', 'plid', 'menu_name');
+
+      $menu_items = db_select('menu_links', 'ml')
+        ->fields('ml', $menu_link_fields)
+        ->condition('link_path', $uri['path'])
+        ->execute()->fetchAll(PDO::FETCH_ASSOC);
+
+      foreach ($menu_items as $menu_item) {
+        $vars['reverse_menu_trail'] = array();
+
+        while ($menu_item['plid']) {
+          $menu_item = db_select('menu_links', 'ml')
+            ->fields('ml', $menu_link_fields)
+            ->condition('mlid', $menu_item['plid'])
+            ->execute()
+            ->fetchAssoc();
+
+          if (isset($menu_item['link_title'])) {
+            $vars['reverse_menu_trail'][] = $menu_item['link_title'];
+          }
+        }
+        $output .= !empty($vars['reverse_menu_trail']) ? theme('linkit_reverse_menu_trail', $vars) : '';
+      }
+
+    }
+
+    return $output;
   }
 
   /**
@@ -284,6 +332,15 @@ class LinkitPluginEntity extends LinkitPlugin {
         '#default_value' => isset($this->conf['group_by_bundle']) ? $this->conf['group_by_bundle'] : 0,
       );
     }
+
+    // Reverse menu trail.
+    $form[$this->plugin['name']]['reverse_menu_trail'] = array(
+      '#title' => t('Add reverse menu trail to description'),
+      '#type' => 'checkbox',
+      '#default_value' => isset($this->conf['reverse_menu_trail']) ? $this->conf['reverse_menu_trail'] : 0,
+      '#description' => t('If the result has a menu item its menu trail will be added in reverse in the description.'),
+    );
+
     return $form;
   }
 }

@@ -106,6 +106,10 @@ function linkit_theme($existing, $type, $theme, $path) {
       'variables' => array(),
       'file' => 'linkit.theme.inc'
     ),
+    'linkit_reverse_menu_trail' => array(
+      'variables' => array('menu_trail' => NULL, 'separator' => ' « '),
+      'file' => 'linkit.theme.inc'
+    )
   );
 }
 
