@@ -76,7 +76,7 @@ Drupal.linkit.registerDialogHelper('field', {
 
     // Link field can have a title field. If they have, we populate the title
     // field with the search result title if any.
-    if (typeof field_settings.title_field != 'undefined') {
+    if (typeof field_settings.title_field != 'undefined' && typeof Drupal.settings.linkit.currentInstance.linkContent != 'undefined') {
       this.replaceFieldValue($('#' + field_settings.title_field).get(0), Drupal.settings.linkit.currentInstance.linkContent);
     }
   },
