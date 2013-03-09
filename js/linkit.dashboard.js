@@ -215,10 +215,10 @@ Drupal.behaviors.linkitSearch = {
         },
 
         select: function(result) {
-          if(typeof result == 'undefined') {
+          if (typeof result == 'undefined') {
             return false;
           }
-          // Only change the link text if it is empty
+          // Only change the link text if it is empty.
           if (typeof result.disabled != 'undefined' && result.disabled) {
             return false;
           }

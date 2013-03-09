@@ -73,18 +73,24 @@ Drupal.linkit.registerDialogHelper('field', {
       // Replace the field value.
       this.replaceFieldValue(source.get(0), link);
     }
+
+    // Link field can have a title field. If they have, we populate the title
+    // field with the search result title if any.
+    if (typeof field_settings.title_field != 'undefined') {
+      this.replaceFieldValue($('#' + field_settings.title_field).get(0), Drupal.settings.linkit.currentInstance.linkContent);
+    }
   },
 
   /**
    * Get field selection.
    */
   getSelection : function(e) {
-    // Mozilla and DOM 3.0
+    // Mozilla and DOM 3.0.
     if ('selectionStart' in e) {
         var l = e.selectionEnd - e.selectionStart;
         return { start: e.selectionStart, end: e.selectionEnd, length: l, text: e.value.substr(e.selectionStart, l) };
     }
-    // IE
+    // IE.
     else if(document.selection) {
         e.focus();
         var r = document.selection.createRange(),
@@ -97,13 +103,13 @@ Drupal.linkit.registerDialogHelper('field', {
           return { start: e.value.length, end: e.value.length, length: 0, text: '' };
         }
 
-        // For some reason IE doesn't always count the \n and \r in the length
+        // For some reason IE doesn't always count the \n and \r in the length.
         var text_part = r.text.replace(/[\r\n]/g,'.'),
           text_whole = e.value.replace(/[\r\n]/g,'.'),
           the_start = text_whole.indexOf(text_part, tr.text.length);
         return { start: the_start, end: the_start + text_part.length, length: text_part.length, text: r.text };
     }
-    // Browser not supported
+    // Browser not supported.
     else {
       return { start: e.value.length, end: e.value.length, length: 0, text: '' };
     }
