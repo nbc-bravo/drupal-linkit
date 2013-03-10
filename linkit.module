@@ -236,7 +236,7 @@ function linkit_autocomplete($string = NULL) {
   foreach ($matches AS $match) {
 
     // Build the val
-    $val = check_plain($match['title'] . ' [path:' . $match['path'] . ']');
+    $val = $match['title'] . ' [path:' . $match['path'] . ']';
 
     // Get the extra information text
     $information = array();
