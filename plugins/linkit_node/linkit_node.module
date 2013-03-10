@@ -1,26 +1,24 @@
-<?php 
-
+<?php
 /**
  * @file
  * Extend Linkit with node links.
  */
-
 
 /**
  * Implementation of hook_linkit_load_plugins().
  */
 function linkit_node_linkit_load_plugins($string) {
   $matches = array();
-  
+
   $settings = variable_get('linkit_node', array());
-  
+
   // Prevent "PHP notice: Undefined variable"
   _linkit_node_get_default_settings($settings);
 
   $fields = array('n.nid', 'n.title'); // default fields
   $from = array('{node} n'); // default from
   $where = array(); // default where
-  
+
   if ($settings['display_settings']['content_type']) {
     $from[] = 'INNER JOIN {node_type} nt ON nt.type = n.type';
     $fields[] = 'nt.name AS content_type';
@@ -30,7 +28,7 @@ function linkit_node_linkit_load_plugins($string) {
   }
   if ($settings['display_settings']['language']) {
     $fields[] = 'n.language';
-  } 
+  }
   if ($settings['display_settings']['created']) {
     $fields[] = 'n.created';
   }
@@ -56,7 +54,7 @@ function linkit_node_linkit_load_plugins($string) {
     $allowed_content_types = implode("', '", $allowed_content_types);
     // Special treatment!!
     // If we push this to the $where array, the single-quotes will be
-    // escaped and result in a SQL error. 
+    // escaped and result in a SQL error.
     // I asked chx if its ok to use the content type machine name
     // "as it is" in this query and he said ok and I trust him.
     $sql[] = " AND n.type IN ('" . $allowed_content_types . "')";
@@ -77,11 +75,11 @@ function linkit_node_linkit_load_plugins($string) {
     // Add the node nid
     if ($settings['display_settings']['nid']) {
       $matches['node'][$i]['information']['nid'] = $node->nid;
-    } 
+    }
     // Add the node content type
     if ($settings['display_settings']['content_type']) {
       $matches['node'][$i]['information']['content type'] = $node->content_type;
-    } 
+    }
     // Add the node status
     if ($settings['display_settings']['status']) {
       $matches['node'][$i]['information']['status'] = $node->status ? t('published') : t('unpublished');
@@ -89,25 +87,25 @@ function linkit_node_linkit_load_plugins($string) {
     // Add the node language
     if ($settings['display_settings']['language']) {
       $matches['node'][$i]['information']['language'] = $node->language ? $node->language : '-';
-    } 
+    }
     // Add the node created time
     if ($settings['display_settings']['created']) {
       $matches['node'][$i]['information']['created'] = $node->created ? format_date($node->created, 'small') : '-';
-    } 
+    }
     // Add the node changed time
     if ($settings['display_settings']['changed']) {
       $matches['node'][$i]['information']['changed'] = $node->changed ? format_date($node->changed, 'small') : '-';
-    } 
-    
+    }
+
     // Add Title of the book a node belong to
     if ($settings['display_settings']['show_books'] && $node->bid) {
       $book_node = node_load($node->bid);
       $matches['node'][$i]['information']['book'] = $book_node->title;
-    } 
+    }
 
     $i++;
   }
-  
+
   return $matches;
 }
 
@@ -126,10 +124,10 @@ function linkit_node_linkit_get_search_styled_link($string) {
     return;
   }
 
-  // This is a node link created with Linkit, try to grab the title and path now. 
+  // This is a node link created with Linkit, try to grab the title and path now.
   $result = db_query(db_rewrite_sql("SELECT n.nid, n.title FROM {node} n WHERE n.nid = %d"), $splitted_string[1]);
   $node = db_fetch_object($result);
-  
+
   // No reault or no node was found
   if (!$result || !$node) {
     return;
@@ -140,7 +138,7 @@ function linkit_node_linkit_get_search_styled_link($string) {
 
 /**
  * Implementation of hook_linkit_info_plugins().
- * 
+ *
  * This is used by linkit_permissions
  */
 function linkit_node_linkit_info_plugins() {
@@ -151,13 +149,13 @@ function linkit_node_linkit_info_plugins() {
 }
 
 /**
- * Prevent "PHP notice: Undefined variable" by merging the settings 
+ * Prevent "PHP notice: Undefined variable" by merging the settings
  * with the defule values
  */
 function _linkit_node_get_default_settings(&$settings) {
   // Merge settings with the default settings
   $settings += array(
-    'display_settings' => array(), 
+    'display_settings' => array(),
     'content_types' => array(),
   );
 

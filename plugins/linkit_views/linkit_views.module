@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 /**
  * @file
  * Extend Linkit with views links.
@@ -11,7 +10,7 @@
  */
 function linkit_views_linkit_load_plugins($string) {
   $matches = array();
-  
+
   // Get all page displays in view, and create temporary table
   $temp_table = 'CREATE TEMPORARY TABLE {linkit_tmp_view_table} (title VARCHAR(128) NOT NULL, path VARCHAR(128) NOT NULL)';
   db_query($temp_table);
@@ -21,8 +20,8 @@ function linkit_views_linkit_load_plugins($string) {
   while ($node = db_fetch_object($result)) {
     $optinos = unserialize($node->display_options);
     db_query("INSERT INTO {linkit_tmp_view_table} (title, path) VALUES ('%s', '%s')", $node->name, $optinos['path']);
-  }  
-  
+  }
+
   $result = db_query("SELECT * FROM {linkit_tmp_view_table} WHERE LOWER(path) LIKE LOWER('%%%s%%')", $string);
   while ($node = db_fetch_object($result)) {
     $matches['view'][] = array(
@@ -32,14 +31,14 @@ function linkit_views_linkit_load_plugins($string) {
         'type' => 'Views',
       ),
     );
-  }  
+  }
 
   return  $matches;
 }
 
 /**
  * Implementation of hook_linkit_info_plugins().
- * 
+ *
  * This is used by linkit_permissions
  */
 function linkit_views_linkit_info_plugins() {

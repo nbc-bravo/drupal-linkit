@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 /**
  * @file
  * Extend Linkit with taxonomy links.
@@ -46,12 +45,12 @@ function linkit_taxonomy_linkit_load_plugins($string) {
       // The API says "Find all parents of a given term ID." but thats not true
       // It is only returning the very next parent
       $parents = taxonomy_get_parents($term->tid);
-      
+
       if (count($parents)) {
         $current = current($parents);
         $matches['taxonomy'][$i]['information']['parent'] = $current->name;
       }
-    } 
+    }
     $i++;
   }
   return  $matches;
@@ -71,26 +70,26 @@ function linkit_taxonomy_linkit_get_search_styled_link($string) {
   if (!is_numeric($splitted_string[count($splitted_string)-1])) {
     return ;
   }
-  
+
   // Try to get a term object
   $term = taxonomy_get_term($splitted_string[count($splitted_string)-1]);
   // taxonomy_get_term is returns an object
   if (!is_object($term)) {
     return ;
   }
-  
+
   // Ok, this looks like a term, get the path
   $path = taxonomy_term_path($term);
-  
+
   // If $path is the same as the provided $string, we have a match.
   if ($path == str_replace('internal:', '', $string)) {
     return check_plain($term->name) . ' [path:internal:' . taxonomy_term_path($term) . ']';
-  }  
+  }
 }
 
 /**
  * Implementation of hook_linkit_info_plugins().
- * 
+ *
  * This is used by linkit_permissions
  */
 function linkit_taxonomy_linkit_info_plugins() {
@@ -101,7 +100,7 @@ function linkit_taxonomy_linkit_info_plugins() {
 }
 
 /**
- * Prevent "PHP notice: Undefined variable" by merging the settings 
+ * Prevent "PHP notice: Undefined variable" by merging the settings
  * with the defule values
  */
 function _linkit_taxonomy_get_default_settings(&$settings) {
@@ -109,6 +108,6 @@ function _linkit_taxonomy_get_default_settings(&$settings) {
   $settings += array(
     'display_settings' => array(
       'show_parent' => 0,
-    ), 
+    ),
   );
 }

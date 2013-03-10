@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 /**
  * @file
  * Extend Linkit with user links.
@@ -43,7 +42,7 @@ function linkit_user_linkit_get_search_styled_link($string) {
     return;
   }
 
-  // This is a node link created with Linkit, try to grab the title and path now. 
+  // This is a node link created with Linkit, try to grab the title and path now.
   $result = db_query(db_rewrite_sql("SELECT u.uid, u.name FROM {users} u WHERE u.uid = %d"), $splitted_string[1]);
   $user = db_fetch_object($result);
 
@@ -57,7 +56,7 @@ function linkit_user_linkit_get_search_styled_link($string) {
 
 /**
  * Implementation of hook_linkit_info_plugins().
- * 
+ *
  * This is used by linkit_permissions
  */
 function linkit_user_linkit_info_plugins() {

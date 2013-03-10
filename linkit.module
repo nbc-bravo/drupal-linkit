@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * @file
@@ -95,7 +95,7 @@ function linkit_textarea($element, $form_state) {
   if (isset($element['#process'])) {
     if (in_array('bueditor_textarea', $element['#process'])) {
       _linkit_add_settings('bueditor');
-       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/bueditor/editor_plugin.js');
+      drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/bueditor/editor_plugin.js');
     }
   }
   return $element;
@@ -158,21 +158,21 @@ function linkit_dashboard_page($editor) {
   module_invoke('admin_menu', 'suppress');
   // Add CSS.
   drupal_add_css(drupal_get_path('module', 'linkit') . '/css/linkit.css');
-  
+
   // Add JS
   static $defualt_settings_added = FALSE;
-  
+
   // Add default settings
   if (!$defualt_settings_added) {
     $defualt_settings_added = TRUE;
-    
+
     $settings = array(
       'linkit' => array('ajaxcall' => url('admin/linkit/geteditresult')),
     );
 
     // Check if we have IMCE and access to it.
     $imce = module_invoke('imce', 'access');
-    if($imce) {
+    if ($imce) {
       $settings['linkit']['IMCEurl'] = url('imce', array('query' => array('app' => 'Linkit|url@edit-link')));
     }
 
@@ -198,13 +198,13 @@ function linkit_dashboard_page($editor) {
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/fckeditor/linkit/linkitDialog.js');
       break;
-    
+
     case 'bueditor':
       // Add JavaScript.
       drupal_add_js(drupal_get_path('module', 'linkit') . '/editors/bueditor/linkit.js');
       break;
   }
-  
+
   print theme('linkit_dashboard', drupal_get_form('_linkit_form'));
   exit();
 }
@@ -222,7 +222,7 @@ function linkit_autocomplete($string = NULL) {
         if (user_access('create '. $module .' links') || user_access('create all links')) {
           $matches = array_merge($matches, $hook_matches[$module]);
         }
-      } 
+      }
       else {
         $matches = array_merge($matches, $hook_matches[$module]);
       }
@@ -231,13 +231,13 @@ function linkit_autocomplete($string = NULL) {
 
   // hook_linkit_load_plugins_alter() , let other modules change the matches array
   drupal_alter('linkit_load_plugins', $matches);
-  
+
   $results = array();
   foreach ($matches AS $match) {
-    
+
     // Build the val
     $val = check_plain($match['title'] . ' [path:' . $match['path'] . ']');
-    
+
     // Get the extra information text
     $information = array();
     foreach ($match['information'] AS $extra_info_key => $extra_info_val) {
@@ -245,7 +245,7 @@ function linkit_autocomplete($string = NULL) {
       // But the "$extra_info_key" is hard coded and cant be change by users or administratios so its ok to use t() this way.
       $information[] = t(drupal_ucfirst($extra_info_key)) . ':<span>' . $extra_info_val . '</span>';
     }
-    
+
     // Build the text
     $text = '<div class="clear-block">';
     $text .= '<div class="auto-item-title">' . check_plain($match['title']) . '</div>';
@@ -255,7 +255,7 @@ function linkit_autocomplete($string = NULL) {
     $text .= '</div>';
     $results[$val] = $text;
   }
- 
+
 
   drupal_json($results);
 }
@@ -266,7 +266,7 @@ function linkit_search_styled_link() {
     $string = check_plain($_GET['string']);
     $matches = module_invoke_all('linkit_get_search_styled_link', $string);
 
-    echo (isset($matches[0]) ? $matches[0] : '');
+    echo isset($matches[0]) ? $matches[0] : '';
   }
 }
 
@@ -318,7 +318,7 @@ function _linkit_form() {
   $form['link']['attributes']['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 0,
@@ -326,7 +326,7 @@ function _linkit_form() {
   $form['link']['attributes']['id'] = array(
     '#type' => 'textfield',
     '#title' => t('ID'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 1,
@@ -334,7 +334,7 @@ function _linkit_form() {
   $form['link']['attributes']['class'] = array(
     '#type' => 'textfield',
     '#title' => t('Class'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 2,
@@ -342,7 +342,7 @@ function _linkit_form() {
   $form['link']['attributes']['rel'] = array(
     '#type' => 'textfield',
     '#title' => t('Rel'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 3,
@@ -350,7 +350,7 @@ function _linkit_form() {
   $form['link']['attributes']['accesskey'] = array(
     '#type' => 'textfield',
     '#title' => t('Accesskey'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 4,
@@ -358,7 +358,7 @@ function _linkit_form() {
   $form['link']['attributes']['anchor'] = array(
     '#type' => 'textfield',
     '#title' => t('Anchor'),
-    '#maxlength' => 255,  
+    '#maxlength' => 255,
     '#size' => 40,
     '#default_value' => '',
     '#weight' => 5,
@@ -384,7 +384,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
   _linkit_add_settings('wysiwyg_' . $editor);
 
   switch ($editor) {
-    case 'tinymce':      
+    case 'tinymce':
       $plugins['linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/tinymce/',
         'filename' => 'editor_plugin.js',
@@ -393,7 +393,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
         'load' => TRUE,
       );
       break;
-    case 'ckeditor':      
+    case 'ckeditor':
       // notice: Big "L" in the name here! important
       $plugins['Linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/ckeditor/',
@@ -402,7 +402,7 @@ function linkit_wysiwyg_plugin($editor, $version) {
         'load' => TRUE,
       );
       break;
-    case 'fckeditor':      
+    case 'fckeditor':
       $plugins['linkit'] = array(
         'path' => drupal_get_path('module', 'linkit') . '/editors/fckeditor/',
         'buttons' => array('linkit' => t('Linkit')),
@@ -421,7 +421,7 @@ function _linkit_add_settings($editor) {
 
   if (!isset($editor_settings_added[$editor])) {
     $editor_settings_added[$editor] = TRUE;
-    
+
     // Add popup url
     $settings = array(
       'linkit' => array(
@@ -441,6 +441,6 @@ function _linkit_add_settings($editor) {
       ),
     );
     drupal_add_js($settings, 'setting');
-    
+
   }
 }

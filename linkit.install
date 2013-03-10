@@ -22,11 +22,11 @@ function linkit_requirements($phase) {
   switch ($phase) {
   case 'runtime':
     if (!module_exists('pathfilter') && !module_exists('pathologic')) {
-      $severity = REQUIREMENT_ERROR; 
+      $severity = REQUIREMENT_ERROR;
       $value = t('Please install pathfilter <strong>OR</strong> pathologic');
     }
     else {
-      $severity = REQUIREMENT_OK; 
+      $severity = REQUIREMENT_OK;
       $value = t('Ok');
     }
     $requirements['linkit_dependencies'] = array(
@@ -51,5 +51,5 @@ function linkit_update_6100() {
   $old = variable_get('linkit_node', array());
   $new = array('display_settings' => $old);
   variable_set('linkit_node', $new);
-  return $ret;  
+  return $ret;
 }

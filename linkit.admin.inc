@@ -23,11 +23,11 @@ function linkit_admin_settings() {
       'changed' => t('Display node changed time'),
       'show_unpublished' => t('Show unpublished nodes in the result'),
     );
-    
+
     if (module_exists('book')) {
       $node_display_settings_options += array('show_books' => t('Display the book a node belongs to'));
     }
-    
+
     $form['linkit_node'] = array(
       '#type' => 'fieldset',
       '#title' => t('Node settings'),
@@ -48,7 +48,7 @@ function linkit_admin_settings() {
       '#title' => t('Include these content types in the search result'),
       '#type' => 'checkboxes',
       '#options' => node_get_types('names'),
-      '#default_value' => $node_settings['content_types'], 
+      '#default_value' => $node_settings['content_types'],
       '#description' => t('If none is checked, all content types will be present in the search result.'),
     );
   }
@@ -58,7 +58,7 @@ function linkit_admin_settings() {
 
     // Prevent "PHP notice: Undefined variable"
     _linkit_taxonomy_get_default_settings($term_settings);
-    
+
     $term_display_settings_options = array(
       'show_parent' => t('Display the parent of the term'),
     );
@@ -80,7 +80,7 @@ function linkit_admin_settings() {
     );
   }
 
-  
+
   if (!count($form)) {
     // No linkit plugins is enabled that uses settings
     // Print a message about this
