@@ -29,6 +29,8 @@ Drupal.behaviors.linkitDashboard = {
       Drupal.linkit.requiredFieldsValidation();
     });
 
+    $(".ui-dialog-titlebar").show();
+
     // Run required field validation.
     Drupal.linkit.requiredFieldsValidation();
 

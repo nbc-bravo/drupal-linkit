@@ -20,7 +20,7 @@ Drupal.linkit.createModal = function() {
   // Create jQuery UI Dialog.
   .dialog(Drupal.linkit.modalOptions())
   // Remove the title bar from the modal.
-  .siblings(".ui-dialog-titlebar").remove();
+  .siblings(".ui-dialog-titlebar").hide();
 
   // Make the modal seem "fixed".
   $(window).bind("scroll resize", function() {
@@ -56,13 +56,18 @@ Drupal.linkit.modalOptions = function() {
     resizable: false,
     width: 520,
     position: ['center', 50],
-    overlay: {
-      backgroundColor: '#000000',
-      opacity: 0.4
-    },
     minHeight: 0,
-    zIndex : 210000,
-    close: Drupal.linkit.modalClose
+    zIndex: 210000,
+    close: Drupal.linkit.modalClose,
+    open: function (event, ui) {
+      // Change the overlay style.
+      $('.ui-widget-overlay').css({
+        opacity: 0.5,
+        filter: 'Alpha(Opacity=50)',
+        backgroundColor: '#FFFFFF'
+      });
+    },
+    title: 'Linkit'
   };
 };
 
