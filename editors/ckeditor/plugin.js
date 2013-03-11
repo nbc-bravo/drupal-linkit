@@ -7,7 +7,7 @@
 
   CKEDITOR.plugins.add( 'linkit', {
 
-    requires : [ 'fakeobjects', 'link' ],
+    requires : [ 'link' ],
 
     init: function( editor ) {
       // Add Button.
