@@ -111,7 +111,6 @@
         var element = CKEDITOR.plugins.link.getSelectedLink( editor ) || evt.data.element;
         if ( !element.isReadOnly() ) {
           if ( element.is( 'a' ) ) {
-            console.log(editor);
             editor.getSelection().selectElement( element );
             if (version >= 4) {
               editor.commands.linkit.exec();
