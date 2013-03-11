@@ -10,6 +10,11 @@
     requires : [ 'link' ],
 
     init: function( editor ) {
+
+      // Get the major CKeditor verison.
+      // We do not care about minor versions.
+      var version = parseInt(CKEDITOR.version);
+
       // Add Button.
       editor.ui.addButton( 'linkit', {
         label: 'Linkit',
