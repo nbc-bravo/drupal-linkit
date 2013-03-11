@@ -67,36 +67,65 @@
         }
       });
 
-      // Add it to the rightclick menu
-      if (editor.addMenuGroup) {
-        editor.addMenuGroup("Linkit", 100);
-      }
-
+      // If the "menu" plugin is loaded, register the menu items.
       if (editor.addMenuItems) {
+        // Use the default link menu group weight and subtract one.
+        var defaultMenuGroup = editor._.menuGroups.link;
+        editor.addMenuGroup("Linkit", defaultMenuGroup - 1);
+
         editor.addMenuItems({
           linkit: {
             label: 'Linkit',
             command: 'linkit',
             icon: this.path + 'linkit.png',
-            group : 'Linkit',
-            order : 0
+            group: 'Linkit',
+            order: 0
           }
         });
+
+        // Remove the default link option.
+        editor.removeMenuItem('link');
       }
 
+      // If the "contextmenu" plugin is loaded, register the listeners.
       if (editor.contextMenu) {
         editor.contextMenu.addListener(function(element, selection) {
           if (!element || element.isReadOnly() || (selection.getSelectedText().length < 1 && !element.is('a'))) {
             return null;
           }
-          return { linkit: CKEDITOR.TRISTATE_ON };
+
+          return {linkit: CKEDITOR.TRISTATE_OFF};
         });
       }
+
+      // Add a shortcut. Only CKeditor version 4 has this function.
+      if (version >= 4) {
+        editor.setKeystroke( CKEDITOR.CTRL + 76 /*L*/, 'linkit' );
+      }
+
+      // Add event listener.
+      editor.on( 'doubleclick', function( evt ) {
+        // Delete the default link dialog.
+        delete evt.data.dialog;
+
+        var element = CKEDITOR.plugins.link.getSelectedLink( editor ) || evt.data.element;
+        if ( !element.isReadOnly() ) {
+          if ( element.is( 'a' ) ) {
+            console.log(editor);
+            editor.getSelection().selectElement( element );
+            if (version >= 4) {
+              editor.commands.linkit.exec();
+            }
+            else if(version == 3) {
+              editor._.commands.linkit.exec();
+            }
+          }
+        }
+      });
 
       // Register an extra fucntion, this will be used in the modal.
       editor._.linkitFnNum = CKEDITOR.tools.addFunction( insertLink, editor );
     }
-
   });
 
   /**
