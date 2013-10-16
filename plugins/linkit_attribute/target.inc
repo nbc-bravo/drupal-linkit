@@ -27,7 +27,7 @@ function linkit_attribute_plugin_target($plugin, $settings = array()) {
   return array(
     '#type' => 'select',
     '#title' => $plugin['name'],
-    '#options' => array('_self' => '_self', '_blank' => '_blank', '_parent' => '_parent', '_top' => '_top'),
+    '#options' => array('' => '', '_self' => '_self', '_blank' => '_blank', '_parent' => '_parent', '_top' => '_top'),
     '#weight' => isset($settings['weight']) ? $settings['weight'] : 0,
   );
 }
