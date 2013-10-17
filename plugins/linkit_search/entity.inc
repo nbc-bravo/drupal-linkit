@@ -69,5 +69,14 @@ function linkit_entity_ctools_linkit_get_children($plugin, $parent) {
   }
 
   drupal_alter('linkit_search_plugin_entities', $plugins);
+
+  // Test the plugins.
+  foreach ($plugins as $plugin_name => $plugin) {
+    $tested_plugin = new $plugin['handler']['class']($plugin, new LinkitProfile());
+    if (isset($tested_plugin->unusable) && $tested_plugin->unusable) {
+      unset($plugins[$plugin_name]);
+    }
+  }
+
   return $plugins;
 }
