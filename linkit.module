@@ -887,7 +887,7 @@ function linkit_autocomplete_absolute_url($url, $parts) {
   // The URL is registerd by Drupal (Internal).
   if (isset($path_info['menu']) && $path_info['system_path'] !== FALSE) {
     $result = array(
-      'path' => url($path_info['menu']['path'], $url_options),  // @TODO: Handle insert_plugin settings.
+      'path' => linkit_get_insert_plugin_processed_path(linkit_get_active_profile(), $path_info['menu']['path'], $url_options),
       'title' => $path_info['menu']['title'] ? check_plain($path_info['menu']['title']) : check_plain($path_info['menu']['path']),
       'description' => check_plain($path_info['menu']['description']) . ' ' . t('This is an internal path.'),
       'addClass' => 'status-ok',
@@ -897,7 +897,7 @@ function linkit_autocomplete_absolute_url($url, $parts) {
   // have access to it or it does not exists.
   elseif ($path_info['target'] == 'internal') {
     $result = array(
-      'path' => url($path_info['path'], $url_options), // @TODO: Handle insert_plugin settings.
+      'path' => linkit_get_insert_plugin_processed_path(linkit_get_active_profile(), $path_info['path'], $url_options),
       'title' => t('Page not found'),
       'description' => t('This page does not exist or you do not have access to it.'),
       'addClass' => 'status-warning',
@@ -1071,4 +1071,34 @@ function linkit_get_profile_type($type) {
    default:
       return t('Can not find the profile type');
   }
+}
+/**
+ * Gets the path processed by the inputfilter choice.
+ *
+ * @param LinkitProfile $profile
+ *    The Linkit profile to use.
+ *
+ * @param $uri
+ *    The uri to act on.
+ *
+ * @param $options
+ *   An array of options to the URL function if its used.
+ *
+ * @return The processed uri.
+ */
+function linkit_get_insert_plugin_processed_path(LinkitProfile $profile, $uri, $options = array()) {
+    switch ($profile->data['insert_plugin']['url_method']) {
+      case LINKIT_URL_METHOD_RAW:
+        $path = $uri;
+       break;
+     case LINKIT_URL_METHOD_RAW_SLASH:
+       $options['alias'] = TRUE;
+       $path = url($uri, $options);
+       break;
+     case LINKIT_URL_METHOD_ALIAS:
+       $path = url($uri,  $options);
+       break;
+    }
+
+    return $path;
 }

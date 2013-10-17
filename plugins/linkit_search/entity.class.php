@@ -145,20 +145,8 @@ class LinkitSearchPluginEntity extends LinkitSearchPlugin {
         $options['language'] = $languages[$entity->language];
       }
     }
-
-    switch ($this->profile->data['insert_plugin']['url_method']) {
-      case LINKIT_URL_METHOD_RAW:
-        $path = $uri['path'];
-       break;
-     case LINKIT_URL_METHOD_RAW_SLASH:
-       $options['alias'] = TRUE;
-       $path = url($uri['path'], $options);
-       break;
-     case LINKIT_URL_METHOD_ALIAS:
-       $path = url($uri['path'],  $options);
-       break;
-    }
-
+    // Process the uri with the insert pluing.
+    $path = linkit_get_insert_plugin_processed_path($this->profile, $uri['path'], $options);
     return $path;
   }
 
