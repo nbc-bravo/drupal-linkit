@@ -96,13 +96,13 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
     $form['entity:file']['show_scheme'] = array(
       '#title' => t('Show file scheme'),
       '#type' => 'checkbox',
-      '#default_value' => isset($this->conf['show_scheme']) ? $this->conf['show_scheme'] : array()
+      '#default_value' => isset($this->conf['show_scheme']) ? $this->conf['show_scheme'] : '',
     );
 
     $form['entity:file']['group_by_scheme'] = array(
       '#title' => t('Group files by scheme'),
       '#type' => 'checkbox',
-      '#default_value' => isset($this->conf['group_by_scheme']) ? $this->conf['group_by_scheme'] : array(),
+      '#default_value' => isset($this->conf['group_by_scheme']) ? $this->conf['group_by_scheme'] : '',
     );
 
     $image_extra_info_options = array(
