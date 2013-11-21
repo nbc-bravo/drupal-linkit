@@ -82,6 +82,10 @@ function linkit_get_allowed_field_widget_types() {
 function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
   $instance = $form['#instance'];
 
+  if (isset($form['locked']) && $form['locked']) {
+    return;
+  }
+
   // Get allowed field types.
   $allowed_field_types = linkit_get_allowed_field_types();
   // Get allowed field widget types.
