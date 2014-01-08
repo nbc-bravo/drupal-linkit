@@ -17,7 +17,7 @@
 
       // Add Button.
       editor.ui.addButton( 'linkit', {
-        label: 'Linkit',
+        label: Drupal.t('Link to content'),
         command: 'linkit',
         icon: this.path + 'linkit.png'
       });
@@ -77,7 +77,7 @@
 
         editor.addMenuItems({
           linkit: {
-            label: 'Linkit',
+            label: Drupal.t('Link to content'),
             command: 'linkit',
             icon: this.path + 'linkit.png',
             group: 'Linkit',
