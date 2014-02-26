@@ -111,7 +111,7 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#title' => t('Enable Linkit for this field.'),
       '#default_value' => isset($instance['settings']['linkit']['enable'])
         ? $instance['settings']['linkit']['enable'] : 0,
-      '#description' => t('Do not use this for CKeditor and TinyMCE fields.'),
+      '#description' => t('Do not use this for CKeditor and TinyMCE fields. You will have to configure this on the wysiwyg/ckeditor profile.'),
     );
 
     $profiles = linkit_profile_field_load_all();
