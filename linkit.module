@@ -402,6 +402,9 @@ function linkit_library() {
     'js' => array(
       $path . '/editors/ckeditor/linkitDialog.js' => array('group' => JS_DEFAULT),
     ),
+    'dependencies' => array(
+      array('linkit', 'base'),
+    ),
   );
 
   // Linkit tinymce dialog script.
@@ -409,6 +412,9 @@ function linkit_library() {
     'title' => 'Linkit TinyMCE',
     'js' => array(
       $path . '/editors/tinymce/linkitDialog.js' => array('group' => JS_DEFAULT),
+    ),
+    'dependencies' => array(
+      array('linkit', 'base'),
     ),
   );
 
