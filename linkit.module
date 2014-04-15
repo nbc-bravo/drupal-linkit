@@ -989,6 +989,29 @@ function linkit_wysiwyg_plugin($editor, $version) {
 }
 
 /**
+ * Implements hook_wysiwyg_editor_settings_alter().
+ */
+function linkit_wysiwyg_editor_settings_alter(&$settings, $context) {
+  if ($context['profile']->editor == 'ckeditor') {
+    $button_exists = isset($context['profile']->settings['buttons']['linkit']);
+    if (!empty($context['profile']->settings['default_toolbar_grouping']) && $button_exists) {
+      foreach ($settings['toolbar'] as &$group) {
+        if ($group['name'] == 'links') {
+          array_unshift($group['items'], 'linkit');
+        }
+        if ($group['name'] == 'other') {
+          if (in_array('linkit', $group['items'])) {
+            unset($group['items'][array_search('linkit', $group['items'])]);
+            // Regenerate the keys.
+            $group['items'] = array_values($group['items']);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_ckeditor_plugin().
  */
 function linkit_ckeditor_plugin() {
