@@ -74,11 +74,13 @@ Drupal.linkit.modalOptions = function() {
 /**
  * Close the Linkit modal.
  */
-Drupal.linkit.modalClose = function () {
+Drupal.linkit.modalClose = function (e) {
   $('#linkit-modal').dialog('destroy').remove();
   // Make sure the current intstance settings are removed when the modal is
   // closed.
   Drupal.settings.linkit.currentInstance = {};
+
+  e.preventDefault();
 };
 
 /**
