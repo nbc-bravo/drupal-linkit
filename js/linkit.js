@@ -80,7 +80,14 @@ Drupal.linkit.modalClose = function (e) {
   // closed.
   Drupal.settings.linkit.currentInstance = {};
 
-  e.preventDefault();
+  // The event object does not have a preventDefault member in
+  // Internet Explorer prior to version 9.
+  if (e && e.preventDefault) {
+    e.preventDefault();
+  }
+  else {
+    return false;
+  }
 };
 
 /**
