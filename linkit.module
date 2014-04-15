@@ -425,7 +425,10 @@ function linkit_library() {
       $path . '/better-autocomplete/jquery.better-autocomplete.js' => array('group' => JS_LIBRARY),
     ),
     'css' => array(
-      $path . '/better-autocomplete/better-autocomplete.css' => array('group' => CSS_DEFAULT),
+      $path . '/better-autocomplete/better-autocomplete.css' => array(
+        'group' => CSS_DEFAULT,
+        'preprocess' => FALSE,
+      ),
     ),
   );
 
@@ -529,8 +532,8 @@ function linkit_dashboard_form($form, &$form_state) {
   }
 
   // Attach css to the form.
-  $form['#attached']['css'] = array(
-    drupal_get_path('module', 'linkit') . '/css/linkit.css',
+  $form['#attached']['css'][drupal_get_path('module', 'linkit') . '/css/linkit.css'] = array(
+    'preprocess' => FALSE,
   );
 
   // Attach js to the form.
