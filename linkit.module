@@ -1027,7 +1027,7 @@ function linkit_ckeditor_plugin() {
       'buttons' => array(
         'linkit' => array(
           'label' => 'Linkit',
-          'icon' => 'linkit.png',
+          'icon' => 'icons/linkit.png',
         ),
       ),
     ),
