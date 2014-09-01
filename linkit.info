@@ -1,6 +1,7 @@
 name = Linkit
 description = Provides an easy interface for inserting links.
 core = 7.x
+configure = admin/config/content/linkit
 dependencies[] = ctools
 dependencies[] = entity
 
