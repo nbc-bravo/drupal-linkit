@@ -1048,9 +1048,8 @@ function linkit_pre_render_editor_element($element) {
     if (!$profile) {
       return $element;
     }
-
     // Set the field ID.
-    $field_id = $element['value']['#id'];
+    $field_id = $element['#id'] . '-value';
 
     $field_js = array(
       'data' => array(
