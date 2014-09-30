@@ -182,8 +182,14 @@ function linkit_process_field_element($element, &$form_state, &$complete_form) {
 
     // Load the profile.
     $profile = linkit_profile_load($instance['settings']['linkit']['profile']);
+    if (!$profile) {
+      return $element;
+    }
     // Load the insert plugin for the profile.
     $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
+    if ($insert_plugin === NULL) {
+      return $element;
+    }
 
     // Set the field ID.
     $field_id = $element['#id'];
