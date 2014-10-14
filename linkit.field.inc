@@ -11,6 +11,7 @@ function linkit_linkit_allowed_field_types() {
   $allowed_field_types = array(
     'text',
     'text_long',
+    'text_with_summary',
     'link_field',
   );
   return $allowed_field_types;
@@ -35,6 +36,7 @@ function linkit_linkit_allowed_field_elements() {
   $allowed_elements = array(
     'textfield',
     'textarea',
+    'textarea_with_summary',
     'link_field',
   );
   return $allowed_elements;
@@ -59,6 +61,7 @@ function linkit_linkit_allowed_field_widget_types() {
   $allowed_field_widget_types = array(
     'text_textfield',
     'text_textarea',
+    'text_textarea_with_summary',
     'link_field',
   );
   return $allowed_field_widget_types;
