@@ -149,7 +149,7 @@ function linkit_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t('Button text that activates linkit modal.'),
       '#default_value' => isset($instance['settings']['linkit']['button_text'])
-        ? $instance['settings']['linkit']['button_text'] : 'Search',
+        ? $instance['settings']['linkit']['button_text'] : t('Search'),
     );
   }
 }
