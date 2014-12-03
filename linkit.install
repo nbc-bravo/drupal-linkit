@@ -83,7 +83,7 @@ function linkit_schema() {
 /**
  * Migrate settings from v2 to v3
  */
-function linkit_update_7301() {
+function linkit_update_7300() {
 
   // Get old profiles.
   $old_profiles = db_query("SELECT * FROM {linkit_profiles} ORDER BY weight DESC");
