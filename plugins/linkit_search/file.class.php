@@ -103,7 +103,7 @@ class LinkitSearchPluginFile extends LinkitSearchPluginEntity {
 
     // We can only support the download type if we have version 2.x of the file_entity module.
     if ($url_type == LINKIT_FILE_URL_TYPE_DOWNLOAD && !(module_exists('file_entity') && function_exists('file_entity_download_uri'))) {
-      $url_type = LINKIT_FILE_URL_TYPE_DIRECT;
+      $url_type =  $this->getDefaultUrlType();
     }
 
     switch ($url_type) {
