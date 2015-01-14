@@ -108,18 +108,18 @@
 
       // Add a shortcut. Only CKeditor version 4 has this function.
       if (version >= 4) {
-        editor.setKeystroke( CKEDITOR.CTRL + 76 /*L*/, 'linkit' );
+        editor.setKeystroke(CKEDITOR.CTRL + 76 /*L*/, 'linkit');
       }
 
       // Add event listener.
-      editor.on( 'doubleclick', function( evt ) {
+      editor.on('doubleclick', function(evt) {
         // Delete the default link dialog.
         delete evt.data.dialog;
 
-        var element = CKEDITOR.plugins.link.getSelectedLink( editor ) || evt.data.element;
-        if ( !element.isReadOnly() ) {
-          if ( element.is( 'a' ) ) {
-            editor.getSelection().selectElement( element );
+        var element = CKEDITOR.plugins.link.getSelectedLink(editor) || evt.data.element;
+        if (!element.isReadOnly()) {
+          if (element.is( 'a' )) {
+            editor.getSelection().selectElement(element);
             if (version >= 4) {
               editor.commands.linkit.exec();
             }
@@ -131,7 +131,7 @@
       });
 
       // Register an extra fucntion, this will be used in the modal.
-      editor._.linkitFnNum = CKEDITOR.tools.addFunction( insertLink, editor );
+      editor._.linkitFnNum = CKEDITOR.tools.addFunction(insertLink, editor);
     }
   });
 
