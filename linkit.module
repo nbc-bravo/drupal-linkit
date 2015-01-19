@@ -1139,14 +1139,14 @@ function linkit_get_insert_plugin_processed_path(LinkitProfile $profile, $uri, $
     switch ($profile->data['insert_plugin']['url_method']) {
       case LINKIT_URL_METHOD_RAW:
         $path = $uri;
-       break;
-     case LINKIT_URL_METHOD_RAW_SLASH:
-       $options['alias'] = TRUE;
-       $path = url($uri, $options);
-       break;
-     case LINKIT_URL_METHOD_ALIAS:
-       $path = url($uri,  $options);
-       break;
+        break;
+      case LINKIT_URL_METHOD_RAW_SLASH:
+        $options['alias'] = TRUE;
+        $path = url($uri, $options);
+        break;
+      case LINKIT_URL_METHOD_ALIAS:
+        $path = url($uri,  $options);
+        break;
     }
 
     return $path;
