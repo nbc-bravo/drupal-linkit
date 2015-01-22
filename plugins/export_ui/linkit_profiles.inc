@@ -106,7 +106,6 @@ function _linkit_build_profile_type_form_fields(&$form, LinkitProfile $profile) 
   $form['data']['profile_type'] = array(
     '#type' => 'fieldset',
     '#title' => t('Profile type'),
-    '#description' => t(''),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => FALSE,
@@ -143,7 +142,6 @@ function _linkit_build_profile_type_form_fields(&$form, LinkitProfile $profile) 
     '#empty_option' => t('- Select one or more text format- '),
     '#default_value' => isset($profile->data['text_formats'])
       ? $profile->data['text_formats'] : array(),
-    '#description' => t('.'),
     '#states' => array(
       'visible' => array(
         // While waiting for https://drupal.org/node/879580 to be commited, we
