@@ -687,12 +687,12 @@ function linkit_autocomplete(LinkitProfile $profile) {
 
   // Special for link to frontpage.
   if (strpos($search_string, 'front') !== FALSE) {
-    $results = array_merge($results, array(
+    $results[] = array(
       'title' => t('Frontpage'),
       'description' => 'The frontpage for this site.',
       'path' => url('<front>'),
       'group' => t('System'),
-    ));
+    );
   }
 
   // Let the Linkit search plugins do their job.
