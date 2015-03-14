@@ -338,7 +338,7 @@ function linkit_element_info_alter(&$types) {
     if (in_array('ckeditor_pre_render_text_format', $types['text_format']['#pre_render'])) {
       $types['text_format']['#pre_render'][] = 'linkit_pre_render_editor_element';
       // Add the linkit library for the editor.
-      drupal_add_library('linkit', 'ckeditor');
+      $types['text_format']['#attached']['library'][] = array('linkit', 'ckeditor');
     }
   }
 
