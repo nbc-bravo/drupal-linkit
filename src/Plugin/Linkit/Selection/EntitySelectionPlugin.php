@@ -165,18 +165,18 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     $result = $query->execute();
 
     if (empty($result)) {
-      return array();
+      return [];
     }
 
     $matches = [];
     $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
     foreach ($entities as $entity_id => $entity) {
-      $matches[] = array(
+      $matches[] = [
         'title' => $this->buildLabel($entity),
         'description' => $this->buildDescription($entity),
         'path' => $this->buildPath($entity),
         'group' => $this->buildGroup($entity),
-      );
+      ];
     }
 
     return $matches;
