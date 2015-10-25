@@ -1,6 +1,6 @@
 services:
-  plugin.manager.linkit.attribute_plugin:
-    class: Drupal\linkit\AttributePluginManager
+  plugin.manager.linkit.attribute:
+    class: Drupal\linkit\AttributeManager
     parent: default_plugin_manager
 
   plugin.manager.linkit.selection_plugin:

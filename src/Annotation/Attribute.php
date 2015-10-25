@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Annotation\AttributePlugin.
+ * Contains \Drupal\linkit\Annotation\Attribute.
  */
 
 namespace Drupal\linkit\Annotation;
@@ -16,14 +16,14 @@ use Drupal\Component\Annotation\Plugin;
  *
  * For a working example, see \Drupal\linkit\Plugin\Linkit\Attribute\Title
  *
- * @see \Drupal\linkit\AttributePluginInterface
- * @see \Drupal\linkit\AttributePluginBase
- * @see \Drupal\linkit\AttributePluginManager
+ * @see \Drupal\linkit\AttributeInterface
+ * @see \Drupal\linkit\AttributeBase
+ * @see \Drupal\linkit\AttributeManager
  * @see plugin_api
  *
  * @Annotation
  */
-class AttributePlugin extends Plugin {
+class Attribute extends Plugin {
 
   /**
    * The plugin ID.
@@ -33,7 +33,7 @@ class AttributePlugin extends Plugin {
   public $id;
 
   /**
-   * The human-readable name of the attribute plugin.
+   * The human-readable name of the attribute.
    *
    * The string should be wrapped in a @Translation().
    *
@@ -42,7 +42,7 @@ class AttributePlugin extends Plugin {
   public $label;
 
   /**
-   * The real HTML attribute name for this attribute plugin.
+   * The real HTML attribute name for this attribute.
    *
    * @var string
    */
@@ -50,7 +50,7 @@ class AttributePlugin extends Plugin {
   // @TODO: Fix this!
 
   /**
-   * A brief description of the attribute plugin.
+   * A brief description of the attribute.
    *
    * This will be shown when adding or configuring a profile.
    *
@@ -61,7 +61,7 @@ class AttributePlugin extends Plugin {
   public $description = '';
 
   /**
-   * A default weight for the attribute plugin.
+   * A default weight for the attribute.
    *
    * @var int (optional)
    */

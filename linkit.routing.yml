@@ -30,27 +30,27 @@ entity.linkit_profile.delete_form:
   requirements:
     _permission: 'administer linkit profiles'
 
-entity.linkit_profile.attribute_plugins:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes-plugins'
+entity.linkit_profile.attributes:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\OverviewForm'
-    _title: 'Manage attribute plugins'
+    _title: 'Manage attributes'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.attribute_plugin.add:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes-plugins/add'
+linkit.attributes.add:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/add'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\AddForm'
-    _title: 'Add attribute plugins'
+    _title: 'Add attributes'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.attribute_plugin.remove:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/attribute-plugins/remove/{plugin_id}'
+linkit.attributes.remove:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/remove/{plugin_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
-    _title: 'Remove an attribute plugin'
+    _title: 'Remove an attributes'
   requirements:
     _permission: 'administer linkit profiles'
 

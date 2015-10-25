@@ -11,7 +11,6 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
-
 /**
  * Base form for profile add and edit forms.
  */

@@ -9,36 +9,36 @@ namespace Drupal\linkit\Form\Attribute;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\linkit\AttributePluginManager;
+use Drupal\linkit\AttributeManager;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form to apply attributes plugins to a profile.
+ * Provides a form to apply attributes to a profile.
  */
 class AddForm extends FormBase {
 
   /**
-   * The profiles to which the attribute plugins will be applied.
+   * The profiles to which the attributes will be applied.
    *
    * @var \Drupal\linkit\ProfileInterface
    */
   protected $linkitProfile;
 
   /**
-   * The attribute plugin manager.
+   * The attribute manager.
    *
-   * @var \Drupal\linkit\AttributePluginManager
+   * @var \Drupal\linkit\AttributeManager
    */
   protected $manager;
 
   /**
    * Constructs a new AddForm.
    *
-   * @param \Drupal\linkit\AttributePluginManager $manager
-   *   The attribute plugin manager.
+   * @param \Drupal\linkit\AttributeManager $manager
+   *   The attribute manager.
    */
-  public function __construct(AttributePluginManager $manager) {
+  public function __construct(AttributeManager $manager) {
     $this->manager = $manager;
   }
 
@@ -47,7 +47,7 @@ class AddForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.linkit.attribute_plugin')
+      $container->get('plugin.manager.linkit.attribute')
     );
   }
 
@@ -55,7 +55,7 @@ class AddForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return "linkit_attribute_plugin_add_form";
+    return "linkit_attribute_add_form";
   }
 
   /**
@@ -65,7 +65,7 @@ class AddForm extends FormBase {
     $this->linkitProfile = $linkit_profile;
 
     $header = array(
-      'label' => $this->t('Attribute plugin'),
+      'label' => $this->t('Attributes'),
       'description' => $this->t('Description'),
     );
 
@@ -73,7 +73,7 @@ class AddForm extends FormBase {
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $this->buildRows(),
-      '#empty' => $this->t('No attribute plugins available.'),
+      '#empty' => $this->t('No attribute available.'),
     );
 
     $form['actions'] = array('#type' => 'actions');
@@ -87,7 +87,7 @@ class AddForm extends FormBase {
     $form['actions']['cancel'] = array(
       '#type' => 'link',
       '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('attribute-plugins'),
+      '#url' => $this->linkitProfile->urlInfo('attributes'),
       '#attributes' => ['class' => ['button']],
     );
 
@@ -104,19 +104,18 @@ class AddForm extends FormBase {
       $plugin = array(
         'id' => $plugin_id,
       );
-      $this->linkitProfile->addAttributePlugin($plugin);
+      $this->linkitProfile->addAttribute($plugin);
     }
 
     $this->linkitProfile->save();
 
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('attribute-plugins'));
+    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('attributes'));
   }
 
   /**
    * Builds the table rows.
    *
-   * Only attributes plugins that is not already applied to the profile are
-   * shown.
+   * Only attributes that is not already applied to the profile are shown.
    *
    * @return array
    *   An array of table rows.
@@ -124,11 +123,11 @@ class AddForm extends FormBase {
   private function buildRows() {
     $rows = array();
 
-    $applied_plugins = $this->linkitProfile->getAttributePlugins()->getConfiguration();
+    $applied_plugins = $this->linkitProfile->getAttributes()->getConfiguration();
     $all_plugins = $this->manager->getDefinitions();
 
     foreach (array_diff_key($all_plugins, $applied_plugins) as $definition) {
-      /** @var \Drupal\linkit\AttributePluginInterface $plugin */
+      /** @var \Drupal\linkit\AttributeInterface $plugin */
       $plugin = $this->manager->createInstance($definition['id']);
 
       $row = array(

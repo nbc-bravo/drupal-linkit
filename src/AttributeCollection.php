@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\AttributePluginCollection.
+ * Contains \Drupal\linkit\AttributeCollection.
  */
 
 namespace Drupal\linkit;
@@ -12,10 +12,10 @@ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 /**
  * A collection of attribute plugins.
  */
-class AttributePluginCollection extends DefaultLazyPluginCollection {
+class AttributeCollection extends DefaultLazyPluginCollection {
 
   /**
-   * All possible attribute plugin IDs.
+   * All possible attribute IDs.
    *
    * @var array
    */
@@ -24,7 +24,7 @@ class AttributePluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\linkit\AttributePluginInterface
+   * @return \Drupal\linkit\AttributeInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

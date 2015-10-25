@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\AttributePluginManager.
+ * Contains \Drupal\linkit\AttributeManager.
  */
 
 namespace Drupal\linkit;
@@ -12,18 +12,18 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
 /**
- * Manages attribute plugins.
+ * Manages attributes.
  */
-class AttributePluginManager extends DefaultPluginManager {
+class AttributeManager extends DefaultPluginManager {
 
   /**
    * {@inheritdoc}
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/Linkit/Attribute', $namespaces, $module_handler, 'Drupal\linkit\AttributePluginInterface', 'Drupal\linkit\Annotation\AttributePlugin');
+    parent::__construct('Plugin/Linkit/Attribute', $namespaces, $module_handler, 'Drupal\linkit\AttributeInterface', 'Drupal\linkit\Annotation\Attribute');
 
     $this->alterInfo('linkit_attribute');
-    $this->setCacheBackend($cache_backend, 'linkit_attribute_plugins');
+    $this->setCacheBackend($cache_backend, 'linkit_attributes');
   }
 
 }

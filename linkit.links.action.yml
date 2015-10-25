@@ -10,9 +10,9 @@ linkit.selection_plugin.add:
   appears_on:
     - entity.linkit_profile.selection_plugins
 
-linkit.attribute_plugin.add:
-  route_name: linkit.attribute_plugin.add
-  title: 'Add attribute plugins'
+linkit.attributes.add:
+  route_name: linkit.attributes.add
+  title: 'Add attributes'
   appears_on:
-    - entity.linkit_profile.attribute_plugins
+    - entity.linkit_profile.attributes
 

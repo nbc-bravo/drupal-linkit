@@ -51,74 +51,55 @@ interface ProfileInterface extends ConfigEntityInterface {
   public function setAutocompleteConfiguration(array $autocomplete_configuration);
 
   /**
-   * Returns a specific attribute plugin.
+   * Returns a specific attribute.
    *
-   * @param string $attribute_plugin_id
-   *   The attribute plugin ID.
+   * @param string $attribute_id
+   *   The attribute ID.
    *
-   * @return \Drupal\linkit\AttributePluginInterface
-   *   The attribute plugin object.
+   * @return \Drupal\linkit\AttributeInterface
+   *   The attribute object.
    */
-  public function getAttributePlugin($attribute_plugin_id);
+  public function getAttribute($attribute_id);
 
   /**
-   * Returns the attribute plugins for this profile.
+   * Returns the attributes for this profile.
    *
-   * @return \Drupal\linkit\AttributePluginCollection|\Drupal\linkit\AttributePluginInterface[]
-   *   The attribute plugin collection.
+   * @return \Drupal\linkit\AttributeCollection|\Drupal\linkit\AttributeInterface[]
+   *   The attribute collection.
    */
-  public function getAttributePlugins();
+  public function getAttributes();
 
   /**
-   * Adds an attribute plugin to this profile.
+   * Adds an attribute to this profile.
    *
    * @param array $configuration
-   *   An array of attribute plugin configuration.
+   *   An array of attribute configuration.
    *
    * @return $this
    */
-  public function addAttributePlugin(array $configuration);
+  public function addAttribute(array $configuration);
 
   /**
-   * Removes an attribute plugin from this profile.
+   * Removes an attribute from this profile.
    *
-   * @param string $instance_id
-   *  The ID of the attribute plugin to remove.
+   * @param string $attribute_id
+   *  The attribute ID.
    *
    * @return $this
    */
-  public function removeAttributePlugin($instance_id);
+  public function removeAttribute($attribute_id);
 
   /**
-   * Sets the configuration for an attribute plugin instance.
+   * Sets the configuration for an attribute instance.
    *
-   * @param string $instance_id
-   *   The ID of the attribute plugin to set the configuration for.
+   * @param string $attribute_id
+   *   The ID of the attribute to set the configuration for.
    * @param array $configuration
-   *   The attribute plugin configuration to set.
+   *   The attribute configuration to set.
    *
    * @return $this
    */
-  public function setAttributePluginConfig($instance_id, array $configuration);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  public function setAttributeConfig($attribute_id, array $configuration);
 
   /**
    * Returns a specific selection plugin.

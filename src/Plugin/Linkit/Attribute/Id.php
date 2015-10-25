@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Id attribute plugin.
+ * Id attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "id",
  *   label = @Translation("Id"),
  *   description = @Translation("Basic input field for the id attribute."),
  * )
  */
-class Id extends AttributePluginBase {
+class Id extends AttributeBase {
 
   /**
    * {@inheritdoc}

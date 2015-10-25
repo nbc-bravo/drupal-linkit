@@ -109,15 +109,15 @@ class LinkitEditorDialog extends FormBase {
       '#autocomplete_route_parameters' => ['linkit_profile_id' => $linkit_profile_id],
     ];
 
-    $attribute_plugins = $this->linkitProfile->getAttributePlugins();
+    $attributes = $this->linkitProfile->getAttributes();
 
-    if (!empty($attribute_plugins)) {
+    if (!empty($attributes)) {
       $form['linkit_attributes'] = [
         '#type' => 'details',
         '#title' => $this->t('Attributes'),
       ];
 
-      foreach ($attribute_plugins as $plugin) {
+      foreach ($attributes as $plugin) {
         $form['linkit_attributes'][$plugin->getPluginId()] = $plugin->buildFormElement($input[$plugin->getPluginId()]);
 
         $form['linkit_attributes'][$plugin->getPluginId()] += [

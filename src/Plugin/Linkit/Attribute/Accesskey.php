@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Accesskey attribute plugin.
+ * Accesskey attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "accesskey",
  *   label = @Translation("Accesskey"),
  *   description = @Translation("Basic input field for the accesskey attribute.")
  * )
  */
-class Accesskey extends AttributePluginBase {
+class Accesskey extends AttributeBase {
 
   /**
    * {@inheritdoc}

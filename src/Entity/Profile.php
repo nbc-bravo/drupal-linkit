@@ -7,10 +7,9 @@
 
 namespace Drupal\linkit\Entity;
 
-use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
-use Drupal\linkit\AttributePluginCollection;
+use Drupal\linkit\AttributeCollection;
 use Drupal\linkit\ProfileInterface;
 use Drupal\linkit\SelectionPluginCollection;
 
@@ -38,7 +37,7 @@ use Drupal\linkit\SelectionPluginCollection;
  *     "collection" = "/admin/config/content/linkit",
  *     "edit-form" = "/admin/config/content/linkit/manage/{linkit_profile}",
  *     "delete-form" = "/admin/config/content/linkit/manage/{linkit_profile}/delete",
- *     "attribute-plugins" = "/admin/config/content/linkit/manage/{linkit_profile}/attribute-plugins",
+ *     "attributes" = "/admin/config/content/linkit/manage/{linkit_profile}/attributes",
  *     "selection-plugins" = "/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins",
  *   },
  *   config_export = {
@@ -46,7 +45,7 @@ use Drupal\linkit\SelectionPluginCollection;
  *     "label",
  *     "description",
  *     "autocomplete_configuration",
- *     "attributePlugins",
+ *     "attributes",
  *     "selectionPlugins"
  *   }
  * )
@@ -92,27 +91,26 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   ];
 
   /**
-   * Configured attribute plugins for this profile.
+   * Configured attribute for this profile.
    *
-   * An associative array of attribute plugins assigned to the profile, keyed by
-   * the instance ID of each attribute plugin and using the properties:
-   * - id: The plugin ID of the attribute plugin instance.
-   * - status: (optional) A Boolean indicating whether the attribute plugin is
-   *   enabled in the profile. Defaults to FALSE.
-   * - weight: (optional) The weight of the attribute plugin in the profile.
+   * An associative array of attribute assigned to the profile, keyed by the
+   * attribute id of each attribute and using the properties:
+   * - id: The plugin ID of the attribute instance.
+   * - status: (optional) A Boolean indicating whether the attribute is enabled
+   *   in the profile. Defaults to FALSE.
+   * - weight: (optional) The weight of the attribute in the profile.
    *   Defaults to 0.
    *
    * @var array
    */
-  protected $attributePlugins = [];
+  protected $attributes = [];
 
   /**
-   * Holds the collection of attribute plugins that are attached to this
-   * profile.
+   * Holds the collection of attributes that are attached to this profile.
    *
-   * @var \Drupal\linkit\AttributePluginCollection
+   * @var \Drupal\linkit\AttributeCollection
    */
-  protected $attributePluginCollection;
+  protected $attributeCollection;
 
   /**
    * Configured selection plugins for this profile.
@@ -170,44 +168,44 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   /**
    * {@inheritdoc}
    */
-  public function getAttributePlugin($attribute_plugin_id) {
-    return $this->getAttributePlugins()->get($attribute_plugin_id);
+  public function getAttribute($attribute_id) {
+    return $this->getAttributes()->get($attribute_id);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAttributePlugins() {
-    if (!$this->attributePluginCollection) {
-      $this->attributePluginCollection = new AttributePluginCollection($this->getAttributePluginManager(), $this->attributePlugins);
-      $this->attributePluginCollection->sort();
+  public function getAttributes() {
+    if (!$this->attributeCollection) {
+      $this->attributeCollection = new AttributeCollection($this->getAttributeManager(), $this->attributes);
+      $this->attributeCollection->sort();
     }
-    return $this->attributePluginCollection;
+    return $this->attributeCollection;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function addAttributePlugin(array $configuration) {
-    $this->getAttributePlugins()->addInstanceId($configuration['id'], $configuration);
+  public function addAttribute(array $configuration) {
+    $this->getAttributes()->addInstanceId($configuration['id'], $configuration);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function removeAttributePlugin($instance_id) {
-    unset($this->attributePlugins[$instance_id]);
-    $this->getAttributePlugins()->removeInstanceId($instance_id);
+  public function removeAttribute($attribute_id) {
+    unset($this->attributes[$attribute_id]);
+    $this->getAttributes()->removeInstanceId($attribute_id);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setAttributePluginConfig($instance_id, array $configuration) {
-    $this->attributePlugins[$instance_id] = $configuration;
-    $this->getAttributePlugins()->setInstanceConfiguration($instance_id, $configuration);
+  public function setAttributeConfig($attribute_id, array $configuration) {
+    $this->attributes[$attribute_id] = $configuration;
+    $this->getAttributes()->setInstanceConfiguration($attribute_id, $configuration);
     return $this;
   }
 
@@ -260,19 +258,19 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    */
   public function getPluginCollections() {
     return array(
-      'attributePlugins' => $this->getAttributePlugins(),
+      'attributes' => $this->getAttributes(),
       'selectionPlugins' => $this->getSelectionPlugins(),
     );
   }
 
   /**
-   * Returns the attribute plugin manager.
+   * Returns the attribute manager.
    *
    * @return \Drupal\Component\Plugin\PluginManagerInterface
-   *   The attribute plugin manager.
+   *   The attribute manager.
    */
-  protected function getAttributePluginManager() {
-    return \Drupal::service('plugin.manager.linkit.attribute_plugin');
+  protected function getAttributeManager() {
+    return \Drupal::service('plugin.manager.linkit.attribute');
   }
 
   /**

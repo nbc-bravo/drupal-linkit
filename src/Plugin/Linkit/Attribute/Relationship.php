@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Relationship attribute plugin.
+ * Relationship attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "relationship",
  *   label = @Translation("Relationship"),
  *   description = @Translation("Basic input field for the relationship attribute."),
  * )
  */
-class Relationship extends AttributePluginBase {
+class Relationship extends AttributeBase {
 
   /**
    * {@inheritdoc}

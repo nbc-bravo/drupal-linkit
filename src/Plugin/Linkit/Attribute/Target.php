@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Target attribute plugin.
+ * Target attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "target",
  *   label = @Translation("Target"),
  *   description = @Translation("Basic input field for the target attribute."),
  * )
  */
-class Target extends AttributePluginBase {
+class Target extends AttributeBase {
 
   /**
    * {@inheritdoc}

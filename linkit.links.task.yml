@@ -8,8 +8,8 @@ entity.linkit_profile.selection_plugins:
   title: 'Manage selection plugins'
   base_route: entity.linkit_profile.edit_form
   weight: 5
-entity.linkit_profile.attribute_plugins:
-  route_name: entity.linkit_profile.attribute_plugins
-  title: 'Manage attributes plugins'
+entity.linkit_profile.attributes:
+  route_name: entity.linkit_profile.attributes
+  title: 'Manage attributes'
   base_route: entity.linkit_profile.edit_form
   weight: 10

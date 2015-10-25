@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\AttributePluginBase.
+ * Contains \Drupal\linkit\AttributeBase.
  */
 
 namespace Drupal\linkit;
@@ -12,16 +12,15 @@ use Drupal\Core\Plugin\PluginBase;
 /**
  * Provides a base class for attribute plugins.
  *
- * @see \Drupal\linkit\Annotation\AttributePlugin
- * @see \Drupal\linkit\AttributePluginBase
- * @see \Drupal\linkit\AttributePluginManager
+ * @see \Drupal\linkit\Annotation\Attribute
+ * @see \Drupal\linkit\AttributeBase
+ * @see \Drupal\linkit\AttributeManager
  * @see plugin_api
  */
-abstract class AttributePluginBase extends PluginBase implements AttributePluginInterface {
+abstract class AttributeBase extends PluginBase implements AttributeInterface {
 
   /**
-   * The weight of the attribute plugin compared to others in an attribute
-   * plugin collection.
+   * The weight of the attribute compared to others in an attribute collection.
    *
    * @var int
    */

@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Title attribute plugin.
+ * Title attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "title",
  *   label = @Translation("Title"),
  *   description = @Translation("Basic input field for the title attribute.")
  * )
  */
-class Title extends AttributePluginBase {
+class Title extends AttributeBase {
 
   /**
    * {@inheritdoc}

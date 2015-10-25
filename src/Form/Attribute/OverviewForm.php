@@ -10,12 +10,12 @@ namespace Drupal\linkit\Form\Attribute;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\linkit\AttributePluginManager;
+use Drupal\linkit\AttributeManager;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides an overview form for attribute plugins on a profile.
+ * Provides an overview form for attribute on a profile.
  */
 class OverviewForm extends FormBase {
 
@@ -27,19 +27,19 @@ class OverviewForm extends FormBase {
   private $linkitProfile;
 
   /**
-   * The attribute plugin manager.
+   * The attribute manager.
    *
-   * @var \Drupal\linkit\AttributePluginManager
+   * @var \Drupal\linkit\AttributeManager
    */
   protected $manager;
 
   /**
    * Constructs a new OverviewForm.
    *
-   * @param \Drupal\linkit\AttributePluginManager $manager
-   *   The attribute plugin manager.
+   * @param \Drupal\linkit\AttributeManager $manager
+   *   The attribute manager.
    */
-  public function __construct(AttributePluginManager $manager) {
+  public function __construct(AttributeManager $manager) {
     $this->manager = $manager;
   }
 
@@ -48,7 +48,7 @@ class OverviewForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.linkit.attribute_plugin')
+      $container->get('plugin.manager.linkit.attribute')
     );
   }
 
@@ -83,7 +83,7 @@ class OverviewForm extends FormBase {
       ],
     ];
 
-    foreach ($this->linkitProfile->getAttributePlugins() as $id => $attribute) {
+    foreach ($this->linkitProfile->getAttributes() as $id => $attribute) {
       $form['plugins'][$id]['#attributes']['class'][] = 'draggable';
       $form['plugins'][$id]['#weight'] = $attribute->getWeight();
 
@@ -110,7 +110,7 @@ class OverviewForm extends FormBase {
 
       $form['plugins'][$id]['operations']['#links']['delete'] = [
         'title' => t('Remove'),
-        'url' => Url::fromRoute('linkit.attribute_plugin.remove', [
+        'url' => Url::fromRoute('linkit.attributes.remove', [
           'linkit_profile' =>  $this->linkitProfile->id(),
           'plugin_id' => $id,
         ]),
@@ -132,8 +132,8 @@ class OverviewForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($form_state->getValue('plugins') as $id => $plugin_data) {
-      if ($this->linkitProfile->getAttributePlugins()->has($id)) {
-        $this->linkitProfile->getAttributePlugin($id)->setWeight($plugin_data['weight']);
+      if ($this->linkitProfile->getAttributes()->has($id)) {
+        $this->linkitProfile->getAttribute($id)->setWeight($plugin_data['weight']);
       }
     }
     $this->linkitProfile->save();

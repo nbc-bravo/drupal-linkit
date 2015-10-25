@@ -19,7 +19,7 @@ linkit.linkit_profile.*:
           type: integer
         timeout:
           type: integer
-    attributePlugins:
+    attributes:
       type: sequence
       sequence:
         type: mapping

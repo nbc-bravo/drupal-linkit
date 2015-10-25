@@ -7,18 +7,18 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
-use Drupal\linkit\AttributePluginBase;
+use Drupal\linkit\AttributeBase;
 
 /**
- * Class attribute plugin.
+ * Class attribute.
  *
- * @AttributePlugin(
+ * @Attribute(
  *   id = "class",
  *   label = @Translation("Class"),
  *   description = @Translation("Basic input field for the class attribute."),
  * )
  */
-class Clazz extends AttributePluginBase {
+class Clazz extends AttributeBase {
 
   /**
    * {@inheritdoc}
