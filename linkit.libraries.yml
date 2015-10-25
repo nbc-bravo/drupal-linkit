@@ -1,0 +1,13 @@
+linkit.autocomplete:
+  version: VERSION
+  js:
+    js/autocomplete.js: {}
+  css:
+    component:
+      css/linkit.module.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.ajax
+    - core/jquery.ui.autocomplete

@@ -1,0 +1,69 @@
+# Schema for the configuration files of the Linkit module.
+
+linkit.linkit_profile.*:
+  type: config_entity
+  mapping:
+    label:
+      type: label
+      label: 'Name'
+    id:
+      type: string
+    description:
+      type: string
+    autocomplete_configuration:
+      type: mapping
+      mapping:
+        character_limit:
+          type: integer
+        key_press_delay:
+          type: integer
+        timeout:
+          type: integer
+    attributePlugins:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          id:
+            type: string
+          weight:
+            type: integer
+    selectionPlugins:
+      type: linkit.plugin.selection.[%parent.id]
+
+linkit.plugin.selection:
+  type: sequence
+  sequence:
+    type: mapping
+    mapping:
+      id:
+        type: string
+      data:
+        type: linkit.plugin.selection.[%parent.id]
+      weight:
+        type: integer
+
+linkit.selection_plugin.*:
+  type: linkit.plugin.selection
+
+linkit.selection_plugin.entity:
+  type: linkit.plugin.selection
+  mapping:
+    result_description:
+      type: string
+    bundles:
+      type: sequence
+      sequence:
+        type: string
+    group_by_bundle:
+      type: boolean
+      nullable: false
+
+linkit.selection_plugin.entity:*:
+  type: linkit.selection_plugin.entity
+
+linkit.selection_plugin.entity:node:
+  type: linkit.selection_plugin.entity
+  mapping:
+    include_unpublished:
+      type: boolean

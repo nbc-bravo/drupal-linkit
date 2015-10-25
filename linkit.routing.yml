@@ -1,0 +1,102 @@
+entity.linkit_profile.collection:
+  path: '/admin/config/content/linkit'
+  defaults:
+    _entity_list: 'linkit_profile'
+    _title: 'Linkit profiles'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+entity.linkit_profile.add_form:
+  path: '/admin/config/content/linkit/add'
+  defaults:
+    _entity_form: linkit_profile.add
+    _title: 'Add profile'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+entity.linkit_profile.edit_form:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}'
+  defaults:
+    _entity_form: linkit_profile.edit
+    _title: 'Edit profile'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+entity.linkit_profile.delete_form:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/delete'
+  defaults:
+    _entity_form: linkit_profile.delete
+    _title: 'Delete profile'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+entity.linkit_profile.attribute_plugins:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes-plugins'
+  defaults:
+    _form: '\Drupal\linkit\Form\Attribute\OverviewForm'
+    _title: 'Manage attribute plugins'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.attribute_plugin.add:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes-plugins/add'
+  defaults:
+    _form: '\Drupal\linkit\Form\Attribute\AddForm'
+    _title: 'Add attribute plugins'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.attribute_plugin.remove:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attribute-plugins/remove/{plugin_id}'
+  defaults:
+    _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
+    _title: 'Remove an attribute plugin'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+entity.linkit_profile.selection_plugins:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins'
+  defaults:
+    _form: '\Drupal\linkit\Form\Selection\OverviewForm'
+    _title: 'Manage selection plugins'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.selection_plugin.add:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/add'
+  defaults:
+    _form: '\Drupal\linkit\Form\Selection\AddForm'
+    _title: 'Add selection plugins'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.selection_plugin.remove:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/remove/{plugin_id}'
+  defaults:
+    _form: '\Drupal\linkit\Form\Selection\DeleteForm'
+    _title: 'Remove a selection plugin'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.selection_plugin.edit:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/{plugin_id}'
+  defaults:
+    _form: '\Drupal\linkit\Form\Selection\EditForm'
+    _title: 'Edit selection plugin'
+  requirements:
+    _permission: 'administer linkit profiles'
+
+linkit.linkit_dialog:
+  path: '/linkit/dialog/linkit/{filter_format}'
+  defaults:
+    _form: '\Drupal\linkit\Form\LinkitEditorDialog'
+    _title: 'Add link'
+  requirements:
+    _entity_access: 'filter_format.use'
+
+linkit.autocomplete:
+  path: '/linkit/autocomplete/{linkit_profile_id}'
+  defaults:
+    _controller: '\Drupal\linkit\Controller\AutocompleteController::autocomplete'
+  requirements:
+    _access: 'TRUE'

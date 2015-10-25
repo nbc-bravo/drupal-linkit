@@ -1,0 +1,15 @@
+entity.linkit_profile.edit_form:
+  route_name: entity.linkit_profile.edit_form
+  title: 'Edit'
+  base_route: entity.linkit_profile.edit_form
+  weight: 0
+entity.linkit_profile.selection_plugins:
+  route_name: entity.linkit_profile.selection_plugins
+  title: 'Manage selection plugins'
+  base_route: entity.linkit_profile.edit_form
+  weight: 5
+entity.linkit_profile.attribute_plugins:
+  route_name: entity.linkit_profile.attribute_plugins
+  title: 'Manage attributes plugins'
+  base_route: entity.linkit_profile.edit_form
+  weight: 10

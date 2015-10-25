@@ -1,0 +1,6 @@
+{
+  "name": "drupal/linkit",
+  "description": "Linkit",
+  "type": "drupal-module",
+  "license": "GPL-2.0+"
+}

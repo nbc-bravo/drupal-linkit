@@ -1,0 +1,17 @@
+/**
+ * @file
+ * Stylesheet for the Linkit module.
+ */
+
+.js input.form-linkit-autocomplete {
+  background: url('/core/misc/throbber-inactive.png') no-repeat 100% center;
+}
+.js[dir="rtl"] input.form-linkit-autocomplete {
+  background-position: 0 center;
+}
+.js input.form-linkit-autocomplete.ui-autocomplete-loading {
+  background: url('/core/misc/throbber-active.gif') 100% center;
+}
+.js[dir="rtl"] input.form-linkit-autocomplete.ui-autocomplete-loading {
+  background-position: 0 center;
+}

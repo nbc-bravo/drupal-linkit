@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ *
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function linkit_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'entity.linkit_profile.attributes':
+      return '<p>' . t('Attributes are HTML attributes that will be attached to the insert plugin.') . '</p>';
+      break;
+  }
+}
