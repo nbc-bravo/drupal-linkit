@@ -10,7 +10,9 @@ namespace Drupal\linkit\Plugin\Linkit\Selection;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\linkit\SelectionPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -38,6 +40,20 @@ class EntitySelectionPlugin extends SelectionPluginBase {
   protected $entityManager;
 
   /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * The target entity type id
    *
    * @var string
@@ -47,7 +63,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityManagerInterface $entity_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler,   AccountInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (empty($plugin_definition['target_entity'])) {
@@ -55,6 +71,8 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     }
     $this->database = $database;
     $this->entityManager = $entity_manager;
+    $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
     $this->target_type = $plugin_definition['target_entity'];
   }
 
@@ -67,7 +85,9 @@ class EntitySelectionPlugin extends SelectionPluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('database'),
-      $container->get('entity.manager')
+      $container->get('entity.manager'),
+      $container->get('module_handler'),
+      $container->get('current_user')
     );
   }
 
@@ -225,7 +245,8 @@ class EntitySelectionPlugin extends SelectionPluginBase {
    *    The description for this entity.
    */
   protected function buildDescription($entity) {
-    return Html::escape('Result description');
+    $description = $this->configuration['result_description'];
+    return Html::escape($description);
   }
 
   /**
