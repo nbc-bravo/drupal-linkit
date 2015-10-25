@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\SelectionPluginCollection.
+ * Contains \Drupal\linkit\MatcherCollection.
  */
 
 namespace Drupal\linkit;
@@ -10,12 +10,12 @@ namespace Drupal\linkit;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
- * A collection of selection plugins.
+ * A collection of matchers.
  */
-class SelectionPluginCollection extends DefaultLazyPluginCollection {
+class MatcherCollection extends DefaultLazyPluginCollection {
 
   /**
-   * All possible selection plugin IDs.
+   * All possible matcher IDs.
    *
    * @var array
    */
@@ -24,7 +24,7 @@ class SelectionPluginCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\linkit\SelectionPluginInterface
+   * @return \Drupal\linkit\MatcherInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

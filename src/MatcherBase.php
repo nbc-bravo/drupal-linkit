@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\SelectionPluginBase.
+ * Contains \Drupal\linkit\MatcherBase.
  */
 
 namespace Drupal\linkit;
@@ -11,18 +11,17 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 
 /**
- * Provides a base class for selection plugins.
+ * Provides a base class for matchers.
  *
- * @see \Drupal\linkit\Annotation\SelectionPlugin
- * @see \Drupal\linkit\SelectionPluginBase
- * @see \Drupal\linkit\SelectionPluginManager
+ * @see \Drupal\linkit\Annotation\Matcher
+ * @see \Drupal\linkit\MatcherBaseBase
+ * @see \Drupal\linkit\MatcherBaseManager
  * @see plugin_api
  */
-abstract class SelectionPluginBase extends PluginBase implements SelectionPluginInterface, ContainerFactoryPluginInterface {
+abstract class MatcherBase extends PluginBase implements MatcherInterface, ContainerFactoryPluginInterface {
 
   /**
-   * The weight of the selection plugin compared to others in a selection
-   * plugin collection.
+   * The weight of the matcher compared to others in a matcher collection.
    *
    * @var int
    */

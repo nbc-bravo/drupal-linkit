@@ -38,51 +38,51 @@ entity.linkit_profile.attributes:
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.attributes.add:
+linkit.attribute.add:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/add'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\AddForm'
-    _title: 'Add attributes'
+    _title: 'Add attribute'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.attributes.remove:
+linkit.attribute.remove:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/remove/{plugin_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
-    _title: 'Remove an attributes'
+    _title: 'Remove an attribute'
   requirements:
     _permission: 'administer linkit profiles'
 
-entity.linkit_profile.selection_plugins:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins'
+entity.linkit_profile.matchers:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers'
   defaults:
-    _form: '\Drupal\linkit\Form\Selection\OverviewForm'
-    _title: 'Manage selection plugins'
+    _form: '\Drupal\linkit\Form\Matcher\OverviewForm'
+    _title: 'Manage matchers'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.selection_plugin.add:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/add'
+linkit.matcher.add:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/add'
   defaults:
-    _form: '\Drupal\linkit\Form\Selection\AddForm'
-    _title: 'Add selection plugins'
+    _form: '\Drupal\linkit\Form\Matcher\AddForm'
+    _title: 'Add matcher'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.selection_plugin.remove:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/remove/{plugin_id}'
+linkit.matcher.remove:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/remove/{plugin_id}'
   defaults:
-    _form: '\Drupal\linkit\Form\Selection\DeleteForm'
-    _title: 'Remove a selection plugin'
+    _form: '\Drupal\linkit\Form\Matcher\DeleteForm'
+    _title: 'Remove a matcher'
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.selection_plugin.edit:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins/{plugin_id}'
+linkit.matcher.edit:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_id}'
   defaults:
-    _form: '\Drupal\linkit\Form\Selection\EditForm'
-    _title: 'Edit selection plugin'
+    _form: '\Drupal\linkit\Form\Matcher\EditForm'
+    _title: 'Edit a matchers'
   requirements:
     _permission: 'administer linkit profiles'
 

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Plugin\Derivative\SelectionEntityDeriver.
+ * Contains \Drupal\linkit\Plugin\Derivative\EntityMatcherDeriver.
  */
 
 namespace Drupal\linkit\Plugin\Derivative;
@@ -17,17 +17,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @see plugin_api
  */
-class EntitySelectionPluginDeriver extends DeriverBase implements ContainerDeriverInterface {
+class EntityMatcherDeriver extends DeriverBase implements ContainerDeriverInterface {
 
   /**
-   * The entity manager
+   * The entity manager.
    *
    * @var \Drupal\Core\Entity\EntityManagerInterface
    */
   protected $entityManager;
 
   /**
-   * Creates an SelectionBase object.
+   * Creates an EntityMatcherDeriver object.
    *
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager.

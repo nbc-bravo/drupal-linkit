@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Selection\EntitySelectionPlugin.
+ * Contains \Drupal\linkit\Plugin\Linkit\Matcher\EntityMatcher.
  */
 
-namespace Drupal\linkit\Plugin\Linkit\Selection;
+namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
@@ -13,17 +13,17 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\linkit\SelectionPluginBase;
+use Drupal\linkit\MatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * @SelectionPlugin(
+ * @Matcher(
  *   id = "entity",
  *   label = @Translation("Entity"),
- *   deriver = "\Drupal\linkit\Plugin\Derivative\EntitySelectionPluginDeriver"
+ *   deriver = "\Drupal\linkit\Plugin\Derivative\EntityMatcherDeriver"
  * )
  */
-class EntitySelectionPlugin extends SelectionPluginBase {
+class EntityMatcher extends MatcherBase {
 
   /**
    * The database connection.
@@ -67,7 +67,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (empty($plugin_definition['target_entity'])) {
-      throw new \InvalidArgumentException("Missing required 'target_entity' property for a SelectionPlugin.");
+      throw new \InvalidArgumentException("Missing required 'target_entity' property for a matcher.");
     }
     $this->database = $database;
     $this->entityManager = $entity_manager;
@@ -195,7 +195,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
   }
 
   /**
-   * Builds an EntityQuery to get referenceable entities.
+   * Builds an EntityQuery to get entities.
    *
    * @param $match
    *   Text to match the label against.

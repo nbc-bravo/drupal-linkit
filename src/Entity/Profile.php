@@ -10,8 +10,8 @@ namespace Drupal\linkit\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 use Drupal\linkit\AttributeCollection;
+use Drupal\linkit\MatcherCollection;
 use Drupal\linkit\ProfileInterface;
-use Drupal\linkit\SelectionPluginCollection;
 
 /**
  * Defines the linkit profile entity.
@@ -38,7 +38,7 @@ use Drupal\linkit\SelectionPluginCollection;
  *     "edit-form" = "/admin/config/content/linkit/manage/{linkit_profile}",
  *     "delete-form" = "/admin/config/content/linkit/manage/{linkit_profile}/delete",
  *     "attributes" = "/admin/config/content/linkit/manage/{linkit_profile}/attributes",
- *     "selection-plugins" = "/admin/config/content/linkit/manage/{linkit_profile}/selection-plugins",
+ *     "matchers" = "/admin/config/content/linkit/manage/{linkit_profile}/matchers",
  *   },
  *   config_export = {
  *     "id",
@@ -46,7 +46,7 @@ use Drupal\linkit\SelectionPluginCollection;
  *     "description",
  *     "autocomplete_configuration",
  *     "attributes",
- *     "selectionPlugins"
+ *     "matchers"
  *   }
  * )
  */
@@ -113,27 +113,26 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   protected $attributeCollection;
 
   /**
-   * Configured selection plugins for this profile.
+   * Configured matchers for this profile.
    *
-   * An associative array of selection plugins assigned to the profile, keyed by
-   * the instance ID of each selection plugin and using the properties:
-   * - id: The plugin ID of the selection plugin instance.
-   * - status: (optional) A Boolean indicating whether the selection plugin is
-   *   enabled in the profile. Defaults to FALSE.
-   * - weight: (optional) The weight of the selection plugin in the profile.
+   * An associative array of matchers assigned to the profile, keyed by the
+   * matcher ID of each matcher and using the properties:
+   * - id: The plugin ID of the matchers instance.
+   * - status: (optional) A Boolean indicating whether the matchers is enabled
+   *   in the profile. Defaults to FALSE.
+   * - weight: (optional) The weight of the matchers in the profile.
    *   Defaults to 0.
    *
    * @var array
    */
-  protected $selectionPlugins = [];
+  protected $matchers = [];
 
   /**
-   * Holds the collection of selection plugins that are attached to this
-   * profile.
+   * Holds the collection of matchers that are attached to this profile.
    *
-   * @var \Drupal\linkit\SelectionPluginCollection
+   * @var \Drupal\linkit\MatcherCollection
    */
-  protected $selectionPluginCollection;
+  protected $matcherCollection;
 
   /**
    * {@inheritdoc}
@@ -212,44 +211,44 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   /**
    * {@inheritdoc}
    */
-  public function getSelectionPlugin($selection_plugin_id) {
-    return $this->getSelectionPlugins()->get($selection_plugin_id);
+  public function getMatcher($matcher_id) {
+    return $this->getMatchers()->get($matcher_id);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSelectionPlugins() {
-    if (!$this->selectionPluginCollection) {
-      $this->selectionPluginCollection = new SelectionPluginCollection($this->getSelectionPluginManager(), $this->selectionPlugins);
-      $this->selectionPluginCollection->sort();
+  public function getMatchers() {
+    if (!$this->matcherCollection) {
+      $this->matcherCollection = new MatcherCollection($this->getMatcherManager(), $this->matchers);
+      $this->matcherCollection->sort();
     }
-    return $this->selectionPluginCollection;
+    return $this->matcherCollection;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function addSelectionPlugin(array $configuration) {
-    $this->getSelectionPlugins()->addInstanceId($configuration['id'], $configuration);
+  public function addMatcher(array $configuration) {
+    $this->getMatchers()->addInstanceId($configuration['id'], $configuration);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function removeSelectionPlugin($instance_id) {
-    unset($this->selectionPlugins[$instance_id]);
-    $this->getSelectionPlugins()->removeInstanceId($instance_id);
+  public function removeMatcher($matcher_id) {
+    unset($this->matchers[$matcher_id]);
+    $this->getMatchers()->removeInstanceId($matcher_id);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setSelectionPluginConfig($instance_id, array $configuration) {
-    $this->selectionPlugins[$instance_id] = $configuration;
-    $this->getSelectionPlugins()->setInstanceConfiguration($instance_id, $configuration);
+  public function setMatcherConfig($matcher_id, array $configuration) {
+    $this->matchers[$matcher_id] = $configuration;
+    $this->getMatchers()->setInstanceConfiguration($matcher_id, $configuration);
     return $this;
   }
 
@@ -259,7 +258,7 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   public function getPluginCollections() {
     return array(
       'attributes' => $this->getAttributes(),
-      'selectionPlugins' => $this->getSelectionPlugins(),
+      'matchers' => $this->getMatchers(),
     );
   }
 
@@ -274,13 +273,13 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   }
 
   /**
-   * Returns the selection plugin manager.
+   * Returns the matcher manager.
    *
    * @return \Drupal\Component\Plugin\PluginManagerInterface
-   *   The attribute plugin manager.
+   *   The matcher manager.
    */
-  protected function getSelectionPluginManager() {
-    return \Drupal::service('plugin.manager.linkit.selection_plugin');
+  protected function getMatcherManager() {
+    return \Drupal::service('plugin.manager.linkit.matcher');
   }
 
 }

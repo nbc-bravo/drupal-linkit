@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Form\Selection\EditForm.
+ * Contains \Drupal\linkit\Form\Matcher\EditForm.
  */
 
-namespace Drupal\linkit\Form\Selection;
+namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
@@ -13,29 +13,29 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\ProfileInterface;
 
 /**
- *  Provides an edit form for selection plugins.
+ *  Provides an edit form for matchers.
  */
 class EditForm extends FormBase {
 
   /**
-   * The profiles to which the selection plugins will be applied.
+   * The profiles to which the matchers will be applied.
    *
    * @var \Drupal\linkit\ProfileInterface
    */
   protected $linkitProfile;
 
   /**
-   * The profiles to which the selection plugins will be applied.
+   * The matcher to edit.
    *
-   * @var \Drupal\linkit\SelectionPluginInterface
+   * @var \Drupal\linkit\MatcherInterface
    */
-  protected $selectionPlugin;
+  protected $linkitMatcher;
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'linkit_selection_plugin_edit_form';
+    return 'linkit_matcher_edit_form';
   }
 
   /**
@@ -43,12 +43,12 @@ class EditForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_id = NULL) {
     $this->linkitProfile = $linkit_profile;
-    $this->selectionPlugin = $this->linkitProfile->getSelectionPlugin($plugin_id);
+    $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_id);
     $form['data'] = [
       '#tree' => true,
     ];
 
-    $form['data'] += $this->selectionPlugin->buildConfigurationForm($form, $form_state);
+    $form['data'] += $this->linkitMatcher->buildConfigurationForm($form, $form_state);
 
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
@@ -60,7 +60,7 @@ class EditForm extends FormBase {
     $form['actions']['cancel'] = array(
       '#type' => 'link',
       '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('selection-plugins'),
+      '#url' => $this->linkitProfile->urlInfo('matchers'),
       '#attributes' => ['class' => ['button']],
     );
     return $form;
@@ -73,7 +73,7 @@ class EditForm extends FormBase {
     $form_state->cleanValues();
     $value = $form_state->getValue('data');
     $effect_data = (new FormState())->setValues($form_state->getValue('data'));
-    $this->selectionPlugin->submitConfigurationForm($form, $effect_data);
+    $this->linkitMatcher->submitConfigurationForm($form, $effect_data);
 
     $this->linkitProfile->save();
   }

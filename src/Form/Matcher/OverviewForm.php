@@ -2,44 +2,44 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Form\Selection\OverviewForm.
+ * Contains \Drupal\linkit\Form\Matcher\OverviewForm.
  */
 
-namespace Drupal\linkit\Form\Selection;
+namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\linkit\MatcherManager;
 use Drupal\linkit\ProfileInterface;
-use Drupal\linkit\SelectionPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides an overview form for selection plugins on a profile.
+ * Provides an overview form for matchers on a profile.
  */
 class OverviewForm extends FormBase {
 
   /**
-   * The profiles to which the selection plugins are applied to.
+   * The profiles to which the matchers are applied to.
    *
    * @var \Drupal\linkit\ProfileInterface
    */
   private $linkitProfile;
 
   /**
-   * The selection plugin manager.
+   * The matcher manager.
    *
-   * @var \Drupal\linkit\SelectionPluginManager
+   * @var \Drupal\linkit\MatcherManager
    */
   protected $manager;
 
   /**
    * Constructs a new OverviewForm.
    *
-   * @param \Drupal\linkit\SelectionPluginManager $manager
-   *   The selection plugin manager.
+   * @param \Drupal\linkit\MatcherManager $manager
+   *   The matcher manager.
    */
-  public function __construct(SelectionPluginManager $manager) {
+  public function __construct(MatcherManager $manager) {
     $this->manager = $manager;
   }
 
@@ -48,7 +48,7 @@ class OverviewForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.linkit.selection_plugin')
+      $container->get('plugin.manager.linkit.matcher')
     );
   }
 
@@ -56,7 +56,7 @@ class OverviewForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return "linkit_selection_plugin_overview_form";
+    return "linkit_matcher_overview_form";
   }
 
   /**
@@ -68,12 +68,12 @@ class OverviewForm extends FormBase {
     $form['plugins'] = [
       '#type' => 'table',
       '#header' => [
-        $this->t('Selection plugin'),
+        $this->t('Matcher'),
         $this->t('Description'),
         $this->t('Weight'),
         $this->t('Operations'),
       ],
-      '#empty' => $this->t('No selection plugins added.'),
+      '#empty' => $this->t('No matchers added.'),
       '#tabledrag' => [
         [
           'action' => 'order',
@@ -83,7 +83,7 @@ class OverviewForm extends FormBase {
       ],
     ];
 
-    foreach ($this->linkitProfile->getSelectionPlugins() as $id => $plugin) {
+    foreach ($this->linkitProfile->getMatchers() as $id => $plugin) {
       $form['plugins'][$id]['#attributes']['class'][] = 'draggable';
       $form['plugins'][$id]['#weight'] = $plugin->getWeight();
 
@@ -110,7 +110,7 @@ class OverviewForm extends FormBase {
 
       $form['plugins'][$id]['operations']['#links']['edit'] = [
         'title' => t('Edit'),
-        'url' => Url::fromRoute('linkit.selection_plugin.edit', [
+        'url' => Url::fromRoute('linkit.matcher.edit', [
           'linkit_profile' =>  $this->linkitProfile->id(),
           'plugin_id' => $id,
         ]),
@@ -118,7 +118,7 @@ class OverviewForm extends FormBase {
 
       $form['plugins'][$id]['operations']['#links']['delete'] = [
         'title' => t('Remove'),
-        'url' => Url::fromRoute('linkit.selection_plugin.remove', [
+        'url' => Url::fromRoute('linkit.matcher.remove', [
           'linkit_profile' =>  $this->linkitProfile->id(),
           'plugin_id' => $id,
         ]),
@@ -140,8 +140,8 @@ class OverviewForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($form_state->getValue('plugins') as $id => $plugin_data) {
-      if ($this->linkitProfile->getSelectionPlugins()->has($id)) {
-        $this->linkitProfile->getSelectionPlugin($id)->setWeight($plugin_data['weight']);
+      if ($this->linkitProfile->getMatchers()->has($id)) {
+        $this->linkitProfile->getMatcher($id)->setWeight($plugin_data['weight']);
       }
     }
     $this->linkitProfile->save();

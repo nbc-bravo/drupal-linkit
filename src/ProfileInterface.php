@@ -102,54 +102,54 @@ interface ProfileInterface extends ConfigEntityInterface {
   public function setAttributeConfig($attribute_id, array $configuration);
 
   /**
-   * Returns a specific selection plugin.
+   * Returns a specific matcher.
    *
-   * @param string $selection_plugin_id
-   *   The selection plugin ID.
+   * @param string $matcher_id
+   *   The matcher ID.
    *
-   * @return \Drupal\linkit\SelectionPluginInterface
-   *   The selection plugin object.
+   * @return \Drupal\linkit\MatcherInterface
+   *   The matcher object.
    */
-  public function getSelectionPlugin($selection_plugin_id);
+  public function getMatcher($matcher_id);
 
   /**
-   * Returns the selection plugins for this profile.
+   * Returns the matchers for this profile.
    *
-   * @return \Drupal\linkit\SelectionPluginCollection|\Drupal\linkit\SelectionPluginInterface[]
-   *   The selection plugin collection.
+   * @return \Drupal\linkit\MatcherrCollection|\Drupal\linkit\MatcherInterface[]
+   *   The matcher collection.
    */
-  public function getSelectionPlugins();
+  public function getMatchers();
 
   /**
-   * Adds a selection plugin to this profile.
+   * Adds a matcher to this profile.
    *
    * @param array $configuration
-   *   An array of selection plugin configuration.
+   *   An array of matcher configuration.
    *
    * @return $this
    */
-  public function addSelectionPlugin(array $configuration);
+  public function addMatcher(array $configuration);
 
   /**
-   * Removes a selection plugin from this profile.
+   * Removes a matcher from this profile.
    *
-   * @param string $instance_id
-   *  The ID of the selection plugin to remove.
+   * @param string $matcher_id
+   *  The ID of the matcher to remove.
    *
    * @return $this
    */
-  public function removeSelectionPlugin($instance_id);
+  public function removeMatcher($matcher_id);
 
   /**
-   * Sets the configuration for a selection plugin instance.
+   * Sets the configuration for a matcher instance.
    *
-   * @param string $instance_id
-   *   The ID of the selection plugin to set the configuration for.
+   * @param string $matcher_id
+   *   The ID of the matcher to set the configuration for.
    * @param array $configuration
-   *   The selection plugin configuration to set.
+   *   The matcher configuration to set.
    *
    * @return $this
    */
-  public function setSelectionPluginConfig($instance_id, array $configuration);
+  public function setMatcherConfig($matcher_id, array $configuration);
 
 }

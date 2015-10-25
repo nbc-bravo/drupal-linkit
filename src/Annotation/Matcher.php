@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Annotation\SelectionPlugin.
+ * Contains \Drupal\linkit\Annotation\Matcher.
  */
 
 namespace Drupal\linkit\Annotation;
@@ -10,18 +10,18 @@ namespace Drupal\linkit\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a selection annotation object.
+ * Defines a matcher annotation object.
  *
- * Plugin Namespace: Plugin\Linkit\Selection
+ * Plugin Namespace: Plugin\Linkit\Matcher
  *
- * @see \Drupal\linkit\SelectionPluginInterface
- * @see \Drupal\linkit\SelectionPluginBase
- * @see \Drupal\linkit\SelectionPluginManager
+ * @see \Drupal\linkit\MatcherInterface
+ * @see \Drupal\linkit\MatcherBase
+ * @see \Drupal\linkit\MatcherManager
  * @see plugin_api
  *
  * @Annotation
  */
-class SelectionPlugin extends Plugin {
+class Matcher extends Plugin {
 
   /**
    * The plugin ID.
@@ -31,7 +31,7 @@ class SelectionPlugin extends Plugin {
   public $id;
 
   /**
-   * The human-readable name of the selection plugin.
+   * The human-readable name of the matcher.
    *
    * The string should be wrapped in a @Translation().
    *
@@ -40,7 +40,7 @@ class SelectionPlugin extends Plugin {
   public $label;
 
   /**
-   * A brief description of the selection plugin.
+   * A brief description of the matcher.
    *
    * This will be shown when adding or configuring a profile.
    *
@@ -51,7 +51,7 @@ class SelectionPlugin extends Plugin {
   public $description = '';
 
   /**
-   * The entity type that is managed by this plugin.
+   * The entity type that is managed by this matcher.
    *
    * @var string
    */

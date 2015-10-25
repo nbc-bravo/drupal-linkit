@@ -2,43 +2,43 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Form\Selection\AddForm.
+ * Contains \Drupal\linkit\Form\Matcher\AddForm.
  */
 
-namespace Drupal\linkit\Form\Selection;
+namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\linkit\MatcherManager;
 use Drupal\linkit\ProfileInterface;
-use Drupal\linkit\SelectionPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form to apply selection plugins to a profile.
+ * Provides a form to apply matchers to a profile.
  */
 class AddForm extends FormBase {
 
   /**
-   * The profiles to which the selection plugins will be applied.
+   * The profiles to which the matchers will be applied.
    *
    * @var \Drupal\linkit\ProfileInterface
    */
   protected $linkitProfile;
 
   /**
-   * The selection plugin manager.
+   * The matcher manager.
    *
-   * @var \Drupal\linkit\SelectionPluginManager
+   * @var \Drupal\linkit\MatcherManager
    */
   protected $manager;
 
   /**
    * Constructs a new AddForm.
    *
-   * @param \Drupal\linkit\SelectionPluginManager $manager
-   *   The selection plugin manager.
+   * @param \Drupal\linkit\MatcherManager $manager
+   *   The matcher manager.
    */
-  public function __construct(SelectionPluginManager $manager) {
+  public function __construct(MatcherManager $manager) {
     $this->manager = $manager;
   }
 
@@ -47,7 +47,7 @@ class AddForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.linkit.selection_plugin')
+      $container->get('plugin.manager.linkit.matcher')
     );
   }
 
@@ -55,7 +55,7 @@ class AddForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return "linkit_selection_plugin_add_form";
+    return "linkit_matcher_add_form";
   }
 
   /**
@@ -65,7 +65,7 @@ class AddForm extends FormBase {
     $this->linkitProfile = $linkit_profile;
 
     $header = array(
-      'label' => $this->t('Selection plugin'),
+      'label' => $this->t('Matcher'),
       'description' => $this->t('Description'),
     );
 
@@ -73,7 +73,7 @@ class AddForm extends FormBase {
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $this->buildRows(),
-      '#empty' => $this->t('No selection plugins available.'),
+      '#empty' => $this->t('No matchers available.'),
     );
 
     $form['actions'] = array('#type' => 'actions');
@@ -87,7 +87,7 @@ class AddForm extends FormBase {
     $form['actions']['cancel'] = array(
       '#type' => 'link',
       '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('selection-plugins'),
+      '#url' => $this->linkitProfile->urlInfo('matchers'),
       '#attributes' => ['class' => ['button']],
     );
 
@@ -104,18 +104,18 @@ class AddForm extends FormBase {
       $plugin_configuration = array(
         'id' => $plugin_id,
       );
-      $this->linkitProfile->addSelectionPlugin($plugin_configuration);
+      $this->linkitProfile->addMatcher($plugin_configuration);
     }
 
     $this->linkitProfile->save();
 
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('selection-plugins'));
+    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('matchers'));
   }
 
   /**
    * Builds the table rows.
    *
-   * Only selection plugins that is not already applied to the profile are
+   * Only matchers that is not already applied to the profile are
    * shown.
    *
    * @return array
@@ -124,11 +124,11 @@ class AddForm extends FormBase {
   private function buildRows() {
     $rows = array();
 
-    $applied_plugins = $this->linkitProfile->getSelectionPlugins()->getConfiguration();
+    $applied_plugins = $this->linkitProfile->getMatchers()->getConfiguration();
     $all_plugins = $this->manager->getDefinitions();
 
     foreach ($all_plugins as $key => $definition) {
-      /** @var \Drupal\linkit\SelectionPluginInterface $plugin */
+      /** @var \Drupal\linkit\MatcherInterface $plugin */
       $plugin = $this->manager->createInstance($key, $definition);
 
       $row = array(

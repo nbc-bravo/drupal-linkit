@@ -4,15 +4,15 @@ linkit_profile.add_form:
   appears_on:
     - entity.linkit_profile.collection
 
-linkit.selection_plugin.add:
-  route_name: linkit.selection_plugin.add
-  title: 'Add selection plugins'
+linkit.matcher.add:
+  route_name: linkit.matcher.add
+  title: 'Add matcher'
   appears_on:
-    - entity.linkit_profile.selection_plugins
+    - entity.linkit_profile.matchers
 
-linkit.attributes.add:
-  route_name: linkit.attributes.add
-  title: 'Add attributes'
+linkit.attribute.add:
+  route_name: linkit.attribute.add
+  title: 'Add attribute'
   appears_on:
     - entity.linkit_profile.attributes
 

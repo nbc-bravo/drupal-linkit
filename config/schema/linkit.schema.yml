@@ -28,10 +28,10 @@ linkit.linkit_profile.*:
             type: string
           weight:
             type: integer
-    selectionPlugins:
-      type: linkit.plugin.selection.[%parent.id]
+    matchers:
+      type: linkit.matcher.[%parent.id]
 
-linkit.plugin.selection:
+linkit.matcher:
   type: sequence
   sequence:
     type: mapping
@@ -39,15 +39,15 @@ linkit.plugin.selection:
       id:
         type: string
       data:
-        type: linkit.plugin.selection.[%parent.id]
+        type: linkit.matcher.[%parent.id]
       weight:
         type: integer
 
-linkit.selection_plugin.*:
-  type: linkit.plugin.selection
+linkit.matcher.*:
+  type: linkit.matcher
 
-linkit.selection_plugin.entity:
-  type: linkit.plugin.selection
+linkit.matcher.entity:
+  type: linkit.matcher
   mapping:
     result_description:
       type: string
@@ -59,11 +59,11 @@ linkit.selection_plugin.entity:
       type: boolean
       nullable: false
 
-linkit.selection_plugin.entity:*:
-  type: linkit.selection_plugin.entity
+linkit.matcher.entity:*:
+  type: linkit.matcher.entity
 
-linkit.selection_plugin.entity:node:
-  type: linkit.selection_plugin.entity
+linkit.matcher.entity:node:
+  type: linkit.matcher.entity
   mapping:
     include_unpublished:
       type: boolean

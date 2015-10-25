@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Selection\UserSelectionPlugin.
+ * Contains \Drupal\linkit\Plugin\Linkit\Matcher\UserMatcher.
  */
 
-namespace Drupal\linkit\Plugin\Linkit\Selection;
+namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 /**
- * @SelectionPlugin(
+ * @Matcher(
  *   id = "entity:user",
  *   target_entity = "user",
  *   label = @Translation("User"),
  *   description = @Translation("Adds support for user entities.")
  * )
  */
-class UserSelectionPlugin extends EntitySelectionPlugin {
+class UserMatcher extends EntityMatcher {
 
   // @TODO: Add role limits?
 

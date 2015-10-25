@@ -3,9 +3,9 @@ entity.linkit_profile.edit_form:
   title: 'Edit'
   base_route: entity.linkit_profile.edit_form
   weight: 0
-entity.linkit_profile.selection_plugins:
-  route_name: entity.linkit_profile.selection_plugins
-  title: 'Manage selection plugins'
+entity.linkit_profile.matchers:
+  route_name: entity.linkit_profile.matchers
+  title: 'Manage matchers'
   base_route: entity.linkit_profile.edit_form
   weight: 5
 entity.linkit_profile.attributes:

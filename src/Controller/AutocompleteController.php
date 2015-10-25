@@ -59,12 +59,12 @@ class AutocompleteController implements ContainerInjectionInterface {
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
-    $selection_plugins = $this->linkitProfile->getSelectionPlugins();
+    $matchers = $this->linkitProfile->getMatchers();
 
     $matches = array();
     $string = $request->query->get('q');
 
-    foreach ($selection_plugins as $plugin) {
+    foreach ($matchers as $plugin) {
       $matches = array_merge($matches, $plugin->getMatches($string));
     }
 

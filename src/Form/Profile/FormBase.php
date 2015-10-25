@@ -111,7 +111,7 @@ abstract class FormBase extends EntityForm {
       case SAVED_NEW:
         drupal_set_message($this->t('Created new profile %label.', ['%label' => $linkit_profile->label()]));
         $this->logger('linkit')->notice('Created new profile %label.', ['%label' => $linkit_profile->label(), 'link' => $edit_link]);
-        $form_state->setRedirectUrl($linkit_profile->urlInfo('selection-plugins'));
+        $form_state->setRedirectUrl($linkit_profile->urlInfo('matchers'));
         break;
 
       case SAVED_UPDATED:

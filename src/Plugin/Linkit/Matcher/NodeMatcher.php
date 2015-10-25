@@ -2,22 +2,22 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Selection\NodeSelectionPlugin.
+ * Contains \Drupal\linkit\Plugin\Linkit\Matcher\NodeMatcher.
  */
 
-namespace Drupal\linkit\Plugin\Linkit\Selection;
+namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * @SelectionPlugin(
+ * @Matcher(
  *   id = "entity:node",
  *   target_entity = "node",
  *   label = @Translation("Content"),
  *   description = @Translation("Adds support for node entities.")
  * )
  */
-class NodeSelectionPlugin extends EntitySelectionPlugin {
+class NodeMatcher extends EntityMatcher {
 
   /**
    * {@inheritdoc}

@@ -21,7 +21,7 @@ class AddForm extends FormBase {
    */
   public function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = $this->t('Save and manage selection plugins');
+    $actions['submit']['#value'] = $this->t('Save and manage matchers');
     return $actions;
   }
 

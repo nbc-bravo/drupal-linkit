@@ -35,7 +35,7 @@ class ProfileCrudTest extends LinkitTestBase {
     $edit['label'] = Unicode::strtolower($this->randomMachineName());
     $edit['id'] = Unicode::strtolower($this->randomMachineName());
     $edit['description'] = $this->randomMachineName(16);
-    $this->drupalPostForm('admin/config/content/linkit/add', $edit, t('Save and manage selection plugins'));
+    $this->drupalPostForm('admin/config/content/linkit/add', $edit, t('Save and manage matchers'));
 
     $this->assertRaw(t('Created new profile %label.', array('%label' => $edit['label'])));
     $this->drupalGet('admin/config/content/linkit');
