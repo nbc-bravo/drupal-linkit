@@ -17,11 +17,14 @@ namespace Drupal\linkit\Plugin\Linkit\Selection;
  */
 class UserSelectionPlugin extends EntitySelectionPlugin {
 
-  protected function buildEntityQuery($search_string) {
-    $query = parent::buildEntityQuery($search_string);
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildEntityQuery($match) {
+    $query = parent::buildEntityQuery($match);
 
-    $search_string = $this->database->escapeLike($search_string);
-    $query->condition('name', '%' . $search_string . '%', 'LIKE');
+    $match = $this->database->escapeLike($match);
+    $query->condition('name', '%' . $match . '%', 'LIKE');
 
     return $query;
   }

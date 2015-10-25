@@ -157,9 +157,11 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     $form_state->setValueForElement($element, $element['#value']);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMatches($string) {
     $query = $this->buildEntityQuery($string);
-
     $result = $query->execute();
 
     if (empty($result)) {
@@ -167,8 +169,6 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     }
 
     $matches = [];
-    $entity = '';
-
     $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
     foreach ($entities as $entity_id => $entity) {
       $matches[] = array(
@@ -182,15 +182,25 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     return $matches;
   }
 
-  protected function buildEntityQuery($search_string) {
-    $search_string = $this->database->escapeLike($search_string);
+  /**
+   * Builds an EntityQuery to get referenceable entities.
+   *
+   * @param $match
+   *   Text to match the label against.
+   *
+   * @return \Drupal\Core\Entity\Query\QueryInterface
+   *   The EntityQuery object with the basic conditions and sorting applied to
+   *   it.
+   */
+  protected function buildEntityQuery($match) {
+    $match = $this->database->escapeLike($match);
 
     $entity_type = $this->entityManager->getDefinition($this->target_type);
     $query = $this->entityManager->getStorage($this->target_type)->getQuery();
     $label_key = $entity_type->getKey('label');
 
     if ($label_key) {
-      $query->condition($label_key, '%' . $search_string . '%', 'LIKE');
+      $query->condition($label_key, '%' . $match . '%', 'LIKE');
       $query->sort($label_key, 'asc');
     }
 
