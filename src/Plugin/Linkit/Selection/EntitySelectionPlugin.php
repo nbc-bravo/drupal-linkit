@@ -7,6 +7,7 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Selection;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -171,10 +172,10 @@ class EntitySelectionPlugin extends SelectionPluginBase {
     $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
     foreach ($entities as $entity_id => $entity) {
       $matches[] = array(
-        'title' => $this->createLabel($entity),
-        'description' => $this->createDescription($entity),
-        'path' => $this->createPath($entity),
-        'group' => $this->createGroup($entity),
+        'title' => $this->buildLabel($entity),
+        'description' => $this->buildDescription($entity),
+        'path' => $this->buildPath($entity),
+        'group' => $this->buildGroup($entity),
       );
     }
 
@@ -200,35 +201,50 @@ class EntitySelectionPlugin extends SelectionPluginBase {
   }
 
   /**
+   * Builds the label string used in the match array.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @return mixed
+   *
+   * @return string
+   *   The label for this entity.
    */
-  protected function createLabel($entity) {
-    return $entity->label();
+  protected function buildLabel($entity) {
+    return Html::escape($entity->label());
   }
 
   /**
+   * Builds the description string used in the match array.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @return mixed
+   *
+   * @return string
+   *    The description for this entity.
    */
-  protected function createDescription($entity) {
-    return 'Result description';
+  protected function buildDescription($entity) {
+    return Html::escape('Result description');
   }
 
   /**
+   * Builds the path string used in the match array.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @return mixed
+   *
+   * @return string
+   *   The URL for this entity.
    */
-  protected function createPath($entity) {
+  protected function buildPath($entity) {
     return $entity->url();
   }
 
   /**
+   * Builds the group string used in the match array.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @return mixed
+   * @return string
+   *   The match group for this entity.
    */
-  protected function createGroup($entity) {
-    return $entity->getEntityTypeId();
+  protected function buildGroup($entity) {
+    return Html::escape($entity->getEntityTypeId());
   }
 
 }
