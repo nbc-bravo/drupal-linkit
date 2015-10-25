@@ -17,6 +17,8 @@ namespace Drupal\linkit\Plugin\Linkit\Selection;
  */
 class UserSelectionPlugin extends EntitySelectionPlugin {
 
+  // @TODO: Add role limits?
+
   /**
    * {@inheritdoc}
    */

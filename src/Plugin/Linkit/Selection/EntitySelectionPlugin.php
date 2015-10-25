@@ -38,13 +38,6 @@ class EntitySelectionPlugin extends SelectionPluginBase {
   protected $entityManager;
 
   /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
    * The target entity type id
    *
    * @var string
@@ -106,14 +99,13 @@ class EntitySelectionPlugin extends SelectionPluginBase {
 
     // @TODO: Add support for tokens in the result_description.
 
-    // If there are bundles, add some default settings features.
+    // Filter the possible bundles to use if the entity has bundles.
     if ($entity_type->hasKey('bundle')) {
       $bundle_options = [];
       foreach ($bundles as $bundle_name => $bundle_info) {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
-      // Filter the possible bundles to use if the entity has bundles.
       $form['bundles'] = [
         '#type' => 'checkboxes',
         '#title' => $this->t('Bundle filter'),
@@ -123,7 +115,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
         '#element_validate' => [[get_class($this), 'elementValidateFilter']],
       ];
 
-      // Group the results with this bundle.
+      // Group the results within this bundle.
       $form['group_by_bundle'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Group by bundle'),
@@ -201,7 +193,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
 
     if ($label_key) {
       $query->condition($label_key, '%' . $match . '%', 'LIKE');
-      $query->sort($label_key, 'asc');
+      $query->sort($label_key, 'ASC');
     }
 
     // Add entity-access tag.
@@ -214,6 +206,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
    * Builds the label string used in the match array.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The matched entity.
    *
    * @return string
    *   The label for this entity.
@@ -226,6 +219,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
    * Builds the description string used in the match array.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The matched entity.
    *
    * @return string
    *    The description for this entity.
@@ -238,6 +232,7 @@ class EntitySelectionPlugin extends SelectionPluginBase {
    * Builds the path string used in the match array.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *    The matched entity.
    *
    * @return string
    *   The URL for this entity.
@@ -250,10 +245,14 @@ class EntitySelectionPlugin extends SelectionPluginBase {
    * Builds the group string used in the match array.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The matched entity.
+   *
    * @return string
    *   The match group for this entity.
    */
   protected function buildGroup($entity) {
+    // @TODO: Use the "group_by_bundle" setting.
+
     return Html::escape($entity->getEntityTypeId());
   }
 
