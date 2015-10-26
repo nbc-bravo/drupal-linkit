@@ -79,7 +79,7 @@ class AddForm extends FormBase {
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => $this->t('Add plugins'),
+      '#value' => $this->t('Add matchers'),
       '#submit' => array('::submitForm'),
       '#tableselect' => TRUE,
       '#button_type' => 'primary',

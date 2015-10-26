@@ -23,7 +23,7 @@ abstract class LinkitTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('linkit', 'block');
+  public static $modules = ['linkit', 'block'];
 
   /**
    * A user with the 'administer linkit profiles' permission.
@@ -65,7 +65,7 @@ abstract class LinkitTestBase extends WebTestBase {
    * @return \Drupal\linkit\ProfileInterface
    *   The created profile entity.
    */
-  protected function createProfile(array $settings = array()) {
+  protected function createProfile(array $settings = []) {
     // Populate defaults array.
     $settings += [
       'id' => Unicode::strtolower($this->randomMachineName()),

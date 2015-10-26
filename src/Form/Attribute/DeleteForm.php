@@ -10,6 +10,7 @@ namespace Drupal\linkit\Form\Attribute;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\ProfileInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides a form to remove an attribute from a profile.
@@ -63,6 +64,11 @@ class DeleteForm extends ConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_id = NULL) {
     $this->linkitProfile = $linkit_profile;
+
+    if (!$this->linkitProfile->getAttributes()->has($plugin_id)) {
+      throw new NotFoundHttpException();
+    }
+
     $this->linkitAttribute = $this->linkitProfile->getAttribute($plugin_id);
     return parent::buildForm($form, $form_state);
   }
