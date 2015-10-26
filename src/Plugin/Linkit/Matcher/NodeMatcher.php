@@ -14,7 +14,8 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "entity:node",
  *   target_entity = "node",
  *   label = @Translation("Content"),
- *   description = @Translation("Adds support for node entities.")
+ *   description = @Translation("Adds support for node entities."),
+ *   provider = "node"
  * )
  */
 class NodeMatcher extends EntityMatcher {
@@ -25,6 +26,15 @@ class NodeMatcher extends EntityMatcher {
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
       'include_unpublished' => FALSE,
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    return parent::calculateDependencies() + [
+      'module' => ['node'],
     ];
   }
 
