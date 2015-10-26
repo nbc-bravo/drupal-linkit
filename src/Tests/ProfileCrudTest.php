@@ -78,5 +78,4 @@ class ProfileCrudTest extends LinkitTestBase {
     $this->drupalGet('admin/config/content/linkit');
     $this->assertNoText($profile->label(), 'Deleted profile does not exists in the profile collection.');
   }
-
 }

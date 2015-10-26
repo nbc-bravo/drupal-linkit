@@ -19,16 +19,11 @@ abstract class LinkitTestBase extends WebTestBase {
   /**
    * Modules to enable.
    *
+   * Enable block module to get the local_actions_block to work.
+   *
    * @var array
    */
-  public static $modules = array('linkit');
-
-  /**
-   * The node access control handler.
-   *
-   * @var \Drupal\Core\Entity\EntityAccessControlHandlerInterface
-   */
-  protected $accessHandler;
+  public static $modules = array('linkit', 'block');
 
   /**
    * A user with the 'administer linkit profiles' permission.
@@ -49,9 +44,11 @@ abstract class LinkitTestBase extends WebTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->accessHandler = \Drupal::entityManager()->getAccessControlHandler('linkit_profile');
     $this->adminUser = $this->drupalCreateUser(['administer linkit profiles']);
     $this->baseUser = $this->drupalCreateUser();
+
+    $this->drupalPlaceBlock('local_tasks_block');
+    $this->drupalPlaceBlock('local_actions_block');
   }
 
   /**
