@@ -29,25 +29,26 @@ linkit.linkit_profile.*:
           weight:
             type: integer
     matchers:
-      type: linkit.matcher.[%parent.id]
+      type: sequence
+      sequence:
+        type: linkit.matcher
 
 linkit.matcher:
-  type: sequence
-  sequence:
-    type: mapping
-    mapping:
-      id:
-        type: string
-      data:
-        type: linkit.matcher.[%parent.id]
-      weight:
-        type: integer
+  type: mapping
+  mapping:
+    id:
+      type: string
+    data:
+      type: linkit.matcher.[%parent.id]
+    weight:
+      type: integer
 
 linkit.matcher.*:
-  type: linkit.matcher
+  type: mapping
+  label: 'Matcher settings'
 
 linkit.matcher.entity:
-  type: linkit.matcher
+  type: mapping
   mapping:
     result_description:
       type: string
@@ -55,9 +56,9 @@ linkit.matcher.entity:
       type: sequence
       sequence:
         type: string
+      nullable: true
     group_by_bundle:
       type: boolean
-      nullable: false
 
 linkit.matcher.entity:*:
   type: linkit.matcher.entity
