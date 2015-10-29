@@ -102,6 +102,10 @@ class AddForm extends FormBase {
     }
 
     $this->linkitProfile->save();
+    // @TODO: Log this when we only can add one attribute.
+//    $this->logger('linkit')->notice('The attribute %label has been deleted.', [
+//      '%label' => $this->linkitProfile->getAttribute($plugin_id)->getLabel(),
+//    ]);
 
     $form_state->setRedirect('linkit.attributes', [
       'linkit_profile' => $this->linkitProfile->id(),

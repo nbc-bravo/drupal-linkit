@@ -84,6 +84,10 @@ class EditForm extends FormBase {
     $this->linkitProfile->save();
 
     drupal_set_message($this->t('Saved %label configuration.', array('%label' => $this->linkitMatcher->getLabel())));
+    $this->logger('linkit')->notice('The matcher %label has been updated in the @profile profile.', [
+      '%label' => $this->linkitMatcher->getLabel(),
+      '@profile' => $this->linkitProfile->label(),
+    ]);
 
     $form_state->setRedirect('linkit.matchers', [
       'linkit_profile' => $this->linkitProfile->id(),

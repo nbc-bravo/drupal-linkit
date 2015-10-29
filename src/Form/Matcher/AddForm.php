@@ -102,6 +102,11 @@ class AddForm extends FormBase {
     $plugin_uuid = $this->linkitProfile->addMatcher($plugin->getConfiguration());
     $this->linkitProfile->save();
 
+    $this->logger('linkit')->notice('Added %label matcher to the @profile profile.', [
+      '%label' => $this->linkitProfile->getMatcher($plugin_uuid)->getLabel(),
+      '@profile' => $this->linkitProfile->label(),
+    ]);
+
     $is_configurable = $plugin instanceof ConfigurableMatcherInterface;
     if ($is_configurable) {
       $form_state->setRedirect('linkit.matcher.edit', [

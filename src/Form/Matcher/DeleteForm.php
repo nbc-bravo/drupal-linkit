@@ -36,7 +36,7 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete the @plugin matcher from the %profile profile?', array('%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitMatcher->getLabel()));
+    return $this->t('Are you sure you want to delete the @plugin matcher from the %profile profile?', ['%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitMatcher->getLabel()]);
   }
 
   /**
@@ -75,11 +75,16 @@ class DeleteForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->linkitProfile->removeMatcher($this->linkitMatcher);
 
-    drupal_set_message($this->t('The matcher %label has been deleted.', array('%label' => $this->linkitMatcher->getLabel())));
+    drupal_set_message($this->t('The matcher %label has been deleted.', ['%label' => $this->linkitMatcher->getLabel()]));
+    $this->logger('linkit')->notice('The matcher %label has been deleted in the @profile profile.', [
+      '%label' => $this->linkitMatcher->getLabel(),
+      '@profile' => $this->linkitProfile->label(),
+    ]);
+
     $form_state->setRedirect('linkit.matchers', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]);
-    // @TODO: Log this?
+
   }
 
 }
