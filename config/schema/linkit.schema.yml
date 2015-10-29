@@ -38,6 +38,8 @@ linkit.matcher:
   mapping:
     id:
       type: string
+    uuid:
+      type: string
     data:
       type: linkit.matcher.[%parent.id]
     weight:

@@ -10,6 +10,7 @@ namespace Drupal\linkit\Form\Matcher;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\linkit\ConfigurableMatcherInterface;
 use Drupal\linkit\MatcherManager;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,12 +65,14 @@ class OverviewForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
-
+    $form['#attached']['library'][] = 'linkit/linkit.admin';
     $form['plugins'] = [
       '#type' => 'table',
       '#header' => [
-        $this->t('Matcher'),
-        $this->t('Description'),
+        [
+          'data' => $this->t('Matcher'),
+          'colspan' => 2
+        ],
         $this->t('Weight'),
         $this->t('Operations'),
       ],
@@ -83,19 +86,28 @@ class OverviewForm extends FormBase {
       ],
     ];
 
-    foreach ($this->linkitProfile->getMatchers() as $id => $plugin) {
-      $form['plugins'][$id]['#attributes']['class'][] = 'draggable';
-      $form['plugins'][$id]['#weight'] = $plugin->getWeight();
+    foreach ($this->linkitProfile->getMatchers() as $plugin) {
+      $key = $plugin->getUuid();
 
-      $form['plugins'][$id]['label'] = [
+      $form['plugins'][$key]['#attributes']['class'][] = 'draggable';
+      $form['plugins'][$key]['#weight'] = $plugin->getWeight();
+
+      $form['plugins'][$key]['label'] = [
         '#plain_text' => (string) $plugin->getLabel(),
       ];
 
-      $form['plugins'][$id]['description'] = [
-        '#plain_text' => (string) $plugin->getDescription(),
-      ];
+      $form['plugins'][$key]['summary'] = [];
 
-      $form['plugins'][$id]['weight'] = [
+      $summary = $plugin->getSummary();
+      if (!empty($summary)) {
+        $form['plugins'][$key]['summary'] = [
+          '#type' => 'inline_template',
+          '#template' => '<div class="linkit-plugin-summary">{{ summary|safe_join("<br />") }}</div>',
+          '#context' => ['summary' => $summary],
+        ];
+      }
+
+      $form['plugins'][$key]['weight'] = [
         '#type' => 'weight',
         '#title' => t('Weight for @title', ['@title' => (string) $plugin->getLabel()]),
         '#title_display' => 'invisible',
@@ -103,24 +115,27 @@ class OverviewForm extends FormBase {
         '#attributes' => ['class' => ['plugin-order-weight']],
       ];
 
-      $form['plugins'][$id]['operations'] = [
+      $form['plugins'][$key]['operations'] = [
         '#type' => 'operations',
         '#links' => [],
       ];
 
-      $form['plugins'][$id]['operations']['#links']['edit'] = [
-        'title' => t('Edit'),
-        'url' => Url::fromRoute('linkit.matcher.edit', [
-          'linkit_profile' =>  $this->linkitProfile->id(),
-          'plugin_id' => $id,
-        ]),
-      ];
+      $is_configurable = $plugin instanceof ConfigurableMatcherInterface;
+      if ($is_configurable) {
+        $form['plugins'][$key]['operations']['#links']['edit'] = [
+          'title' => t('Edit'),
+          'url' => Url::fromRoute('linkit.matcher.edit', [
+            'linkit_profile' =>  $this->linkitProfile->id(),
+            'plugin_instance_id' => $key,
+          ]),
+        ];
+      }
 
-      $form['plugins'][$id]['operations']['#links']['delete'] = [
-        'title' => t('Remove'),
-        'url' => Url::fromRoute('linkit.matcher.remove', [
+      $form['plugins'][$key]['operations']['#links']['delete'] = [
+        'title' => t('Delete'),
+        'url' => Url::fromRoute('linkit.matcher.delete', [
           'linkit_profile' =>  $this->linkitProfile->id(),
-          'plugin_id' => $id,
+          'plugin_instance_id' => $key,
         ]),
       ];
     }

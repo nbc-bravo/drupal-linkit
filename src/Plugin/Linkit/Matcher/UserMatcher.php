@@ -12,7 +12,6 @@ namespace Drupal\linkit\Plugin\Linkit\Matcher;
  *   id = "entity:user",
  *   target_entity = "user",
  *   label = @Translation("User"),
- *   description = @Translation("Adds support for user entities."),
  *   provider = "user"
  * )
  */

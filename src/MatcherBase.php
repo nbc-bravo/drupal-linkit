@@ -13,12 +13,16 @@ use Drupal\Core\Plugin\PluginBase;
 /**
  * Provides a base class for matchers.
  *
- * @see \Drupal\linkit\Annotation\Matcher
- * @see \Drupal\linkit\MatcherBaseBase
- * @see \Drupal\linkit\MatcherBaseManager
  * @see plugin_api
  */
 abstract class MatcherBase extends PluginBase implements MatcherInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * The matcher ID.
+   *
+   * @var string
+   */
+  protected $uuid;
 
   /**
    * The weight of the matcher compared to others in a matcher collection.
@@ -39,6 +43,13 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
   /**
    * {@inheritdoc}
    */
+  public function getUuid() {
+    return $this->uuid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getLabel() {
     return $this->pluginDefinition['label'];
   }
@@ -46,8 +57,8 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
-    return $this->pluginDefinition['description'];
+  public function getSummary() {
+    return array();
   }
 
   /**
@@ -69,6 +80,7 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
    */
   public function getConfiguration() {
     return [
+      'uuid' => $this->getUuid(),
       'id' => $this->getPluginId(),
       'weight' => $this->getWeight(),
       'data' => $this->configuration,
@@ -80,10 +92,12 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
    */
   public function setConfiguration(array $configuration) {
     $configuration += [
-      'data' => [],
+      'uuid' => '',
       'weight' => '0',
+      'data' => [],
     ];
     $this->configuration = $configuration['data'] + $this->defaultConfiguration();
+    $this->uuid = $configuration['uuid'];
     $this->weight = $configuration['weight'];
     return $this;
   }

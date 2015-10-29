@@ -70,16 +70,16 @@ linkit.matcher.add:
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.matcher.remove:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/remove/{plugin_id}'
+linkit.matcher.delete:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/delete/{plugin_instance_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\DeleteForm'
-    _title: 'Remove a matcher'
+    _title: 'Delete a matcher'
   requirements:
     _permission: 'administer linkit profiles'
 
 linkit.matcher.edit:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_id}'
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_instance_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\EditForm'
     _title: 'Edit a matchers'

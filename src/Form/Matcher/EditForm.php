@@ -10,6 +10,8 @@ namespace Drupal\linkit\Form\Matcher;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\LinkGeneratorTrait;
+use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 
 /**
@@ -27,7 +29,7 @@ class EditForm extends FormBase {
   /**
    * The matcher to edit.
    *
-   * @var \Drupal\linkit\MatcherInterface
+   * @var \Drupal\linkit\ConfigurableMatcherInterface
    */
   protected $linkitMatcher;
 
@@ -41,9 +43,9 @@ class EditForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_id = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_instance_id = NULL) {
     $this->linkitProfile = $linkit_profile;
-    $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_id);
+    $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_instance_id);
     $form['data'] = [
       '#tree' => true,
     ];
@@ -57,12 +59,18 @@ class EditForm extends FormBase {
       '#submit' => array('::submitForm'),
       '#button_type' => 'primary',
     );
-    $form['actions']['cancel'] = array(
+    $form['actions']['delete'] = array(
       '#type' => 'link',
-      '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('matchers'),
-      '#attributes' => ['class' => ['button']],
+      '#title' => $this->t('Delete'),
+      '#url' => Url::fromRoute('linkit.matcher.delete', [
+        'linkit_profile' => $this->linkitProfile->id(),
+        'plugin_instance_id' => $this->linkitMatcher->getUuid(),
+      ]),
+      '#attributes' => [
+        'class' => ['button', 'button--danger'],
+      ],
     );
+
     return $form;
   }
 

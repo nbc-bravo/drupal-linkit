@@ -54,7 +54,6 @@ class EntityMatcherDeriver extends DeriverBase implements ContainerDeriverInterf
 
       if ($has_canonical) {
         $this->derivatives[$entity_type_id] = $base_plugin_definition;
-        $this->derivatives[$entity_type_id]['description'] = t('Adds support for @entity_type entities.', ['@entity_type' => Unicode::strtolower($entity_type->getLabel())]);
         $this->derivatives[$entity_type_id]['label'] = $entity_type->getLabel();
         $this->derivatives[$entity_type_id]['target_entity'] = $entity_type_id;
         $this->derivatives[$entity_type_id]['base_plugin_label'] = (string) $base_plugin_definition['label'];

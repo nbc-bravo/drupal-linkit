@@ -11,3 +11,9 @@ linkit.autocomplete:
     - core/drupalSettings
     - core/drupal.ajax
     - core/jquery.ui.autocomplete
+
+linkit.admin:
+  version: VERSION
+  css:
+    theme:
+      css/linkit.admin.theme.css: {}

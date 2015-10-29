@@ -10,6 +10,7 @@ namespace Drupal\linkit\Form\Matcher;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\ProfileInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides a form to remove a matcher from a profile.
@@ -34,14 +35,7 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to remove the @plugin matcher from the %profile profile?', array('%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitMatcher->getLabel()));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Remove');
+    return $this->t('Are you sure you want to delete the @plugin matcher from the %profile profile?', array('%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitMatcher->getLabel()));
   }
 
   /**
@@ -61,9 +55,14 @@ class DeleteForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_id = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_instance_id = NULL) {
     $this->linkitProfile = $linkit_profile;
-    $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_id);
+
+    if (!$this->linkitProfile->getMatchers()->has($plugin_instance_id)) {
+      throw new NotFoundHttpException();
+    }
+
+    $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_instance_id);
     return parent::buildForm($form, $form_state);
   }
 
@@ -71,12 +70,9 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    if ($this->linkitProfile->getMatchers()->has($this->linkitMatcher->getPluginId())) {
-      $this->linkitProfile->removeMatcher($this->linkitMatcher->getPluginId());
-      $this->linkitProfile->save();
-    }
+    $this->linkitProfile->removeMatcher($this->linkitMatcher);
 
-    drupal_set_message($this->t('The matcher %label has been removed.', array('%label' => $this->linkitMatcher->getLabel())));
+    drupal_set_message($this->t('The matcher %label has been deleted.', array('%label' => $this->linkitMatcher->getLabel())));
     $form_state->setRedirectUrl($this->linkitProfile->urlInfo('matchers'));
     // @TODO: Log this?
   }

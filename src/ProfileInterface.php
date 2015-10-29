@@ -104,18 +104,18 @@ interface ProfileInterface extends ConfigEntityInterface {
   /**
    * Returns a specific matcher.
    *
-   * @param string $matcher_id
-   *   The matcher ID.
+   * @param string $instance_id
+   *   The matcher instance ID.
    *
    * @return \Drupal\linkit\MatcherInterface
    *   The matcher object.
    */
-  public function getMatcher($matcher_id);
+  public function getMatcher($instance_id);
 
   /**
    * Returns the matchers for this profile.
    *
-   * @return \Drupal\linkit\MatcherrCollection|\Drupal\linkit\MatcherInterface[]
+   * @return \Drupal\linkit\MatcherCollection|\Drupal\linkit\MatcherInterface[]
    *   The matcher collection.
    */
   public function getMatchers();
@@ -126,30 +126,31 @@ interface ProfileInterface extends ConfigEntityInterface {
    * @param array $configuration
    *   An array of matcher configuration.
    *
-   * @return $this
+   * @return string
+   *   The instance ID of the matcher.
    */
   public function addMatcher(array $configuration);
 
   /**
    * Removes a matcher from this profile.
    *
-   * @param string $matcher_id
-   *  The ID of the matcher to remove.
+   * @param \Drupal\linkit\MatcherInterface $matcher
+   *  The matcher object.
    *
    * @return $this
    */
-  public function removeMatcher($matcher_id);
+  public function removeMatcher(MatcherInterface $matcher);
 
   /**
    * Sets the configuration for a matcher instance.
    *
-   * @param string $matcher_id
-   *   The ID of the matcher to set the configuration for.
+   * @param string $instance_id
+   *   The instance ID of the matcher to set the configuration for.
    * @param array $configuration
    *   The matcher configuration to set.
    *
    * @return $this
    */
-  public function setMatcherConfig($matcher_id, array $configuration);
+  public function setMatcherConfig($instance_id, array $configuration);
 
 }

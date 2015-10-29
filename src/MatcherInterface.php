@@ -19,7 +19,15 @@ use Drupal\Core\Plugin\PluginFormInterface;
  * @see \Drupal\linkit\MatcherManager
  * @see plugin_api
  */
-interface MatcherInterface extends PluginFormInterface, PluginInspectionInterface, ConfigurablePluginInterface {
+interface MatcherInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
+
+  /**
+   * Returns the unique ID representing the matcher.
+   *
+   * @return string
+   *   The matcher ID.
+   */
+  public function getUuid();
 
   /**
    * Returns the matcher label.
@@ -30,12 +38,12 @@ interface MatcherInterface extends PluginFormInterface, PluginInspectionInterfac
   public function getLabel();
 
   /**
-   * Returns the matcher description.
+   * Returns the summarized configuration of the matcher.
    *
    * @return string
-   *   The matcher description.
+   *   The summarized configuration of the matcher.
    */
-  public function getDescription();
+  public function getSummary();
 
   /**
    * Returns the weight of the matcher.
@@ -46,7 +54,7 @@ interface MatcherInterface extends PluginFormInterface, PluginInspectionInterfac
   public function getWeight();
 
   /**
-   * Sets the weight for this matcher.
+   * Sets the weight for the matcher.
    *
    * @param int $weight
    *   The weight for this matcher.

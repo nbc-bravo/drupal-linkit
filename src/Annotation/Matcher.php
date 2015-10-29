@@ -40,17 +40,6 @@ class Matcher extends Plugin {
   public $label;
 
   /**
-   * A brief description of the matcher.
-   *
-   * This will be shown when adding or configuring a profile.
-   *
-   * @ingroup plugin_translatable
-   *
-   * @var \Drupal\Core\Annotation\Translation (optional)
-   */
-  public $description = '';
-
-  /**
    * The entity type that is managed by this matcher.
    *
    * @var string

@@ -25,6 +25,7 @@ class AddForm extends FormBase {
    */
   protected $linkitProfile;
 
+
   /**
    * The matcher manager.
    *
@@ -64,31 +65,25 @@ class AddForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
 
-    $header = array(
-      'label' => $this->t('Matcher'),
-      'description' => $this->t('Description'),
-    );
+    $options = [];
+    foreach ($this->manager->getDefinitions() as $id => $plugin) {
+      $options[$id] = $plugin['label'];
+    }
 
-    $form['plugins'] = array(
-      '#type' => 'tableselect',
-      '#header' => $header,
-      '#options' => $this->buildRows(),
-      '#empty' => $this->t('No matchers available.'),
+    $form['plugin'] = array(
+      '#type' => 'select',
+      '#title' => $this->t('Add a new matcher'),
+      '#options' => $options,
+      '#empty_option' => $this->t('- Select a matcher -'),
     );
 
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => $this->t('Add matchers'),
+      '#value' => $this->t('Save and continue'),
       '#submit' => array('::submitForm'),
       '#tableselect' => TRUE,
       '#button_type' => 'primary',
-    );
-    $form['actions']['cancel'] = array(
-      '#type' => 'link',
-      '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('matchers'),
-      '#attributes' => ['class' => ['button']],
     );
 
     return $form;
@@ -100,46 +95,16 @@ class AddForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
 
-    foreach (array_filter($form_state->getValue('plugins')) as $plugin_id) {
-      $plugin_configuration = array(
-        'id' => $plugin_id,
-      );
-      $this->linkitProfile->addMatcher($plugin_configuration);
-    }
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance($form_state->getValue('plugin'));
 
+    $plugin_id = $this->linkitProfile->addMatcher($plugin->getConfiguration());
     $this->linkitProfile->save();
 
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('matchers'));
-  }
-
-  /**
-   * Builds the table rows.
-   *
-   * Only matchers that is not already applied to the profile are
-   * shown.
-   *
-   * @return array
-   *   An array of table rows.
-   */
-  private function buildRows() {
-    $rows = array();
-
-    $applied_plugins = $this->linkitProfile->getMatchers()->getConfiguration();
-    $all_plugins = $this->manager->getDefinitions();
-
-    foreach ($all_plugins as $key => $definition) {
-      /** @var \Drupal\linkit\MatcherInterface $plugin */
-      $plugin = $this->manager->createInstance($key, $definition);
-
-      $row = array(
-        'label' => (string) $plugin->getLabel(),
-        'description' => (string) $plugin->getDescription(),
-      );
-
-      $rows[$plugin->getPluginId()] = $row;
-    }
-
-    return $rows;
+    $form_state->setRedirect('linkit.matcher.edit', [
+      'linkit_profile' => $this->linkitProfile->id(),
+      'plugin_id' => $plugin_id,
+    ]);
   }
 
 }

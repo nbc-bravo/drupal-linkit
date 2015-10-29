@@ -11,6 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 use Drupal\linkit\AttributeCollection;
 use Drupal\linkit\MatcherCollection;
+use Drupal\linkit\MatcherInterface;
 use Drupal\linkit\ProfileInterface;
 
 /**
@@ -211,8 +212,8 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
   /**
    * {@inheritdoc}
    */
-  public function getMatcher($matcher_id) {
-    return $this->getMatchers()->get($matcher_id);
+  public function getMatcher($instance_id) {
+    return $this->getMatchers()->get($instance_id);
   }
 
   /**
@@ -230,25 +231,26 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    * {@inheritdoc}
    */
   public function addMatcher(array $configuration) {
-    $this->getMatchers()->addInstanceId($configuration['id'], $configuration);
+    $configuration['uuid'] = $this->uuidGenerator()->generate();
+    $this->getMatchers()->addInstanceId($configuration['uuid'], $configuration);
+    return $configuration['uuid'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function removeMatcher(MatcherInterface $matcher) {
+    $this->getMatchers()->removeInstanceId($matcher->getUuid());
+    $this->save();
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function removeMatcher($matcher_id) {
-    unset($this->matchers[$matcher_id]);
-    $this->getMatchers()->removeInstanceId($matcher_id);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMatcherConfig($matcher_id, array $configuration) {
-    $this->matchers[$matcher_id] = $configuration;
-    $this->getMatchers()->setInstanceConfiguration($matcher_id, $configuration);
+  public function setMatcherConfig($instance_id, array $configuration) {
+    $this->matchers[$instance_id] = $configuration;
+    $this->getMatchers()->setInstanceConfiguration($instance_id, $configuration);
     return $this;
   }
 

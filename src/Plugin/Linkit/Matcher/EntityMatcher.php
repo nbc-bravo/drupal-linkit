@@ -13,7 +13,7 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\linkit\MatcherBase;
+use Drupal\linkit\ConfigurableMatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   deriver = "\Drupal\linkit\Plugin\Derivative\EntityMatcherDeriver"
  * )
  */
-class EntityMatcher extends MatcherBase {
+class EntityMatcher extends ConfigurableMatcherBase {
 
   /**
    * The database connection.
@@ -94,6 +94,35 @@ class EntityMatcher extends MatcherBase {
   /**
    * {@inheritdoc}
    */
+  public function getSummary() {
+    $summery = parent::getSummary();
+    $entity_type = $this->entityManager->getDefinition($this->target_type);
+
+    $result_description = $this->configuration['result_description'];
+    if (!empty($result_description)) {
+      $summery[] = $this->t('Result description: @result_description', [
+        '@result_description' => $result_description
+      ]);
+    }
+
+    if ($entity_type->hasKey('bundle')) {
+      $bundles = !empty($this->configuration['bundles']) ? $this->configuration['bundles'] : ['None'];
+      $summery[] = $this->t('Bundle filter: @bundle_filter', [
+        // @TODO: Print labels instead of machine name.
+        '@bundle_filter' => implode(', ', $bundles),
+      ]);
+
+      $summery[] = $this->t('Group by bundle: @bundle_grouping', [
+        '@bundle_grouping' => $this->configuration['bundles'] ? $this->t('Yes') : $this->t('No'),
+      ]);
+    }
+
+    return $summery;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
       'result_description' => '',
@@ -107,7 +136,6 @@ class EntityMatcher extends MatcherBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $entity_type = $this->entityManager->getDefinition($this->target_type);
-    $bundles = $this->entityManager->getBundleInfo($this->target_type);
 
     $form['result_description'] = [
       '#title' => $this->t('Result description'),
@@ -122,7 +150,7 @@ class EntityMatcher extends MatcherBase {
     // Filter the possible bundles to use if the entity has bundles.
     if ($entity_type->hasKey('bundle')) {
       $bundle_options = [];
-      foreach ($bundles as $bundle_name => $bundle_info) {
+      foreach ($this->entityManager->getBundleInfo($this->target_type) as $bundle_name => $bundle_info) {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
@@ -144,12 +172,6 @@ class EntityMatcher extends MatcherBase {
     }
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
   }
 
   /**
@@ -276,5 +298,4 @@ class EntityMatcher extends MatcherBase {
 
     return Html::escape($entity->getEntityTypeId());
   }
-
 }

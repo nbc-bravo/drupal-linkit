@@ -14,11 +14,23 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "entity:node",
  *   target_entity = "node",
  *   label = @Translation("Content"),
- *   description = @Translation("Adds support for node entities."),
  *   provider = "node"
  * )
  */
 class NodeMatcher extends EntityMatcher {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSummary() {
+    $summery = parent::getSummary();
+
+    $summery[] = $this->t('Include unpublished: @include_unpublished', [
+      '@include_unpublished' => $this->configuration['include_unpublished'] ? $this->t('Yes') : $this->t('No'),
+    ]);
+
+    return $summery;
+  }
 
   /**
    * {@inheritdoc}
@@ -43,9 +55,6 @@ class NodeMatcher extends EntityMatcher {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
-    $form['bundles']['#title'] = $this->t('Content types filter');
-    $form['bundles']['#description'] = $this->t('If none of the checkboxes is checked, allow all content types.');
-    $form['group_by_bundle']['#title'] = $this->t('Group by content type');
 
     $form['include_unpublished'] = [
       '#title' => t('Include unpublished nodes'),
