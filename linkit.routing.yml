@@ -46,11 +46,11 @@ linkit.attribute.add:
   requirements:
     _permission: 'administer linkit profiles'
 
-linkit.attribute.remove:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/remove/{plugin_id}'
+linkit.attribute.delete:
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/delete/{plugin_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
-    _title: 'Remove an attribute'
+    _title: 'Delete an attribute'
   requirements:
     _permission: 'administer linkit profiles'
 

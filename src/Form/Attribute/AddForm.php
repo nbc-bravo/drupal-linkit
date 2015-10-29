@@ -84,12 +84,6 @@ class AddForm extends FormBase {
       '#tableselect' => TRUE,
       '#button_type' => 'primary',
     );
-    $form['actions']['cancel'] = array(
-      '#type' => 'link',
-      '#title' => $this->t('Cancel'),
-      '#url' => $this->linkitProfile->urlInfo('attributes'),
-      '#attributes' => ['class' => ['button']],
-    );
 
     return $form;
   }

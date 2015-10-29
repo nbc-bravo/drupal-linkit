@@ -35,13 +35,13 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test the overview page.
    */
-  function testMatcherOverview() {
+  function testOverview() {
     $profile = $this->createProfile();
 
     $this->drupalGet(\Drupal::url('entity.linkit_profile.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
-    $this->assertText('No matchers added.');
+    $this->assertText(t('No matchers added.'));
 
     $this->assertLinkByHref(\Drupal::url('linkit.matcher.add', [
       'linkit_profile' => $profile->id(),
@@ -51,8 +51,7 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test adding a matcher to a profile.
    */
-  function testAddMatcher() {
-    // Add a linkit profile.
+  function testAdd() {
     $profile = $this->createProfile();
     $this->drupalGet(\Drupal::url('linkit.matcher.add', [
       'linkit_profile' => $profile->id(),
@@ -76,14 +75,13 @@ class MatcherCrudTest extends LinkitTestBase {
     $this->drupalGet(\Drupal::url('entity.linkit_profile.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
-    $this->assertNoText('No matchers added.');
+    $this->assertNoText(t('No matchers added.'));
   }
 
   /**
    * Test delete a matcher from a profile.
    */
-  function testDeleteMatcher() {
-    // Add a linkit profile and attach a matcher to it.
+  function testDelete() {
     $profile = $this->createProfile();
     $plugin_uuid = $profile->addMatcher(['id' => 'entity:user']);
     $profile->save();
@@ -106,7 +104,7 @@ class MatcherCrudTest extends LinkitTestBase {
     $this->assertUrl(\Drupal::url('entity.linkit_profile.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
-    $this->assertText('No matchers added.');
+    $this->assertText(t('No matchers added.'));
 
     /** @var \Drupal\linkit\Entity\Profile $updated_profile */
     $updated_profile = Profile::load($profile->id());

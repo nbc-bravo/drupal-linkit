@@ -109,8 +109,8 @@ class OverviewForm extends FormBase {
       ];
 
       $form['plugins'][$id]['operations']['#links']['delete'] = [
-        'title' => t('Remove'),
-        'url' => Url::fromRoute('linkit.attribute.remove', [
+        'title' => t('Delete'),
+        'url' => Url::fromRoute('linkit.attribute.delete', [
           'linkit_profile' =>  $this->linkitProfile->id(),
           'plugin_id' => $id,
         ]),

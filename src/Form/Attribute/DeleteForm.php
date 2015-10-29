@@ -35,14 +35,7 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to remove the @plugin attribute from the %profile profile?', array('%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitAttribute->getLabel()));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Remove');
+    return $this->t('Are you sure you want to delete the @plugin attribute from the %profile profile?', array('%profile' => $this->linkitProfile->label(), '@plugin' => $this->linkitAttribute->getLabel()));
   }
 
   /**
@@ -82,7 +75,7 @@ class DeleteForm extends ConfirmFormBase {
       $this->linkitProfile->save();
     }
 
-    drupal_set_message($this->t('The attribute %label has been removed.', array('%label' => $this->linkitAttribute->getLabel())));
+    drupal_set_message($this->t('The attribute %label has been deleted.', array('%label' => $this->linkitAttribute->getLabel())));
     $form_state->setRedirectUrl($this->linkitProfile->urlInfo('attributes'));
     // @TODO: Log this?
   }
