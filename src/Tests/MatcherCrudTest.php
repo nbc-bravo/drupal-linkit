@@ -38,7 +38,7 @@ class MatcherCrudTest extends LinkitTestBase {
   function testOverview() {
     $profile = $this->createProfile();
 
-    $this->drupalGet(\Drupal::url('entity.linkit_profile.matchers', [
+    $this->drupalGet(\Drupal::url('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No matchers added.'));
@@ -72,7 +72,7 @@ class MatcherCrudTest extends LinkitTestBase {
     //  'plugin_id' => ???,
     //]));
 
-    $this->drupalGet(\Drupal::url('entity.linkit_profile.matchers', [
+    $this->drupalGet(\Drupal::url('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertNoText(t('No matchers added.'));
@@ -93,6 +93,16 @@ class MatcherCrudTest extends LinkitTestBase {
     ]));
     $this->assertResponse('404');
 
+    // Go to the delete page, but press cancel.
+    $this->drupalGet(\Drupal::url('linkit.matcher.delete', [
+      'linkit_profile' => $profile->id(),
+      'plugin_instance_id' => $plugin_uuid,
+    ]));
+    $this->clickLink(t('Cancel'));
+    $this->assertUrl(\Drupal::url('linkit.matchers', [
+      'linkit_profile' => $profile->id(),
+    ]));
+
     // Delete the matcher from the profile.
     $this->drupalGet(\Drupal::url('linkit.matcher.delete', [
       'linkit_profile' => $profile->id(),
@@ -101,7 +111,7 @@ class MatcherCrudTest extends LinkitTestBase {
 
     $this->drupalPostForm(NULL, [], t('Confirm'));
     $this->assertRaw(t('The matcher %plugin has been deleted.', ['%plugin' => 'User']));
-    $this->assertUrl(\Drupal::url('entity.linkit_profile.matchers', [
+    $this->assertUrl(\Drupal::url('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No matchers added.'));

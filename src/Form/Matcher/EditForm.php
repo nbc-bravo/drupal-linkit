@@ -85,7 +85,7 @@ class EditForm extends FormBase {
 
     drupal_set_message($this->t('Saved %label configuration.', array('%label' => $this->linkitMatcher->getLabel())));
 
-    $form_state->setRedirect('entity.linkit_profile.matchers', [
+    $form_state->setRedirect('linkit.matchers', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]);
   }

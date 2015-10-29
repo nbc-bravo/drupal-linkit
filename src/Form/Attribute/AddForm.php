@@ -95,15 +95,17 @@ class AddForm extends FormBase {
     $form_state->cleanValues();
 
     foreach (array_filter($form_state->getValue('plugins')) as $plugin_id) {
-      $plugin = array(
+      $plugin = [
         'id' => $plugin_id,
-      );
+      ];
       $this->linkitProfile->addAttribute($plugin);
     }
 
     $this->linkitProfile->save();
 
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('attributes'));
+    $form_state->setRedirect('linkit.attributes', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
   }
 
   /**
@@ -115,7 +117,7 @@ class AddForm extends FormBase {
    *   An array of table rows.
    */
   private function buildRows() {
-    $rows = array();
+    $rows = [];
 
     $applied_plugins = $this->linkitProfile->getAttributes()->getConfiguration();
     $all_plugins = $this->manager->getDefinitions();
@@ -124,10 +126,10 @@ class AddForm extends FormBase {
       /** @var \Drupal\linkit\AttributeInterface $plugin */
       $plugin = $this->manager->createInstance($definition['id']);
 
-      $row = array(
+      $row = [
         'label' => (string) $plugin->getLabel(),
         'description' => (string) $plugin->getDescription(),
-      );
+      ];
 
       $rows[$plugin->getPluginId()] = $row;
     }

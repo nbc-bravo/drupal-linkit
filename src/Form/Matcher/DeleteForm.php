@@ -9,6 +9,7 @@ namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -42,7 +43,9 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return $this->linkitProfile->urlInfo('matchers');
+    return Url::fromRoute('linkit.matchers', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
   }
 
   /**
@@ -73,7 +76,9 @@ class DeleteForm extends ConfirmFormBase {
     $this->linkitProfile->removeMatcher($this->linkitMatcher);
 
     drupal_set_message($this->t('The matcher %label has been deleted.', array('%label' => $this->linkitMatcher->getLabel())));
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('matchers'));
+    $form_state->setRedirect('linkit.matchers', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
     // @TODO: Log this?
   }
 

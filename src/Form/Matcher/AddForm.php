@@ -9,6 +9,7 @@ namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\linkit\ConfigurableMatcherInterface;
 use Drupal\linkit\MatcherManager;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -101,10 +102,20 @@ class AddForm extends FormBase {
     $plugin_uuid = $this->linkitProfile->addMatcher($plugin->getConfiguration());
     $this->linkitProfile->save();
 
-    $form_state->setRedirect('linkit.matcher.edit', [
-      'linkit_profile' => $this->linkitProfile->id(),
-      'plugin_instance_id' => $plugin_uuid,
-    ]);
+    $is_configurable = $plugin instanceof ConfigurableMatcherInterface;
+    if ($is_configurable) {
+      $form_state->setRedirect('linkit.matcher.edit', [
+        'linkit_profile' => $this->linkitProfile->id(),
+        'plugin_instance_id' => $plugin_uuid,
+      ]);
+    }
+    else {
+      drupal_set_message($this->t('Added %label matcher.', array('%label' => $plugin->getLabel())));
+
+      $form_state->setRedirect('linkit.matchers', [
+        'linkit_profile' => $this->linkitProfile->id(),
+      ]);
+    }
   }
 
 }

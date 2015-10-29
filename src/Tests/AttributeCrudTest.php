@@ -47,7 +47,7 @@ class AttributeCrudTest extends LinkitTestBase {
   function testOverview() {
     $profile = $this->createProfile();
 
-    $this->drupalGet(\Drupal::url('entity.linkit_profile.attributes', [
+    $this->drupalGet(\Drupal::url('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No attributes added.'));
@@ -73,7 +73,7 @@ class AttributeCrudTest extends LinkitTestBase {
     $edit['plugins[accesskey]'] = 'accesskey';
     $this->drupalPostForm(NULL, $edit, t('Add attributes'));
 
-    $this->assertUrl(\Drupal::url('entity.linkit_profile.attributes', [
+    $this->assertUrl(\Drupal::url('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
 
@@ -96,6 +96,16 @@ class AttributeCrudTest extends LinkitTestBase {
     ]));
     $this->assertResponse('404');
 
+    // Go to the delete page, but press cancel.
+    $this->drupalGet(\Drupal::url('linkit.attribute.delete', [
+      'linkit_profile' => $profile->id(),
+      'plugin_id' => 'accesskey',
+    ]));
+    $this->clickLink(t('Cancel'));
+    $this->assertUrl(\Drupal::url('linkit.attributes', [
+      'linkit_profile' => $profile->id(),
+    ]));
+
     // Delete the attribute from the profile.
     $this->drupalGet(\Drupal::url('linkit.attribute.delete', [
       'linkit_profile' => $profile->id(),
@@ -104,7 +114,7 @@ class AttributeCrudTest extends LinkitTestBase {
 
     $this->drupalPostForm(NULL, [], t('Confirm'));
     $this->assertRaw(t('The attribute %plugin has been deleted.', ['%plugin' => 'Accesskey']));
-    $this->assertUrl(\Drupal::url('entity.linkit_profile.attributes', [
+    $this->assertUrl(\Drupal::url('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No attributes added.'));

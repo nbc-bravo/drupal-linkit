@@ -30,7 +30,7 @@ entity.linkit_profile.delete_form:
   requirements:
     _permission: 'administer linkit profiles'
 
-entity.linkit_profile.attributes:
+linkit.attributes:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\OverviewForm'
@@ -54,7 +54,7 @@ linkit.attribute.delete:
   requirements:
     _permission: 'administer linkit profiles'
 
-entity.linkit_profile.matchers:
+linkit.matchers:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\OverviewForm'

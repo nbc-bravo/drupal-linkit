@@ -9,6 +9,7 @@ namespace Drupal\linkit\Form\Attribute;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -42,7 +43,9 @@ class DeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return $this->linkitProfile->urlInfo('attributes');
+    return Url::fromRoute('linkit.attributes', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
   }
 
   /**
@@ -76,7 +79,10 @@ class DeleteForm extends ConfirmFormBase {
     }
 
     drupal_set_message($this->t('The attribute %label has been deleted.', array('%label' => $this->linkitAttribute->getLabel())));
-    $form_state->setRedirectUrl($this->linkitProfile->urlInfo('attributes'));
+    $form_state->setRedirect('linkit.attributes', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
+
     // @TODO: Log this?
   }
 

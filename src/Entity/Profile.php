@@ -37,9 +37,7 @@ use Drupal\linkit\ProfileInterface;
  *   links = {
  *     "collection" = "/admin/config/content/linkit",
  *     "edit-form" = "/admin/config/content/linkit/manage/{linkit_profile}",
- *     "delete-form" = "/admin/config/content/linkit/manage/{linkit_profile}/delete",
- *     "attributes" = "/admin/config/content/linkit/manage/{linkit_profile}/attributes",
- *     "matchers" = "/admin/config/content/linkit/manage/{linkit_profile}/matchers",
+ *     "delete-form" = "/admin/config/content/linkit/manage/{linkit_profile}/delete"
  *   },
  *   config_export = {
  *     "id",

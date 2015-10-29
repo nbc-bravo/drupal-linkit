@@ -8,11 +8,11 @@ linkit.matcher.add:
   route_name: linkit.matcher.add
   title: 'Add matcher'
   appears_on:
-    - entity.linkit_profile.matchers
+    - linkit.matchers
 
 linkit.attribute.add:
   route_name: linkit.attribute.add
   title: 'Add attribute'
   appears_on:
-    - entity.linkit_profile.attributes
+    - linkit.attributes
 
