@@ -64,26 +64,26 @@ class AddForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
 
-    $header = array(
+    $header = [
       'label' => $this->t('Attributes'),
       'description' => $this->t('Description'),
-    );
+    ];
 
-    $form['plugins'] = array(
+    $form['plugins'] = [
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $this->buildRows(),
       '#empty' => $this->t('No attribute available.'),
-    );
+    ];
 
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array(
+    $form['actions'] = ['#type' => 'actions'];
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Add attributes'),
-      '#submit' => array('::submitForm'),
+      '#submit' => ['::submitForm'],
       '#tableselect' => TRUE,
       '#button_type' => 'primary',
-    );
+    ];
 
     return $form;
   }
