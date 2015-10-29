@@ -79,10 +79,14 @@ class EditForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
-    $value = $form_state->getValue('data');
-    $effect_data = (new FormState())->setValues($form_state->getValue('data'));
-    $this->linkitMatcher->submitConfigurationForm($form, $effect_data);
-
+    $plugin_data = (new FormState())->setValues($form_state->getValue('data'));
+    $this->linkitMatcher->submitConfigurationForm($form, $plugin_data);
     $this->linkitProfile->save();
+
+    drupal_set_message($this->t('Saved %label configuration.', array('%label' => $this->linkitMatcher->getLabel())));
+
+    $form_state->setRedirect('entity.linkit_profile.matchers', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]);
   }
 }

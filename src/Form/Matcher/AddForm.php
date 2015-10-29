@@ -98,12 +98,12 @@ class AddForm extends FormBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance($form_state->getValue('plugin'));
 
-    $plugin_id = $this->linkitProfile->addMatcher($plugin->getConfiguration());
+    $plugin_uuid = $this->linkitProfile->addMatcher($plugin->getConfiguration());
     $this->linkitProfile->save();
 
     $form_state->setRedirect('linkit.matcher.edit', [
       'linkit_profile' => $this->linkitProfile->id(),
-      'plugin_id' => $plugin_id,
+      'plugin_instance_id' => $plugin_uuid,
     ]);
   }
 
