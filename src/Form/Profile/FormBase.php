@@ -52,47 +52,6 @@ abstract class FormBase extends EntityForm {
       '#description' => $this->t('The text will be displayed on the <em>profile collection</em> page.'),
     ];
 
-    $form['additional_settings'] = [
-      '#type' => 'vertical_tabs',
-    ];
-
-    $form['autocomplete_configuration'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Autocomplete settings'),
-      '#description' => t('Linkit uses !bac which may be configured with a focus on performance.', ['!bac' =>  \Drupal::l('Better Autocomplete', Url::fromUri('https://github.com/betamos/Better-Autocomplete'))]),
-      '#group' => 'additional_settings',
-      '#open' => FALSE,
-      '#tree' => TRUE,
-    ];
-
-    $form['autocomplete_configuration']['character_limit'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Character limit'),
-      '#default_value' => $this->entity->getAutocompleteConfiguration()['character_limit'],
-      '#description' => $this->t('The minimum number of chars to trigger the first search.'),
-      // @TODO: Add numeric validation
-    ];
-
-    $form['autocomplete_configuration']['key_press_delay'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Key press delay'),
-      '#default_value' => $this->entity->getAutocompleteConfiguration()['key_press_delay'],
-      '#description' => $this->t('The time in milliseconds between last keypress and a new search.'),
-      '#field_suffix' => t('milliseconds'),
-      // @TODO: Add numeric validation
-    ];
-
-    // Called 'remoteTimeout' in BAC but we use the name 'timeout' as all calls
-    // we do are remote calls.
-    $form['autocomplete_configuration']['timeout'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Timeout'),
-      '#default_value' => $this->entity->getAutocompleteConfiguration()['timeout'],
-      '#description' => $this->t('The timeout in milliseconds for searches.'),
-      '#field_suffix' => t('milliseconds'),
-      // @TODO: Add numeric validation
-    ];
-
     return parent::form($form, $form_state);
   }
 

@@ -45,7 +45,6 @@ use Drupal\linkit\ProfileInterface;
  *     "id",
  *     "label",
  *     "description",
- *     "autocomplete_configuration",
  *     "attributes",
  *     "matchers"
  *   }
@@ -73,23 +72,6 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    * @var string
    */
   protected $description;
-
-  /**
-   * Autocomplete settings for this profile.
-   *
-   * An associative array using the properties:
-   * - character_limit: The minimum number of chars to trigger the first search.
-   * - key_press_delay: The time in milliseconds between last keypress and a
-   *   new search.
-   * - timeout: The timeout in milliseconds for searches.
-   *
-   * @var array
-   */
-  protected $autocomplete_configuration = [
-    'character_limit' => 3,
-    'key_press_delay' => 350,
-    'timeout' => 10000,
-  ];
 
   /**
    * Configured attribute for this profile.
@@ -147,21 +129,6 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    */
   public function setDescription($description) {
     $this->set('description', trim($description));
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAutocompleteConfiguration() {
-    return $this->get('autocomplete_configuration');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAutocompleteConfiguration(array $autocomplete_configuration) {
-    $this->set('autocomplete_configuration', $autocomplete_configuration);
     return $this;
   }
 

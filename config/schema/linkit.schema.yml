@@ -10,15 +10,6 @@ linkit.linkit_profile.*:
       type: string
     description:
       type: string
-    autocomplete_configuration:
-      type: mapping
-      mapping:
-        character_limit:
-          type: integer
-        key_press_delay:
-          type: integer
-        timeout:
-          type: integer
     attributes:
       type: sequence
       sequence:

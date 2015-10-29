@@ -33,24 +33,6 @@ interface ProfileInterface extends ConfigEntityInterface {
   public function setDescription($description);
 
   /**
-   * Gets the profile autocomplete configuration.
-   *
-   * @return array
-   *   The profile autocomplete configuration.
-   */
-  public function getAutocompleteConfiguration();
-
-  /**
-   * Sets the profile autocomplete configuration.
-   *
-   * @param array $autocomplete_configuration
-   *  The profile autocomplete configuration.
-   *
-   * @return $this
-   */
-  public function setAutocompleteConfiguration(array $autocomplete_configuration);
-
-  /**
    * Returns a specific attribute.
    *
    * @param string $attribute_id
