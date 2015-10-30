@@ -15,6 +15,7 @@ use Drupal\linkit\AttributeBase;
  * @Attribute(
  *   id = "relationship",
  *   label = @Translation("Relationship"),
+ *   html_name = "rel",
  *   description = @Translation("Basic input field for the relationship attribute."),
  * )
  */

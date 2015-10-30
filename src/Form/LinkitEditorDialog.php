@@ -84,7 +84,7 @@ class LinkitEditorDialog extends FormBase {
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
     $user_input = $form_state->getUserInput();
-    $input = isset($user_input['editor_object']) ? $user_input['editor_object'] : array();
+    $input = isset($user_input['editor_object']) ? $user_input['editor_object'] : [];
 
     // @TODO: Refactor the way to get the linkit profile to be more fail safe.
     /** @var \Drupal\editor\EditorInterface $editor */
@@ -99,14 +99,15 @@ class LinkitEditorDialog extends FormBase {
 
     // Everything under the "attributes" key is merged directly into the
     // generated link tag's attributes.
-    // TODO: Gör om till ett linkit element som använder BAC?
     $form['attributes']['href'] = [
       '#title' => $this->t('Link'),
       '#type' => 'linkit',
       '#default_value' => isset($input['href']) ? $input['href'] : '',
       '#description' => $this->t('Start typing to find content or paste a URL.'),
       '#autocomplete_route_name' => 'linkit.autocomplete',
-      '#autocomplete_route_parameters' => ['linkit_profile_id' => $linkit_profile_id],
+      '#autocomplete_route_parameters' => [
+        'linkit_profile_id' => $linkit_profile_id
+      ],
     ];
 
     $attributes = $this->linkitProfile->getAttributes();
@@ -118,35 +119,29 @@ class LinkitEditorDialog extends FormBase {
       ];
 
       foreach ($attributes as $plugin) {
-        $form['linkit_attributes'][$plugin->getPluginId()] = $plugin->buildFormElement($input[$plugin->getPluginId()]);
-
-        $form['linkit_attributes'][$plugin->getPluginId()] += [
-          '#parents' => array('attributes', $plugin->getPluginId()),
-          // TODO: Lägg till html_name i annotationen!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $form['linkit_attributes'][$plugin->getHtmlName()] = $plugin->buildFormElement($input[$plugin->getPluginId()]);
+        $form['linkit_attributes'][$plugin->getHtmlName()] += [
+          '#parents' => [
+            'attributes', $plugin->getHtmlName(),
+          ],
         ];
       }
     }
 
-//    foreach ($this->linkitProfile->getSelectionPlugins() as $plugin) {
-//      $form[$plugin->getPluginId()] = array(
-//        '#markup' => $plugin->getPluginId()
-//      );
-//    }
-
-    $form['actions'] = array(
+    $form['actions'] = [
       '#type' => 'actions',
-    );
+    ];
 
-    $form['actions']['save_modal'] = array(
+    $form['actions']['save_modal'] = [
       '#type' => 'submit',
       // @TODO: Insert and update?
       '#value' => $this->t('Save'),
-      '#submit' => array(),
-      '#ajax' => array(
+      '#submit' => [],
+      '#ajax' => [
         'callback' => '::submitForm',
         'event' => 'click',
-      ),
-    );
+      ],
+    ];
 
     return $form;
   }

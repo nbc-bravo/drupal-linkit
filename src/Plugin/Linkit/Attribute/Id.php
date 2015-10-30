@@ -15,6 +15,7 @@ use Drupal\linkit\AttributeBase;
  * @Attribute(
  *   id = "id",
  *   label = @Translation("Id"),
+ *   html_name = "id",
  *   description = @Translation("Basic input field for the id attribute."),
  * )
  */

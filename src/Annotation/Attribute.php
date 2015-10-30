@@ -46,8 +46,7 @@ class Attribute extends Plugin {
    *
    * @var string
    */
-  public $html_attribute;
-  // @TODO: Fix this!
+  public $html_name;
 
   /**
    * A brief description of the attribute.

@@ -81,6 +81,13 @@ abstract class AttributeBase extends PluginBase implements AttributeInterface {
   /**
    * {@inheritdoc}
    */
+  public function getHtmlName() {
+    return $this->pluginDefinition['html_name'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getDescription() {
     return $this->pluginDefinition['description'];
   }

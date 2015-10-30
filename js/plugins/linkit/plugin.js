@@ -23,7 +23,12 @@
           element: 'a',
           attributes: {
             '!href': '',
-            'target': ''
+            // @TODO: Read these dynamically from the profile.
+            'accesskey': '',
+            'id': '',
+            'rel': '',
+            'target': '',
+            'title': ''
           }
         }),
         requiredContent: new CKEDITOR.style({

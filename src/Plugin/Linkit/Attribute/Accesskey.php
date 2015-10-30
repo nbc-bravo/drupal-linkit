@@ -15,6 +15,7 @@ use Drupal\linkit\AttributeBase;
  * @Attribute(
  *   id = "accesskey",
  *   label = @Translation("Accesskey"),
+ *   html_name = "accesskey",
  *   description = @Translation("Basic input field for the accesskey attribute.")
  * )
  */

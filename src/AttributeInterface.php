@@ -37,6 +37,15 @@ interface AttributeInterface extends PluginInspectionInterface, ConfigurablePlug
   public function getDescription();
 
   /**
+   * Returns the attribute html name. This is the name of the attribute
+   * that will be inserted in the <code>&lt;a&gt;</code> tag.
+   *
+   * @return string
+   *   The attribute html name.
+   */
+  public function getHtmlName();
+
+  /**
    * Returns the weight of the attribute.
    *
    * @return int|string
