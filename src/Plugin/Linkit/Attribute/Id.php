@@ -28,6 +28,7 @@ class Id extends AttributeBase {
     return [
       '#type' => 'textfield',
       '#title' => t('Id'),
+      '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
     ];

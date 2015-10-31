@@ -35,6 +35,7 @@ class Target extends AttributeBase {
         '_self' => t('Same window (_self)'),
         '_parent' => t('Parent window (_parent)')
       ],
+      '#default_value' => $default_value,
     ];
   }
 

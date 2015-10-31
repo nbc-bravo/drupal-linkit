@@ -28,6 +28,7 @@ class Relationship extends AttributeBase {
     return [
       '#type' => 'textfield',
       '#title' => t('Relationship'),
+      '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
     ];

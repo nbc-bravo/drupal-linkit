@@ -28,6 +28,7 @@ class Accesskey extends AttributeBase {
     return [
       '#type' => 'textfield',
       '#title' => t('Accesskey'),
+      '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
     ];

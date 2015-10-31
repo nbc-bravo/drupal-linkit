@@ -28,6 +28,7 @@ class Title extends AttributeBase {
     return [
       '#type' => 'textfield',
       '#title' => t('Title'),
+      '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
     ];
