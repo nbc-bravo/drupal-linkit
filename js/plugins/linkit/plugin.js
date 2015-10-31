@@ -122,7 +122,7 @@
           // loads the JavaScript file instead of Drupal. Pull translated
           // strings from the plugin settings that are translated server-side.
           var dialogSettings = {
-            title: linkElement ? editor.config.drupalLink_dialogTitleEdit : editor.config.drupalLink_dialogTitleAdd,
+            title: linkElement ? editor.config.linkit_dialogTitleAdd : editor.config.linkit_dialogTitleEdit,
             dialogClass: 'editor-linkit-dialog'
           };
 
@@ -134,7 +134,7 @@
       // CTRL + L.
       editor.setKeystroke(CKEDITOR.CTRL + 76, 'linkit');
 
-      // Add buttons for link and unlink.
+      // Add buttons.
       if (editor.ui.addButton) {
         editor.ui.addButton('Linkit', {
           label: Drupal.t('Link'),
@@ -157,9 +157,9 @@
       // If the "menu" plugin is loaded, register the menu items.
       if (editor.addMenuItems) {
         editor.addMenuItems({
-          link: {
+          linkit: {
             label: Drupal.t('Edit Link'),
-            command: 'drupallink',
+            command: 'linkit',
             group: 'link',
             order: 1
           }
@@ -179,7 +179,9 @@
 
           var menu = {};
           if (anchor.getAttribute('href') && anchor.getChildCount()) {
-            menu = {link: CKEDITOR.TRISTATE_OFF, unlink: CKEDITOR.TRISTATE_OFF};
+            menu = {
+              linkit: CKEDITOR.TRISTATE_OFF
+            };
           }
           return menu;
         });

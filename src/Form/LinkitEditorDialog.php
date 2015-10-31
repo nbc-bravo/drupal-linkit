@@ -80,7 +80,6 @@ class LinkitEditorDialog extends FormBase {
    *   The filter format for which this dialog corresponds.
    */
   public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL) {
-
     // The default values are set directly from \Drupal::request()->request,
     // provided by the editor plugin opening the dialog.
     $user_input = $form_state->getUserInput();
@@ -119,7 +118,7 @@ class LinkitEditorDialog extends FormBase {
       ];
 
       foreach ($attributes as $plugin) {
-        $form['linkit_attributes'][$plugin->getHtmlName()] = $plugin->buildFormElement($input[$plugin->getPluginId()]);
+        $form['linkit_attributes'][$plugin->getHtmlName()] = $plugin->buildFormElement($input[$plugin->getHtmlName()]);
         $form['linkit_attributes'][$plugin->getHtmlName()] += [
           '#parents' => [
             'attributes', $plugin->getHtmlName(),

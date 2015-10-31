@@ -7,6 +7,7 @@
 
 namespace Drupal\linkit\Controller;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -54,18 +55,19 @@ class AutocompleteController implements ContainerInjectionInterface {
    * Like other autocomplete functions, this function inspects the 'q' query
    * parameter for the string to use to search for suggestions.
    *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   A JSON response containing the autocomplete suggestions.
+   * @param Request $request
+   * @param $linkit_profile_id
+   *
+   * @return JsonResponse A JSON response containing the autocomplete suggestions.
+   * A JSON response containing the autocomplete suggestions.
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
     $matchers = $this->linkitProfile->getMatchers();
 
     $matches = array();
-    $string = $request->query->get('q');
-
     foreach ($matchers as $plugin) {
-      $matches = array_merge($matches, $plugin->getMatches($string));
+      $matches = array_merge($matches, $plugin->getMatches(Unicode::strtolower($request->query->get('q'))));
     }
 
     return new JsonResponse($matches);

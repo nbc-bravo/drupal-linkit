@@ -35,7 +35,6 @@
      * @param {object} data
      */
     function sourceCallbackHandler(data) {
-      console.log(data);
       autocomplete.cache[elementId][term] = data;
       showSuggestions(data);
     }
@@ -72,31 +71,43 @@
    * Override jQuery UI _renderItem function to output HTML by default.
    *
    * @param {object} ul
+   *   The <ul> element that the newly created <li> element must be appended to.
    * @param {object} item
    *
    * @return {object}
    */
   function renderItem(ul, item) {
-    return $("<li>")
-      .append($("<span>").html(item.title))
-      .append($("<span>").html(item.description))
-      .appendTo(ul);
+    var $line = $('<li>').addClass('linkit-result');
+    $line.append($('<span>').html(item.title).addClass('linkit-result--title'));
+
+    if (item.description !== null) {
+      $line.append($('<span>').html(item.description).addClass('linkit-result--description'));
+    }
+
+    return $line.appendTo(ul);
   }
 
   /**
-   * Override jQuery UI _renderMenu function to group items.
+   * Override jQuery UI _renderMenu function to handle groups.
    *
    * @param {object} ul
-   * @param {object} item
+   *   An empty <ul> element to use as the widget's menu.
+   * @param {array} items
+   *   An Array of items that match the user typed term.
    *
+   * @return {object}
    */
-  //function renderMenu(ul, item) {
-  //  var that = this;
-  //  $.each(items, function(index, item) {
-  //    autocomplete.options._renderItemData(ul, item);
-  //  });
-  //  $(ul).find("li:odd").addClass("odd");
-  //}
+  function renderMenu(ul, items) {
+    var self = this.element.autocomplete('instance');
+    var currentGroup = '';
+    $.each(items, function (index, item) {
+      if (item.group != currentGroup) {
+        ul.append('<li class="linkit-result--group">' + item.group + "</li>");
+        currentGroup = item.group;
+      }
+      self._renderItemData(ul, item);
+    });
+  }
 
   /**
    * Attaches the autocomplete behavior to all required fields.
@@ -108,10 +119,18 @@
       // Act on textfields with the "form-autocomplete" class.
       var $autocomplete = $(context).find('input.form-linkit-autocomplete').once('linkit-autocomplete');
       if ($autocomplete.length) {
+        $.widget('custom.autocomplete', $.ui.autocomplete, {
+          _create: function () {
+            this._super();
+            this.widget().menu('option', 'items', '> :not(.linkit-result--group)');
+          },
+          _renderMenu: autocomplete.options.renderMenu,
+          _renderItem: autocomplete.options.renderItem
+        });
+
         // Use jQuery UI Autocomplete on the textfield.
-        $autocomplete.autocomplete(autocomplete.options)
-          .data("ui-autocomplete")
-          ._renderItem = autocomplete.options.renderItem;
+        $autocomplete.autocomplete(autocomplete.options);
+        $autocomplete.autocomplete('widget').addClass('linkit-ui-autocomplete');
       }
     },
     detach: function (context, settings, trigger) {
@@ -131,6 +150,7 @@
     options: {
       source: sourceData,
       renderItem: renderItem,
+      renderMenu: renderMenu,
       select: selectHandler,
       minLength: 1
     },

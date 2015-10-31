@@ -294,8 +294,17 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *   The match group for this entity.
    */
   protected function buildGroup($entity) {
-    // @TODO: Use the "group_by_bundle" setting.
+    $group = $entity->getEntityType()->getLabel();
 
-    return Html::escape($entity->getEntityTypeId());
+    // If the entities by this entity should be grouped by bundle, get the
+    // name and append it to the group.
+    if ($this->configuration['group_by_bundle']) {
+      $bundles = $this->entityManager->getBundleInfo($entity->getEntityTypeId());
+      $bundle_label = $bundles[$entity->bundle()]['label'];
+      $group .= ' - ' . $bundle_label;
+    }
+
+    return $group;
   }
+
 }
