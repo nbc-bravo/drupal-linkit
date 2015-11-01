@@ -10,6 +10,7 @@ namespace Drupal\linkit\Controller;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,8 +67,21 @@ class AutocompleteController implements ContainerInjectionInterface {
     $matchers = $this->linkitProfile->getMatchers();
 
     $matches = array();
+
+    $string = Unicode::strtolower($request->query->get('q'));
+
+    // Special for link to frontpage.
+    if (strpos($string, 'front') !== FALSE) {
+      $matches[] = array(
+        'title' => t('Frontpage'),
+        'description' => 'The frontpage for this site.',
+        'path' => Url::fromRoute('<front>')->toString(),
+        'group' => t('System'),
+      );
+    }
+
     foreach ($matchers as $plugin) {
-      $matches = array_merge($matches, $plugin->getMatches(Unicode::strtolower($request->query->get('q'))));
+      $matches = array_merge($matches, $plugin->getMatches($string));
     }
 
     return new JsonResponse($matches);
