@@ -148,6 +148,14 @@ class LinkitEditorDialog extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $attributes = array_filter($form_state->getValue('attributes'));
+    $form_state->setValue('attributes', $attributes);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
 
