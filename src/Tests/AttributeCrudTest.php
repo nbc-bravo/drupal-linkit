@@ -69,7 +69,7 @@ class AttributeCrudTest extends LinkitTestBase {
     $this->assertEqual(count($this->manager->getDefinitions()), count($this->xpath('//table/tbody/tr')), 'All attributes are available.');
 
     $edit = array();
-    $edit['plugins[class]'] = 'class';
+    $edit['plugins[id]'] = 'id';
     $edit['plugins[accesskey]'] = 'accesskey';
     $this->drupalPostForm(NULL, $edit, t('Add attributes'));
 
