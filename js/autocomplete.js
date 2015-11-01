@@ -53,7 +53,7 @@
   }
 
   /**
-    * Handles an autocompleteselect event.
+    * Handles an autocomplete select event.
     *
     * @param {jQuery.Event} event
     * @param {object} ui
@@ -61,8 +61,6 @@
     * @return {bool}
     */
   function selectHandler(event, ui) {
-    console.log(ui.item);
-
     event.target.value = ui.item.path;
     return false;
   }
@@ -131,6 +129,11 @@
         // Use jQuery UI Autocomplete on the textfield.
         $autocomplete.autocomplete(autocomplete.options);
         $autocomplete.autocomplete('widget').addClass('linkit-ui-autocomplete');
+        $autocomplete.bind('focus', function() {
+          if (autocomplete.cache[$autocomplete.attr('id')].length) {
+            $autocomplete.autocomplete('instance').search();
+          }
+        });
       }
     },
     detach: function (context, settings, trigger) {
