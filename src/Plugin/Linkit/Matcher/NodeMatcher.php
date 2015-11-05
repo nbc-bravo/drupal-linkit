@@ -81,9 +81,7 @@ class NodeMatcher extends EntityMatcher {
   protected function buildEntityQuery($match) {
     $query = parent::buildEntityQuery($match);
 
-    $access = $this->currentUser->hasPermission('bypass node access') && !count($this->moduleHandler->getImplementations('node_grants'));
-
-    if (!$access || $this->configuration['include_unpublished'] === FALSE) {
+    if ($this->configuration['include_unpublished'] !== TRUE) {
       $query->condition('status', NODE_PUBLISHED);
     }
 

@@ -6,8 +6,8 @@
  */
 
 namespace Drupal\linkit\Tests;
-use Drupal\linkit\Entity\Profile;
 
+use Drupal\linkit\Entity\Profile;
 
 /**
  * Tests adding, listing and deleting attributes on a profile.

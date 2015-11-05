@@ -136,7 +136,6 @@ class EntityMatcher extends ConfigurableMatcherBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $entity_type = $this->entityManager->getDefinition($this->target_type);
-
     $form['result_description'] = [
       '#title' => $this->t('Result description'),
       '#type' => 'textfield',
@@ -204,7 +203,10 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
     $matches = [];
     $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
+
     foreach ($entities as $entity_id => $entity) {
+      // @TODO: Validate access here?
+
       $matches[] = [
         'title' => $this->buildLabel($entity),
         'description' => $this->buildDescription($entity),
@@ -236,6 +238,11 @@ class EntityMatcher extends ConfigurableMatcherBase {
     if ($label_key) {
       $query->condition($label_key, '%' . $match . '%', 'LIKE');
       $query->sort($label_key, 'ASC');
+    }
+
+    // Bundle check.
+    if (!empty($this->configuration['bundles']) && $bundle_key = $entity_type->getKey('bundle')) {
+      $query->condition($bundle_key, $this->configuration['bundles'], 'IN');
     }
 
     // Add entity-access tag.
