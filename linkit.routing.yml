@@ -82,7 +82,7 @@ linkit.matcher.edit:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_instance_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\EditForm'
-    _title: 'Edit a matchers'
+    _title: 'Edit a matcher'
   requirements:
     _permission: 'administer linkit profiles'
 
