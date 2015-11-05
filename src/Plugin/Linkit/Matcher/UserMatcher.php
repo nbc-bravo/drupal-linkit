@@ -35,6 +35,7 @@ class UserMatcher extends EntityMatcher {
     $query = parent::buildEntityQuery($match);
 
     $match = $this->database->escapeLike($match);
+    // The user entity don't specify a label key so we have to do it instead.
     $query->condition('name', '%' . $match . '%', 'LIKE');
 
     return $query;

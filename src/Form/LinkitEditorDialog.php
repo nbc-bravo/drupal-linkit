@@ -111,7 +111,7 @@ class LinkitEditorDialog extends FormBase {
 
     $attributes = $this->linkitProfile->getAttributes();
 
-    if (!empty($attributes)) {
+    if ($attributes->count()) {
       $form['linkit_attributes'] = [
         '#type' => 'details',
         '#title' => $this->t('Attributes'),
