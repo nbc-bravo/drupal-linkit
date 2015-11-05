@@ -556,7 +556,7 @@ function linkit_dashboard_form($form, &$form_state) {
       '#options' => $_profiles,
       '#ajax' => array(
         'callback' => 'linkit_change_profile',
-        'wrapper' => 'linkit-dashbaord-ajax-wrapper',
+        'wrapper' => 'linkit-dashboard-ajax-wrapper',
         'method' => 'replaceWith',
         'effect' => 'fade',
         'event' => 'click',
@@ -577,7 +577,7 @@ function linkit_dashboard_form($form, &$form_state) {
   $form['linkit_container'] = array(
     '#type' => 'container',
     '#weight' => 100,
-    '#prefix' => '<div id="linkit-dashbaord-ajax-wrapper">',
+    '#prefix' => '<div id="linkit-dashboard-ajax-wrapper">',
     '#suffix' => '</div>',
     '#attached' => array(
       'js' => array(
