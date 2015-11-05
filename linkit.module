@@ -823,7 +823,10 @@ function linkit_parse_url($url, $parts) {
   // Internal URL.
   // We can not use the url_is_external() as it treats all absolute links as
   // external and treats all stream wrappers as internal.
-  $local_url = trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/') == $base_url;
+  $local_hosts = array($base_url);
+  // Give other modules a chance to add/remove/alter the local hosts.
+  drupal_alter('linkit_local_hosts', $local_hosts);
+  $local_url = in_array(trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/'), $local_hosts);
   $local_stream_wrapper = isset($local_stream_wrappers[$path_info['scheme']]);
   //@TODO: maybe file_valid_uri() ?
 
