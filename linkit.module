@@ -1046,12 +1046,17 @@ function linkit_pre_render_editor_element($element) {
 
     $profiles_formats = array();
 
+    $use_imce = FALSE;
+
     // First we need to figure out which formats that the current user can access have active Linkit profiles for them.
     foreach ($all_formats as $format) {
       // Load the first profile that is assigned to this text format.
       $profile = linkit_profile_load_by_format($format);
 
       if ($profile) {
+        if (isset($profile->data['imce']) && $profile->data['imce'] == 1) {
+          $use_imce = TRUE;
+        }
         $profiles_formats[$format] = array('profile' => $profile->name);
       }
     }
@@ -1068,7 +1073,7 @@ function linkit_pre_render_editor_element($element) {
       );
 
       // Configure Linkit to have an IMCE selector.
-      if (module_invoke('imce', 'access') && isset($profile->data['imce']) && $profile->data['imce'] == 1) {
+      if (module_invoke('imce', 'access') && $use_imce) {
         $field_js['data']['linkit']['IMCEurl'] = url('imce', array('query' => array(
           'app' => 'Linkit|sendto@Drupal.linkit.IMCECallback',
           'absolute' => TRUE,
