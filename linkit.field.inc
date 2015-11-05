@@ -189,7 +189,7 @@ function linkit_process_field_element($element, &$form_state, &$complete_form) {
       return $element;
     }
     // Load the insert plugin for the profile.
-    $insert_plugin = linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']);
+    $insert_plugin = isset($profile->data['insert_plugin']['plugin']) ? linkit_insert_plugin_load($profile->data['insert_plugin']['plugin']) : NULL;
     if ($insert_plugin === NULL) {
       return $element;
     }
