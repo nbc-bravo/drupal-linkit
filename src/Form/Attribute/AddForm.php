@@ -65,28 +65,39 @@ class AddForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
 
-    $options = [];
-    foreach ($this->manager->getDefinitions() as $id => $plugin) {
-      $options[$id] = $plugin['label'];
-    }
+    $form['#attached']['library'][] = 'linkit/linkit.admin';
+    $header = [
+      'label' => $this->t('Attributes'),
+      'description' => $this->t('Description'),
+    ];
 
-    $form['plugin'] = array(
-      '#type' => 'select',
-      '#title' => $this->t('Add a new attribute'),
-      '#options' => $options,
-      '#empty_option' => $this->t('- Select an attribute -'),
-    );
+    $form['plugin'] = [
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $this->buildRows(),
+      '#empty' => $this->t('No attribute available.'),
+      '#multiple' => FALSE,
+    ];
 
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array(
+    $form['actions'] = ['#type' => 'actions'];
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save and continue'),
-      '#submit' => array('::submitForm'),
+      '#submit' => ['::submitForm'],
       '#tableselect' => TRUE,
       '#button_type' => 'primary',
-    );
+    ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if (empty($form_state->getValue('plugin'))) {
+      $form_state->setErrorByName('plugin', $this->t('No attribute selected.'));
+    }
   }
 
   /**
