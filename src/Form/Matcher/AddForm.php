@@ -68,8 +68,7 @@ class AddForm extends FormBase {
 
     $form['#attached']['library'][] = 'linkit/linkit.admin';
     $header = [
-      'label' => $this->t('Attributes'),
-      'description' => $this->t('Description'),
+      'label' => $this->t('Matchers'),
     ];
 
     $form['plugin'] = [
@@ -154,7 +153,6 @@ class AddForm extends FormBase {
 
       $row = [
         'label' => $plugin->getLabel(),
-        'description' => 'ADD THIS',
       ];
 
       $rows[$plugin->getPluginId()] = $row;
