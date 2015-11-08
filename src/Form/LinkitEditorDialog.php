@@ -118,10 +118,12 @@ class LinkitEditorDialog extends FormBase {
       ];
 
       foreach ($attributes as $plugin) {
-        $form['linkit_attributes'][$plugin->getHtmlName()] = $plugin->buildFormElement($input[$plugin->getHtmlName()]);
-        $form['linkit_attributes'][$plugin->getHtmlName()] += [
+        $plugin_name = $plugin->getHtmlName();
+        $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
+        $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
+        $form['linkit_attributes'][$plugin_name] += [
           '#parents' => [
-            'attributes', $plugin->getHtmlName(),
+            'attributes', $plugin_name,
           ],
         ];
       }
