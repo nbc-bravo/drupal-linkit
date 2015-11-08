@@ -6,6 +6,7 @@
  */
 
 namespace Drupal\linkit\Tests;
+use Drupal\Core\Url;
 use Drupal\linkit\Entity\Profile;
 
 /**
@@ -38,14 +39,14 @@ class MatcherCrudTest extends LinkitTestBase {
   function testOverview() {
     $profile = $this->createProfile();
 
-    $this->drupalGet(\Drupal::url('linkit.matchers', [
+    $this->drupalGet(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No matchers added.'));
 
-    $this->assertLinkByHref(\Drupal::url('linkit.matcher.add', [
+    $this->assertLinkByHref(Url::fromRoute('linkit.matcher.add', [
       'linkit_profile' => $profile->id(),
-    ]));
+    ])->toString());
   }
 
   /**
@@ -53,13 +54,13 @@ class MatcherCrudTest extends LinkitTestBase {
    */
   function testAdd() {
     $profile = $this->createProfile();
-    $this->drupalGet(\Drupal::url('linkit.matcher.add', [
+    $this->drupalGet(Url::fromRoute('linkit.matcher.add', [
       'linkit_profile' => $profile->id(),
     ]));
 
     // We have only enabled the user module, so we will only have one matcher
     // available.
-    $this->assertEqual(2, count($this->xpath('//select/option')), 'User matcher is available.');
+    $this->assertEqual(1, count($this->xpath('//input[@type="radio"]')), 'User matcher is available.');
 
     $edit = array();
     $edit['plugin'] = 'entity:user';
@@ -72,7 +73,7 @@ class MatcherCrudTest extends LinkitTestBase {
     //  'plugin_id' => ???,
     //]));
 
-    $this->drupalGet(\Drupal::url('linkit.matchers', [
+    $this->drupalGet(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertNoText(t('No matchers added.'));
@@ -87,31 +88,31 @@ class MatcherCrudTest extends LinkitTestBase {
     $profile->save();
 
     // Try delete a matcher that is not attached to the profile.
-    $this->drupalGet(\Drupal::url('linkit.matcher.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.matcher.delete', [
       'linkit_profile' => $profile->id(),
       'plugin_instance_id' => 'doesntexists'
     ]));
     $this->assertResponse('404');
 
     // Go to the delete page, but press cancel.
-    $this->drupalGet(\Drupal::url('linkit.matcher.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.matcher.delete', [
       'linkit_profile' => $profile->id(),
       'plugin_instance_id' => $plugin_uuid,
     ]));
     $this->clickLink(t('Cancel'));
-    $this->assertUrl(\Drupal::url('linkit.matchers', [
+    $this->assertUrl(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
 
     // Delete the matcher from the profile.
-    $this->drupalGet(\Drupal::url('linkit.matcher.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.matcher.delete', [
       'linkit_profile' => $profile->id(),
       'plugin_instance_id' => $plugin_uuid,
     ]));
 
     $this->drupalPostForm(NULL, [], t('Confirm'));
     $this->assertRaw(t('The matcher %plugin has been deleted.', ['%plugin' => 'User']));
-    $this->assertUrl(\Drupal::url('linkit.matchers', [
+    $this->assertUrl(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No matchers added.'));

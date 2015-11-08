@@ -7,6 +7,7 @@
 
 namespace Drupal\linkit\Tests;
 
+use Drupal\Core\Url;
 use Drupal\linkit\Entity\Profile;
 
 /**
@@ -47,14 +48,14 @@ class AttributeCrudTest extends LinkitTestBase {
   function testOverview() {
     $profile = $this->createProfile();
 
-    $this->drupalGet(\Drupal::url('linkit.attributes', [
+    $this->drupalGet(Url::fromRoute('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No attributes added.'));
 
-    $this->assertLinkByHref(\Drupal::url('linkit.attribute.add', [
+    $this->assertLinkByHref(Url::fromRoute('linkit.attribute.add', [
       'linkit_profile' => $profile->id(),
-    ]));
+    ])->toString());
   }
 
   /**
@@ -62,22 +63,21 @@ class AttributeCrudTest extends LinkitTestBase {
    */
   function testAdd() {
     $profile = $this->createProfile();
-    $this->drupalGet(\Drupal::url('linkit.attribute.add', [
+    $this->drupalGet(Url::fromRoute('linkit.attribute.add', [
       'linkit_profile' => $profile->id(),
     ]));
 
-    $this->assertEqual(count($this->manager->getDefinitions()), count($this->xpath('//table/tbody/tr')), 'All attributes are available.');
+    $this->assertEqual(count($this->manager->getDefinitions()), count($this->xpath('//input[@type="radio"]')), 'All attributes are available.');
 
     $edit = array();
-    $edit['plugins[id]'] = 'id';
-    $edit['plugins[accesskey]'] = 'accesskey';
-    $this->drupalPostForm(NULL, $edit, t('Add attributes'));
+    $edit['plugin'] = 'accesskey';
+    $this->drupalPostForm(NULL, $edit, t('Save and continue'));
 
-    $this->assertUrl(\Drupal::url('linkit.attributes', [
+    $this->assertUrl(Url::fromRoute('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
 
-    $this->assertEqual(2, count($this->xpath('//table/tbody/tr')), 'Two attributes were added.');
+    $this->assertEqual(1, count($this->xpath('//table/tbody/tr')), 'Attribute added.');
     $this->assertNoText(t('No attributes added.'));
   }
 
@@ -90,31 +90,31 @@ class AttributeCrudTest extends LinkitTestBase {
     $profile->save();
 
     // Try delete an attribute that is not attached to the profile.
-    $this->drupalGet(\Drupal::url('linkit.attribute.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.attribute.delete', [
       'linkit_profile' => $profile->id(),
-      'plugin_id' => 'doesntexists'
+      'plugin_instance_id' => 'doesntexists'
     ]));
     $this->assertResponse('404');
 
     // Go to the delete page, but press cancel.
-    $this->drupalGet(\Drupal::url('linkit.attribute.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.attribute.delete', [
       'linkit_profile' => $profile->id(),
-      'plugin_id' => 'accesskey',
+      'plugin_instance_id' => 'accesskey',
     ]));
     $this->clickLink(t('Cancel'));
-    $this->assertUrl(\Drupal::url('linkit.attributes', [
+    $this->assertUrl(Url::fromRoute('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
 
     // Delete the attribute from the profile.
-    $this->drupalGet(\Drupal::url('linkit.attribute.delete', [
+    $this->drupalGet(Url::fromRoute('linkit.attribute.delete', [
       'linkit_profile' => $profile->id(),
-      'plugin_id' => 'accesskey',
+      'plugin_instance_id' => 'accesskey',
     ]));
 
     $this->drupalPostForm(NULL, [], t('Confirm'));
     $this->assertRaw(t('The attribute %plugin has been deleted.', ['%plugin' => 'Accesskey']));
-    $this->assertUrl(\Drupal::url('linkit.attributes', [
+    $this->assertUrl(Url::fromRoute('linkit.attributes', [
       'linkit_profile' => $profile->id(),
     ]));
     $this->assertText(t('No attributes added.'));
