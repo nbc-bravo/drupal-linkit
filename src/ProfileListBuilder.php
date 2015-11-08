@@ -9,6 +9,7 @@ namespace Drupal\linkit;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of profile entities.
@@ -38,6 +39,35 @@ class ProfileListBuilder extends ConfigEntityListBuilder {
     $row['label'] = $linkitProfile->label();
     $row['description']['data'] = ['#markup' => $linkitProfile->getDescription()];
     return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultOperations(EntityInterface $entity) {
+    $operations = parent::getDefaultOperations($entity);
+
+    if (isset($operations['edit'])) {
+      $operations['edit']['title'] = t('Edit profile');
+    }
+
+    $operations['matchers'] = array(
+      'title' => t('Manage matchers'),
+      'weight' => 10,
+      'url' => Url::fromRoute('linkit.matchers', [
+        'linkit_profile' => $entity->id()
+      ]),
+    );
+
+    $operations['attributes'] = array(
+      'title' => t('Manage attributes'),
+      'weight' => 20,
+      'url' => Url::fromRoute('linkit.attributes', [
+        'linkit_profile' => $entity->id()
+      ]),
+    );
+
+    return $operations;
   }
 
 }
