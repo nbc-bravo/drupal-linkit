@@ -57,7 +57,8 @@ interface ProfileInterface extends ConfigEntityInterface {
    * @param array $configuration
    *   An array of attribute configuration.
    *
-   * @return $this
+   * @return String
+   *   The ID of the attribute.
    */
   public function addAttribute(array $configuration);
 

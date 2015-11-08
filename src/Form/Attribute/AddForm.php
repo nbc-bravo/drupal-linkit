@@ -10,6 +10,7 @@ namespace Drupal\linkit\Form\Attribute;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\AttributeManager;
+use Drupal\linkit\ConfigurableAttributeInterface;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -64,26 +65,26 @@ class AddForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
 
-    $header = [
-      'label' => $this->t('Attributes'),
-      'description' => $this->t('Description'),
-    ];
+    $options = [];
+    foreach ($this->manager->getDefinitions() as $id => $plugin) {
+      $options[$id] = $plugin['label'];
+    }
 
-    $form['plugins'] = [
-      '#type' => 'tableselect',
-      '#header' => $header,
-      '#options' => $this->buildRows(),
-      '#empty' => $this->t('No attribute available.'),
-    ];
+    $form['plugin'] = array(
+      '#type' => 'select',
+      '#title' => $this->t('Add a new attribute'),
+      '#options' => $options,
+      '#empty_option' => $this->t('- Select an attribute -'),
+    );
 
-    $form['actions'] = ['#type' => 'actions'];
-    $form['actions']['submit'] = [
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => $this->t('Add attributes'),
-      '#submit' => ['::submitForm'],
+      '#value' => $this->t('Save and continue'),
+      '#submit' => array('::submitForm'),
       '#tableselect' => TRUE,
       '#button_type' => 'primary',
-    ];
+    );
 
     return $form;
   }
@@ -94,22 +95,30 @@ class AddForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
 
-    foreach (array_filter($form_state->getValue('plugins')) as $plugin_id) {
-      $plugin = [
-        'id' => $plugin_id,
-      ];
-      $this->linkitProfile->addAttribute($plugin);
-    }
-
+    /** @var \Drupal\linkit\AttributeInterface $plugin */
+    $plugin = $this->manager->createInstance($form_state->getValue('plugin'));
+    $plugin_id = $this->linkitProfile->addAttribute($plugin->getConfiguration());
     $this->linkitProfile->save();
-    // @TODO: Log this when we only can add one attribute.
-//    $this->logger('linkit')->notice('The attribute %label has been deleted.', [
-//      '%label' => $this->linkitProfile->getAttribute($plugin_id)->getLabel(),
-//    ]);
 
-    $form_state->setRedirect('linkit.attributes', [
-      'linkit_profile' => $this->linkitProfile->id(),
+    $this->logger('linkit')->notice('Added %label attribute to the @profile profile.', [
+      '%label' => $this->linkitProfile->getAttribute($plugin_id)->getLabel(),
+      '@profile' => $this->linkitProfile->label(),
     ]);
+
+    $is_configurable = $plugin instanceof ConfigurableAttributeInterface;
+    if ($is_configurable) {
+      $form_state->setRedirect('linkit.attribute.edit', [
+        'linkit_profile' => $this->linkitProfile->id(),
+        'plugin_instance_id' => $plugin_id,
+      ]);
+    }
+    else {
+      drupal_set_message($this->t('Added %label attribute.', ['%label' => $plugin->getLabel()]));
+
+      $form_state->setRedirect('linkit.attributes', [
+        'linkit_profile' => $this->linkitProfile->id(),
+      ]);
+    }
   }
 
   /**

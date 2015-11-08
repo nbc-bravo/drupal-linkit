@@ -13,16 +13,31 @@ linkit.linkit_profile.*:
     attributes:
       type: sequence
       sequence:
-        type: mapping
-        mapping:
-          id:
-            type: string
-          weight:
-            type: integer
+        type: linkit.attribute
     matchers:
       type: sequence
       sequence:
         type: linkit.matcher
+
+linkit.attribute:
+  type: mapping
+  mapping:
+    id:
+      type: string
+    data:
+      type: linkit.attribute.[%parent.id]
+    weight:
+      type: integer
+
+linkit.attribute.*:
+  type: mapping
+  label: 'Attribute settings'
+
+linkit.attribute.target:
+  type: linkit.attribute
+  mapping:
+    widget_type:
+      type: string
 
 linkit.matcher:
   type: mapping

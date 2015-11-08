@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\linkit\AttributeManager;
+use Drupal\linkit\ConfigurableAttributeInterface;
 use Drupal\linkit\ProfileInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -83,36 +84,49 @@ class OverviewForm extends FormBase {
       ],
     ];
 
-    foreach ($this->linkitProfile->getAttributes() as $id => $attribute) {
-      $form['plugins'][$id]['#attributes']['class'][] = 'draggable';
-      $form['plugins'][$id]['#weight'] = $attribute->getWeight();
+    foreach ($this->linkitProfile->getAttributes() as $plugin) {
+      $key = $plugin->getPluginId();
 
-      $form['plugins'][$id]['label'] = [
-        '#plain_text' => (string) $attribute->getLabel(),
+      $form['plugins'][$key]['#attributes']['class'][] = 'draggable';
+      $form['plugins'][$key]['#weight'] = $plugin->getWeight();
+
+      $form['plugins'][$key]['label'] = [
+        '#plain_text' => (string) $plugin->getLabel(),
       ];
 
-      $form['plugins'][$id]['description'] = [
-        '#plain_text' => (string) $attribute->getDescription(),
+      $form['plugins'][$key]['description'] = [
+        '#plain_text' => (string) $plugin->getDescription(),
       ];
 
-      $form['plugins'][$id]['weight'] = [
+      $form['plugins'][$key]['weight'] = [
         '#type' => 'weight',
-        '#title' => t('Weight for @title', ['@title' => (string) $attribute->getLabel()]),
+        '#title' => t('Weight for @title', ['@title' => (string) $plugin->getLabel()]),
         '#title_display' => 'invisible',
-        '#default_value' => $attribute->getWeight(),
+        '#default_value' => $plugin->getWeight(),
         '#attributes' => ['class' => ['plugin-order-weight']],
       ];
 
-      $form['plugins'][$id]['operations'] = [
+      $form['plugins'][$key]['operations'] = [
         '#type' => 'operations',
         '#links' => [],
       ];
 
-      $form['plugins'][$id]['operations']['#links']['delete'] = [
+      $is_configurable = $plugin instanceof ConfigurableAttributeInterface;
+      if ($is_configurable) {
+        $form['plugins'][$key]['operations']['#links']['edit'] = [
+          'title' => t('Edit'),
+          'url' => Url::fromRoute('linkit.attribute.edit', [
+            'linkit_profile' =>  $this->linkitProfile->id(),
+            'plugin_instance_id' => $key,
+          ]),
+        ];
+      }
+
+      $form['plugins'][$key]['operations']['#links']['delete'] = [
         'title' => t('Delete'),
         'url' => Url::fromRoute('linkit.attribute.delete', [
           'linkit_profile' =>  $this->linkitProfile->id(),
-          'plugin_id' => $id,
+          'plugin_instance_id' => $key,
         ]),
       ];
     }

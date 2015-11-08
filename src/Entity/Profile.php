@@ -153,7 +153,7 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    */
   public function addAttribute(array $configuration) {
     $this->getAttributes()->addInstanceId($configuration['id'], $configuration);
-    return $this;
+    return $configuration['id'];
   }
 
   /**
