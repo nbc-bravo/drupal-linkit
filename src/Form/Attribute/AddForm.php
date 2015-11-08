@@ -75,7 +75,7 @@ class AddForm extends FormBase {
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $this->buildRows(),
-      '#empty' => $this->t('No attribute available.'),
+      '#empty' => $this->t('No attributes available.'),
       '#multiple' => FALSE,
     ];
 

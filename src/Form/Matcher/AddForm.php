@@ -66,28 +66,44 @@ class AddForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL) {
     $this->linkitProfile = $linkit_profile;
 
+    $form['#attached']['library'][] = 'linkit/linkit.admin';
+    $header = [
+      'label' => $this->t('Attributes'),
+      'description' => $this->t('Description'),
+    ];
+
+    $form['plugin'] = [
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $this->buildRows(),
+      '#empty' => $this->t('No matchers available.'),
+      '#multiple' => FALSE,
+    ];
+
+    $form['actions'] = ['#type' => 'actions'];
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Save and continue'),
+      '#submit' => ['::submitForm'],
+      '#tableselect' => TRUE,
+      '#button_type' => 'primary',
+    ];
+
     $options = [];
     foreach ($this->manager->getDefinitions() as $id => $plugin) {
       $options[$id] = $plugin['label'];
     }
 
-    $form['plugin'] = array(
-      '#type' => 'select',
-      '#title' => $this->t('Add a new matcher'),
-      '#options' => $options,
-      '#empty_option' => $this->t('- Select a matcher -'),
-    );
-
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array(
-      '#type' => 'submit',
-      '#value' => $this->t('Save and continue'),
-      '#submit' => array('::submitForm'),
-      '#tableselect' => TRUE,
-      '#button_type' => 'primary',
-    );
-
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if (empty($form_state->getValue('plugin'))) {
+      $form_state->setErrorByName('plugin', $this->t('No matcher selected.'));
+    }
   }
 
   /**
@@ -121,6 +137,30 @@ class AddForm extends FormBase {
         'linkit_profile' => $this->linkitProfile->id(),
       ]);
     }
+  }
+
+  /**
+   * Builds the table rows.
+   *
+   * @return array
+   *   An array of table rows.
+   */
+  private function buildRows() {
+    $rows = [];
+
+    foreach ($this->manager->getDefinitions() as $definition) {
+      /** @var \Drupal\linkit\MatcherInterface $plugin */
+      $plugin = $this->manager->createInstance($definition['id']);
+
+      $row = [
+        'label' => $plugin->getLabel(),
+        'description' => 'ADD THIS',
+      ];
+
+      $rows[$plugin->getPluginId()] = $row;
+    }
+
+    return $rows;
   }
 
 }
