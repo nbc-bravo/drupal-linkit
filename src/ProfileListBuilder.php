@@ -23,10 +23,10 @@ class ProfileListBuilder extends ConfigEntityListBuilder {
    */
   public function buildHeader() {
       $header['title'] = t('Profile');
-      $header['description'] = array(
+      $header['description'] = [
           'data' => t('Description'),
-          'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
-      );
+          'class' => [RESPONSIVE_PRIORITY_MEDIUM],
+      ];
     return $header + parent::buildHeader();
   }
 
@@ -51,21 +51,21 @@ class ProfileListBuilder extends ConfigEntityListBuilder {
       $operations['edit']['title'] = t('Edit profile');
     }
 
-    $operations['matchers'] = array(
+    $operations['matchers'] = [
       'title' => t('Manage matchers'),
       'weight' => 10,
       'url' => Url::fromRoute('linkit.matchers', [
         'linkit_profile' => $entity->id()
       ]),
-    );
+    ];
 
-    $operations['attributes'] = array(
+    $operations['attributes'] = [
       'title' => t('Manage attributes'),
       'weight' => 20,
       'url' => Url::fromRoute('linkit.attributes', [
         'linkit_profile' => $entity->id()
       ]),
-    );
+    ];
 
     return $operations;
   }
