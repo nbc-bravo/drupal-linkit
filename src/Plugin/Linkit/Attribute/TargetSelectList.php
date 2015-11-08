@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Attribute\Target.
+ * Contains \Drupal\linkit\Plugin\Linkit\Attribute\TargetSelectList.
  */
 
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
@@ -13,13 +13,13 @@ use Drupal\linkit\AttributeBase;
  * Target attribute.
  *
  * @Attribute(
- *   id = "target",
- *   label = @Translation("Target"),
+ *   id = "target_select",
+ *   label = @Translation("Target (select list)"),
  *   html_name = "target",
- *   description = @Translation("Basic input field for the target attribute."),
+ *   description = @Translation("Select list with predefined targets."),
  * )
  */
-class Target extends AttributeBase {
+class TargetSelectList extends AttributeBase {
 
   /**
    * {@inheritdoc}
