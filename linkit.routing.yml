@@ -47,7 +47,7 @@ linkit.attribute.add:
     _permission: 'administer linkit profiles'
 
 linkit.attribute.delete:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/delete/{plugin_instance_id}'
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/{plugin_instance_id}/delete'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
     _title: 'Delete an attribute'
@@ -79,7 +79,7 @@ linkit.matcher.add:
     _permission: 'administer linkit profiles'
 
 linkit.matcher.delete:
-  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/delete/{plugin_instance_id}'
+  path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_instance_id}/delete'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\DeleteForm'
     _title: 'Delete a matcher'
