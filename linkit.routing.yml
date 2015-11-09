@@ -26,7 +26,6 @@ entity.linkit_profile.delete_form:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/delete'
   defaults:
     _entity_form: linkit_profile.delete
-    _title: 'Delete profile'
   requirements:
     _permission: 'administer linkit profiles'
 
@@ -50,7 +49,6 @@ linkit.attribute.delete:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/{plugin_instance_id}/delete'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\DeleteForm'
-    _title: 'Delete an attribute'
   requirements:
     _permission: 'administer linkit profiles'
 
@@ -82,7 +80,6 @@ linkit.matcher.delete:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_instance_id}/delete'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\DeleteForm'
-    _title: 'Delete a matcher'
   requirements:
     _permission: 'administer linkit profiles'
 
