@@ -18,7 +18,7 @@ entity.linkit_profile.edit_form:
   path: '/admin/config/content/linkit/manage/{linkit_profile}'
   defaults:
     _entity_form: linkit_profile.edit
-    _title: 'Edit profile'
+    _title_callback: 'Drupal\linkit\Controller\LinkitController::profileTitle'
   requirements:
     _permission: 'administer linkit profiles'
 
@@ -58,7 +58,7 @@ linkit.attribute.edit:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/attributes/{plugin_instance_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Attribute\EditForm'
-    _title: 'Edit an attribute'
+    _title_callback: 'Drupal\linkit\Controller\LinkitController::attributeTitle'
   requirements:
     _permission: 'administer linkit profiles'
 
@@ -90,7 +90,7 @@ linkit.matcher.edit:
   path: '/admin/config/content/linkit/manage/{linkit_profile}/matchers/{plugin_instance_id}'
   defaults:
     _form: '\Drupal\linkit\Form\Matcher\EditForm'
-    _title: 'Edit a matcher'
+    _title_callback: 'Drupal\linkit\Controller\LinkitController::matcherTitle'
   requirements:
     _permission: 'administer linkit profiles'
 
