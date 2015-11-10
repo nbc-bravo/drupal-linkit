@@ -9,7 +9,7 @@ namespace Drupal\linkit\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\editor\Entity\Editor;
@@ -27,15 +27,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Linkit extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, ContainerFactoryPluginInterface {
 
   /**
-   * The entity manager.
+   * The Linkit profile storage.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $entityManager;
+  protected $linkitProfileStorage;
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $linkit_profile_storage) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityManager = $entity_manager;
+    $this->linkitProfileStorage = $linkit_profile_storage;
   }
 
   /**
@@ -46,7 +49,7 @@ class Linkit extends CKEditorPluginBase implements CKEditorPluginConfigurableInt
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.manager')
+      $container->get('entity.manager')->getStorage('linkit_profile')
     );
   }
 
@@ -85,39 +88,24 @@ class Linkit extends CKEditorPluginBase implements CKEditorPluginConfigurableInt
   public function settingsForm(array $form, FormStateInterface $form_state, Editor $editor) {
     $settings = $editor->getSettings();
 
-    $all_profiles = $this->entityManager->getStorage('linkit_profile')->loadMultiple();
+    $all_profiles = $this->linkitProfileStorage->loadMultiple();
 
-    // @TODO: Can this be "nicer"?
     $options = array();
     foreach ($all_profiles as $profile) {
-      /** @var \Drupal\linkit\ProfileInterface $profile */
       $options[$profile->id()] = $profile->label();
     }
 
-    // @TODO: Add information text about the selection. A link to the profile
-    // collection page?
-
     $form['linkit_profile'] = array(
       '#type' => 'select',
-      '#title' => t('Select a profile'),
+      '#title' => t('Select a linkit profile'),
       '#options' => $options,
       '#default_value' => isset($settings['plugins']['linkit']) ? $settings['plugins']['linkit'] : '',
-      '#empty_option' => $this->t('- Select -'),
-      '#element_validate' => array(
-        array($this, 'validateLinkitProfileValue'),
-      ),
+      '#empty_option' => $this->t('- Select profile -'),
+      '#required' => TRUE,
+      '#description' => $this->t('Select the linkit profile you wish to use with this text format.'),
     );
 
     return $form;
-  }
-
-  /**
-   * #element_validate handler for the "profile" element in settingsForm().
-   */
-  public function validateLinkitProfileValue(array $element, FormStateInterface $form_state) {
-    if (empty($element['#value'])) {
-      $form_state->setError($element, $this->t('You must select a profile in order to use Linkit on this format.'));
-    }
   }
 
 }
