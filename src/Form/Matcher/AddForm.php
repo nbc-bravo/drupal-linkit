@@ -147,7 +147,13 @@ class AddForm extends FormBase {
   private function buildRows() {
     $rows = [];
 
-    foreach ($this->manager->getDefinitions() as $definition) {
+    $all_plugins = $this->manager->getDefinitions();
+
+    uasort($all_plugins, function ($a, $b) {
+      return strnatcasecmp($a['label'], $b['label']);
+    });
+
+    foreach ($all_plugins as $definition) {
       /** @var \Drupal\linkit\MatcherInterface $plugin */
       $plugin = $this->manager->createInstance($definition['id']);
 

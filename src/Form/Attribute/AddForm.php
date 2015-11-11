@@ -145,7 +145,9 @@ class AddForm extends FormBase {
 
     $applied_plugins = $this->linkitProfile->getAttributes()->getConfiguration();
     $all_plugins = $this->manager->getDefinitions();
-
+    uasort($all_plugins, function ($a, $b) {
+      return strnatcasecmp($a['label'], $b['label']);
+    });
     foreach (array_diff_key($all_plugins, $applied_plugins) as $definition) {
       /** @var \Drupal\linkit\AttributeInterface $plugin */
       $plugin = $this->manager->createInstance($definition['id']);
