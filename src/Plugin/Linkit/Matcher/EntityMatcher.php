@@ -8,12 +8,14 @@
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\linkit\ConfigurableMatcherBase;
+use Drupal\linkit\MatcherTokensTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,6 +26,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class EntityMatcher extends ConfigurableMatcherBase {
+
+  use MatcherTokensTrait;
 
   /**
    * The database connection.
@@ -144,7 +148,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       '#maxlength' => 255,
     ];
 
-    // @TODO: Add support for tokens in the result_description.
+    $this->insertTokenList($form, [$this->target_type]);
 
     // Filter the possible bundles to use if the entity has bundles.
     if ($entity_type->hasKey('bundle')) {
@@ -274,8 +278,10 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *    The description for this entity.
    */
   protected function buildDescription($entity) {
-    $description = $this->configuration['result_description'];
-    return Html::escape($description);
+    $description = \Drupal::token()->replace($this->configuration['result_description'], [$this->target_type => $entity], []);
+    // @TODO: Create a linkit utility to handle filtering and escaping.
+    // This could be LinkitFilter::descriptionFilter()
+    return Xss::filter($description, Xss::getHtmlTagList() + ['img']);
   }
 
   /**
