@@ -21,6 +21,17 @@ trait MatcherTokensTrait {
    *   An array of token types to use.
    */
   public function insertTokenList(&$form, array $types = array()) {
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      // Add the token tree UI.
+      $form['token_tree'] = array(
+        '#theme' => 'token_tree',
+        '#token_types' => $types,
+        '#dialog' => TRUE,
+      );
+
+      return $form;
+    }
+
     $token_items = array();
     foreach ($this->getAvailableTokens($types) as $type => $tokens) {
       foreach ($tokens as $name => $info) {
