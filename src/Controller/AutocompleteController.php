@@ -11,6 +11,7 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Url;
+use Drupal\linkit\ResultManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,13 @@ class AutocompleteController implements ContainerInjectionInterface {
   protected $linkitProfileStorage;
 
   /**
+   * The result manager.
+   *
+   * @var \Drupal\linkit\ResultManager
+   */
+  protected $resultManager;
+
+  /**
    * The linkit profile.
    *
    * @var \Drupal\linkit\ProfileInterface
@@ -34,11 +42,14 @@ class AutocompleteController implements ContainerInjectionInterface {
   /**
    * Constructs a EntityAutocompleteController object.
    *
+   * @param ResultManager $resultManager
+   *   The result service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $linkit_profile_storage
    *   The linkit profile storage service.
    */
-  public function __construct(EntityStorageInterface $linkit_profile_storage) {
+  public function __construct(EntityStorageInterface $linkit_profile_storage, ResultManager $resultManager) {
     $this->linkitProfileStorage = $linkit_profile_storage;
+    $this->resultManager = $resultManager;
   }
 
   /**
@@ -46,7 +57,8 @@ class AutocompleteController implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('linkit_profile')
+      $container->get('entity.manager')->getStorage('linkit_profile'),
+      $container->get('linkit.result_manager')
     );
   }
 
@@ -64,26 +76,9 @@ class AutocompleteController implements ContainerInjectionInterface {
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
-    $matchers = $this->linkitProfile->getMatchers();
-
-    $matches = array();
-
     $string = Unicode::strtolower($request->query->get('q'));
 
-    // Special for link to frontpage.
-    if (strpos($string, 'front') !== FALSE) {
-      $matches[] = array(
-        'title' => t('Frontpage'),
-        'description' => 'The frontpage for this site.',
-        'path' => Url::fromRoute('<front>')->toString(),
-        'group' => t('System'),
-      );
-    }
-
-    foreach ($matchers as $plugin) {
-      $matches = array_merge($matches, $plugin->getMatches($string));
-    }
-
+    $matches = $this->resultManager->getResults($this->linkitProfile, $string);
     return new JsonResponse($matches);
   }
 
