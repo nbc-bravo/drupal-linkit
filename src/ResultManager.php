@@ -41,6 +41,15 @@ class ResultManager {
       $matches = array_merge($matches, $plugin->getMatches($search_string));
     }
 
+    // If there is still no matches, return a "no results" array.
+    if (empty($matches)) {
+      return [
+        [
+          'title' => t('No results'),
+        ]
+      ];
+    }
+
     return $matches;
   }
 }
