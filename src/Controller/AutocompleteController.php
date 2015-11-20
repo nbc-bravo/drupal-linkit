@@ -69,10 +69,11 @@ class AutocompleteController implements ContainerInjectionInterface {
    * parameter for the string to use to search for suggestions.
    *
    * @param Request $request
+   *   The request.
    * @param $linkit_profile_id
-   *
-   * @return JsonResponse A JSON response containing the autocomplete suggestions.
-   * A JSON response containing the autocomplete suggestions.
+   *   The linkit profile id.
+   * @return JsonResponse
+   *   A JSON response containing the autocomplete suggestions.
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
