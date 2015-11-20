@@ -58,12 +58,14 @@
     * @param {jQuery.Event} event
     * @param {object} ui
     *
-    * @return {bool}
+    * @return {boolean}
     */
   function selectHandler(event, ui) {
     if (ui.item.hasOwnProperty('path')) {
       event.target.value = ui.item.path;
     }
+
+    return false;
   }
 
   /**
