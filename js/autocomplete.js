@@ -3,7 +3,7 @@
  * Linkit Autocomplete based on jQuery UI.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, _) {
 
   "use strict";
 
@@ -61,8 +61,9 @@
     * @return {bool}
     */
   function selectHandler(event, ui) {
-    event.target.value = ui.item.path;
-    return false;
+    if (ui.item.hasOwnProperty('path')) {
+      event.target.value = ui.item.path;
+    }
   }
 
   /**
@@ -97,13 +98,16 @@
    */
   function renderMenu(ul, items) {
     var self = this.element.autocomplete('instance');
-    var currentGroup = '';
-    $.each(items, function (index, item) {
-      if (item.group != currentGroup) {
-        ul.append('<li class="linkit-result--group">' + item.group + "</li>");
-        currentGroup = item.group;
-      }
-      self._renderItemData(ul, item);
+
+    var grouped_items = _.groupBy(items, function(item) {
+      return item.hasOwnProperty('group') ? item.group : "";
+    });
+
+    $.each(grouped_items, function (group, items) {
+      ul.append('<li class="linkit-result--group">' + group + "</li>");
+      $.each(items, function (index, item) {
+        self._renderItemData(ul, item);
+      });
     });
   }
 
@@ -162,4 +166,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, _);
