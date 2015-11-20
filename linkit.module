@@ -326,10 +326,10 @@ function linkit_module_implements_alter(&$implementations, $hook) {
  * Implements hook_element_info_alter().
  */
 function linkit_element_info_alter(&$types) {
-  // Append a process function for the field integration.
+  // Append a after_build function for the field integration.
   foreach (linkit_get_allowed_field_elements() as $element) {
     if (isset($types[$element])) {
-      $types[$element]['#process'][] = 'linkit_process_field_element';
+      $types[$element]['#after_build'][] = 'linkit_field_element_after_build';
     }
   }
 

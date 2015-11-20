@@ -9,13 +9,13 @@ Drupal.behaviors.linkitDashboard = {
   attach: function (context, settings) {
     // Bind the insert link button.
     $('.linkit-insert', context).once('linkit-insert', function() {
-      $('.linkit-insert', context).click(function() {
+      $('.linkit-insert', context).click(function(event) {
+        event.preventDefault();
         // Call the insertLink() function.
         Drupal.linkit.getDialogHelper(Drupal.settings.linkit.currentInstance.helper).insertLink(Drupal.linkit.getLink());
 
         // Close the dialog.
         Drupal.linkit.modalClose();
-        return false;
       });
     });
 
@@ -238,5 +238,5 @@ Drupal.behaviors.linkitSearch = {
     });
   }
 };
-
+  
 })(jQuery);

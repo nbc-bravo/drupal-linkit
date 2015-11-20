@@ -144,6 +144,12 @@ Drupal.linkit.registerDialogHelper = function(name, helper) {
 
 /**
  * Get a dialog helper.
+ *
+ * @param {String} name
+ *   The name of helper.
+ *
+ * @return {Object}
+ *   Dialog helper object.
  */
 Drupal.linkit.getDialogHelper = function(name) {
   return Drupal.linkit.dialogHelper[name];
