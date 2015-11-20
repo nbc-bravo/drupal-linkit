@@ -104,7 +104,10 @@
     });
 
     $.each(grouped_items, function (group, items) {
-      ul.append('<li class="linkit-result--group">' + group + "</li>");
+      if (group.length) {
+        ul.append('<li class="linkit-result--group">' + group + "</li>");
+      }
+
       $.each(items, function (index, item) {
         self._renderItemData(ul, item);
       });
@@ -133,11 +136,6 @@
         // Use jQuery UI Autocomplete on the textfield.
         $autocomplete.autocomplete(autocomplete.options);
         $autocomplete.autocomplete('widget').addClass('linkit-ui-autocomplete');
-        $autocomplete.bind('focus', function() {
-          if (autocomplete.cache[$autocomplete.attr('id')].length) {
-            $autocomplete.autocomplete('instance').search();
-          }
-        });
       }
     },
     detach: function (context, settings, trigger) {
