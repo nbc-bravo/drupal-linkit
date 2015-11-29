@@ -4,10 +4,3 @@
  * @file
  * Installation functions for Linkit module.
  */
-
-/**
- * Implements hook_install().
- */
-function linkit_install() {
-
-}
