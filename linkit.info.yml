@@ -4,3 +4,4 @@ package: Custom
 type: module
 version: 4.0
 core: 8.x
+configure: entity.linkit_profile.collection
