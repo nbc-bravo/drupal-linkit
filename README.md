@@ -1,30 +1,31 @@
-# Linkit
+Linkit
+===========
 
 Linkit provides an **enriched linking experience for internal and external
 linking** with editors by using an autocomplete field. Linkit links to all
 entities by default.
 
-## Key features
+Key features
+------------
 * Search content with an autocomplete field.
 * Basic support for all entities.
 * Token support for result descriptions.
 * Settings are handled by profiles, similar to the profiles of the WYSIWYG
 module. Thus, it is possible to customize the behavior of Linkit in detail.
 
-## Installation
+Installation
+------------
 [Normal module installation procedure.]
 (https://www.drupal.org/documentation/install/modules-themes/modules-8)<br>
 Enable the Linkit button in your editor or on your field.
 
-## Configuration
+Configuration
+------------
 After the installation, you have to create a Linkit profile. The profile will
 contain information about which plugins to use. <br>
-Profiles can be created at /admin/config/content/linkit
+Profiles can be created at `/admin/config/content/linkit`
 
-## Plugins
+Plugins
+------------
 There are plugin implementation examples in the linkit_test module bundled with
 Linkit core.
-
-AUTHOR/MAINTAINER
-======================
-- Moshe Weitzman <weitzman at tejasa DOT com> http://www.acquia.com
