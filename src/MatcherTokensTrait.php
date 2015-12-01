@@ -35,7 +35,8 @@ trait MatcherTokensTrait {
     $token_items = array();
     foreach ($this->getAvailableTokens($types) as $type => $tokens) {
       foreach ($tokens as $name => $info) {
-        $token_items[$type . ':' . $name] = "[$type:$name]" . ' - ' . $info['name'] . ': ' . $info['description'];
+        $token_description = !empty($info['description']) ? $info['description'] : '';
+        $token_items[$type . ':' . $name] = "[$type:$name]" . ' - ' . $info['name'] . ': ' . $token_description;
       }
     }
 
