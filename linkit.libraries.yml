@@ -1,3 +1,18 @@
+linkit.admin:
+  version: VERSION
+  css:
+    theme:
+      css/linkit.admin.theme.css: {}
+
+linkit.base:
+  version: VERSION
+  js:
+    js/linki.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+
 linkit.autocomplete:
   version: VERSION
   js:
@@ -6,14 +21,14 @@ linkit.autocomplete:
     component:
       css/linkit.module.css: {}
   dependencies:
-    - core/jquery
-    - core/drupal
-    - core/drupalSettings
+    - linkit/linkit.base
     - core/drupal.ajax
     - core/jquery.ui.autocomplete
 
-linkit.admin:
+linkit.attribute.title:
   version: VERSION
-  css:
-    theme:
-      css/linkit.admin.theme.css: {}
+  js:
+    js/attribute/title.js: {}
+  dependencies:
+    - linkit/linkit.base
+    - linkit/linkit.autocomplete

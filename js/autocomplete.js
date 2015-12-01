@@ -3,7 +3,7 @@
  * Linkit Autocomplete based on jQuery UI.
  */
 
-(function ($, Drupal, _) {
+(function ($, Drupal, _, document) {
 
   "use strict";
 
@@ -64,7 +64,7 @@
     if (ui.item.hasOwnProperty('path')) {
       event.target.value = ui.item.path;
     }
-
+    $(document).trigger('linkit.autocomplete.select', [event, ui]);
     return false;
   }
 
@@ -166,4 +166,4 @@
     }
   };
 
-})(jQuery, Drupal, _);
+})(jQuery, Drupal, _, document);

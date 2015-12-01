@@ -39,6 +39,12 @@ linkit.attribute.target:
     widget_type:
       type: string
 
+linkit.attribute.title:
+  type: linkit.attribute
+  mapping:
+    automatic_title:
+      type: boolean
+
 linkit.matcher:
   type: mapping
   mapping:

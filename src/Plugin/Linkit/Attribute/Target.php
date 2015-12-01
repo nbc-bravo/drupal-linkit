@@ -59,7 +59,7 @@ class Target extends ConfigurableAttributeBase {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'widget_type' => 'simple_checkbox',
+      'widget_type' => self::SIMPLE_CHECKBOX,
     ];
   }
 
