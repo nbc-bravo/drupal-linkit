@@ -7,7 +7,7 @@ linkit.admin:
 linkit.base:
   version: VERSION
   js:
-    js/linki.js: {}
+    js/linkit.js: {}
   dependencies:
     - core/jquery
     - core/drupal
@@ -19,7 +19,7 @@ linkit.autocomplete:
     js/autocomplete.js: {}
   css:
     component:
-      css/linkit.module.css: {}
+      css/linkit.autocomplete.css: {}
   dependencies:
     - linkit/linkit.base
     - core/drupal.ajax
