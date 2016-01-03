@@ -42,7 +42,7 @@ abstract class AttributeBase extends PluginBase implements AttributeInterface {
     return [
       'id' => $this->getPluginId(),
       'weight' => $this->weight,
-      'data' => $this->configuration,
+      'settings' => $this->configuration,
     ];
   }
 
@@ -52,9 +52,9 @@ abstract class AttributeBase extends PluginBase implements AttributeInterface {
   public function setConfiguration(array $configuration) {
     $configuration += [
       'weight' => '0',
-      'data' => [],
+      'settings' => [],
     ];
-    $this->configuration = $configuration['data'] + $this->defaultConfiguration();
+    $this->configuration = $configuration['settings'] + $this->defaultConfiguration();
     $this->weight = $configuration['weight'];
     return $this;
   }

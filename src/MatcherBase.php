@@ -83,7 +83,7 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
       'uuid' => $this->getUuid(),
       'id' => $this->getPluginId(),
       'weight' => $this->getWeight(),
-      'data' => $this->configuration,
+      'settings' => $this->configuration,
     ];
   }
 
@@ -94,9 +94,9 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
     $configuration += [
       'uuid' => '',
       'weight' => '0',
-      'data' => [],
+      'settings' => [],
     ];
-    $this->configuration = $configuration['data'] + $this->defaultConfiguration();
+    $this->configuration = $configuration['settings'] + $this->defaultConfiguration();
     $this->uuid = $configuration['uuid'];
     $this->weight = $configuration['weight'];
     return $this;

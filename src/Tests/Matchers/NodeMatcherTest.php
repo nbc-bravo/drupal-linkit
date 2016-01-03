@@ -71,7 +71,7 @@ class NodeMatcherTest extends LinkitTestBase {
   function testNodeMatcherWidthBundleFiler() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', [
-      'data' => [
+      'settings' => [
         'bundles' => [
           'test1' => 'test1'
         ],
@@ -88,7 +88,7 @@ class NodeMatcherTest extends LinkitTestBase {
   function testNodeMatcherWidthIncludeUnpublished() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', [
-      'data' => [
+      'settings' => [
         'include_unpublished' => TRUE,
       ],
     ]);

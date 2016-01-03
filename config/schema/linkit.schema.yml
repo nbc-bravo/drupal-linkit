@@ -24,7 +24,7 @@ linkit.attribute:
   mapping:
     id:
       type: string
-    data:
+    settings:
       type: linkit.attribute.[%parent.id]
     weight:
       type: integer
@@ -52,7 +52,7 @@ linkit.matcher:
       type: string
     uuid:
       type: string
-    data:
+    settings:
       type: linkit.matcher.[%parent.id]
     weight:
       type: integer
