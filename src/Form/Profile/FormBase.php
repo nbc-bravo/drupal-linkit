@@ -9,7 +9,6 @@ namespace Drupal\linkit\Form\Profile;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 
 /**
  * Base form for profile add and edit forms.
@@ -51,6 +50,11 @@ abstract class FormBase extends EntityForm {
       '#default_value' => $this->entity->getDescription(),
       '#description' => $this->t('The text will be displayed on the <em>profile collection</em> page.'),
     ];
+
+    $form['additional_settings'] = array(
+      '#type' => 'vertical_tabs',
+      '#weight' => 99,
+    );
 
     return parent::form($form, $form_state);
   }

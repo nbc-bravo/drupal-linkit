@@ -82,3 +82,12 @@ linkit.matcher.entity:node:
   mapping:
     include_unpublished:
       type: boolean
+
+# Third party settings on behalf of the imce module.
+linkit.linkit_profile.*.third_party.imce:
+  type: mapping
+  mapping:
+    use:
+      type: boolean
+    scheme:
+      type: string

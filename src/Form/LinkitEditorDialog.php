@@ -15,6 +15,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\linkit\AttributeCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -70,7 +71,7 @@ class LinkitEditorDialog extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'linkit_editor_dialog';
+    return 'linkit_editor_dialog_form';
   }
 
   /**
@@ -109,25 +110,7 @@ class LinkitEditorDialog extends FormBase {
       ],
     ];
 
-    $attributes = $this->linkitProfile->getAttributes();
-
-    if ($attributes->count()) {
-      $form['linkit_attributes'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Attributes'),
-      ];
-
-      foreach ($attributes as $plugin) {
-        $plugin_name = $plugin->getHtmlName();
-        $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
-        $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
-        $form['linkit_attributes'][$plugin_name] += [
-          '#parents' => [
-            'attributes', $plugin_name,
-          ],
-        ];
-      }
-    }
+    $this->addAttributes($form, $form_state, $this->linkitProfile->getAttributes());
 
     $form['actions'] = [
       '#type' => 'actions',
@@ -175,6 +158,47 @@ class LinkitEditorDialog extends FormBase {
     }
 
     return $response;
+  }
+
+  /**
+   * Adds the attributes enabled on the current profile.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param AttributeCollection $attributes
+   *   A collection of attributes for the current profile.
+   */
+  private function addAttributes(array &$form, FormStateInterface &$form_state, AttributeCollection $attributes) {
+    if ($attributes->count()) {
+      $form['linkit_attributes'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Attributes'),
+      ];
+
+      /** @var \Drupal\linkit\AttributeInterface $plugin */
+      foreach ($attributes as $plugin) {
+        $plugin_name = $plugin->getHtmlName();
+        $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
+        $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
+        $form['linkit_attributes'][$plugin_name] += [
+          '#parents' => [
+            'attributes', $plugin_name,
+          ],
+        ];
+      }
+    }
+  }
+
+  /**
+   * Gets the linkit profile entity.
+   *
+   * @return \Drupal\linkit\ProfileInterface
+   *   The current linkit profile used by this form.
+   */
+  public function getLinkitProfile() {
+    return $this->linkitProfile;
   }
 
 }

@@ -32,3 +32,11 @@ linkit.attribute.title:
   dependencies:
     - linkit/linkit.base
     - linkit/linkit.autocomplete
+
+linkit.imce:
+  version: VERSION
+  js:
+    js/linkit.imce.js: {}
+  dependencies:
+    - core/jquery.once
+    - linkit/linkit.base
