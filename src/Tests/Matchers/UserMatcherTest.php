@@ -80,7 +80,6 @@ class UserMatcherTest extends LinkitTestBase {
 
     $matches = $plugin->getMatches('Lorem');
     $this->assertEqual(5, count($matches), 'Correct number of matches');
-    debug($matches);
   }
 
 }
