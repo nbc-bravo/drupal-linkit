@@ -33,12 +33,14 @@ linkit.attribute.*:
   type: mapping
   label: 'Attribute settings'
 
+# Plugin \Drupal\linkit\Plugin\Linkit\Attribute\Target
 linkit.attribute.target:
   type: linkit.attribute
   mapping:
     widget_type:
       type: string
 
+# Plugin \Drupal\linkit\Plugin\Linkit\Attribute\Title
 linkit.attribute.title:
   type: linkit.attribute
   mapping:
@@ -77,6 +79,7 @@ linkit.matcher.entity:
 linkit.matcher.entity:*:
   type: linkit.matcher.entity
 
+# Plugin \Drupal\linkit\Plugin\Linkit\Matcher\NodeMatcher
 linkit.matcher.entity:node:
   type: linkit.matcher.entity
   mapping:
