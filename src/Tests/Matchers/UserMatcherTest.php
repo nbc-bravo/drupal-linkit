@@ -67,21 +67,20 @@ class UserMatcherTest extends LinkitTestBase {
     $this->assertEqual(4, count($matches), 'Correct number of matches');
   }
 
-//  /**
-//   * Tests user matcher with role filer.
-//   */
-//  function testUserMatcherWidthRoleFiler() {
-//    /** @var \Drupal\linkit\MatcherInterface $plugin */
-//    $plugin = $this->manager->createInstance('entity:node', [
-//      'settings' => [
-//        'bundles' => [
-//          'test1' => 'test1'
-//        ],
-//      ],
-//    ]);
-//
-//    $matches = $plugin->getMatches('Lorem');
-//    $this->assertEqual(2, count($matches), 'Correct number of matches');
-//  }
+  /**
+   * Tests user matcher with include blocked setting activated.
+   */
+  function testUserMatcherWidthIncludeBlocked() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:user', [
+      'settings' => [
+        'include_blocked' => TRUE,
+      ],
+    ]);
+
+    $matches = $plugin->getMatches('Lorem');
+    $this->assertEqual(5, count($matches), 'Correct number of matches');
+    debug($matches);
+  }
 
 }
