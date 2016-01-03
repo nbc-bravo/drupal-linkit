@@ -108,6 +108,7 @@ class LinkitEditorDialog extends FormBase {
       '#autocomplete_route_parameters' => [
         'linkit_profile_id' => $linkit_profile_id
       ],
+      '#weight' => '0',
     ];
 
     $this->addAttributes($form, $form_state, $this->linkitProfile->getAttributes());
@@ -175,6 +176,7 @@ class LinkitEditorDialog extends FormBase {
       $form['linkit_attributes'] = [
         '#type' => 'details',
         '#title' => $this->t('Attributes'),
+        '#weight' => '10',
       ];
 
       /** @var \Drupal\linkit\AttributeInterface $plugin */

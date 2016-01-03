@@ -20,16 +20,12 @@
    */
   Drupal.behaviors.linkitImce = {
     attach: function (context, settings) {
-      var $button = $(context).find('.linkit-imce-button').once('linkit-imce-button');
-      if ($button.length) {
-        var url = $button.data('imceUrl');
-        url += (url.indexOf('?') === -1 ? '?' : '&') + 'sendto=linkitImce.sendto';
-
-        $button.bind('click', function(event) {
-          window.open(url, '', 'width=760,height=560,resizable=1');
+      var $link = $(context).find('.linkit-imce-open').once('linkit-imce-open');
+      if ($link.length) {
+        $link.bind('click', function(event) {
           event.preventDefault();
+          window.open($(this).attr('href'), '', 'width=760,height=560,resizable=1');
         });
-
       }
     }
   };

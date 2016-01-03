@@ -74,8 +74,8 @@ function imce_form_linkit_profile_form_builder($entity_type, ProfileInterface $l
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter() for linkit_editor_dialog_form on behalf
- * of the 'imce' module.
+ * Implements hook_form_BASE_FORM_ID_alter() for linkit_editor_dialog_form on
+ * behalf of the 'imce' module.
  *
  * Adds a button to open the imce file browser if it is enabled.
  */
@@ -84,20 +84,26 @@ function imce_form_linkit_editor_dialog_form_alter(&$form, FormStateInterface $f
   $linkit_profile = $form_state->getFormObject()->getLinkitProfile();
 
   if($linkit_profile->getThirdPartySetting('imce', 'use', FALSE)) {
-    $form['imce'] = [
-      '#type' => 'button',
-      '#value' => t('Open file browser'),
+    $form['imce-link'] = [
+      '#type' => 'link',
+      '#title' => t('Open IMCE file browser'),
+      '#url' => Url::fromRoute('imce.page', [
+        'scheme' => $linkit_profile->getThirdPartySetting('imce', 'scheme', 'public'),
+      ]),
+      '#options' => array(
+        'query' => array(
+          'sendto' => 'linkitImce.sendto',
+        ),
+      ),
       '#attributes' => [
-        'class' => ['linkit-imce-button'],
-        'data-imce-url' => Url::fromRoute('imce.page', [
-          'scheme' => $linkit_profile->getThirdPartySetting('imce', 'scheme', 'public'),
-        ])->toString(),
+        'class' => ['linkit-imce-open'],
       ],
       '#attached' => [
         'library' => [
           'linkit/linkit.imce'
         ],
       ],
+      '#weight' => 1,
     ];
   }
 }
