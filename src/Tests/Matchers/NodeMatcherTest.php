@@ -12,9 +12,6 @@ use Drupal\linkit\Tests\LinkitTestBase;
 /**
  * Tests node matcher.
  *
- * @TODO: Shall we use entity_test module here instead and only test for node
- *   specific features in this test?
- *
  * @group linkit
  */
 class NodeMatcherTest extends LinkitTestBase {

@@ -86,6 +86,13 @@ linkit.matcher.entity:node:
     include_unpublished:
       type: boolean
 
+# Plugin \Drupal\linkit\Plugin\Linkit\Matcher\UserMatcher
+linkit.matcher.entity:user:
+  type: linkit.matcher.entity
+  mapping:
+    include_blocked:
+      type: boolean
+
 # Third party settings on behalf of the imce module.
 linkit.linkit_profile.*.third_party.imce:
   type: mapping
