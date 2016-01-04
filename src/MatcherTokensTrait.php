@@ -27,6 +27,7 @@ trait MatcherTokensTrait {
         '#theme' => 'token_tree',
         '#token_types' => $types,
         '#dialog' => TRUE,
+        '#weight' => -90,
       );
 
       return $form;
@@ -44,6 +45,7 @@ trait MatcherTokensTrait {
       $form['tokens'] = array(
         '#type' => 'details',
         '#title' => t('Available tokens'),
+        '#weight' => -90,
       );
 
       $form['tokens']['list'] = array(

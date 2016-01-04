@@ -146,6 +146,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       '#default_value' => $this->configuration['result_description'],
       '#size' => 120,
       '#maxlength' => 255,
+      '#weight' => -100,
     ];
 
     $this->insertTokenList($form, [$this->target_type]);
@@ -164,6 +165,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
         '#default_value' => $this->configuration['bundles'],
         '#description' => $this->t('If none of the checkboxes is checked, allow all bundles.'),
         '#element_validate' => [[get_class($this), 'elementValidateFilter']],
+        '#weight' => -50,
       ];
 
       // Group the results by bundle.
@@ -171,6 +173,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
         '#type' => 'checkbox',
         '#title' => $this->t('Group by bundle'),
         '#default_value' => $this->configuration['group_by_bundle'],
+        '#weight' => -50,
       ];
     }
 
