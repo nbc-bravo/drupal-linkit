@@ -60,7 +60,7 @@ class NodeMatcher extends EntityMatcher {
       '#title' => t('Include unpublished nodes'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['include_unpublished'],
-      '#description' => t('In order to see unpublished nodes, the user must also have permissions to do so.'),
+      '#description' => t('In order to see unpublished nodes, the requesting user must also have permissions to do so.'),
     ];
 
     return $form;
