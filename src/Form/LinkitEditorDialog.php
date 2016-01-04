@@ -86,7 +86,6 @@ class LinkitEditorDialog extends FormBase {
     $user_input = $form_state->getUserInput();
     $input = isset($user_input['editor_object']) ? $user_input['editor_object'] : [];
 
-    // @TODO: Refactor the way to get the linkit profile to be more fail safe.
     /** @var \Drupal\editor\EditorInterface $editor */
     $editor = $this->editorStorage->load($filter_format->id());
     $linkit_profile_id = $editor->getSettings()['plugins']['linkit']['linkit_profile'];
@@ -108,7 +107,7 @@ class LinkitEditorDialog extends FormBase {
       '#autocomplete_route_parameters' => [
         'linkit_profile_id' => $linkit_profile_id
       ],
-      '#weight' => '0',
+      '#weight' => 0,
     ];
 
     $this->addAttributes($form, $form_state, $this->linkitProfile->getAttributes());
@@ -119,7 +118,6 @@ class LinkitEditorDialog extends FormBase {
 
     $form['actions']['save_modal'] = [
       '#type' => 'submit',
-      // @TODO: Insert and update?
       '#value' => $this->t('Save'),
       '#submit' => [],
       '#ajax' => [
