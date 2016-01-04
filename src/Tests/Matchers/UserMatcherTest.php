@@ -91,7 +91,7 @@ class UserMatcherTest extends LinkitTestBase {
   /**
    * Tests user matcher with include blocked setting activated.
    */
-  function testUserMatcherWidthIncludeBlockedWithPermissions() {
+  function testUserMatcherWidthIncludeBlocked() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', [
       'settings' => [
