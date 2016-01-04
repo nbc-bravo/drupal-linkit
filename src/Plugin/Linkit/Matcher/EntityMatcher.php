@@ -117,7 +117,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       ]);
 
       $summery[] = $this->t('Group by bundle: @bundle_grouping', [
-        '@bundle_grouping' => $this->configuration['bundles'] ? $this->t('Yes') : $this->t('No'),
+        '@bundle_grouping' => $this->configuration['group_by_bundle'] ? $this->t('Yes') : $this->t('No'),
       ]);
     }
 
@@ -159,14 +159,14 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
       $form['bundles'] = [
         '#type' => 'checkboxes',
-        '#title' => $this->t('Bundle filter'),
+        '#title' => $this->t('Restrict to the selected bundles'),
         '#options' => $bundle_options,
         '#default_value' => $this->configuration['bundles'],
         '#description' => $this->t('If none of the checkboxes is checked, allow all bundles.'),
         '#element_validate' => [[get_class($this), 'elementValidateFilter']],
       ];
 
-      // Group the results within this bundle.
+      // Group the results by bundle.
       $form['group_by_bundle'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Group by bundle'),
