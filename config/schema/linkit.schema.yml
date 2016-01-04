@@ -90,6 +90,11 @@ linkit.matcher.entity:node:
 linkit.matcher.entity:user:
   type: linkit.matcher.entity
   mapping:
+    roles:
+      type: sequence
+      sequence:
+        type: string
+      nullable: true
     include_blocked:
       type: boolean
 
