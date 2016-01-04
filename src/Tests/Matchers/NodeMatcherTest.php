@@ -49,7 +49,7 @@ class NodeMatcherTest extends LinkitTestBase {
     $this->drupalCreateNode(['title' => 'Lorem Ipsum 3', 'type' => $type2->id()]);
 
     // Unpublished node.
-    $this->drupalCreateNode(['title' => 'Lorem Ipsum 4', 'type' => $type1->id(), 'status' => FALSE]);
+    $this->drupalCreateNode(['title' => 'Lorem unpublishd', 'type' => $type1->id(), 'status' => FALSE]);
   }
 
   /**
@@ -90,6 +90,14 @@ class NodeMatcherTest extends LinkitTestBase {
       ],
     ]);
 
+    // Test without permissions to see unpublished nodes.
+    $matches = $plugin->getMatches('Lorem');
+    $this->assertEqual(3, count($matches), 'Correct number of matches');
+
+    $account = $this->drupalCreateUser(['bypass node access']);
+    $this->drupalLogin($account);
+
+    // Test with permissions to see unpublished nodes.
     $matches = $plugin->getMatches('Lorem');
     $this->assertEqual(4, count($matches), 'Correct number of matches');
   }

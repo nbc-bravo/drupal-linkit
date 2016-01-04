@@ -110,4 +110,5 @@ class UserMatcherTest extends LinkitTestBase {
     $matches = $plugin->getMatches('blocked');
     $this->assertEqual(1, count($matches), 'Correct number of matches');
   }
+
 }

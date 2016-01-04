@@ -87,6 +87,7 @@ class UserMatcher extends EntityMatcher {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
+
     $this->configuration['roles'] = $form_state->getValue('roles');
     $this->configuration['include_blocked'] = $form_state->getValue('include_blocked');
   }
