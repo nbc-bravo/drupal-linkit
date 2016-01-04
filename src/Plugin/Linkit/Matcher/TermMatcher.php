@@ -7,8 +7,8 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\linkit\Utility\LinkitXss;
 
 /**
  * @Matcher(
@@ -43,9 +43,7 @@ class TermMatcher extends EntityMatcher {
    */
   protected function buildDescription($entity) {
     $description = \Drupal::token()->replace($this->configuration['result_description'], ['term' => $entity], []);
-    // @TODO: Create a linkit utility to handle filtering and escaping.
-    // This could be LinkitFilter::descriptionFilter()
-    return Xss::filter($description, Xss::getHtmlTagList() + ['img']);
+    return LinkitXss::descriptionFilter($description);
   }
 
 }
