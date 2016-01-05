@@ -79,6 +79,16 @@ linkit.matcher.entity:
 linkit.matcher.entity:*:
   type: linkit.matcher.entity
 
+# Plugin \Drupal\linkit\Plugin\Linkit\Matcher\FileMatcher
+linkit.matcher.entity:file:
+  type: linkit.matcher.entity
+  mapping:
+    images:
+      type: mapping
+      mapping:
+        show_dimensions:
+          type: boolean
+
 # Plugin \Drupal\linkit\Plugin\Linkit\Matcher\NodeMatcher
 linkit.matcher.entity:node:
   type: linkit.matcher.entity
