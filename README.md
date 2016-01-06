@@ -12,8 +12,8 @@ Key features
 * Search content with an autocomplete field.
 * Basic support for all entities.
 * Token support for result descriptions.
-* Settings are handled by profiles, similar to the profiles of the WYSIWYG
-module. Thus, it is possible to customize the behavior of Linkit in detail.
+* Settings are handled by profiles. Thus, it is possible to customize the
+  behavior of Linkit in detail.
 
 
 Installation
@@ -21,9 +21,6 @@ Installation
 
 * Normal module installation procedure. See
   https://www.drupal.org/documentation/install/modules-themes/modules-8
-* Create a linkit profile. (See Configuration)
-* Enable the Linkit plugin on the text format you want to use. Formats are found
-  at `admin/config/content/formats`.
 
 
 Configuration
@@ -33,6 +30,9 @@ After the installation, you have to create a Linkit profile. The profile will
 contain information about which plugins to use.
 Profiles can be created at `/admin/config/content/linkit`
 
+When you have created a profile, you need to enable the Linkit plugin on the
+text format you want to use. Formats are found at
+`admin/config/content/formats`.
 
 Plugins
 ------------
