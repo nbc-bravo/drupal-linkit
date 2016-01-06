@@ -88,6 +88,11 @@ linkit.matcher.entity:file:
       mapping:
         show_dimensions:
           type: boolean
+        show_thumbnail:
+          type: boolean
+        thumbnail_image_style:
+          type: string
+          nullable: true
 
 # Plugin \Drupal\linkit\Plugin\Linkit\Matcher\NodeMatcher
 linkit.matcher.entity:node:

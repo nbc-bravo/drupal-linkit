@@ -6,7 +6,9 @@
  */
 
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
+
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\linkit\Utility\LinkitXss;
 
 /**
@@ -29,6 +31,19 @@ class FileMatcher extends EntityMatcher {
       '@show_image_dimensions' => $this->configuration['images']['show_dimensions'] ? $this->t('Yes') : $this->t('No'),
     ]);
 
+    $summery[] = $this->t('Show image thumbnail: @show_image_thumbnail', [
+      '@show_image_thumbnail' => $this->configuration['images']['show_thumbnail'] ? $this->t('Yes') : $this->t('No'),
+    ]);
+
+    if ($this->moduleHandler->moduleExists('image') && $this->configuration['images']['show_thumbnail']) {
+      $image_style = ImageStyle::load($this->configuration['images']['thumbnail_image_style']);
+        if (!is_null($image_style)) {
+          $summery[] = $this->t('Thumbnail style: @thumbnail_style', [
+          '@thumbnail_style' =>  $image_style->label(),
+        ]);
+      }
+    }
+
     return $summery;
   }
 
@@ -39,6 +54,8 @@ class FileMatcher extends EntityMatcher {
     return parent::defaultConfiguration() + [
       'images' => [
         'show_dimensions' => FALSE,
+        'show_thumbnail' => FALSE,
+        'thumbnail_image_style' => 'linkit_result_thumbnail',
       ],
     ];
   }
@@ -47,9 +64,16 @@ class FileMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return parent::calculateDependencies() + [
+    $dependencies = parent::calculateDependencies() + [
       'module' => ['file'],
     ];
+
+    if ($this->configuration['images']['show_thumbnail']) {
+      $dependencies['module'][] = 'Image';
+      $dependencies['config'][] = 'image.style.' . $this->configuration['images']['thumbnail_image_style'];
+    }
+
+    return $dependencies;
   }
 
   /**
@@ -71,6 +95,26 @@ class FileMatcher extends EntityMatcher {
       '#default_value' => $this->configuration['images']['show_dimensions'],
     ];
 
+    if ($this->moduleHandler->moduleExists('image')) {
+      $form['images']['show_thumbnail'] = [
+        '#title' => t('Show thumbnail'),
+        '#type' => 'checkbox',
+        '#default_value' => $this->configuration['images']['show_thumbnail'],
+      ];
+
+      $form['images']['thumbnail_image_style'] = [
+        '#title' => t('Thumbnail image style'),
+        '#type' => 'select',
+        '#default_value' => $this->configuration['images']['thumbnail_image_style'],
+        '#options' => image_style_options(FALSE),
+        '#states' => [
+          'visible' => [
+            ':input[name="images[show_thumbnail]"]' => ['checked' => TRUE],
+          ],
+        ],
+      ];
+    }
+
     return $form;
   }
 
@@ -79,7 +123,13 @@ class FileMatcher extends EntityMatcher {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
-    $this->configuration['images'] = $form_state->getValue('images');
+
+    $values = $form_state->getValue('images');
+    if (!$values['show_thumbnail']) {
+      $values['thumbnail_image_style'] = NULL;
+    }
+
+    $this->configuration['images'] = $values;
   }
 
   /**
@@ -105,12 +155,24 @@ class FileMatcher extends EntityMatcher {
 
     /** @var \Drupal\Core\Image\ImageInterface $image */
     $image = \Drupal::service('image.factory')->get($file);
-    if ($image->isValid() && $this->configuration['images']['show_dimensions']) {
+    if ($image->isValid()) {
+      if ($this->configuration['images']['show_thumbnail'] && $this->moduleHandler->moduleExists('image')) {
+        $image_element = array(
+          '#weight' => -10,
+          '#theme' => 'image_style',
+          '#style_name' => $this->configuration['images']['thumbnail_image_style'],
+          '#uri' => $entity->getFileUri(),
+        );
+
+        $description_array[] = (string) \Drupal::service('renderer')->render($image_element);
+      }
+
+      if ($this->configuration['images']['show_dimensions']) {
         $description_array[] = $image->getWidth() . 'x' . $image->getHeight() . 'px';
+      }
     }
 
     $description = implode('<br />' , $description_array);
-
     return LinkitXss::descriptionFilter($description);
   }
 

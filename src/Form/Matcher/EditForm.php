@@ -46,11 +46,8 @@ class EditForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ProfileInterface $linkit_profile = NULL, $plugin_instance_id = NULL) {
     $this->linkitProfile = $linkit_profile;
     $this->linkitMatcher = $this->linkitProfile->getMatcher($plugin_instance_id);
-    $form['data'] = [
-      '#tree' => true,
-    ];
 
-    $form['data'] += $this->linkitMatcher->buildConfigurationForm($form, $form_state);
+    $form += $this->linkitMatcher->buildConfigurationForm($form, $form_state);
 
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
@@ -79,7 +76,7 @@ class EditForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
-    $plugin_data = (new FormState())->setValues($form_state->getValue('data'));
+    $plugin_data = (new FormState())->setValues($form_state->getValues());
     $this->linkitMatcher->submitConfigurationForm($form, $plugin_data);
     $this->linkitProfile->save();
 
