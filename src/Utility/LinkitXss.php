@@ -28,7 +28,7 @@ class LinkitXss extends Xss {
    * @see \Drupal\Component\Utility\Xss::filter()
    */
   public static function descriptionFilter($string) {
-    return parent::filter($string, Xss::getHtmlTagList() + ['img']);
+    return parent::filter($string, ['img'] + Xss::getHtmlTagList());
   }
 
 }
