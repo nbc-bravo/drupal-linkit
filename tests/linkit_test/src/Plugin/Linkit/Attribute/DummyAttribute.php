@@ -13,10 +13,10 @@ use Drupal\linkit\AttributeBase;
  * Accesskey attribute.
  *
  * @Attribute(
- *   id = "dummyattribute",
- *   label = @Translation("DummyAttribute"),
+ *   id = "dummy_attribute",
+ *   label = @Translation("Dummy Attribute"),
  *   html_name = "dummyattribute",
- *   description = @Translation("Test attribute")
+ *   description = @Translation("Dummy Attribute")
  * )
  */
 class DummyAttribute extends AttributeBase {
