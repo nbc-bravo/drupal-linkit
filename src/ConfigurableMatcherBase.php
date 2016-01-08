@@ -16,16 +16,4 @@ use Drupal\Core\Form\FormStateInterface;
  */
 abstract class ConfigurableMatcherBase extends MatcherBase implements ConfigurableMatcherInterface {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-  }
-
 }

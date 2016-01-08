@@ -8,4 +8,3 @@ dependencies:
   - linkit
   - field
   - text
-  - entity_test

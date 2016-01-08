@@ -47,8 +47,10 @@ abstract class LinkitTestBase extends WebTestBase {
     $this->adminUser = $this->drupalCreateUser(['administer linkit profiles']);
     $this->baseUser = $this->drupalCreateUser();
 
-    $this->drupalPlaceBlock('local_tasks_block');
-    $this->drupalPlaceBlock('local_actions_block');
+    $this->drupalPlaceBlock('page_title_block', ['region' => 'content']);
+    $this->drupalPlaceBlock('local_tasks_block', ['region' => 'content']);
+    $this->drupalPlaceBlock('local_actions_block', ['region' => 'content']);
+    $this->drupalPlaceBlock('system_messages_block', ['region' => 'highlighted']);
   }
 
   /**

@@ -17,19 +17,27 @@ use Drupal\linkit\Entity\Profile;
 class MatcherCrudTest extends LinkitTestBase {
 
   /**
-   * Modules to enable.
+   * The attribute manager.
    *
-   * @TODO: Use a test matchers implementation here?
-   *
-   * @var array
+   * @var \Drupal\linkit\MatcherManager
    */
-  public static $modules = ['user'];
+  protected $manager;
+
+  /**
+   * The linkit profile.
+   *
+   * @var \Drupal\linkit\ProfileInterface
+   */
+  protected $linkitProfile;
 
   /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
+    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
+
+    $this->linkitProfile = $this->createProfile();
     $this->drupalLogin($this->adminUser);
   }
 
@@ -37,15 +45,13 @@ class MatcherCrudTest extends LinkitTestBase {
    * Test the overview page.
    */
   function testOverview() {
-    $profile = $this->createProfile();
-
     $this->drupalGet(Url::fromRoute('linkit.matchers', [
-      'linkit_profile' => $profile->id(),
+      'linkit_profile' => $this->linkitProfile->id(),
     ]));
     $this->assertText(t('No matchers added.'));
 
     $this->assertLinkByHref(Url::fromRoute('linkit.matcher.add', [
-      'linkit_profile' => $profile->id(),
+      'linkit_profile' => $this->linkitProfile->id(),
     ])->toString());
   }
 
@@ -53,29 +59,53 @@ class MatcherCrudTest extends LinkitTestBase {
    * Test adding a matcher to a profile.
    */
   function testAdd() {
-    $profile = $this->createProfile();
     $this->drupalGet(Url::fromRoute('linkit.matcher.add', [
-      'linkit_profile' => $profile->id(),
+      'linkit_profile' => $this->linkitProfile->id(),
     ]));
-
-    // We have only enabled the user module, so we will only have one matcher
-    // available.
-    $this->assertEqual(1, count($this->xpath('//input[@type="radio"]')), 'User matcher is available.');
 
     $edit = array();
-    $edit['plugin'] = 'entity:user';
+    $edit['plugin'] = 'dummy_matcher';
     $this->drupalPostForm(NULL, $edit, t('Save and continue'));
 
-    // @TODO: How can we test that we are redirected to the edit page? How do we
-    // get the plugins uuid?
-    //$this->assertUrl(\Drupal::url('linkit.matcher.edit', [
-    //  'linkit_profile' => $profile->id(),
-    //  'plugin_id' => ???,
-    //]));
+    // Load the saved profile.
+    $this->linkitProfile = Profile::load($this->linkitProfile->id());
+
+    $matcher_ids = $this->linkitProfile->getMatchers()->getInstanceIds();
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->linkitProfile->getMatcher(current($matcher_ids));
+
+    $this->assertRaw(t('Added %label matcher.', ['%label' => $plugin->getLabel()]));
+    $this->assertNoText(t('No matchers added.'));
+  }
+
+  /**
+   * Test adding a configurable attribute to a profile.
+   */
+  function testAddConfigurable() {
+    $this->drupalGet(Url::fromRoute('linkit.matcher.add', [
+      'linkit_profile' => $this->linkitProfile->id(),
+    ]));
+
+    $edit = array();
+    $edit['plugin'] = 'configurable_dummy_matcher';
+    $this->drupalPostForm(NULL, $edit, t('Save and continue'));
+
+    // Load the saved profile.
+    $this->linkitProfile = Profile::load($this->linkitProfile->id());
+
+    $matcher_ids = $this->linkitProfile->getMatchers()->getInstanceIds();
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->linkitProfile->getMatcher(current($matcher_ids));
+
+    $this->assertUrl(\Drupal::url('linkit.matcher.edit', [
+      'linkit_profile' => $this->linkitProfile->id(),
+      'plugin_instance_id' => $plugin->getUuid(),
+    ]));
 
     $this->drupalGet(Url::fromRoute('linkit.matchers', [
-      'linkit_profile' => $profile->id(),
+      'linkit_profile' => $this->linkitProfile->id(),
     ]));
+
     $this->assertNoText(t('No matchers added.'));
   }
 
@@ -83,8 +113,11 @@ class MatcherCrudTest extends LinkitTestBase {
    * Test delete a matcher from a profile.
    */
   function testDelete() {
+    /** @var \Drupal\linkit\AttributeInterface $plugin */
+    $plugin = $this->manager->createInstance('dummy_matcher');
+
     $profile = $this->createProfile();
-    $plugin_uuid = $profile->addMatcher(['id' => 'entity:user']);
+    $plugin_uuid = $profile->addMatcher($plugin->getConfiguration());
     $profile->save();
 
     // Try delete a matcher that is not attached to the profile.
@@ -111,7 +144,7 @@ class MatcherCrudTest extends LinkitTestBase {
     ]));
 
     $this->drupalPostForm(NULL, [], t('Confirm'));
-    $this->assertRaw(t('The matcher %plugin has been deleted.', ['%plugin' => 'User']));
+    $this->assertRaw(t('The matcher %plugin has been deleted.', ['%plugin' => $plugin->getLabel()]));
     $this->assertUrl(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $profile->id(),
     ]));

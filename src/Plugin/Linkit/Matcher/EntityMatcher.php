@@ -191,6 +191,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
   /**
    * {@inheritdoc}
    */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['result_description'] = $form_state->getValue('result_description');
     $this->configuration['bundles'] = $form_state->getValue('bundles');

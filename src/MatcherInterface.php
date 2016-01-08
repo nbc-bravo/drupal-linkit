@@ -40,8 +40,8 @@ interface MatcherInterface extends PluginInspectionInterface, ConfigurablePlugin
   /**
    * Returns the summarized configuration of the matcher.
    *
-   * @return string
-   *   The summarized configuration of the matcher.
+   * @return array
+   *   An array of summarized configuration of the matcher.
    */
   public function getSummary();
 
