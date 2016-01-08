@@ -23,7 +23,7 @@ abstract class LinkitTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['linkit', 'block'];
+  public static $modules = ['linkit', 'linkit_test', 'block'];
 
   /**
    * A user with the 'administer linkit profiles' permission.
