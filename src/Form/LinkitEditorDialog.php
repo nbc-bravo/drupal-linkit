@@ -172,7 +172,7 @@ class LinkitEditorDialog extends FormBase {
   private function addAttributes(array &$form, FormStateInterface &$form_state, AttributeCollection $attributes) {
     if ($attributes->count()) {
       $form['linkit_attributes'] = [
-        '#type' => 'details',
+        '#type' => 'container',
         '#title' => $this->t('Attributes'),
         '#weight' => '10',
       ];
