@@ -7,6 +7,7 @@
 
 namespace Drupal\linkit\Tests;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Url;
 
 /**
  * Tests creating, loading and deleting profiles.
@@ -14,13 +15,6 @@ use Drupal\Component\Utility\Unicode;
  * @group linkit
  */
 class ProfileCrudTest extends LinkitTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['block'];
 
   /**
    * {@inheritdoc}
@@ -35,13 +29,10 @@ class ProfileCrudTest extends LinkitTestBase {
    * Test the overview page.
    */
   function testOverview() {
-    $this->drupalPlaceBlock('local_actions_block');
-    $this->drupalPlaceBlock('local_tasks_block');
-
     // Verify that the profile collection page is not accessible for regular
     // users.
     $this->drupalLogin($this->baseUser);
-    $this->drupalGet('admin/config/content/linkit');
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.collection'));
     $this->assertResponse(403);
     $this->drupalLogout();
 
@@ -52,11 +43,11 @@ class ProfileCrudTest extends LinkitTestBase {
     $profiles[] = $this->createProfile();
     $profiles[] = $this->createProfile();
 
-    $this->drupalGet('admin/config/content/linkit');
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.collection'));
     $this->assertResponse(200);
 
     // Assert that the 'Add profile' action exists.
-    $this->assertLinkByHref('admin/config/content/linkit/add');
+    $this->assertLinkByHref(Url::fromRoute('entity.linkit_profile.add_form')->toString());
 
     /** @var \Drupal\linkit\ProfileInterface $profile */
     foreach ($profiles as $profile) {
@@ -69,17 +60,20 @@ class ProfileCrudTest extends LinkitTestBase {
    * Creates profile.
    */
   function testProfileCreation() {
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.add_form'));
     $this->drupalGet('admin/config/content/linkit/add');
     $this->assertResponse(200);
+
     // Create a profile.
     $edit = [];
     $edit['label'] = Unicode::strtolower($this->randomMachineName());
     $edit['id'] = Unicode::strtolower($this->randomMachineName());
     $edit['description'] = $this->randomMachineName(16);
-    $this->drupalPostForm('admin/config/content/linkit/add', $edit, t('Save and manage matchers'));
+    $this->drupalPostForm(NULL, $edit, t('Save and manage matchers'));
 
     $this->assertRaw(t('Created new profile %label.', ['%label' => $edit['label']]));
-    $this->drupalGet('admin/config/content/linkit');
+
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.collection'));
     $this->assertText($edit['label'], 'Profile exists in the profile collection.');
   }
 
@@ -88,21 +82,27 @@ class ProfileCrudTest extends LinkitTestBase {
    */
   function testProfileUpdate() {
     $profile = $this->createProfile();
-    $this->drupalGet('admin/config/content/linkit/manage/' . $profile->id());
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.edit_form', [
+      'linkit_profile' => $profile->id(),
+    ]));
     $this->assertResponse(200);
 
     $id_field = $this->xpath('.//input[not(@disabled) and @name="id"]');
 
     $this->assertTrue(empty($id_field), 'Machine name field is disabled.');
+    $this->assertLinkByHref(Url::fromRoute('entity.linkit_profile.edit_form', [
+      'linkit_profile' => $profile->id(),
+    ])->toString());
     $this->assertLinkByHref('admin/config/content/linkit/manage/' . $profile->id() . '/delete');
 
     $edit = [];
     $edit['label'] = $this->randomMachineName();
     $edit['description'] = $this->randomMachineName(16);
-    $this->drupalPostForm('admin/config/content/linkit/manage/' . $profile->id(), $edit, t('Update profile'));
+    $this->drupalPostForm(NULL, $edit, t('Update profile'));
 
     $this->assertRaw(t('Updated profile %label.', ['%label' => $edit['label']]));
-    $this->drupalGet('admin/config/content/linkit');
+
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.collection'));
     $this->assertText($edit['label'], 'Updated profile exists in the profile collection.');
   }
 
@@ -112,11 +112,13 @@ class ProfileCrudTest extends LinkitTestBase {
   function testProfileDelete() {
     /** @var \Drupal\linkit\ProfileInterface $profile */
     $profile = $this->createProfile();
-
-    $this->drupalPostForm('admin/config/content/linkit/manage/' . $profile->id() . '/delete', [], t('Delete'));
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.delete_form', [
+      'linkit_profile' => $profile->id(),
+    ]));
+    $this->drupalPostForm(NULL, [], t('Delete'));
 
     $this->assertRaw(t('The linkit profile %label has been deleted.', ['%label' => $profile->label()]));
-    $this->drupalGet('admin/config/content/linkit');
+    $this->drupalGet(Url::fromRoute('entity.linkit_profile.collection'));
     $this->assertNoText($profile->label(), 'Deleted profile does not exists in the profile collection.');
   }
 

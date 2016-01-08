@@ -97,7 +97,7 @@ class MatcherCrudTest extends LinkitTestBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->linkitProfile->getMatcher(current($matcher_ids));
 
-    $this->assertUrl(\Drupal::url('linkit.matcher.edit', [
+    $this->assertUrl(Url::fromRoute('linkit.matcher.edit', [
       'linkit_profile' => $this->linkitProfile->id(),
       'plugin_instance_id' => $plugin->getUuid(),
     ]));
