@@ -31,6 +31,7 @@ class Relationship extends AttributeBase {
       '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
+      '#placeholder' => t('The "rel" attribute value'),
     ];
   }
 

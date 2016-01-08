@@ -31,6 +31,7 @@ class Id extends AttributeBase {
       '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
+      '#placeholder' => t('The "id" attribute value'),
     ];
   }
 

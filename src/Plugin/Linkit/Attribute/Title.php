@@ -33,10 +33,12 @@ class Title extends ConfigurableAttributeBase {
       '#default_value' => $default_value,
       '#maxlength' => 255,
       '#size' => 40,
+      '#placeholder' => t('The "title" attribute value'),
     ];
 
     if ($this->configuration['automatic_title']) {
       $element['#attached']['library'][] = 'linkit/linkit.attribute.title';
+      $element['#placeholder'] = t('The "title" attribute value (auto populated)');
     }
 
     return $element;
