@@ -110,10 +110,18 @@ class EntityMatcher extends ConfigurableMatcherBase {
     }
 
     if ($entity_type->hasKey('bundle')) {
-      $bundles = !empty($this->configuration['bundles']) ? $this->configuration['bundles'] : ['None'];
+      $has_bundle_filter = !empty($this->configuration['bundles']);
+      $bundles = [];
+
+      if ($has_bundle_filter) {
+        $bundles_info = $this->entityManager->getBundleInfo($this->target_type);
+        foreach ($this->configuration['bundles'] as $bundle) {
+          $bundles[] = $bundles_info[$bundle]['label'];
+        }
+      }
+
       $summery[] = $this->t('Bundle filter: @bundle_filter', [
-        // @TODO: Print labels instead of machine name.
-        '@bundle_filter' => implode(', ', $bundles),
+        '@bundle_filter' => $has_bundle_filter ? implode(', ', $bundles) : t('None'),
       ]);
 
       $summery[] = $this->t('Group by bundle: @bundle_grouping', [
