@@ -60,6 +60,12 @@ class ConfigurableDummyAttribute extends ConfigurableAttributeBase {
   /**
    * {@inheritdoc}
    */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['dummy_setting'] = $form_state->getValue('dummy_setting');
   }

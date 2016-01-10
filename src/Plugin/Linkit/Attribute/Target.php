@@ -83,6 +83,12 @@ class Target extends ConfigurableAttributeBase {
   /**
    * {@inheritdoc}
    */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['widget_type'] = $form_state->getValue('widget_type');
   }

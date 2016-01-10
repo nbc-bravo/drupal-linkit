@@ -8,7 +8,6 @@
 namespace Drupal\linkit\Plugin\Linkit\Attribute;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\linkit\AttributeBase;
 use Drupal\linkit\ConfigurableAttributeBase;
 
 /**
@@ -65,6 +64,12 @@ class Title extends ConfigurableAttributeBase {
     ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
   }
 
   /**
