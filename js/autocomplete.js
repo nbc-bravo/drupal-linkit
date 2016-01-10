@@ -26,7 +26,7 @@
      * @param {object} suggestions
      */
     function showSuggestions(suggestions) {
-      response(suggestions);
+      response(suggestions.matches);
     }
 
     /**

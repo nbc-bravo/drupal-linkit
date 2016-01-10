@@ -80,7 +80,11 @@ class AutocompleteController implements ContainerInjectionInterface {
     $string = Unicode::strtolower($request->query->get('q'));
 
     $matches = $this->resultManager->getResults($this->linkitProfile, $string);
-    return new JsonResponse($matches);
+
+    $json_object = new \stdClass();
+    $json_object->matches = $matches;
+
+    return new JsonResponse($json_object);
   }
 
 }
