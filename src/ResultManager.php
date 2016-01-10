@@ -55,7 +55,7 @@ class ResultManager {
     if (filter_var($search_string, FILTER_VALIDATE_EMAIL)) {
       $matches[] = [
         'title' => t('E-mail @email', ['@email' => $search_string]),
-        'description' => t('Open your mail client ready to e-mail @email', ['@email' => $search_string]),
+        'description' => t('Opens your mail client ready to e-mail @email', ['@email' => $search_string]),
         'path' => 'mailto:' . Html::escape($search_string),
         'group' => t('E-mail'),
       ];
