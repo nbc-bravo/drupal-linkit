@@ -1,19 +1,10 @@
 Linkit
 ===========
-
 Linkit provides an **enriched linking experience for internal and external
-linking** with editors by using an autocomplete field. Linkit links to all
-entities by default.
-
-
-Key features
-------------
-
-* Search content with an autocomplete field.
-* Basic support for all entities.
-* Token support for result descriptions.
-* Settings are handled by profiles. Thus, it is possible to customize the
-  behavior of Linkit in detail.
+linking** with editors by using an autocomplete field. Linkit has by default
+support for nodes, users, taxonomy terms, files, comments and
+**basic support for all types of entities** that defines a canonical link
+template.
 
 
 Installation
@@ -34,7 +25,8 @@ When you have created a profile, you need to enable the Linkit plugin on the
 text format you want to use. Formats are found at
 `admin/config/content/formats`.
 
-Plugins
+
+Plugins examples
 ------------
 
 There are plugin implementation examples in the linkit_test module bundled with
