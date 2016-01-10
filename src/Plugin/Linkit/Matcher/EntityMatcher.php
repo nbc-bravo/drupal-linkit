@@ -226,7 +226,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
 
     foreach ($entities as $entity_id => $entity) {
-      // @TODO: Validate access here?
+      // Check the access against the defined entity access handler.
+      /** @var \Drupal\Core\Access\AccessResultInterface $access */
+      $access = $entity->access('view', $this->currentUser, TRUE);
+      if ($access->isForbidden()) {
+        continue;
+      }
 
       $matches[] = [
         'title' => $this->buildLabel($entity),
@@ -266,7 +271,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $query->condition($bundle_key, $this->configuration['bundles'], 'IN');
     }
 
-    // Add entity-access tag.
+    // Add tags to let other modules alter the query.
+    $query->addTag('linkit_entity_autocomplete');
+    $query->addTag('linkit_entity_' . $this->target_type . '_autocomplete');
+
+    // Add access tag for the query.
+    $query->addTag('entity_access');
     $query->addTag($this->target_type . '_access');
 
     return $query;
