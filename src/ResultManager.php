@@ -29,6 +29,13 @@ class ResultManager {
    */
   public function getResults(ProfileInterface $linkitProfile, $search_string) {
     $matches = array();
+
+    if (empty(trim($search_string))) {
+      return [[
+        'title' => t('No results'),
+      ]];
+    }
+
     // Special for link to front page.
     if (strpos($search_string, 'front') !== FALSE) {
       $matches[] = [
@@ -53,7 +60,7 @@ class ResultManager {
         'group' => t('E-mail'),
       ];
     }
-    
+
     // If there is still no matches, return a "no results" array.
     if (empty($matches)) {
       return [[
