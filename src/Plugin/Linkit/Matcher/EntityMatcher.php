@@ -319,7 +319,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *   The URL for this entity.
    */
   protected function buildPath($entity) {
-    return $entity->toUrl();
+    return $entity->toUrl()->toString();
   }
 
   /**
