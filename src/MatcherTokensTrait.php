@@ -29,29 +29,28 @@ trait MatcherTokensTrait {
         '#dialog' => TRUE,
         '#weight' => -90,
       );
-
-      return $form;
     }
-
-    $token_items = array();
-    foreach ($this->getAvailableTokens($types) as $type => $tokens) {
-      foreach ($tokens as $name => $info) {
-        $token_description = !empty($info['description']) ? $info['description'] : '';
-        $token_items[$type . ':' . $name] = "[$type:$name]" . ' - ' . $info['name'] . ': ' . $token_description;
+    else {
+      $token_items = array();
+      foreach ($this->getAvailableTokens($types) as $type => $tokens) {
+        foreach ($tokens as $name => $info) {
+          $token_description = !empty($info['description']) ? $info['description'] : '';
+          $token_items[$type . ':' . $name] = "[$type:$name]" . ' - ' . $info['name'] . ': ' . $token_description;
+        }
       }
-    }
 
-    if (count($token_items)) {
-      $form['tokens'] = array(
-        '#type' => 'details',
-        '#title' => t('Available tokens'),
-        '#weight' => -90,
-      );
+      if (count($token_items)) {
+        $form['tokens'] = array(
+          '#type' => 'details',
+          '#title' => t('Available tokens'),
+          '#weight' => -90,
+        );
 
-      $form['tokens']['list'] = array(
-        '#theme' => 'item_list',
-        '#items' => $token_items,
-      );
+        $form['tokens']['list'] = array(
+          '#theme' => 'item_list',
+          '#items' => $token_items,
+        );
+      }
     }
   }
 

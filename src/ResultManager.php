@@ -39,8 +39,8 @@ class ResultManager {
     // Special for link to front page.
     if (strpos($search_string, 'front') !== FALSE) {
       $matches[] = [
-        'title' => t('Frontpage'),
-        'description' => 'The frontpage for this site.',
+        'title' => t('Front page'),
+        'description' => 'The front page for this site.',
         'path' => Url::fromRoute('<front>')->toString(),
         'group' => t('System'),
       ];
@@ -70,4 +70,5 @@ class ResultManager {
 
     return $matches;
   }
+
 }

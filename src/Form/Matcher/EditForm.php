@@ -10,7 +10,6 @@ namespace Drupal\linkit\Form\Matcher;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\LinkGeneratorTrait;
 use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 
