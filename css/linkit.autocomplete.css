@@ -63,3 +63,7 @@
   font-size: 0.9em;
   line-height: 1.3;
 }
+
+.linkit-result--description img {
+  display: block;
+}

@@ -156,6 +156,10 @@ class FileMatcher extends EntityMatcher {
     /** @var \Drupal\Core\Image\ImageInterface $image */
     $image = \Drupal::service('image.factory')->get($file);
     if ($image->isValid()) {
+      if ($this->configuration['images']['show_dimensions']) {
+        $description_array[] = $image->getWidth() . 'x' . $image->getHeight() . 'px';
+      }
+
       if ($this->configuration['images']['show_thumbnail'] && $this->moduleHandler->moduleExists('image')) {
         $image_element = array(
           '#weight' => -10,
@@ -165,10 +169,6 @@ class FileMatcher extends EntityMatcher {
         );
 
         $description_array[] = (string) \Drupal::service('renderer')->render($image_element);
-      }
-
-      if ($this->configuration['images']['show_dimensions']) {
-        $description_array[] = $image->getWidth() . 'x' . $image->getHeight() . 'px';
       }
     }
 
