@@ -98,6 +98,8 @@ linkit.linkit_dialog:
     _title: 'Add link'
   requirements:
     _entity_access: 'filter_format.use'
+  options:
+    _theme: ajax_base_page
 
 linkit.autocomplete:
   path: '/linkit/autocomplete/{linkit_profile_id}'
@@ -105,3 +107,5 @@ linkit.autocomplete:
     _controller: '\Drupal\linkit\Controller\AutocompleteController::autocomplete'
   requirements:
     _access: 'TRUE'
+  options:
+    _theme: ajax_base_page
