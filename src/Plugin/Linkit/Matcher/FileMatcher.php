@@ -69,7 +69,7 @@ class FileMatcher extends EntityMatcher {
     ];
 
     if ($this->configuration['images']['show_thumbnail']) {
-      $dependencies['module'][] = 'Image';
+      $dependencies['module'][] = 'image';
       $dependencies['config'][] = 'image.style.' . $this->configuration['images']['thumbnail_image_style'];
     }
 
