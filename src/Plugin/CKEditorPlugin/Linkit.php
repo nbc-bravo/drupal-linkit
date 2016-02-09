@@ -101,11 +101,23 @@ class Linkit extends CKEditorPluginBase implements CKEditorPluginConfigurableInt
       '#options' => $options,
       '#default_value' => isset($settings['plugins']['linkit']) ? $settings['plugins']['linkit'] : '',
       '#empty_option' => $this->t('- Select profile -'),
-      '#required' => TRUE,
       '#description' => $this->t('Select the linkit profile you wish to use with this text format.'),
+      '#element_validate' => array(
+        array($this, 'validateLinkitProfileSelection'),
+      ),
     );
 
     return $form;
+  }
+
+  /**
+   * #element_validate handler for the "linkit_profile" element in settingsForm().
+   */
+  public function validateLinkitProfileSelection(array $element, FormStateInterface $form_state) {
+    $toolbar_buttons = $form_state->getValue(array('editor', 'settings', 'toolbar', 'button_groups'));
+    if (strpos($toolbar_buttons, '"Linkit"') !== FALSE && empty($element['#value'])) {
+      $form_state->setError($element, t('Please select the linkit profile you wish to use.'));
+    }
   }
 
 }
