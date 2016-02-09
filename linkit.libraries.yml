@@ -24,6 +24,7 @@ linkit.autocomplete:
     - linkit/linkit.base
     - core/drupal.ajax
     - core/jquery.ui.autocomplete
+    - core/underscore
 
 linkit.attribute.title:
   version: VERSION
