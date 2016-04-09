@@ -10,42 +10,10 @@ linkit.linkit_profile.*:
       type: string
     description:
       type: string
-    attributes:
-      type: sequence
-      sequence:
-        type: linkit.attribute
     matchers:
       type: sequence
       sequence:
         type: linkit.matcher
-
-linkit.attribute:
-  type: mapping
-  mapping:
-    id:
-      type: string
-    settings:
-      type: linkit.attribute.[%parent.id]
-    weight:
-      type: integer
-
-linkit.attribute.*:
-  type: mapping
-  label: 'Attribute settings'
-
-# Plugin \Drupal\linkit\Plugin\Linkit\Attribute\Target
-linkit.attribute.target:
-  type: linkit.attribute
-  mapping:
-    widget_type:
-      type: string
-
-# Plugin \Drupal\linkit\Plugin\Linkit\Attribute\Title
-linkit.attribute.title:
-  type: linkit.attribute
-  mapping:
-    automatic_title:
-      type: boolean
 
 linkit.matcher:
   type: mapping

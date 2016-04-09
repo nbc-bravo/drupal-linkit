@@ -23,6 +23,15 @@ function linkit_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
+ * Implements hook_ckeditor_plugin_info_alter().
+ */
+function linkit_ckeditor_plugin_info_alter(array &$plugins) {
+  if (isset($plugins['drupallink'])) {
+    $plugins['drupallink']['class'] = "Drupal\\linkit\\Plugin\\CKEditorPlugin\\LinkitDrupalLink";
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter() for editor_link_dialog.
  */
 function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -33,16 +42,11 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
 
   /** @var \Drupal\Core\Entity\EntityStorageInterface $editorStorage */
   $editorStorage = Drupal::service('entity.manager')->getStorage('editor');
-  /** @var  \Drupal\Core\Entity\EntityStorageInterface $linkitProfileStorage */
-  $linkitProfileStorage = Drupal::service('entity.manager')->getStorage('linkit_profile');
 
   /** @var \Drupal\editor\EditorInterface $editor */
   $editor = $editorStorage->load($filter_format->id());
-  $linkit_profile_id = $editor->getSettings()['plugins']['linkit']['linkit_profile'];
-
-  /** @var \Drupal\linkit\ProfileInterface $linkitProfile */
-  $linkitProfile = $linkitProfileStorage->load($linkit_profile_id);
-
+  $linkit_profile_id = $editor->getSettings()['plugins']['drupallink']['linkit_profile'];
+  
   // Everything under the "attributes" key is merged directly into the
   // generated link tag's attributes.
   $form['attributes']['href'] = [
@@ -59,27 +63,6 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
   // Add #submit callback that generates data-entity-type and data-entity-uuid
   // attributes from the href attribute when appropriate.
   array_unshift($form['#submit'], 'linkit_form_editor_link_dialog_submit');
-
-  if ($linkitProfile->getAttributes()->count()) {
-    $form['linkit_attributes'] = [
-      '#type' => 'container',
-      '#title' => t('Attributes'),
-      '#weight' => '10',
-    ];
-
-    /** @var \Drupal\linkit\AttributeInterface $plugin */
-    foreach ($linkitProfile->getAttributes() as $plugin) {
-      $plugin_name = $plugin->getHtmlName();
-
-      $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
-      $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
-      $form['linkit_attributes'][$plugin_name] += [
-        '#parents' => [
-          'attributes', $plugin_name,
-        ],
-      ];
-    }
-  }
 }
 
 /**

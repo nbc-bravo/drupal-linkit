@@ -1,8 +1,4 @@
 services:
-  plugin.manager.linkit.attribute:
-    class: Drupal\linkit\AttributeManager
-    parent: default_plugin_manager
-
   plugin.manager.linkit.matcher:
     class: Drupal\linkit\MatcherManager
     parent: default_plugin_manager

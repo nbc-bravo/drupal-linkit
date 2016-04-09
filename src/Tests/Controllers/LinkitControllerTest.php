@@ -63,21 +63,4 @@ class LinkitControllerTest extends LinkitTestBase {
 
     $this->assertText('Edit ' . $plugin->getLabel() . ' matcher');
   }
-
-  /**
-   * Tests the attribute route title callback.
-   */
-  function testAttributeTitle() {
-    /** @var \Drupal\linkit\AttributeInterface $plugin */
-    $plugin = $this->container->get('plugin.manager.linkit.attribute')->createInstance('configurable_dummy_attribute');
-    $this->linkitProfile->addAttribute($plugin->getConfiguration());
-    $this->linkitProfile->save();
-
-    $this->drupalGet(Url::fromRoute('linkit.attribute.edit', [
-      'linkit_profile' => $this->linkitProfile->id(),
-      'plugin_instance_id' => $plugin->getPluginId(),
-    ]));
-    $this->assertText('Edit ' . $plugin->getLabel() . ' attribute');
-  }
-
 }

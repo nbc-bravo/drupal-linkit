@@ -59,14 +59,6 @@ class ProfileListBuilder extends ConfigEntityListBuilder {
       ]),
     ];
 
-    $operations['attributes'] = [
-      'title' => t('Manage attributes'),
-      'weight' => 20,
-      'url' => Url::fromRoute('linkit.attributes', [
-        'linkit_profile' => $entity->id()
-      ]),
-    ];
-
     return $operations;
   }
 

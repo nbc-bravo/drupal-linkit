@@ -9,7 +9,6 @@ namespace Drupal\linkit\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
-use Drupal\linkit\AttributeCollection;
 use Drupal\linkit\MatcherCollection;
 use Drupal\linkit\MatcherInterface;
 use Drupal\linkit\ProfileInterface;
@@ -43,7 +42,6 @@ use Drupal\linkit\ProfileInterface;
  *     "id",
  *     "label",
  *     "description",
- *     "attributes",
  *     "matchers"
  *   }
  * )
@@ -70,28 +68,6 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    * @var string
    */
   protected $description;
-
-  /**
-   * Configured attribute for this profile.
-   *
-   * An associative array of attribute assigned to the profile, keyed by the
-   * attribute id of each attribute and using the properties:
-   * - id: The plugin ID of the attribute instance.
-   * - status: (optional) A Boolean indicating whether the attribute is enabled
-   *   in the profile. Defaults to FALSE.
-   * - weight: (optional) The weight of the attribute in the profile.
-   *   Defaults to 0.
-   *
-   * @var array
-   */
-  protected $attributes = [];
-
-  /**
-   * Holds the collection of attributes that are attached to this profile.
-   *
-   * @var \Drupal\linkit\AttributeCollection
-   */
-  protected $attributeCollection;
 
   /**
    * Configured matchers for this profile.
@@ -127,50 +103,6 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    */
   public function setDescription($description) {
     $this->set('description', trim($description));
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAttribute($attribute_id) {
-    return $this->getAttributes()->get($attribute_id);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAttributes() {
-    if (!$this->attributeCollection) {
-      $this->attributeCollection = new AttributeCollection($this->getAttributeManager(), $this->attributes);
-      $this->attributeCollection->sort();
-    }
-    return $this->attributeCollection;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addAttribute(array $configuration) {
-    $this->getAttributes()->addInstanceId($configuration['id'], $configuration);
-    return $configuration['id'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function removeAttribute($attribute_id) {
-    unset($this->attributes[$attribute_id]);
-    $this->getAttributes()->removeInstanceId($attribute_id);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAttributeConfig($attribute_id, array $configuration) {
-    $this->attributes[$attribute_id] = $configuration;
-    $this->getAttributes()->setInstanceConfiguration($attribute_id, $configuration);
     return $this;
   }
 
@@ -223,20 +155,9 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    * {@inheritdoc}
    */
   public function getPluginCollections() {
-    return array(
-      'attributes' => $this->getAttributes(),
+    return [
       'matchers' => $this->getMatchers(),
-    );
-  }
-
-  /**
-   * Returns the attribute manager.
-   *
-   * @return \Drupal\Component\Plugin\PluginManagerInterface
-   *   The attribute manager.
-   */
-  protected function getAttributeManager() {
-    return \Drupal::service('plugin.manager.linkit.attribute');
+    ];
   }
 
   /**

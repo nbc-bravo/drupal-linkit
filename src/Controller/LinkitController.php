@@ -45,21 +45,4 @@ class LinkitController extends ControllerBase {
     return $this->t('Edit %label matcher', array('%label' => $matcher->getLabel()));
   }
 
-  /**
-   * Route title callback.
-   *
-   * @param \Drupal\linkit\ProfileInterface $linkit_profile
-   *   The profile.
-   * @param string $plugin_instance_id
-   *   The plugin instance id.
-   *
-   * @return string
-   *   The title for the attribute edit form.
-   */
-  public function attributeTitle(ProfileInterface $linkit_profile, $plugin_instance_id) {
-    /** @var \Drupal\linkit\AttributeInterface $attribute */
-    $attribute = $linkit_profile->getAttribute($plugin_instance_id);
-    return $this->t('Edit %label attribute', array('%label' => $attribute->getLabel()));
-  }
-
 }
