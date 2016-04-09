@@ -22,6 +22,89 @@ function linkit_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter() for editor_link_dialog.
+ */
+function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user_input = $form_state->getUserInput();
+  /** @var Drupal\filter\Entity\FilterFormat  $filter_format */
+  $filter_format = $form_state->getBuildInfo()['args'][0];
+  $input = isset($user_input['editor_object']) ? $user_input['editor_object'] : [];
+
+  /** @var \Drupal\Core\Entity\EntityStorageInterface $editorStorage */
+  $editorStorage = Drupal::service('entity.manager')->getStorage('editor');
+  /** @var  \Drupal\Core\Entity\EntityStorageInterface $linkitProfileStorage */
+  $linkitProfileStorage = Drupal::service('entity.manager')->getStorage('linkit_profile');
+
+  /** @var \Drupal\editor\EditorInterface $editor */
+  $editor = $editorStorage->load($filter_format->id());
+  $linkit_profile_id = $editor->getSettings()['plugins']['linkit']['linkit_profile'];
+
+  /** @var \Drupal\linkit\ProfileInterface $linkitProfile */
+  $linkitProfile = $linkitProfileStorage->load($linkit_profile_id);
+
+  // Everything under the "attributes" key is merged directly into the
+  // generated link tag's attributes.
+  $form['attributes']['href'] = [
+    '#title' => t('Link'),
+    '#type' => 'linkit',
+    '#default_value' => isset($input['href']) ? $input['href'] : '',
+    '#description' => t('Start typing to find content or paste a URL.'),
+    '#autocomplete_route_name' => 'linkit.autocomplete',
+    '#autocomplete_route_parameters' => [
+      'linkit_profile_id' => $linkit_profile_id
+    ],
+    '#weight' => 0,
+  ];
+  // Add #submit callback that generates data-entity-type and data-entity-uuid
+  // attributes from the href attribute when appropriate.
+  array_unshift($form['#submit'], 'linkit_form_editor_link_dialog_submit');
+
+  if ($linkitProfile->getAttributes()->count()) {
+    $form['linkit_attributes'] = [
+      '#type' => 'container',
+      '#title' => t('Attributes'),
+      '#weight' => '10',
+    ];
+
+    /** @var \Drupal\linkit\AttributeInterface $plugin */
+    foreach ($linkitProfile->getAttributes() as $plugin) {
+      $plugin_name = $plugin->getHtmlName();
+
+      $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
+      $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
+      $form['linkit_attributes'][$plugin_name] += [
+        '#parents' => [
+          'attributes', $plugin_name,
+        ],
+      ];
+    }
+  }
+}
+
+/**
+ * Generates data-entity-type and data-entity-uuid attributes from href.
+ */
+function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface $form_state) {
+  // Check if the 'href' attribute contains a entity: URI.
+  $href = $form_state->getValue(['attributes', 'href']);
+  $uri_parts = parse_url($href);
+  if ($uri_parts['scheme'] !== 'entity') {
+    return;
+  }
+
+  // Parse the entity: URI into an entity type ID and entity ID.
+  list($entity_type_id, $entity_id) = explode('/', $uri_parts['path'], 2);
+
+  // Load the entity and populate the data-entity-type and data-entity-uuid
+  // attributes as expected by filters.
+  // @see \Drupal\editor\Plugin\Filter\EditorFileReference
+  // @see \Drupal\linkit\Plugin\Filter\LinkitFilter
+  $entity = entity_load($entity_type_id, $entity_id);
+  $form_state->setValue(['attributes', 'data-entity-type'], $entity_type_id);
+  $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
+}
+
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter() for linkit_profile_form on behalf

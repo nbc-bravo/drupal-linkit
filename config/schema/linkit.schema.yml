@@ -121,3 +121,11 @@ linkit.linkit_profile.*.third_party.imce:
       type: boolean
     scheme:
       type: string
+
+filter_settings.linkit:
+  type: filter
+  label: 'Linkit'
+  mapping:
+    title:
+      type: boolean
+      label: 'Automatically set the "title" attribute'

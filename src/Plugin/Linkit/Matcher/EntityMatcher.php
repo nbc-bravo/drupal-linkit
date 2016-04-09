@@ -316,10 +316,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *    The matched entity.
    *
    * @return string
-   *   The URL for this entity.
+   *   The entity: URL for this entity.
+   *
+   * @see \Drupal\Core\Url::fromEntityUri()
    */
   protected function buildPath($entity) {
-    return $entity->toUrl()->toString();
+    return 'entity:' . $entity->getEntityTypeId() . '/' . $entity->id();
   }
 
   /**
