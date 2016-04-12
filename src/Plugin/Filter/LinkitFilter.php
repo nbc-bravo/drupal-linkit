@@ -71,31 +71,33 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
   public function process($text, $langcode) {
     $result = new FilterProcessResult($text);
 
-    $dom = Html::load($text);
-    $xpath = new \DOMXPath($dom);
+    if (strpos($text, 'data-entity-type') !== FALSE && strpos($text, 'data-entity-uuid') !== FALSE) {
+      $dom = Html::load($text);
+      $xpath = new \DOMXPath($dom);
 
-    /** @var \DOMElement $node */
-    foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $node) {
-      // Load the appropriate translation of the linked entity.
-      $entity = $this->entityRepository->loadEntityByUuid($node->getAttribute('data-entity-type'), $node->getAttribute('data-entity-uuid'));
-      $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
+      /** @var \DOMElement $node */
+      foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $node) {
+        // Load the appropriate translation of the linked entity.
+        $entity = $this->entityRepository->loadEntityByUuid($node->getAttribute('data-entity-type'), $node->getAttribute('data-entity-uuid'));
+        $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
 
-      // Set the appropriate href and title attributes.
-      $url = $entity->toUrl()->toString(TRUE);
-      $node->setAttribute('href', $url->getGeneratedUrl());
-      if ($this->settings['title']) {
-        $node->setAttribute('title', $entity->label());
+        // Set the appropriate href and title attributes.
+        $url = $entity->toUrl()->toString(TRUE);
+        $node->setAttribute('href', $url->getGeneratedUrl());
+        if ($this->settings['title']) {
+          $node->setAttribute('title', $entity->label());
+        }
+
+        // The processed text now depends on:
+        $result
+          // - the generated URL (which has undergone path & route processing)
+          ->addCacheableDependency($url)
+          // - the linked entity (whose URL and title may change)
+          ->addCacheableDependency($entity);
       }
 
-      // The processed text now depends on:
-      $result
-        // - the generated URL (which has undergone path & route processing)
-        ->addCacheableDependency($url)
-        // - the linked entity (whose URL and title may change)
-        ->addCacheableDependency($entity);
+      $result->setProcessedText(Html::serialize($dom));
     }
-
-    $result->setProcessedText(Html::serialize($dom));
 
     return $result;
   }
