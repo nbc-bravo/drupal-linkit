@@ -14,7 +14,7 @@ Installation
 https://www.drupal.org/documentation/install/modules-themes/modules-8
 
 * **Enable Linkit**
-To enable Linkit, go to `admin/config/content/formats` and edit the 
+To enable Linkit, go to `/admin/config/content/formats` and edit the 
 desired text format you want to enable Linkit for. Linkit will alter 
 the default link plugin, so make sure that it is enabled. When the 
 default link plugin is enabled, you will have to select a Linkit 
