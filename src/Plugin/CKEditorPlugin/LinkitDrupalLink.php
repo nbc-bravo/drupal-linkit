@@ -16,7 +16,8 @@ use Drupal\editor\Entity\Editor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Extends the default Drupal link plugin and adds a settings form to select a Linkit profile.
+ * Extends the default Drupal link plugin and adds a settings form to select a
+ * Linkit profile.
  */
 class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableInterface, ContainerFactoryPluginInterface {
 
@@ -55,22 +56,34 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
 
     $all_profiles = $this->linkitProfileStorage->loadMultiple();
 
-    $options = array();
+    $options = [];
     foreach ($all_profiles as $profile) {
       $options[$profile->id()] = $profile->label();
     }
 
-    $form['linkit_profile'] = array(
+    $form['linkit_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Linkit enabled'),
+      '#default_value' => isset($settings['plugins']['drupallink']['linkit_enabled']) ? $settings['plugins']['drupallink']['linkit_enabled'] : '',
+      '#description' => $this->t('Enable Linkit for this text format.'),
+    ];
+
+    $form['linkit_profile'] = [
       '#type' => 'select',
       '#title' => t('Linkit profile'),
       '#options' => $options,
       '#default_value' => isset($settings['plugins']['drupallink']['linkit_profile']) ? $settings['plugins']['drupallink']['linkit_profile'] : '',
       '#empty_option' => $this->t('- Select -'),
       '#description' => $this->t('Select the Linkit profile you wish to use with this text format.'),
-      '#element_validate' => array(
-        array($this, 'validateLinkitProfileSelection'),
-      ),
-    );
+      '#states' => [
+        'invisible' => [
+          'input[data-drupal-selector="edit-editor-settings-plugins-drupallink-linkit-enabled"]' => ['checked' => FALSE],
+        ],
+      ],
+      '#element_validate' => [
+        [$this, 'validateLinkitProfileSelection'],
+      ],
+    ];
 
     return $form;
   }
@@ -79,9 +92,10 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
    * #element_validate handler for the "linkit_profile" element in settingsForm().
    */
   public function validateLinkitProfileSelection(array $element, FormStateInterface $form_state) {
-    $toolbar_buttons = $form_state->getValue(array('editor', 'settings', 'toolbar', 'button_groups'));
-    if (strpos($toolbar_buttons, '"Linkit"') !== FALSE && empty($element['#value'])) {
-      $form_state->setError($element, t('Please select the linkit profile you wish to use.'));
+    $settings = $form_state->getValue(array('editor', 'settings', 'plugins', 'drupallink'));
+    $enabled = isset($settings['linkit_enabled']) && $settings['linkit_enabled'] === 1;
+    if ($enabled && empty(trim($settings['linkit_profile']))) {
+      $form_state->setError($element, t('Please select the Linkit profile you wish to use.'));
     }
   }
 }

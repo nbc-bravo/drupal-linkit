@@ -45,6 +45,13 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
 
   /** @var \Drupal\editor\EditorInterface $editor */
   $editor = $editorStorage->load($filter_format->id());
+  $plugin_settings = $editor->getSettings()['plugins']['drupallink'];
+
+  // Do not alter the form if Linkit is not enabled for this text format.
+  if (!isset($plugin_settings['linkit_enabled']) || (isset($plugin_settings['linkit_enabled']) && !$plugin_settings['linkit_enabled'])) {
+    return;
+  }
+
   $linkit_profile_id = $editor->getSettings()['plugins']['drupallink']['linkit_profile'];
   
   // Everything under the "attributes" key is merged directly into the
