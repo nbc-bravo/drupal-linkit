@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Matcher\TermMatcher.
- */
-
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Core\Form\FormStateInterface;

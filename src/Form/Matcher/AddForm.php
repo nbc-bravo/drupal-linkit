@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Form\Matcher\AddForm.
- */
-
 namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Plugin\Filter\LinkitFilter.
- */
-
 namespace Drupal\linkit\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;

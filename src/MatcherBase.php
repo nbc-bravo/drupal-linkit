@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\MatcherBase.
- */
-
 namespace Drupal\linkit;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Entity\Profile.
- */
-
 namespace Drupal\linkit\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;

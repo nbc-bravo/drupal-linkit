@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit_test\Plugin\Linkit\Matcher\ConfigurableDummyMatcher.
- */
-
 namespace Drupal\linkit_test\Plugin\Linkit\Matcher;
 
 use Drupal\Core\Form\FormStateInterface;

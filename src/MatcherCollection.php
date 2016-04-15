@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\MatcherCollection.
- */
-
 namespace Drupal\linkit;
 
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;

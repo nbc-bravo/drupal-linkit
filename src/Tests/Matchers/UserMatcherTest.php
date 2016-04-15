@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\Matchers\UserMatcherTest.
- */
-
 namespace Drupal\linkit\Tests\Matchers;
 
 use Drupal\linkit\Tests\LinkitTestBase;

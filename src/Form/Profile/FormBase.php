@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Form\Profile\FormBase.
- */
-
 namespace Drupal\linkit\Form\Profile;
 
 use Drupal\Core\Entity\EntityForm;

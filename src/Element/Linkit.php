@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Element\Linkit.
- */
-
 namespace Drupal\linkit\Element;
 
 use Drupal\Core\Form\FormStateInterface;

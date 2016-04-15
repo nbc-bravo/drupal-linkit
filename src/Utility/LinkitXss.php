@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Utility\LinkitXss.
- */
-
 namespace Drupal\linkit\Utility;
 
 use Drupal\Component\Utility\Xss;

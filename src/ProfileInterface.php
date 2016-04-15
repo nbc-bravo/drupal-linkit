@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\ProfileInterface.
- */
-
 namespace Drupal\linkit;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;

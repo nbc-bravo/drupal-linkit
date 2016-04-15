@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Plugin\CKEditorPlugin\LinkitDrupalLink.
- */
-
 namespace Drupal\linkit\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;

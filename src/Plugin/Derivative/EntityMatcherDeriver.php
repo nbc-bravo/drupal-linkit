@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Plugin\Derivative\EntityMatcherDeriver.
- */
-
 namespace Drupal\linkit\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;

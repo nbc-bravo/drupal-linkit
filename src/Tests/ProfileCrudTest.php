@@ -1,11 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\ProfileCreationTest.
- */
-
 namespace Drupal\linkit\Tests;
+
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Url;
 

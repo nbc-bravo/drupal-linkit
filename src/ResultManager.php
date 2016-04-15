@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\ResultManager.
- */
-
 namespace Drupal\linkit;
 
 use Drupal\Component\Utility\Html;

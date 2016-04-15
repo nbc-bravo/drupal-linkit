@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\ProfileListBuilder.
- */
-
 namespace Drupal\linkit;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;

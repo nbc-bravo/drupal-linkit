@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\LinkitFilterTest.
- */
-
 namespace Drupal\linkit\Tests;
 
 use Drupal\filter\FilterPluginCollection;

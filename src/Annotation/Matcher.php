@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Annotation\Matcher.
- */
-
 namespace Drupal\linkit\Annotation;
 
 use Drupal\Component\Annotation\Plugin;

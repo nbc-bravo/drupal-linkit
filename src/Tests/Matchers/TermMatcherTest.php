@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\Matchers\TermMatcherTest.
- */
-
 namespace Drupal\linkit\Tests\Matchers;
 
 use Drupal\Component\Utility\Unicode;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\Controllers\LinkitControllerTest.
- */
-
 namespace Drupal\linkit\Tests\Controllers;
 
 use Drupal\Core\Url;

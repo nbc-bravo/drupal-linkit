@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Controller\AutocompleteController.
- */
-
 namespace Drupal\linkit\Controller;
 
 use Drupal\Component\Utility\Unicode;

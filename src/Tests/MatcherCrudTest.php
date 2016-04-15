@@ -1,11 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\MatcherCrudTest.
- */
-
 namespace Drupal\linkit\Tests;
+
 use Drupal\Core\Url;
 use Drupal\linkit\Entity\Profile;
 

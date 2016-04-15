@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\MatcherTokensTrait.
- */
-
 namespace Drupal\linkit;
 
 /**

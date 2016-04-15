@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Form\Profile\EditForm.
- */
-
 namespace Drupal\linkit\Form\Profile;
 
 use Drupal\Core\Form\FormStateInterface;

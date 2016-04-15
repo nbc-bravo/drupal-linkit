@@ -1,11 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Plugin\Linkit\Matcher\UserMatcher.
- */
-
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\RoleInterface;
 

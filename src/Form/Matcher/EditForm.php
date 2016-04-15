@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Form\Matcher\EditForm.
- */
-
 namespace Drupal\linkit\Form\Matcher;
 
 use Drupal\Core\Form\FormBase;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Controller\LinkitController.
- */
-
 namespace Drupal\linkit\Controller;
 
 use Drupal\Core\Controller\ControllerBase;

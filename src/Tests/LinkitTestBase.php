@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\linkit\Tests\LinkitTestBase.
- */
-
 namespace Drupal\linkit\Tests;
 
 use Drupal\Component\Utility\Unicode;
