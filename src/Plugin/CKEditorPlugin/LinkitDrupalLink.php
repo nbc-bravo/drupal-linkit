@@ -11,8 +11,7 @@ use Drupal\editor\Entity\Editor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Extends the default Drupal link plugin and adds a settings form to select a
- * Linkit profile.
+ * Adds a settings form to select a Linkit profile on the default link plugin.
  */
 class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableInterface, ContainerFactoryPluginInterface {
 
@@ -84,13 +83,27 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
   }
 
   /**
-   * #element_validate handler for the "linkit_profile" element in
-   * settingsForm().
+   * Linkit profile select validation.
+   *
+   * #element_validate callback for the "linkit_profile" element.
+   *
+   * @param array $element
+   *   An associative array containing the properties and children of the
+   *   generic form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form for the form this element belongs to.
+   *
+   * @see \Drupal\Core\Render\Element\FormElement::processPattern()
    */
   public function validateLinkitProfileSelection(array $element, FormStateInterface $form_state) {
-    $settings = $form_state->getValue(array('editor', 'settings', 'plugins', 'drupallink'));
-    $enabled = isset($settings['linkit_enabled']) && $settings['linkit_enabled'] === 1;
-    if ($enabled && empty(trim($settings['linkit_profile']))) {
+    $values = $form_state->getValue([
+      'editor',
+      'settings',
+      'plugins',
+      'drupallink',
+    ]);
+    $enabled = isset($values['linkit_enabled']) && $values['linkit_enabled'] === 1;
+    if ($enabled && empty(trim($values['linkit_profile']))) {
       $form_state->setError($element, t('Please select the Linkit profile you wish to use.'));
     }
   }

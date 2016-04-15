@@ -8,6 +8,7 @@ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Provides matchers based on active entities.
  *
  * @see plugin_api
  */

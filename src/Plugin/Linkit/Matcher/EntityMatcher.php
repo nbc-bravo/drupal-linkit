@@ -14,6 +14,8 @@ use Drupal\linkit\Utility\LinkitXss;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Provides default linkit matchers for all entity types.
+ *
  * @Matcher(
  *   id = "entity",
  *   label = @Translation("Entity"),

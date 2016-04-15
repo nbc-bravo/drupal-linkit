@@ -5,6 +5,8 @@ namespace Drupal\linkit\Plugin\Linkit\Matcher;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
+ * Provides specific linkit matchers for the node entity type.
+ *
  * @Matcher(
  *   id = "entity:node",
  *   target_entity = "node",

@@ -12,7 +12,7 @@ class LinkitXss extends Xss {
   /**
    * Description filter helper.
    *
-   * @param $string
+   * @param string $string
    *   The string with raw HTML in it. It will be stripped of everything that
    *   can cause an XSS attack.
    *

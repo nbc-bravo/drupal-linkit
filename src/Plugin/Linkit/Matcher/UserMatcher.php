@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\RoleInterface;
 
 /**
+ * Provides specific linkit matchers for the user entity type.
+ *
  * @Matcher(
  *   id = "entity:user",
  *   target_entity = "user",

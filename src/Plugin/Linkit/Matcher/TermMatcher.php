@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\Utility\LinkitXss;
 
 /**
+ * Provides specific linkit matchers for the taxonomy_term entity type.
+ *
  * @Matcher(
  *   id = "entity:taxonomy_term",
  *   target_entity = "taxonomy_term",

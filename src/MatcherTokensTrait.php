@@ -10,7 +10,7 @@ trait MatcherTokensTrait {
   /**
    * Inserts a form element with a list of available tokens.
    *
-   * @param $form
+   * @param array $form
    *   The form array to append the token list to.
    * @param array $types
    *   An array of token types to use.

@@ -58,8 +58,9 @@ interface MatcherInterface extends PluginInspectionInterface, ConfigurablePlugin
   public function setWeight($weight);
 
   /**
-   * Gets an array with search matches that will be presented in the
-   * autocomplete widget.
+   * Gets an array with search matches.
+   *
+   * The matches will be presented in the autocomplete widget.
    *
    * @param string $string
    *   The string that contains the text to search for.

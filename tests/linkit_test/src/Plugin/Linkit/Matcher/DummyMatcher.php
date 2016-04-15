@@ -6,6 +6,8 @@ use Drupal\linkit\MatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Provides test linkit matchers for the dummy_matcher entity type.
+ *
  * @Matcher(
  *   id = "dummy_matcher",
  *   label = @Translation("Dummy Matcher"),

@@ -7,6 +7,8 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\linkit\Utility\LinkitXss;
 
 /**
+ * Provides specific linkit matchers for the file entity type.
+ *
  * @Matcher(
  *   id = "entity:file",
  *   target_entity = "file",

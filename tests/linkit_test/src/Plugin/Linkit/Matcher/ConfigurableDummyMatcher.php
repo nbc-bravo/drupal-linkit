@@ -7,6 +7,8 @@ use Drupal\linkit\ConfigurableMatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Provides test linkit matchers for the configurable_dummy_matcher entity type.
+ *
  * @Matcher(
  *   id = "configurable_dummy_matcher",
  *   label = @Translation("Configurable Dummy Matcher"),

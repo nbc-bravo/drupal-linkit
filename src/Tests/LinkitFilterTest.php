@@ -26,7 +26,7 @@ class LinkitFilterTest extends LinkitTestBase {
   protected $filter;
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();

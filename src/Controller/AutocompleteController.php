@@ -10,6 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Returns responses for linkit autocomplete routes.
+ */
 class AutocompleteController implements ContainerInjectionInterface {
 
   /**
@@ -36,10 +39,10 @@ class AutocompleteController implements ContainerInjectionInterface {
   /**
    * Constructs a EntityAutocompleteController object.
    *
-   * @param ResultManager $resultManager
-   *   The result service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $linkit_profile_storage
    *   The linkit profile storage service.
+   * @param ResultManager $resultManager
+   *   The result service.
    */
   public function __construct(EntityStorageInterface $linkit_profile_storage, ResultManager $resultManager) {
     $this->linkitProfileStorage = $linkit_profile_storage;
@@ -64,7 +67,7 @@ class AutocompleteController implements ContainerInjectionInterface {
    *
    * @param Request $request
    *   The request.
-   * @param $linkit_profile_id
+   * @param string $linkit_profile_id
    *   The linkit profile id.
    *
    * @return JsonResponse

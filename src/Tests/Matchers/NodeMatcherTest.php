@@ -33,18 +33,37 @@ class NodeMatcherTest extends LinkitTestBase {
     $this->drupalLogin($this->adminUser);
     $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
-    $type1 = $this->drupalCreateContentType(['type' => 'test1', 'name' => 'Test1']);
-    $type2 = $this->drupalCreateContentType(['type' => 'test2', 'name' => 'Test2']);
+    $type1 = $this->drupalCreateContentType([
+      'type' => 'test1',
+      'name' => 'Test1',
+    ]);
+    $type2 = $this->drupalCreateContentType([
+      'type' => 'test2',
+      'name' => 'Test2',
+    ]);
 
     // Nodes with type 1.
-    $this->drupalCreateNode(['title' => 'Lorem Ipsum 1', 'type' => $type1->id()]);
-    $this->drupalCreateNode(['title' => 'Lorem Ipsum 2', 'type' => $type1->id()]);
+    $this->drupalCreateNode([
+      'title' => 'Lorem Ipsum 1',
+      'type' => $type1->id(),
+    ]);
+    $this->drupalCreateNode([
+      'title' => 'Lorem Ipsum 2',
+      'type' => $type1->id(),
+    ]);
 
-    // Nodes with type 1.
-    $this->drupalCreateNode(['title' => 'Lorem Ipsum 3', 'type' => $type2->id()]);
+    // Node with type 2.
+    $this->drupalCreateNode([
+      'title' => 'Lorem Ipsum 3',
+      'type' => $type2->id(),
+    ]);
 
     // Unpublished node.
-    $this->drupalCreateNode(['title' => 'Lorem unpublishd', 'type' => $type1->id(), 'status' => FALSE]);
+    $this->drupalCreateNode([
+      'title' => 'Lorem unpublishd',
+      'type' => $type1->id(),
+      'status' => FALSE,
+    ]);
   }
 
   /**
