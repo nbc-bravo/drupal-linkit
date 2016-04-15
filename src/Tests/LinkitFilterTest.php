@@ -2,6 +2,7 @@
 
 namespace Drupal\linkit\Tests;
 
+use Drupal\Component\Utility\Html;
 use Drupal\filter\FilterPluginCollection;
 
 /**
@@ -69,12 +70,12 @@ class LinkitFilterTest extends LinkitTestBase {
 
     // Test with a node.
     $input = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '" href="' . $node->toUrl()->toString() . '" title="' . $node->label() . '">Link text</a>';
+    $expected = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '" href="' . $node->toUrl()->toString() . '" title="' . Html::decodeEntities($node->label()) . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input)->getProcessedText());
 
     // Test with a user.
     $input = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '" href="' . $account->toUrl()->toString() . '" title="' . $account->label() . '">Link text</a>';
+    $expected = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '" href="' . $account->toUrl()->toString() . '" title="' . Html::decodeEntities($account->label()) . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input)->getProcessedText());
   }
 
