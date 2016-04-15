@@ -40,7 +40,7 @@ class TermMatcherTest extends LinkitTestBase {
    *   The vocabulary name.
    *
    * @return Vocabulary The new vocabulary object.
-   * The new vocabulary object.
+   *   The new vocabulary object.
    */
   private function createVocabulary($name) {
     $vocabularyStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
@@ -72,15 +72,15 @@ class TermMatcherTest extends LinkitTestBase {
 
     $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $term = $termStorage->create($values + array(
-        'name' => $this->randomMachineName(),
-        'description' => array(
-          'value' => $this->randomMachineName(),
-          // Use the first available text format.
-          'format' => $format->id(),
-        ),
-        'vid' => $vocabulary->id(),
-        'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-      ));
+      'name' => $this->randomMachineName(),
+      'description' => array(
+        'value' => $this->randomMachineName(),
+        // Use the first available text format.
+        'format' => $format->id(),
+      ),
+      'vid' => $vocabulary->id(),
+      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    ));
     $term->save();
     return $term;
   }
@@ -107,7 +107,7 @@ class TermMatcherTest extends LinkitTestBase {
   /**
    * Tests term matcher with default configuration.
    */
-  function testTermMatcherWidthDefaultConfiguration() {
+  public function testTermMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:taxonomy_term', []);
     $matches = $plugin->getMatches('foo');
@@ -117,12 +117,12 @@ class TermMatcherTest extends LinkitTestBase {
   /**
    * Tests term matcher with bundle filer.
    */
-  function testTermMatcherWidthBundleFiler() {
+  public function testTermMatcherWidthBundleFiler() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:taxonomy_term', [
       'settings' => [
         'bundles' => [
-          'testing_vocabulary_1' => 'testing_vocabulary_1'
+          'testing_vocabulary_1' => 'testing_vocabulary_1',
         ],
       ],
     ]);

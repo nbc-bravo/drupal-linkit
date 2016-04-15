@@ -28,7 +28,7 @@ class ProfileCrudTest extends LinkitTestBase {
   /**
    * Test the overview page.
    */
-  function testOverview() {
+  public function testOverview() {
     // Verify that the profile collection page is not accessible for regular
     // users.
     $this->drupalLogin($this->baseUser);
@@ -59,7 +59,7 @@ class ProfileCrudTest extends LinkitTestBase {
   /**
    * Creates profile.
    */
-  function testProfileCreation() {
+  public function testProfileCreation() {
     $this->drupalGet(Url::fromRoute('entity.linkit_profile.add_form'));
     $this->drupalGet('admin/config/content/linkit/add');
     $this->assertResponse(200);
@@ -80,7 +80,7 @@ class ProfileCrudTest extends LinkitTestBase {
   /**
    * Updates a profile.
    */
-  function testProfileUpdate() {
+  public function testProfileUpdate() {
     $profile = $this->createProfile();
     $this->drupalGet(Url::fromRoute('entity.linkit_profile.edit_form', [
       'linkit_profile' => $profile->id(),
@@ -109,7 +109,7 @@ class ProfileCrudTest extends LinkitTestBase {
   /**
    * Delete a profile.
    */
-  function testProfileDelete() {
+  public function testProfileDelete() {
     /** @var \Drupal\linkit\ProfileInterface $profile */
     $profile = $this->createProfile();
     $this->drupalGet(Url::fromRoute('entity.linkit_profile.delete_form', [

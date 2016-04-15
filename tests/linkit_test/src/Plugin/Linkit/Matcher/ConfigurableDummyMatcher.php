@@ -11,7 +11,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\ConfigurableMatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
  * @Matcher(
  *   id = "configurable_dummy_matcher",

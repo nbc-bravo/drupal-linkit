@@ -59,6 +59,7 @@ trait MatcherTokensTrait {
    *
    * @param array $types
    *   An array of token types to use.
+   *
    * @return array
    *   An array with available tokens
    */

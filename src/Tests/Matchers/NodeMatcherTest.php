@@ -55,7 +55,7 @@ class NodeMatcherTest extends LinkitTestBase {
   /**
    * Tests node matcher.
    */
-  function testNodeMatcherWidthDefaultConfiguration() {
+  public function testNodeMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', []);
     $matches = $plugin->getMatches('Lorem');
@@ -65,12 +65,12 @@ class NodeMatcherTest extends LinkitTestBase {
   /**
    * Tests node matcher with bundle filer.
    */
-  function testNodeMatcherWidthBundleFiler() {
+  public function testNodeMatcherWidthBundleFiler() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', [
       'settings' => [
         'bundles' => [
-          'test1' => 'test1'
+          'test1' => 'test1',
         ],
       ],
     ]);
@@ -82,7 +82,7 @@ class NodeMatcherTest extends LinkitTestBase {
   /**
    * Tests node matcher with include unpublished setting activated.
    */
-  function testNodeMatcherWidthIncludeUnpublished() {
+  public function testNodeMatcherWidthIncludeUnpublished() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', [
       'settings' => [

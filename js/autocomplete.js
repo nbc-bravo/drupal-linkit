@@ -53,13 +53,13 @@
   }
 
   /**
-    * Handles an autocomplete select event.
-    *
-    * @param {jQuery.Event} event
-    * @param {object} ui
-    *
-    * @return {boolean}
-    */
+   * Handles an autocomplete select event.
+   *
+   * @param {jQuery.Event} event
+   * @param {object} ui
+   *
+   * @return {boolean}
+   */
   function selectHandler(event, ui) {
     if (ui.item.hasOwnProperty('path')) {
       event.target.value = ui.item.path;

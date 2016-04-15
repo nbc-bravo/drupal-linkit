@@ -24,6 +24,8 @@ class LinkitFilterTest extends LinkitTestBase {
   public static $modules = ['node', 'user'];
 
   /**
+   * The linkit filter.
+   *
    * @var \Drupal\filter\Plugin\FilterInterface
    */
   protected $filter;
@@ -49,7 +51,7 @@ class LinkitFilterTest extends LinkitTestBase {
 
     $node = $this->drupalCreateNode([
       'type' => 'test',
-      'title' => $this->randomGenerator->string()
+      'title' => $this->randomGenerator->string(),
     ]);
 
     $account = $this->drupalCreateUser();

@@ -44,7 +44,7 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test the overview page.
    */
-  function testOverview() {
+  public function testOverview() {
     $this->drupalGet(Url::fromRoute('linkit.matchers', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
@@ -58,7 +58,7 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test adding a matcher to a profile.
    */
-  function testAdd() {
+  public function testAdd() {
     $this->drupalGet(Url::fromRoute('linkit.matcher.add', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
@@ -81,7 +81,7 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test adding a configurable attribute to a profile.
    */
-  function testAddConfigurable() {
+  public function testAddConfigurable() {
     $this->drupalGet(Url::fromRoute('linkit.matcher.add', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
@@ -112,8 +112,8 @@ class MatcherCrudTest extends LinkitTestBase {
   /**
    * Test delete a matcher from a profile.
    */
-  function testDelete() {
-    /** @var \Drupal\linkit\AttributeInterface $plugin */
+  public function testDelete() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('dummy_matcher');
 
     $profile = $this->createProfile();
@@ -123,7 +123,7 @@ class MatcherCrudTest extends LinkitTestBase {
     // Try delete a matcher that is not attached to the profile.
     $this->drupalGet(Url::fromRoute('linkit.matcher.delete', [
       'linkit_profile' => $profile->id(),
-      'plugin_instance_id' => 'doesntexists'
+      'plugin_instance_id' => 'doesntexists',
     ]));
     $this->assertResponse('404');
 

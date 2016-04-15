@@ -58,7 +58,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
   protected $currentUser;
 
   /**
-   * The target entity type id
+   * The target entity type ID.
    *
    * @var string
    */
@@ -67,7 +67,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler,   AccountInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (empty($plugin_definition['target_entity'])) {
@@ -105,7 +105,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $result_description = $this->configuration['result_description'];
     if (!empty($result_description)) {
       $summery[] = $this->t('Result description: @result_description', [
-        '@result_description' => $result_description
+        '@result_description' => $result_description,
       ]);
     }
 

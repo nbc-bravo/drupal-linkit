@@ -47,7 +47,6 @@ class UserMatcher extends EntityMatcher {
     ];
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -67,7 +66,7 @@ class UserMatcher extends EntityMatcher {
       '#type' => 'checkboxes',
       '#title' => $this->t('Restrict to the selected roles'),
       '#options' => array_diff_key(user_role_names(TRUE), array(RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID)),
-      '#default_value' =>  $this->configuration['roles'],
+      '#default_value' => $this->configuration['roles'],
       '#description' => $this->t('If none of the checkboxes is checked, allow all roles.'),
       '#element_validate' => [[get_class($this), 'elementValidateFilter']],
     );

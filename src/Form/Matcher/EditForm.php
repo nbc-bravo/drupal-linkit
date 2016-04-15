@@ -14,7 +14,7 @@ use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 
 /**
- *  Provides an edit form for matchers.
+ * Provides an edit form for matchers.
  */
 class EditForm extends FormBase {
 
@@ -89,4 +89,5 @@ class EditForm extends FormBase {
       'linkit_profile' => $this->linkitProfile->id(),
     ]);
   }
+
 }

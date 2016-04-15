@@ -71,7 +71,7 @@ class OverviewForm extends FormBase {
       '#header' => [
         [
           'data' => $this->t('Matcher'),
-          'colspan' => 2
+          'colspan' => 2,
         ],
         $this->t('Weight'),
         $this->t('Operations'),
@@ -125,7 +125,7 @@ class OverviewForm extends FormBase {
         $form['plugins'][$key]['operations']['#links']['edit'] = [
           'title' => t('Edit'),
           'url' => Url::fromRoute('linkit.matcher.edit', [
-            'linkit_profile' =>  $this->linkitProfile->id(),
+            'linkit_profile' => $this->linkitProfile->id(),
             'plugin_instance_id' => $key,
           ]),
         ];
@@ -134,7 +134,7 @@ class OverviewForm extends FormBase {
       $form['plugins'][$key]['operations']['#links']['delete'] = [
         'title' => t('Delete'),
         'url' => Url::fromRoute('linkit.matcher.delete', [
-          'linkit_profile' =>  $this->linkitProfile->id(),
+          'linkit_profile' => $this->linkitProfile->id(),
           'plugin_instance_id' => $key,
         ]),
       ];

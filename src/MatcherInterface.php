@@ -9,7 +9,6 @@ namespace Drupal\linkit;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines the interface for matchers.
@@ -64,10 +63,10 @@ interface MatcherInterface extends PluginInspectionInterface, ConfigurablePlugin
   public function setWeight($weight);
 
   /**
-   * Gets an array with search matches that will be presented in the autocomplete
-   * widget.
+   * Gets an array with search matches that will be presented in the
+   * autocomplete widget.
    *
-   * @param $string
+   * @param string $string
    *   The string that contains the text to search for.
    *
    * @return array

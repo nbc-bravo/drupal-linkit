@@ -12,7 +12,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a matcher annotation object.
  *
- * Plugin Namespace: Plugin\Linkit\Matcher
+ * Plugin Namespace: Plugin\Linkit\Matcher.
  *
  * @see \Drupal\linkit\MatcherInterface
  * @see \Drupal\linkit\MatcherBase

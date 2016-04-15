@@ -10,7 +10,6 @@ namespace Drupal\linkit\Tests\Controllers;
 use Drupal\Core\Url;
 use Drupal\linkit\Tests\LinkitTestBase;
 
-
 /**
  * Tests Linkit controller.
  *
@@ -39,7 +38,7 @@ class LinkitControllerTest extends LinkitTestBase {
   /**
    * Tests the profile route title callback.
    */
-  function testProfileTitle() {
+  public function testProfileTitle() {
     $this->drupalGet(Url::fromRoute('entity.linkit_profile.edit_form', [
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
@@ -50,17 +49,15 @@ class LinkitControllerTest extends LinkitTestBase {
   /**
    * Tests the matcher route title callback.
    */
-  function testMatcherTitle() {
+  public function testMatcherTitle() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->container->get('plugin.manager.linkit.matcher')->createInstance('configurable_dummy_matcher');
     $matcher_uuid = $this->linkitProfile->addMatcher($plugin->getConfiguration());
     $this->linkitProfile->save();
 
-    $this->drupalGet(Url::fromRoute('linkit.matcher.edit', [
-      'linkit_profile' => $this->linkitProfile->id(),
-      'plugin_instance_id' => $matcher_uuid,
-    ]));
+    $this->drupalGet(Url::fromRoute('linkit.matcher.edit', ['linkit_profile' => $this->linkitProfile->id(), 'plugin_instance_id' => $matcher_uuid]));
 
     $this->assertText('Edit ' . $plugin->getLabel() . ' matcher');
   }
+
 }

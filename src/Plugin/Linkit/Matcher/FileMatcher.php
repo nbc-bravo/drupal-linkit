@@ -37,9 +37,9 @@ class FileMatcher extends EntityMatcher {
 
     if ($this->moduleHandler->moduleExists('image') && $this->configuration['images']['show_thumbnail']) {
       $image_style = ImageStyle::load($this->configuration['images']['thumbnail_image_style']);
-        if (!is_null($image_style)) {
-          $summery[] = $this->t('Thumbnail style: @thumbnail_style', [
-          '@thumbnail_style' =>  $image_style->label(),
+      if (!is_null($image_style)) {
+        $summery[] = $this->t('Thumbnail style: @thumbnail_style', [
+          '@thumbnail_style' => $image_style->label(),
         ]);
       }
     }
@@ -172,7 +172,7 @@ class FileMatcher extends EntityMatcher {
       }
     }
 
-    $description = implode('<br />' , $description_array);
+    $description = implode('<br />', $description_array);
     return LinkitXss::descriptionFilter($description);
   }
 
@@ -185,4 +185,5 @@ class FileMatcher extends EntityMatcher {
   protected function buildPath($entity) {
     return $entity->url();
   }
+
 }

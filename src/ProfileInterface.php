@@ -66,7 +66,7 @@ interface ProfileInterface extends ConfigEntityInterface {
    * Removes a matcher from this profile.
    *
    * @param \Drupal\linkit\MatcherInterface $matcher
-   *  The matcher object.
+   *   The matcher object.
    *
    * @return $this
    */

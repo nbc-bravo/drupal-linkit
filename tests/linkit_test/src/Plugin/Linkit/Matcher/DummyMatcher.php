@@ -10,7 +10,6 @@ namespace Drupal\linkit_test\Plugin\Linkit\Matcher;
 use Drupal\linkit\MatcherBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
  * @Matcher(
  *   id = "dummy_matcher",

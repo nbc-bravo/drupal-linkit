@@ -89,7 +89,8 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
   }
 
   /**
-   * #element_validate handler for the "linkit_profile" element in settingsForm().
+   * #element_validate handler for the "linkit_profile" element in
+   * settingsForm().
    */
   public function validateLinkitProfileSelection(array $element, FormStateInterface $form_state) {
     $settings = $form_state->getValue(array('editor', 'settings', 'plugins', 'drupallink'));
@@ -98,4 +99,5 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
       $form_state->setError($element, t('Please select the Linkit profile you wish to use.'));
     }
   }
+
 }

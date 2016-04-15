@@ -64,7 +64,7 @@ class UserMatcherTest extends LinkitTestBase {
   /**
    * Tests user matcher.
    */
-  function testUserMatcherWidthDefaultConfiguration() {
+  public function testUserMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', []);
     $matches = $plugin->getMatches('Lorem');
@@ -74,12 +74,12 @@ class UserMatcherTest extends LinkitTestBase {
   /**
    * Tests user matcher with role filer.
    */
-  function testUserMatcherWidthRoleFiler() {
+  public function testUserMatcherWidthRoleFiler() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', [
       'settings' => [
         'roles' => [
-          'custom_role' => 'custom_role'
+          'custom_role' => 'custom_role',
         ],
       ],
     ]);
@@ -91,7 +91,7 @@ class UserMatcherTest extends LinkitTestBase {
   /**
    * Tests user matcher with include blocked setting activated.
    */
-  function testUserMatcherWidthIncludeBlocked() {
+  public function testUserMatcherWidthIncludeBlocked() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', [
       'settings' => [

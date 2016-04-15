@@ -46,7 +46,4 @@
     win.close();
   };
 
-
 })(jQuery, Drupal, drupalSettings);
-
-

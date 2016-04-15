@@ -7,7 +7,6 @@
 
 namespace Drupal\linkit;
 
-
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 
@@ -21,7 +20,7 @@ class ResultManager {
    *
    * @param ProfileInterface $linkitProfile
    *   The linkit profile.
-   * @param $search_string
+   * @param string $search_string
    *   The string ro use in the matchers.
    *
    * @return array
@@ -31,9 +30,11 @@ class ResultManager {
     $matches = array();
 
     if (empty(trim($search_string))) {
-      return [[
-        'title' => t('No results'),
-      ]];
+      return [
+        [
+          'title' => t('No results'),
+        ],
+      ];
     }
 
     // Special for link to front page.
@@ -63,9 +64,11 @@ class ResultManager {
 
     // If there is still no matches, return a "no results" array.
     if (empty($matches)) {
-      return [[
-        'title' => t('No results'),
-      ]];
+      return [
+        [
+          'title' => t('No results'),
+        ],
+      ];
     }
 
     return $matches;

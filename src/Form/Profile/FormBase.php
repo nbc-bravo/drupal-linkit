@@ -39,7 +39,7 @@ abstract class FormBase extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $this->entity->id(),
       '#machine_name' => [
-        'exists' => ['\Drupal\linkit\Entity\Profile', 'load']
+        'exists' => ['\Drupal\linkit\Entity\Profile', 'load'],
       ],
       '#disabled' => !$this->entity->isNew(),
     ];

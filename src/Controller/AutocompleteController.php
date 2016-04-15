@@ -71,6 +71,7 @@ class AutocompleteController implements ContainerInjectionInterface {
    *   The request.
    * @param $linkit_profile_id
    *   The linkit profile id.
+   *
    * @return JsonResponse
    *   A JSON response containing the autocomplete suggestions.
    */

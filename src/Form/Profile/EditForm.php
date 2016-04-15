@@ -10,7 +10,7 @@ namespace Drupal\linkit\Form\Profile;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- *  Provides an edit form for profile.
+ * Provides an edit form for profile.
  *
  * @see \Drupal\linkit\Profile\FormBase
  */
