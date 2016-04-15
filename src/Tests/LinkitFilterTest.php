@@ -3,7 +3,10 @@
 namespace Drupal\linkit\Tests;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\filter\FilterPluginCollection;
+use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
  * Tests the Linkit filter.
@@ -17,7 +20,7 @@ class LinkitFilterTest extends LinkitTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'user'];
+  public static $modules = ['node', 'user', 'language'];
 
   /**
    * The linkit filter.
@@ -36,46 +39,79 @@ class LinkitFilterTest extends LinkitTestBase {
     $manager = $this->container->get('plugin.manager.filter');
     $bag = new FilterPluginCollection($manager, array());
     $this->filter = $bag->get('linkit');
+
+    // Add Swedish, Danish and Finnish.
+    ConfigurableLanguage::createFromLangcode('sv')->save();
+    ConfigurableLanguage::createFromLangcode('da')->save();
+    ConfigurableLanguage::createFromLangcode('fi')->save();
   }
 
   /**
-   * Tests the linkit filter.
+   * Tests the linkit filter for nodes.
    */
-  public function testFilter() {
+  public function testFilterNode() {
     // Create a content type.
-    $this->drupalCreateContentType(['type' => 'test', 'name' => 'Test']);
+    $this->drupalCreateContentType(['type' => 'test']);
 
-    $node = $this->drupalCreateNode([
-      'type' => 'test',
-      'title' => $this->randomGenerator->string(),
-    ]);
+    $node = $this->drupalCreateNode(['type' => 'test']);
+    $node_sv = $this->drupalCreateNode(['type' => 'test', 'langcode' => 'sv']);
+    $this->assertTrue($node_sv->language()->getId() == 'sv', 'Node created as Swedish.');
+    $node_da = $this->drupalCreateNode(['type' => 'test', 'langcode' => 'da']);
+    $this->assertTrue($node_da->language()->getId() == 'da', 'Node created as Danish.');
+    $node_fi = $this->drupalCreateNode(['type' => 'test', 'langcode' => 'fi']);
+    $this->assertTrue($node_fi->language()->getId() == 'fi', 'Node created as Finnish.');
 
+    // Don't automatically set the title.
+    $this->filter->setConfiguration(['settings' => ['title' => 0]]);
+    $this->assertLinkitFilter($node);
+    $this->assertLinkitFilter($node_sv);
+    $this->assertLinkitFilter($node_da);
+    $this->assertLinkitFilter($node_fi);
+
+    // Automatically set the title.
+    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->assertLinkitFilterWithTitle($node);
+    $this->assertLinkitFilterWithTitle($node_sv);
+    $this->assertLinkitFilterWithTitle($node_da);
+    $this->assertLinkitFilterWithTitle($node_fi);
+  }
+
+  /**
+   * Tests the linkit filter for users.
+   */
+  public function testFilterUser() {
     $account = $this->drupalCreateUser();
 
     // Don't automatically set the title.
     $this->filter->setConfiguration(['settings' => ['title' => 0]]);
-
-    // Test with a node.
-    $input = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '" href="' . $node->toUrl()->toString() . '">Link text</a>';
-    $this->assertIdentical($expected, $this->process($input)->getProcessedText());
-
-    // Test with a user.
-    $input = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '" href="' . $account->toUrl()->toString() . '">Link text</a>';
-    $this->assertIdentical($expected, $this->process($input)->getProcessedText());
+    $this->assertLinkitFilter($account);
 
     // Automatically set the title.
     $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->assertLinkitFilterWithTitle($account);
+  }
 
-    // Test with a node.
-    $input = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="node" data-entity-uuid="' . $node->uuid() . '" href="' . $node->toUrl()->toString() . '" title="' . Html::decodeEntities($node->label()) . '">Link text</a>';
+  /**
+   * Asserts that Linkit filter correctly processes the content.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object to check.
+   */
+  private function assertLinkitFilter(EntityInterface $entity) {
+    $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '">Link text</a>';
+    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $entity->toUrl()->toString() . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input)->getProcessedText());
+  }
 
-    // Test with a user.
-    $input = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="user" data-entity-uuid="' . $account->uuid() . '" href="' . $account->toUrl()->toString() . '" title="' . Html::decodeEntities($account->label()) . '">Link text</a>';
+  /**
+   * Asserts that Linkit filter correctly processes the content titles.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object to check.
+   */
+  private function assertLinkitFilterWithTitle(EntityInterface $entity) {
+    $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '">Link text</a>';
+    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $entity->toUrl()->toString() . '" title="' . Html::decodeEntities($entity->label()) . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input)->getProcessedText());
   }
 
