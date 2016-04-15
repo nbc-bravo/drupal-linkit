@@ -2,6 +2,7 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\Utility\LinkitXss;
 
@@ -10,8 +11,8 @@ use Drupal\linkit\Utility\LinkitXss;
  *
  * @Matcher(
  *   id = "entity:taxonomy_term",
- *   target_entity = "taxonomy_term",
  *   label = @Translation("Taxonomy term"),
+ *   target_entity = "taxonomy_term",
  *   provider = "taxonomy"
  * )
  */
@@ -38,7 +39,7 @@ class TermMatcher extends EntityMatcher {
   /**
    * {@inheritdoc}
    */
-  protected function buildDescription($entity) {
+  protected function buildDescription(EntityInterface $entity) {
     $description = \Drupal::token()->replace($this->configuration['result_description'], ['term' => $entity], []);
     return LinkitXss::descriptionFilter($description);
   }

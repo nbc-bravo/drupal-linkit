@@ -9,8 +9,8 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @Matcher(
  *   id = "entity:node",
- *   target_entity = "node",
  *   label = @Translation("Content"),
+ *   target_entity = "node",
  *   provider = "node"
  * )
  */
@@ -75,8 +75,8 @@ class NodeMatcher extends EntityMatcher {
   /**
    * {@inheritdoc}
    */
-  protected function buildEntityQuery($match) {
-    $query = parent::buildEntityQuery($match);
+  protected function buildEntityQuery($search_string) {
+    $query = parent::buildEntityQuery($search_string);
 
     $no_access = !$this->currentUser->hasPermission('bypass node access') && !count($this->moduleHandler->getImplementations('node_grants'));
     if ($this->configuration['include_unpublished'] !== TRUE || $no_access) {

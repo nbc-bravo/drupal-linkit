@@ -2,6 +2,7 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\linkit\Utility\LinkitXss;
@@ -11,8 +12,8 @@ use Drupal\linkit\Utility\LinkitXss;
  *
  * @Matcher(
  *   id = "entity:file",
- *   target_entity = "file",
  *   label = @Translation("File"),
+ *   target_entity = "file",
  *   provider = "file"
  * )
  */
@@ -132,8 +133,8 @@ class FileMatcher extends EntityMatcher {
   /**
    * {@inheritdoc}
    */
-  protected function buildEntityQuery($match) {
-    $query = parent::buildEntityQuery($match);
+  protected function buildEntityQuery($search_string) {
+    $query = parent::buildEntityQuery($search_string);
     $query->condition('status', FILE_STATUS_PERMANENT);
 
     return $query;
@@ -142,7 +143,7 @@ class FileMatcher extends EntityMatcher {
   /**
    * {@inheritdoc}
    */
-  protected function buildDescription($entity) {
+  protected function buildDescription(EntityInterface $entity) {
     $description_array = array();
 
     $description_array[] = parent::buildDescription($entity);
@@ -179,7 +180,7 @@ class FileMatcher extends EntityMatcher {
    * The file entity still uses url() even though it's deprecated in the
    * entity interface.
    */
-  protected function buildPath($entity) {
+  protected function buildPath(EntityInterface $entity) {
     return $entity->url();
   }
 

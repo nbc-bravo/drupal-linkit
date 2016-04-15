@@ -34,11 +34,4 @@ class Matcher extends Plugin {
    */
   public $label;
 
-  /**
-   * The entity type that is managed by this matcher.
-   *
-   * @var string
-   */
-  public $entity_type;
-
 }

@@ -10,8 +10,8 @@ use Drupal\user\RoleInterface;
  *
  * @Matcher(
  *   id = "entity:user",
- *   target_entity = "user",
  *   label = @Translation("User"),
+ *   target_entity = "user",
  *   provider = "user"
  * )
  */
@@ -92,12 +92,12 @@ class UserMatcher extends EntityMatcher {
   /**
    * {@inheritdoc}
    */
-  protected function buildEntityQuery($match) {
-    $query = parent::buildEntityQuery($match);
+  protected function buildEntityQuery($search_string) {
+    $query = parent::buildEntityQuery($search_string);
 
-    $match = $this->database->escapeLike($match);
+    $search_string = $this->database->escapeLike($search_string);
     // The user entity don't specify a label key so we have to do it instead.
-    $query->condition('name', '%' . $match . '%', 'LIKE');
+    $query->condition('name', '%' . $search_string . '%', 'LIKE');
 
     // Filter by role.
     if (!empty($this->configuration['roles'])) {

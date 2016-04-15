@@ -4,6 +4,7 @@ namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -59,7 +60,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *
    * @var string
    */
-  protected $target_type;
+  protected $targetType;
 
   /**
    * {@inheritdoc}
@@ -74,7 +75,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $this->entityManager = $entity_manager;
     $this->moduleHandler = $module_handler;
     $this->currentUser = $current_user;
-    $this->target_type = $plugin_definition['target_entity'];
+    $this->targetType = $plugin_definition['target_entity'];
   }
 
   /**
@@ -97,7 +98,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    */
   public function getSummary() {
     $summery = parent::getSummary();
-    $entity_type = $this->entityManager->getDefinition($this->target_type);
+    $entity_type = $this->entityManager->getDefinition($this->targetType);
 
     $result_description = $this->configuration['result_description'];
     if (!empty($result_description)) {
@@ -111,7 +112,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $bundles = [];
 
       if ($has_bundle_filter) {
-        $bundles_info = $this->entityManager->getBundleInfo($this->target_type);
+        $bundles_info = $this->entityManager->getBundleInfo($this->targetType);
         foreach ($this->configuration['bundles'] as $bundle) {
           $bundles[] = $bundles_info[$bundle]['label'];
         }
@@ -144,7 +145,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $entity_type = $this->entityManager->getDefinition($this->target_type);
+    $entity_type = $this->entityManager->getDefinition($this->targetType);
     $form['result_description'] = [
       '#title' => $this->t('Result description'),
       '#type' => 'textfield',
@@ -154,12 +155,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
       '#weight' => -100,
     ];
 
-    $this->insertTokenList($form, [$this->target_type]);
+    $this->insertTokenList($form, [$this->targetType]);
 
     // Filter the possible bundles to use if the entity has bundles.
     if ($entity_type->hasKey('bundle')) {
       $bundle_options = [];
-      foreach ($this->entityManager->getBundleInfo($this->target_type) as $bundle_name => $bundle_info) {
+      foreach ($this->entityManager->getBundleInfo($this->targetType) as $bundle_name => $bundle_info) {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
@@ -220,7 +221,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     }
 
     $matches = [];
-    $entities = $this->entityManager->getStorage($this->target_type)->loadMultiple($result);
+    $entities = $this->entityManager->getStorage($this->targetType)->loadMultiple($result);
 
     foreach ($entities as $entity_id => $entity) {
       // Check the access against the defined entity access handler.
@@ -244,22 +245,22 @@ class EntityMatcher extends ConfigurableMatcherBase {
   /**
    * Builds an EntityQuery to get entities.
    *
-   * @param $match
+   * @param string $search_string
    *   Text to match the label against.
    *
    * @return \Drupal\Core\Entity\Query\QueryInterface
    *   The EntityQuery object with the basic conditions and sorting applied to
    *   it.
    */
-  protected function buildEntityQuery($match) {
-    $match = $this->database->escapeLike($match);
+  protected function buildEntityQuery($search_string) {
+    $search_string = $this->database->escapeLike($search_string);
 
-    $entity_type = $this->entityManager->getDefinition($this->target_type);
-    $query = $this->entityManager->getStorage($this->target_type)->getQuery();
+    $entity_type = $this->entityManager->getDefinition($this->targetType);
+    $query = $this->entityManager->getStorage($this->targetType)->getQuery();
     $label_key = $entity_type->getKey('label');
 
     if ($label_key) {
-      $query->condition($label_key, '%' . $match . '%', 'LIKE');
+      $query->condition($label_key, '%' . $search_string . '%', 'LIKE');
       $query->sort($label_key, 'ASC');
     }
 
@@ -270,11 +271,11 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
     // Add tags to let other modules alter the query.
     $query->addTag('linkit_entity_autocomplete');
-    $query->addTag('linkit_entity_' . $this->target_type . '_autocomplete');
+    $query->addTag('linkit_entity_' . $this->targetType . '_autocomplete');
 
     // Add access tag for the query.
     $query->addTag('entity_access');
-    $query->addTag($this->target_type . '_access');
+    $query->addTag($this->targetType . '_access');
 
     return $query;
   }
@@ -288,7 +289,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * @return string
    *   The label for this entity.
    */
-  protected function buildLabel($entity) {
+  protected function buildLabel(EntityInterface $entity) {
     return Html::escape($entity->label());
   }
 
@@ -301,8 +302,8 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * @return string
    *    The description for this entity.
    */
-  protected function buildDescription($entity) {
-    $description = \Drupal::token()->replace($this->configuration['result_description'], [$this->target_type => $entity], []);
+  protected function buildDescription(EntityInterface $entity) {
+    $description = \Drupal::token()->replace($this->configuration['result_description'], [$this->targetType => $entity], []);
     return LinkitXss::descriptionFilter($description);
   }
 
@@ -317,7 +318,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *
    * @see \Drupal\Core\Url::fromEntityUri()
    */
-  protected function buildPath($entity) {
+  protected function buildPath(EntityInterface $entity) {
     return 'entity:' . $entity->getEntityTypeId() . '/' . $entity->id();
   }
 
@@ -330,7 +331,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * @return string
    *   The match group for this entity.
    */
-  protected function buildGroup($entity) {
+  protected function buildGroup(EntityInterface $entity) {
     $group = $entity->getEntityType()->getLabel();
 
     // If the entities by this entity should be grouped by bundle, get the
