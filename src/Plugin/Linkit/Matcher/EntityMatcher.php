@@ -223,7 +223,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $matches = [];
     $entities = $this->entityManager->getStorage($this->targetType)->loadMultiple($result);
 
-    foreach ($entities as $entity_id => $entity) {
+    foreach ($entities as $entity) {
       // Check the access against the defined entity access handler.
       /** @var \Drupal\Core\Access\AccessResultInterface $access */
       $access = $entity->access('view', $this->currentUser, TRUE);

@@ -83,11 +83,6 @@ class AddForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
-    $options = [];
-    foreach ($this->manager->getDefinitions() as $id => $plugin) {
-      $options[$id] = $plugin['label'];
-    }
-
     return $form;
   }
 
