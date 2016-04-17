@@ -46,10 +46,10 @@ abstract class FormBase extends EntityForm {
       '#description' => $this->t('The text will be displayed on the <em>profile collection</em> page.'),
     ];
 
-    $form['additional_settings'] = array(
+    $form['additional_settings'] = [
       '#type' => 'vertical_tabs',
       '#weight' => 99,
-    );
+    ];
 
     return parent::form($form, $form_state);
   }
