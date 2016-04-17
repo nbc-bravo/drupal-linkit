@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -70,25 +71,41 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
       $dom = Html::load($text);
       $xpath = new \DOMXPath($dom);
 
-      /** @var \DOMElement $node */
-      foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $node) {
-        // Load the appropriate translation of the linked entity.
-        $entity = $this->entityRepository->loadEntityByUuid($node->getAttribute('data-entity-type'), $node->getAttribute('data-entity-uuid'));
-        $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
+      foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
+        /** @var \DOMElement $element */
+        try {
+          // Load the appropriate translation of the linked entity.
+          $entity_type = $element->getAttribute('data-entity-type');
+          $uuid = $element->getAttribute('data-entity-uuid');
+          $entity = $this->entityRepository->loadEntityByUuid($entity_type, $uuid);
+          if ($entity) {
+            $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
 
-        // Set the appropriate href and title attributes.
-        $url = $entity->toUrl()->toString(TRUE);
-        $node->setAttribute('href', $url->getGeneratedUrl());
-        if ($this->settings['title']) {
-          $node->setAttribute('title', $entity->label());
+            // Set the appropriate href and title attributes.
+            $url = $entity->toUrl()->toString(TRUE);
+            $element->setAttribute('href', $url->getGeneratedUrl());
+
+            $access = $entity->access('view', NULL, TRUE);
+            if ($this->settings['title'] && !$access->isForbidden()) {
+              $element->setAttribute('title', $entity->label());
+            }
+
+            // The processed text now depends on:
+            $result
+              // - the linked entity access for the current user
+              ->addCacheableDependency($access)
+              // - the generated URL (which has undergone path & route processing)
+              ->addCacheableDependency($url)
+              // - the linked entity (whose URL and title may change)
+              ->addCacheableDependency($entity);
+          }
+          else {
+            throw new EntityNotFoundException(sprintf('Unable to load entity %s %s.', $entity_type, $uuid));
+          }
         }
-
-        // The processed text now depends on:
-        $result
-          // - the generated URL (which has undergone path & route processing)
-          ->addCacheableDependency($url)
-          // - the linked entity (whose URL and title may change)
-          ->addCacheableDependency($entity);
+        catch(\Exception $e) {
+          watchdog_exception('linkit_filter', $e);
+        }
       }
 
       $result->setProcessedText(Html::serialize($dom));
