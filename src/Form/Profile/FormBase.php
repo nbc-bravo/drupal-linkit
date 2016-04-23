@@ -77,7 +77,7 @@ abstract class FormBase extends EntityForm {
       case SAVED_UPDATED:
         drupal_set_message($this->t('Updated profile %label.', ['%label' => $linkit_profile->label()]));
         $this->logger('linkit')->notice('Updated profile %label.', ['%label' => $linkit_profile->label(), 'link' => $edit_link]);
-        $form_state->setRedirectUrl($linkit_profile->urlInfo('edit-form'));
+        $form_state->setRedirectUrl($linkit_profile->toUrl('edit-form'));
         break;
     }
   }
