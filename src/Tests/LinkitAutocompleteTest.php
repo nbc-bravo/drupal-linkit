@@ -7,7 +7,9 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\entity_test\Entity\EntityTest;
+use Drupal\entity_test\Entity\EntityTestMul;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\linkit\Controller\AutocompleteController;
 use Drupal\linkit\Entity\Profile;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'user', 'entity_test', 'linkit'];
+  public static $modules = ['system', 'user', 'entity_test', 'linkit', 'language'];
 
   /**
    * @var \Drupal\Linkit\ProfileInterface
@@ -39,6 +41,13 @@ class LinkitAutocompleteTest extends KernelTestBase {
   protected $matcherManager;
 
   /**
+   * The added languages.
+   *
+   * @var array
+   */
+  protected $langcodes;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -49,6 +58,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
 
     $this->installEntitySchema('user');
     $this->installEntitySchema('entity_test');
+    $this->installEntitySchema('entity_test_mul');
 
     $this->matcherManager = $this->container->get('plugin.manager.linkit.matcher');
 
@@ -58,7 +68,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
   /**
    * Tests that inaccessible entities isn't included in the results.
    */
-  function testAutocompletionAccess() {
+  public function testAutocompletionAccess() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->matcherManager->createInstance('entity:entity_test');
     $this->linkitProfile->addMatcher($plugin->getConfiguration());
@@ -85,7 +95,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
   /**
    * Tests the autocomplete with an email address.
    */
-  function testAutocompletionEmail() {
+  public function testAutocompletionEmail() {
     $email = 'drupal@example.com';
     $data = $this->getAutocompleteResult($email);
     $this->assertSame((string) new FormattableMarkup('E-mail @email', ['@email' => $email]), $data[0]['title'], 'Autocomplete returned email match.');
@@ -95,7 +105,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
   /**
    * Tests autocompletion in general.
    */
-  function testAutocompletion() {
+  public function testAutocompletion() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->matcherManager->createInstance('entity:entity_test');
     $this->linkitProfile->addMatcher($plugin->getConfiguration());
@@ -129,6 +139,37 @@ class LinkitAutocompleteTest extends KernelTestBase {
     $data = $this->getAutocompleteResult('');
     $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
     $this->assertSame($this->noResults(), $data[0], 'Autocomplete returned the "no results."');
+  }
+
+  /**
+   * Tests autocompletion with translated entities.
+   */
+  public function testAutocompletionTranslations() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->matcherManager->createInstance('entity:entity_test_mul');
+    $this->linkitProfile->addMatcher($plugin->getConfiguration());
+    $this->linkitProfile->save();
+
+    $this->setupLanguages();
+
+    $entity = EntityTestMul::create(['name' => 'Barbar']);
+
+    // Copy the array and shift the default language.
+    $translations = $this->langcodes;
+    array_shift($translations);
+
+    foreach ($translations as $langcode) {
+      $entity->addTranslation($langcode, ['name' => 'Barbar ' . $langcode]);
+    }
+
+    $entity->save();
+
+    foreach ($this->langcodes as $langcode) {
+      $this->config('system.site')->set('default_langcode', $langcode)->save();
+      $data = $this->getAutocompleteResult('bar');
+      $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
+      $this->assertSame($entity->getTranslation($langcode)->label(), $data[0]['title'], 'Autocomplete returned the "no results."');
+    }
   }
 
   /**
@@ -189,6 +230,18 @@ class LinkitAutocompleteTest extends KernelTestBase {
     return [
       'title' => 'No results'
     ];
+  }
+
+  /**
+   * Adds additional languages.
+   */
+  protected function setupLanguages() {
+    $this->langcodes = ['sv', 'da', 'fi'];
+    foreach ($this->langcodes as $langcode) {
+      ConfigurableLanguage::createFromLangcode($langcode)->save();
+      $prefixes[$langcode] = $langcode;
+    }
+    array_unshift($this->langcodes, \Drupal::languageManager()->getDefaultLanguage()->getId());
   }
 
 }
