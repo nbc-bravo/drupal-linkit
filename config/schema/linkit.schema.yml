@@ -97,3 +97,17 @@ filter_settings.linkit:
     title:
       type: boolean
       label: 'Automatically set the "title" attribute'
+
+# Plugin \Drupal\ckeditor\Plugin\CKEditorPlugin\DrupalLink
+# Linkit alters the plugin to save Linkit specific information used by the
+# altered plugin.
+ckeditor.plugin.drupallink:
+  type: mapping
+  label: 'Drupal link'
+  mapping:
+    linkit_enabled:
+      type: boolean
+      label: 'Use Linkit'
+    linkit_profile:
+      type: string
+      label: 'Linkit profile'
