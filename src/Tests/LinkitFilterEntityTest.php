@@ -50,7 +50,7 @@ class LinkitFilterEntityTest extends LinkitFilterTestBase {
 
     // Automatically set the title.
     $this->filter->setConfiguration(['settings' => ['title' => 1]]);
-    // The title should not be included
+    // The title should not be included.
     $input = '<a data-entity-type="' . $entity_no_access->getEntityTypeId() . '" data-entity-uuid="' . $entity_no_access->uuid() . '">Link text</a>';
     $this->assertFalse(strpos($this->process($input)->getProcessedText(), 'title'), 'The link does not contain a title attribute.');
     $this->assertLinkitFilterWithTitle($entity_with_access);
@@ -81,14 +81,14 @@ class LinkitFilterEntityTest extends LinkitFilterTestBase {
 
     // Disable the automatic title attribute.
     $this->filter->setConfiguration(['settings' => ['title' => 0]]);
-    /** @var \Drupal\Core\Language\Language  $language */
+    /** @var \Drupal\Core\Language\Language $language */
     foreach ($entity->getTranslationLanguages() as $language) {
       $this->assertLinkitFilter($entity->getTranslation($language->getId()), $language->getId());
     }
 
     // Enable the automatic title attribute.
     $this->filter->setConfiguration(['settings' => ['title' => 1]]);
-    /** @var \Drupal\Core\Language\Language  $language */
+    /** @var \Drupal\Core\Language\Language $language */
     foreach ($entity->getTranslationLanguages() as $language) {
       $this->assertLinkitFilterWithTitle($entity->getTranslation($language->getId()), $language->getId());
     }

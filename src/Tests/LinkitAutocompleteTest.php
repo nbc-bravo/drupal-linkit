@@ -26,9 +26,17 @@ class LinkitAutocompleteTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'user', 'entity_test', 'linkit', 'language'];
+  public static $modules = [
+    'system',
+    'user',
+    'entity_test',
+    'linkit',
+    'language',
+  ];
 
   /**
+   * The linkit profile.
+   *
    * @var \Drupal\Linkit\ProfileInterface
    */
   protected $linkitProfile;
@@ -87,7 +95,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
   /**
    * Tests that 'front' adds the front page match.
    */
-  function testAutocompletionFront() {
+  public function testAutocompletionFront() {
     $data = $this->getAutocompleteResult('front');
     $this->assertSame('Front page', $data[0]['title'], 'Autocomplete returned the front page match.');
   }
@@ -179,7 +187,7 @@ class LinkitAutocompleteTest extends KernelTestBase {
    *   The label of the entity to query by.
    *
    * @return array
-   *  An array of matches.
+   *   An array of matches.
    */
   protected function getAutocompleteResult($input) {
     $request = Request::create('linkit/autocomplete/' . $this->linkitProfile->id());
@@ -222,13 +230,14 @@ class LinkitAutocompleteTest extends KernelTestBase {
   /**
    * Returns the "no results" match.
    *
-   * @return array with a fixed value of no results.
+   * @return array
+   *   An array with a fixed value of no results.
    *
    * @todo Should this use some kind of t() function?
    */
   protected function noResults() {
     return [
-      'title' => 'No results'
+      'title' => 'No results',
     ];
   }
 
@@ -239,7 +248,6 @@ class LinkitAutocompleteTest extends KernelTestBase {
     $this->langcodes = ['sv', 'da', 'fi'];
     foreach ($this->langcodes as $langcode) {
       ConfigurableLanguage::createFromLangcode($langcode)->save();
-      $prefixes[$langcode] = $langcode;
     }
     array_unshift($this->langcodes, \Drupal::languageManager()->getDefaultLanguage()->getId());
   }

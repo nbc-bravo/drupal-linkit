@@ -92,9 +92,10 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
 
             // The processed text now depends on:
             $result
-              // - the linked entity access for the current user
+              // - the linked entity access for the current user.
               ->addCacheableDependency($access)
-              // - the generated URL (which has undergone path & route processing)
+              // - the generated URL (which has undergone path & route
+              // processing)
               ->addCacheableDependency($url)
               // - the linked entity (whose URL and title may change)
               ->addCacheableDependency($entity);
@@ -103,7 +104,7 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
             throw new EntityNotFoundException(sprintf('Unable to load entity %s %s.', $entity_type, $uuid));
           }
         }
-        catch(\Exception $e) {
+        catch (\Exception $e) {
           watchdog_exception('linkit_filter', $e);
         }
       }
