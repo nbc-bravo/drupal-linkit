@@ -35,13 +35,13 @@
    */
   linkitImce.sendto = function (file, win) {
     var imce = win.imce;
-    var items = imce.getSelection();
 
     if (imce.countSelection() > 1) {
       imce.setMessage(Drupal.t('You can only select one file.'));
       return;
     }
-    var path = imce.getConf('root_url') + '/' + imce.getItemPath(items[0]);
+
+    var path = file.getUrl();
     $('[data-drupal-selector="edit-attributes-href"]').val(path);
     win.close();
   };

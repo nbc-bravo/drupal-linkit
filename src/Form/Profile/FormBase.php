@@ -4,6 +4,7 @@ namespace Drupal\linkit\Form\Profile;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 
 /**
  * Base form for profile add and edit forms.
@@ -51,6 +52,33 @@ abstract class FormBase extends EntityForm {
       '#weight' => 99,
     ];
 
+    if ($this->moduleHandler->moduleExists('imce')) {
+      $form['imce'] = array(
+        '#type' => 'details',
+        '#title' => t('IMCE integration'),
+        '#group' => 'additional_settings',
+      );
+
+      $form['imce']['imce_use'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable IMCE File Browser in the editor dialog.'),
+        '#default_value' => $this->entity->getThirdPartySetting('imce', 'use', FALSE),
+      );
+
+      $scheme_options = \Drupal::service('stream_wrapper_manager')->getNames(StreamWrapperInterface::READ_VISIBLE);
+      $form['imce']['imce_scheme'] = array(
+        '#type' => 'radios',
+        '#title' => t('Scheme'),
+        '#options' => $scheme_options,
+        '#default_value' => $this->entity->getThirdPartySetting('imce', 'scheme', 'public'),
+        '#states' => [
+          'visible' => [
+            ':input[name="imce_use"]' => ['checked' => TRUE],
+          ],
+        ],
+      );
+    }
+
     return parent::form($form, $form_state);
   }
 
@@ -62,6 +90,11 @@ abstract class FormBase extends EntityForm {
 
     // Prevent leading and trailing spaces in linkit profile labels.
     $linkit_profile->set('label', trim($linkit_profile->label()));
+
+    if ($this->moduleHandler->moduleExists('imce')) {
+      $linkit_profile->setThirdPartySetting('imce', 'use', $form_state->getValue('imce_use'));
+      $linkit_profile->setThirdPartySetting('imce', 'scheme', $form_state->getValue('imce_scheme'));
+    }
 
     $status = $linkit_profile->save();
     $edit_link = $this->entity->link($this->t('Edit'));
