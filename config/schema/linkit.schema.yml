@@ -90,6 +90,7 @@ linkit.linkit_profile.*.third_party.imce:
     scheme:
       type: string
 
+# Plugin \Drupal\linkit\Plugin\Filter\LinkitFilter
 filter_settings.linkit:
   type: filter
   label: 'Linkit'
