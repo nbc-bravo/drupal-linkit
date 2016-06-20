@@ -51,6 +51,11 @@ linkit.matcher.entity:*:
 linkit.matcher.entity:file:
   type: linkit.matcher.entity
   mapping:
+    file_extensions:
+      type: string
+    file_status:
+      type: integer
+      default: 1
     images:
       type: mapping
       mapping:

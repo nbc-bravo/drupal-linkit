@@ -23,26 +23,32 @@ class FileMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   public function getSummary() {
-    $summery = parent::getSummary();
+    $summary = parent::getSummary();
 
-    $summery[] = $this->t('Show image dimensions: @show_image_dimensions', [
+    if (!empty($this->configuration['file_extensions'])) {
+      $summary[] = $this->t('Limit matches to the following file extensions: @file_extensions', [
+        '@file_extensions' => str_replace(' ', ', ', $this->configuration['file_extensions']),
+      ]);
+    }
+
+    $summary[] = $this->t('Show image dimensions: @show_image_dimensions', [
       '@show_image_dimensions' => $this->configuration['images']['show_dimensions'] ? $this->t('Yes') : $this->t('No'),
     ]);
 
-    $summery[] = $this->t('Show image thumbnail: @show_image_thumbnail', [
+    $summary[] = $this->t('Show image thumbnail: @show_image_thumbnail', [
       '@show_image_thumbnail' => $this->configuration['images']['show_thumbnail'] ? $this->t('Yes') : $this->t('No'),
     ]);
 
     if ($this->moduleHandler->moduleExists('image') && $this->configuration['images']['show_thumbnail']) {
       $image_style = ImageStyle::load($this->configuration['images']['thumbnail_image_style']);
       if (!is_null($image_style)) {
-        $summery[] = $this->t('Thumbnail style: @thumbnail_style', [
+        $summary[] = $this->t('Thumbnail style: @thumbnail_style', [
           '@thumbnail_style' => $image_style->label(),
         ]);
       }
     }
 
-    return $summery;
+    return $summary;
   }
 
   /**
@@ -50,6 +56,8 @@ class FileMatcher extends EntityMatcher {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
+      'file_extensions' => '',
+      'file_status' => FILE_STATUS_PERMANENT,
       'images' => [
         'show_dimensions' => FALSE,
         'show_thumbnail' => FALSE,
@@ -79,6 +87,16 @@ class FileMatcher extends EntityMatcher {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
+
+    $file_extensions = str_replace(' ', ', ', $this->configuration['file_extensions']);
+    $form['file_extensions'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Allowed file extensions'),
+      '#default_value' => $file_extensions,
+      '#description' => $this->t('Separate extensions with a space or comma and do not include the leading dot.'),
+      '#element_validate' => [['\Drupal\file\Plugin\Field\FieldType\FileItem', 'validateExtensions']],
+      '#maxlength' => 256,
+    ];
 
     $form['images'] = [
       '#type' => 'details',
@@ -122,6 +140,8 @@ class FileMatcher extends EntityMatcher {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
 
+    $this->configuration['file_extensions'] = $form_state->getValue('file_extensions');
+
     $values = $form_state->getValue('images');
     if (!$values['show_thumbnail']) {
       $values['thumbnail_image_style'] = NULL;
@@ -135,7 +155,17 @@ class FileMatcher extends EntityMatcher {
    */
   protected function buildEntityQuery($search_string) {
     $query = parent::buildEntityQuery($search_string);
-    $query->condition('status', FILE_STATUS_PERMANENT);
+
+    $query->condition('status', $this->configuration['file_status']);
+
+    if (!empty($this->configuration['file_extensions'])) {
+      $file_extensions = explode(' ', $this->configuration['file_extensions']);
+      $group = $query->orConditionGroup();
+      foreach ($file_extensions as $file_extension) {
+        $group->condition('filename', '%\.' . $this->database->escapeLike($file_extension), 'LIKE');
+      }
+      $query->condition($group);
+    }
 
     return $query;
   }
