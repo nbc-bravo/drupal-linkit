@@ -20,15 +20,21 @@ the default link plugin, so make sure that it is enabled. When the
 default link plugin is enabled, you will have to select a Linkit 
 profile to use in the "Drupal link" tab under the toolbar configuration.
 
-* If the **Limit allowed HTML tags and correct faulty HTML** filter is 
-enabled, add `<a data-entity-type data-entity-uuid>` to the Allowed 
-HTML tags.
-
 * **Enable Linkit filter**
 Linkit will insert URLs in a format like "entity:node/1". The Linkit 
 filter will then transform that URL into a "real" URL when rendering 
 the text. **Note: The Linkit filter must run before "Limit allowed HTML 
 tags and correct faulty HTML"**.
+
+* If the **Limit allowed HTML tags and correct faulty HTML** filter is
+enabled, add *data-entity-type* and *data-entity-uuid* to the `<a>` tag
+in the *Allowed HTML* tags (i.e. `<a href data-entity-type data-entity-uuid>`).
+
+* (optional) **Use automatic titles with the Linkit filter**
+If automatic titles is enabled in the Linkit filter settings, and
+**Limit allowed HTML tags and correct faulty HTML** is enabled, add
+*title*  to the `<a>` tag in the *Allowed HTML* tags (i.e.
+`<a href data-entity-type data-entity-uuid title>`).
 
 
 Configuration
