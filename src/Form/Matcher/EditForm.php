@@ -43,14 +43,14 @@ class EditForm extends FormBase {
 
     $form += $this->linkitMatcher->buildConfigurationForm($form, $form_state);
 
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array(
+    $form['actions'] = ['#type' => 'actions'];
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save changes'),
-      '#submit' => array('::submitForm'),
+      '#submit' => ['::submitForm'],
       '#button_type' => 'primary',
-    );
-    $form['actions']['delete'] = array(
+    ];
+    $form['actions']['delete'] = [
       '#type' => 'link',
       '#title' => $this->t('Delete'),
       '#url' => Url::fromRoute('linkit.matcher.delete', [
@@ -60,7 +60,7 @@ class EditForm extends FormBase {
       '#attributes' => [
         'class' => ['button', 'button--danger'],
       ],
-    );
+    ];
 
     return $form;
   }
@@ -74,7 +74,7 @@ class EditForm extends FormBase {
     $this->linkitMatcher->submitConfigurationForm($form, $plugin_data);
     $this->linkitProfile->save();
 
-    drupal_set_message($this->t('Saved %label configuration.', array('%label' => $this->linkitMatcher->getLabel())));
+    drupal_set_message($this->t('Saved %label configuration.', ['%label' => $this->linkitMatcher->getLabel()]));
     $this->logger('linkit')->notice('The matcher %label has been updated in the @profile profile.', [
       '%label' => $this->linkitMatcher->getLabel(),
       '@profile' => $this->linkitProfile->label(),

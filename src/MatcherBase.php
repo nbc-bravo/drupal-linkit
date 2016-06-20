@@ -53,7 +53,7 @@ abstract class MatcherBase extends PluginBase implements MatcherInterface, Conta
    * {@inheritdoc}
    */
   public function getSummary() {
-    return array();
+    return [];
   }
 
   /**

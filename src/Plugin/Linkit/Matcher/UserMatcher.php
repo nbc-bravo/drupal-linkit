@@ -60,14 +60,14 @@ class UserMatcher extends EntityMatcher {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['roles'] = array(
+    $form['roles'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Restrict to the selected roles'),
-      '#options' => array_diff_key(user_role_names(TRUE), array(RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID)),
+      '#options' => array_diff_key(user_role_names(TRUE), [RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID]),
       '#default_value' => $this->configuration['roles'],
       '#description' => $this->t('If none of the checkboxes is checked, allow all roles.'),
       '#element_validate' => [[get_class($this), 'elementValidateFilter']],
-    );
+    ];
 
     $form['include_blocked'] = [
       '#title' => t('Include blocked user'),

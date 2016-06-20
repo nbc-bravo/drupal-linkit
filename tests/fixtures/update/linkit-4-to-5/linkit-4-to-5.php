@@ -16,16 +16,16 @@ $connection = Database::getConnection();
 // Configuration for linkit profiles.
 $config = Yaml::decode(file_get_contents(__DIR__ . '/linkit.linkit_profile.test_profile.yml'));
 $connection->insert('config')
-  ->fields(array(
+  ->fields([
     'collection',
     'name',
     'data',
-  ))
-  ->values(array(
+  ])
+  ->values([
     'collection' => '',
     'name' => 'linkit.linkit_profile.' . $config['id'],
     'data' => serialize($config),
-  ))
+  ])
   ->execute();
 
 
@@ -36,16 +36,16 @@ $configs[] = Yaml::decode(file_get_contents(__DIR__ . '/filter.format.format_2.y
 $configs[] = Yaml::decode(file_get_contents(__DIR__ . '/filter.format.format_3.yml'));
 foreach ($configs as $config) {
   $connection->insert('config')
-    ->fields(array(
+    ->fields([
       'collection',
       'name',
       'data',
-    ))
-    ->values(array(
+    ])
+    ->values([
       'collection' => '',
       'name' => 'filter.format.' . $config['format'],
       'data' => serialize($config),
-    ))
+    ])
     ->execute();
 }
 
@@ -56,15 +56,15 @@ $configs[] = Yaml::decode(file_get_contents(__DIR__ . '/editor.editor.format_2.y
 $configs[] = Yaml::decode(file_get_contents(__DIR__ . '/editor.editor.format_3.yml'));
 foreach ($configs as $config) {
   $connection->insert('config')
-    ->fields(array(
+    ->fields([
       'collection',
       'name',
       'data',
-    ))
-    ->values(array(
+    ])
+    ->values([
       'collection' => '',
       'name' => 'editor.editor.' . $config['format'],
       'data' => serialize($config),
-    ))
+    ])
     ->execute();
 }

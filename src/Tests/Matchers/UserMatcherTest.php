@@ -33,8 +33,8 @@ class UserMatcherTest extends LinkitTestBase {
     $this->drupalLogin($this->adminUser);
     $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
-    $custom_role = $this->drupalCreateRole(array(), 'custom_role', 'custom_role');
-    $custom_role_admin = $this->drupalCreateRole(array(), 'custom_role_admin', 'custom_role_admin');
+    $custom_role = $this->drupalCreateRole([], 'custom_role', 'custom_role');
+    $custom_role_admin = $this->drupalCreateRole([], 'custom_role_admin', 'custom_role_admin');
 
     $this->drupalCreateUser([], 'lorem');
     $this->drupalCreateUser([], 'foo');

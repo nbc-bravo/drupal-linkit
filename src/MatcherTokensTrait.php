@@ -15,18 +15,18 @@ trait MatcherTokensTrait {
    * @param array $types
    *   An array of token types to use.
    */
-  public function insertTokenList(&$form, array $types = array()) {
+  public function insertTokenList(&$form, array $types = []) {
     if (\Drupal::moduleHandler()->moduleExists('token')) {
       // Add the token tree UI.
-      $form['token_tree'] = array(
+      $form['token_tree'] = [
         '#theme' => 'token_tree_link',
         '#token_types' => $types,
         '#dialog' => TRUE,
         '#weight' => -90,
-      );
+      ];
     }
     else {
-      $token_items = array();
+      $token_items = [];
       foreach ($this->getAvailableTokens($types) as $type => $tokens) {
         foreach ($tokens as $name => $info) {
           $token_description = !empty($info['description']) ? $info['description'] : '';
@@ -35,16 +35,16 @@ trait MatcherTokensTrait {
       }
 
       if (count($token_items)) {
-        $form['tokens'] = array(
+        $form['tokens'] = [
           '#type' => 'details',
           '#title' => t('Available tokens'),
           '#weight' => -90,
-        );
+        ];
 
-        $form['tokens']['list'] = array(
+        $form['tokens']['list'] = [
           '#theme' => 'item_list',
           '#items' => $token_items,
-        );
+        ];
       }
     }
   }
@@ -58,7 +58,7 @@ trait MatcherTokensTrait {
    * @return array
    *   An array with available tokens
    */
-  public function getAvailableTokens(array $types = array()) {
+  public function getAvailableTokens(array $types = []) {
     $info = \Drupal::token()->getInfo();
     $available = array_intersect_key($info['tokens'], array_flip($types));
     return $available;

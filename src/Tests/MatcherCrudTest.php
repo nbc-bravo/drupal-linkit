@@ -59,7 +59,7 @@ class MatcherCrudTest extends LinkitTestBase {
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
 
-    $edit = array();
+    $edit = [];
     $edit['plugin'] = 'dummy_matcher';
     $this->drupalPostForm(NULL, $edit, t('Save and continue'));
 
@@ -82,7 +82,7 @@ class MatcherCrudTest extends LinkitTestBase {
       'linkit_profile' => $this->linkitProfile->id(),
     ]));
 
-    $edit = array();
+    $edit = [];
     $edit['plugin'] = 'configurable_dummy_matcher';
     $this->drupalPostForm(NULL, $edit, t('Save and continue'));
 

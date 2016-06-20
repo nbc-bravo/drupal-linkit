@@ -80,12 +80,12 @@ class FileMatcher extends EntityMatcher {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['images'] = array(
+    $form['images'] = [
       '#type' => 'details',
       '#title' => t('Image file settings'),
       '#description' => t('Extra settings for image files in the result.'),
       '#tree' => TRUE,
-    );
+    ];
 
     $form['images']['show_dimensions'] = [
       '#title' => t('Show pixel dimensions'),
@@ -144,7 +144,7 @@ class FileMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   protected function buildDescription(EntityInterface $entity) {
-    $description_array = array();
+    $description_array = [];
 
     $description_array[] = parent::buildDescription($entity);
 
@@ -159,12 +159,12 @@ class FileMatcher extends EntityMatcher {
       }
 
       if ($this->configuration['images']['show_thumbnail'] && $this->moduleHandler->moduleExists('image')) {
-        $image_element = array(
+        $image_element = [
           '#weight' => -10,
           '#theme' => 'image_style',
           '#style_name' => $this->configuration['images']['thumbnail_image_style'],
           '#uri' => $entity->getFileUri(),
-        );
+        ];
 
         $description_array[] = (string) \Drupal::service('renderer')->render($image_element);
       }

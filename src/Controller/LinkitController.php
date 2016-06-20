@@ -20,7 +20,7 @@ class LinkitController extends ControllerBase {
    *   The profile label as a render array.
    */
   public function profileTitle(ProfileInterface $linkit_profile) {
-    return $this->t('Edit %label profile', array('%label' => $linkit_profile->label()));
+    return $this->t('Edit %label profile', ['%label' => $linkit_profile->label()]);
   }
 
   /**
@@ -37,7 +37,7 @@ class LinkitController extends ControllerBase {
   public function matcherTitle(ProfileInterface $linkit_profile, $plugin_instance_id) {
     /** @var \Drupal\linkit\MatcherInterface $matcher */
     $matcher = $linkit_profile->getMatcher($plugin_instance_id);
-    return $this->t('Edit %label matcher', array('%label' => $matcher->getLabel()));
+    return $this->t('Edit %label matcher', ['%label' => $matcher->getLabel()]);
   }
 
 }

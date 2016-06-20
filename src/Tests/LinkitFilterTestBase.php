@@ -27,7 +27,7 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
 
     /** @var \Drupal\Component\Plugin\PluginManagerInterface $manager */
     $manager = $this->container->get('plugin.manager.filter');
-    $bag = new FilterPluginCollection($manager, array());
+    $bag = new FilterPluginCollection($manager, []);
     $this->filter = $bag->get('linkit');
   }
 

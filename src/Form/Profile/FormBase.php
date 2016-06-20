@@ -53,20 +53,20 @@ abstract class FormBase extends EntityForm {
     ];
 
     if ($this->moduleHandler->moduleExists('imce')) {
-      $form['imce'] = array(
+      $form['imce'] = [
         '#type' => 'details',
         '#title' => t('IMCE integration'),
         '#group' => 'additional_settings',
-      );
+      ];
 
-      $form['imce']['imce_use'] = array(
+      $form['imce']['imce_use'] = [
         '#type' => 'checkbox',
         '#title' => t('Enable IMCE File Browser in the editor dialog.'),
         '#default_value' => $this->entity->getThirdPartySetting('imce', 'use', FALSE),
-      );
+      ];
 
       $scheme_options = \Drupal::service('stream_wrapper_manager')->getNames(StreamWrapperInterface::READ_VISIBLE);
-      $form['imce']['imce_scheme'] = array(
+      $form['imce']['imce_scheme'] = [
         '#type' => 'radios',
         '#title' => t('Scheme'),
         '#options' => $scheme_options,
@@ -76,7 +76,7 @@ abstract class FormBase extends EntityForm {
             ':input[name="imce_use"]' => ['checked' => TRUE],
           ],
         ],
-      );
+      ];
     }
 
     return parent::form($form, $form_state);

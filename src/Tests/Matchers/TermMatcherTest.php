@@ -61,21 +61,21 @@ class TermMatcherTest extends LinkitTestBase {
    * @return \Drupal\taxonomy\Entity\Term
    *   The new taxonomy term object.
    */
-  private function createTerm(Vocabulary $vocabulary, $values = array()) {
+  private function createTerm(Vocabulary $vocabulary, $values = []) {
     $filter_formats = filter_formats();
     $format = array_pop($filter_formats);
 
     $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
-    $term = $termStorage->create($values + array(
+    $term = $termStorage->create($values + [
       'name' => $this->randomMachineName(),
-      'description' => array(
+      'description' => [
         'value' => $this->randomMachineName(),
         // Use the first available text format.
         'format' => $format->id(),
-      ),
+      ],
       'vid' => $vocabulary->id(),
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-    ));
+      ]);
     $term->save();
     return $term;
   }

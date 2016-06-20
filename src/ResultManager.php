@@ -22,7 +22,7 @@ class ResultManager {
    *   An array of matches.
    */
   public function getResults(ProfileInterface $linkitProfile, $search_string) {
-    $matches = array();
+    $matches = [];
 
     if (empty(trim($search_string))) {
       return [
