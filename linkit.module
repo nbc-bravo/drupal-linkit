@@ -50,6 +50,11 @@ define('LINKIT_PROFILE_TYPE_EDITOR', 1);
  */
 define('LINKIT_PROFILE_TYPE_FIELD', 2);
 
+/**
+ * Define the profile type menu.
+ */
+define('LINKIT_PROFILE_TYPE_MENU', 3);
+
 // Include the file with the field functions.
 require_once dirname(__FILE__) . '/linkit.field.inc';
 
@@ -162,6 +167,22 @@ function linkit_profile_editor_load_all() {
   $profiles = linkit_profile_load_all();
   foreach ($profiles as &$profile) {
     if ($profile->profile_type != LINKIT_PROFILE_TYPE_EDITOR) {
+      $profile = FALSE;
+    }
+  }
+  return array_filter($profiles);
+}
+
+/**
+ * Load all Linkit profiles that is for menu links.
+ *
+ * @return
+ *   An array with LinkitProfile objects.
+ */
+function linkit_profile_menu_load_all() {
+  $profiles = linkit_profile_load_all();
+  foreach ($profiles as &$profile) {
+    if ($profile->profile_type != LINKIT_PROFILE_TYPE_MENU) {
       $profile = FALSE;
     }
   }
@@ -1124,6 +1145,8 @@ function linkit_get_profile_type($type) {
       return t('Editor');
     case LINKIT_PROFILE_TYPE_FIELD:
       return t('Field');
+    case LINKIT_PROFILE_TYPE_MENU:
+      return t('Menu');
    default:
       return t('Can not find the profile type');
   }
@@ -1157,4 +1180,19 @@ function linkit_get_insert_plugin_processed_path(LinkitProfile $profile, $uri, $
     }
 
     return $path;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for "menu_edit_item".
+ */
+function linkit_form_menu_edit_item_alter(&$form, &$form_state) {
+  // If a 'menu' profile type exists, use it to add Linkit to menu links.
+  $profiles = linkit_profile_menu_load_all();
+  foreach ($profiles as $profile) {
+    $form['link_path']['#linkit'] = array(
+      'profile' => $profile->name,
+      'button_text' => t($profile->data['button_text']),
+    );
+    break;
+  }
 }
