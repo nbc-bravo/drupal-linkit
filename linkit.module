@@ -1106,7 +1106,7 @@ function linkit_pre_render_editor_element($element) {
         $field_js['data']['linkit']['publicFilesDirectory'] = variable_get('file_public_path', conf_path() . '/files');
       }
 
-      // Attach the linkit_base librar
+      // Attach the linkit_base library
       $element['#attached']['library'][] = array('linkit', 'base');
       $element['#attached']['js'][] = $field_js;
 
