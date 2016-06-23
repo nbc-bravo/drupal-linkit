@@ -2,14 +2,12 @@
 
 namespace Drupal\linkit\Tests\Matchers;
 
-use Drupal\linkit\Tests\LinkitTestBase;
-
 /**
  * Tests user matcher.
  *
  * @group linkit
  */
-class UserMatcherTest extends LinkitTestBase {
+class UserMatcherTest extends EntityMatcherTestBase {
 
   /**
    * Modules to enable.
@@ -19,19 +17,10 @@ class UserMatcherTest extends LinkitTestBase {
   public static $modules = ['user'];
 
   /**
-   * The matcher manager.
-   *
-   * @var \Drupal\linkit\MatcherManager
-   */
-  protected $manager;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->adminUser);
-    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
     $custom_role = $this->drupalCreateRole([], 'custom_role', 'custom_role');
     $custom_role_admin = $this->drupalCreateRole([], 'custom_role_admin', 'custom_role_admin');
@@ -54,6 +43,17 @@ class UserMatcherTest extends LinkitTestBase {
     $account = $this->drupalCreateUser([], 'blocked_lorem');
     $account->block();
     $account->save();
+  }
+
+  /**
+   * Tests the paths for results on a user matcher.
+   */
+  public function testMatcherResultsPath() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:user', []);
+    $matches = $plugin->getMatches('Lorem');
+
+    $this->assertResultUri('user', $matches);
   }
 
   /**

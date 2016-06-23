@@ -3,14 +3,13 @@
 namespace Drupal\linkit\Tests\Matchers;
 
 use Drupal\file\Entity\File;
-use Drupal\linkit\Tests\LinkitTestBase;
 
 /**
  * Tests file matcher.
  *
  * @group linkit
  */
-class FileMatcherTest extends LinkitTestBase {
+class FileMatcherTest extends EntityMatcherTestBase {
 
   /**
    * Modules to enable.
@@ -20,19 +19,10 @@ class FileMatcherTest extends LinkitTestBase {
   public static $modules = ['file_test', 'file'];
 
   /**
-   * The matcher manager.
-   *
-   * @var \Drupal\linkit\MatcherManager
-   */
-  protected $manager;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->adminUser);
-    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
     $image_files = $this->drupalGetTestFiles('image');
 
@@ -48,6 +38,21 @@ class FileMatcherTest extends LinkitTestBase {
       $this->drupalPostForm('file-test/upload', $edit, t('Submit'));
       $this->assertResponse(200, 'Received a 200 response for posted test file.');
     }
+  }
+
+  /**
+   * Tests the paths for results on a file matcher.
+   */
+  public function testMatcherResultsPath() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:file', [
+      'settings' => [
+        'file_status' => 0,
+      ],
+    ]);
+    $matches = $plugin->getMatches('image-test');
+
+    $this->assertResultUri('file', $matches);
   }
 
   /**

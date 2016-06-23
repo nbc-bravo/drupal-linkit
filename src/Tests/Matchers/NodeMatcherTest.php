@@ -2,14 +2,12 @@
 
 namespace Drupal\linkit\Tests\Matchers;
 
-use Drupal\linkit\Tests\LinkitTestBase;
-
 /**
  * Tests node matcher.
  *
  * @group linkit
  */
-class NodeMatcherTest extends LinkitTestBase {
+class NodeMatcherTest extends EntityMatcherTestBase {
 
   /**
    * Modules to enable.
@@ -19,19 +17,10 @@ class NodeMatcherTest extends LinkitTestBase {
   public static $modules = ['node'];
 
   /**
-   * The matcher manager.
-   *
-   * @var \Drupal\linkit\MatcherManager
-   */
-  protected $manager;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->adminUser);
-    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
     $type1 = $this->drupalCreateContentType([
       'type' => 'test1',
@@ -64,6 +53,17 @@ class NodeMatcherTest extends LinkitTestBase {
       'type' => $type1->id(),
       'status' => FALSE,
     ]);
+  }
+
+  /**
+   * Tests the paths for results on a node matcher.
+   */
+  public function testMatcherResultsPath() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:node', []);
+    $matches = $plugin->getMatches('Lorem');
+
+    $this->assertResultUri('node', $matches);
   }
 
   /**

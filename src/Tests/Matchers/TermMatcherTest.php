@@ -4,7 +4,6 @@ namespace Drupal\linkit\Tests\Matchers;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\linkit\Tests\LinkitTestBase;
 use Drupal\taxonomy\Entity\Vocabulary;
 
 /**
@@ -12,7 +11,7 @@ use Drupal\taxonomy\Entity\Vocabulary;
  *
  * @group linkit
  */
-class TermMatcherTest extends LinkitTestBase {
+class TermMatcherTest extends EntityMatcherTestBase {
 
   /**
    * Modules to enable.
@@ -20,13 +19,6 @@ class TermMatcherTest extends LinkitTestBase {
    * @var array
    */
   public static $modules = ['taxonomy'];
-
-  /**
-   * The matcher manager.
-   *
-   * @var \Drupal\linkit\MatcherManager
-   */
-  protected $manager;
 
   /**
    * Creates and saves a vocabulary.
@@ -75,7 +67,7 @@ class TermMatcherTest extends LinkitTestBase {
       ],
       'vid' => $vocabulary->id(),
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-      ]);
+    ]);
     $term->save();
     return $term;
   }
@@ -85,8 +77,6 @@ class TermMatcherTest extends LinkitTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->drupalLogin($this->adminUser);
-    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
     $testing_vocabulary_1 = $this->createVocabulary('testing_vocabulary_1');
     $testing_vocabulary_2 = $this->createVocabulary('testing_vocabulary_2');
@@ -97,6 +87,21 @@ class TermMatcherTest extends LinkitTestBase {
     $this->createTerm($testing_vocabulary_1, ['name' => 'bar']);
     $this->createTerm($testing_vocabulary_2, ['name' => 'foo_bar']);
     $this->createTerm($testing_vocabulary_2, ['name' => 'foo_baz']);
+  }
+
+  /**
+   * Tests the paths for results on a term matcher.
+   */
+  public function testMatcherResultsPath() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:taxonomy_term', [
+      'settings' => [
+        'file_status' => 0,
+      ],
+    ]);
+    $matches = $plugin->getMatches('foo');
+
+    $this->assertResultUri('taxonomy_term', $matches);
   }
 
   /**

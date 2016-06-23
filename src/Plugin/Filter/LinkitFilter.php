@@ -32,6 +32,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * Constructs a LinkitFilter object.
    *
    * @param array $configuration
@@ -81,11 +88,23 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
           if ($entity) {
             $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
 
-            // Set the appropriate href and title attributes.
-            $url = $entity->toUrl()->toString(TRUE);
-            $element->setAttribute('href', $url->getGeneratedUrl());
+            // Set the appropriate href attribute.
+            // The file entity has not declared any "links" in its entity
+            // definition. We therefor have to use the file entity specific
+            // getFileUri() instead.
+            if ($entity_type === 'file') {
+              /** @var \Drupal\file\Entity\File $entity */
+              $url = file_create_url($entity->getFileUri());
+              $element->setAttribute('href', $url);
+            }
+            else {
+              $url = $entity->toUrl()->toString(TRUE);
+              $element->setAttribute('href', $url->getGeneratedUrl());
+            }
 
             $access = $entity->access('view', NULL, TRUE);
+
+            // Set the appropriate title attribute.
             if ($this->settings['title'] && !$access->isForbidden()) {
               $element->setAttribute('title', $entity->label());
             }

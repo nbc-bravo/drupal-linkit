@@ -38,8 +38,16 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
    *   The entity object to check.
    */
   protected function assertLinkitFilter(EntityInterface $entity, $langcode = LanguageInterface::LANGCODE_SITE_DEFAULT) {
+    if ($entity->getEntityTypeId() === "file") {
+      /** @var \Drupal\file\Entity\File $entity */
+      $href = $url = file_create_url($entity->getFileUri());
+    }
+    else {
+      $href = $entity->toUrl()->toString();
+    }
+
     $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $entity->toUrl()->toString() . '">Link text</a>';
+    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $href . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input, $langcode)->getProcessedText());
   }
 
@@ -50,8 +58,16 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
    *   The entity object to check.
    */
   protected function assertLinkitFilterWithTitle(EntityInterface $entity, $langcode = LanguageInterface::LANGCODE_SITE_DEFAULT) {
+    if ($entity->getEntityTypeId() === "file") {
+      /** @var \Drupal\file\Entity\File $entity */
+      $href = $url = file_create_url($entity->getFileUri());
+    }
+    else {
+      $href = $entity->toUrl()->toString();
+    }
+
     $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '">Link text</a>';
-    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $entity->toUrl()->toString() . '" title="' . Html::decodeEntities($entity->label()) . '">Link text</a>';
+    $expected = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" href="' . $href . '" title="' . Html::decodeEntities($entity->label()) . '">Link text</a>';
     $this->assertIdentical($expected, $this->process($input, $langcode)->getProcessedText());
   }
 

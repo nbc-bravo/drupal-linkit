@@ -21,13 +21,6 @@ class LinkitFilterEntityTest extends LinkitFilterTestBase {
   public static $modules = ['entity_test', 'path', 'language'];
 
   /**
-   * An user with permissions to administer content types.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $webUser;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp() {

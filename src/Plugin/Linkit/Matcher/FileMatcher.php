@@ -204,14 +204,4 @@ class FileMatcher extends EntityMatcher {
     return LinkitXss::descriptionFilter($description);
   }
 
-  /**
-   * {@inheritdoc}
-   *
-   * The file entity still uses url() even though it's deprecated in the
-   * entity interface.
-   */
-  protected function buildPath(EntityInterface $entity) {
-    return $entity->url();
-  }
-
 }
