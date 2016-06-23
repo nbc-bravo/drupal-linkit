@@ -81,15 +81,15 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     ];
   }
 
-  // Add #submit callback that generates data-entity-type and data-entity-uuid
-  // attributes from the href attribute when appropriate.
-  array_unshift($form['#submit'], 'linkit_form_editor_link_dialog_submit');
+  // Add #validate callback that generates data-entity-type and
+  // data-entity-uuid attributes from the href attribute when appropriate.
+  array_unshift($form['#validate'], 'linkit_form_editor_link_dialog_validate');
 }
 
 /**
  * Generates data-entity-type and data-entity-uuid attributes from href.
  */
-function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface $form_state) {
+function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterface $form_state) {
   // Check if the 'href' attribute contains a entity: URI.
   $href = $form_state->getValue(['attributes', 'href']);
   $uri_parts = parse_url($href);
@@ -104,7 +104,17 @@ function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface 
   // attributes as expected by filters.
   // @see \Drupal\editor\Plugin\Filter\EditorFileReference
   // @see \Drupal\linkit\Plugin\Filter\LinkitFilter
-  $entity = entity_load($entity_type_id, $entity_id);
-  $form_state->setValue(['attributes', 'data-entity-type'], $entity_type_id);
-  $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
+  try {
+    if (!$entity = \Drupal::entityTypeManager()->getStorage($entity_type_id)->load($entity_id)) {
+      $form_state->setError($form['attributes']['href'], t('Invalid URI'));
+    }
+    else {
+      $form_state->setValue(['attributes', 'data-entity-type'], $entity_type_id);
+      $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
+    }
+  }
+  catch (Exception $exception) {
+    $form_state->setError($form['attributes']['href'], t('Invalid URI'));
+  }
+
 }
