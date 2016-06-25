@@ -70,7 +70,7 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
         ],
       ],
       '#attributes' => [
-        'class' => ['linkit-imce-open'],
+        'class' => ['form-item', 'linkit-imce-open'],
       ],
       '#attached' => [
         'library' => [

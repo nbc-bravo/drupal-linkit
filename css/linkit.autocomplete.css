@@ -71,3 +71,7 @@
 .linkit-result--description img {
   display: block;
 }
+
+a.linkit-imce-open {
+  display: inline-block;
+}
