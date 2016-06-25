@@ -83,21 +83,10 @@ class Linkit extends FormElement {
   }
 
   /**
-   * Prepares a #type 'linkit' render element for input.html.twig.
-   *
-   * @param array $element
-   *   An associative array containing the properties of the element.
-   *   Properties used: #title, #value, #description, #size, #attributes.
-   *
-   * @return array
-   *   The $element with prepared variables ready for input.html.twig.
+   * {@inheritdoc}
    */
   public static function preRenderLinkitElement($element) {
-    $element['#attributes']['type'] = 'text';
-    Element::setAttributes($element, ['id', 'name', 'value', 'size']);
-    static::setAttributes($element, ['form-text']);
-
-    return $element;
+    return Textfield::preRenderTextfield($element);
   }
 
 }
