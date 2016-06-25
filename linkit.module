@@ -94,6 +94,8 @@ function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterfac
   $href = $form_state->getValue(['attributes', 'href']);
   $uri_parts = parse_url($href);
   if ($uri_parts['scheme'] !== 'entity') {
+    $form_state->setValue(['attributes', 'data-entity-type'], '');
+    $form_state->setValue(['attributes', 'data-entity-uuid'], '');
     return;
   }
 
