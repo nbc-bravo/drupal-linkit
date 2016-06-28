@@ -6,7 +6,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\entity_embed\Exception\EntityNotFoundException;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -118,9 +117,6 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
               ->addCacheableDependency($url)
               // - the linked entity (whose URL and title may change)
               ->addCacheableDependency($entity);
-          }
-          else {
-            throw new EntityNotFoundException(sprintf('Unable to load entity %s %s.', $entity_type, $uuid));
           }
         }
         catch (\Exception $e) {
