@@ -1,16 +1,15 @@
 <?php
 
-namespace Drupal\linkit\Tests;
+namespace Drupal\Tests\linkit\Kernel;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\filter\FilterPluginCollection;
 
 /**
- * Provides a base class for testing the Linkit filter.
+ * Provides helper methods for assertions.
  */
-abstract class LinkitFilterTestBase extends LinkitTestBase {
+trait AssertLinkitFilterTrait {
 
   /**
    * The linkit filter.
@@ -20,22 +19,12 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
   protected $filter;
 
   /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-
-    /** @var \Drupal\Component\Plugin\PluginManagerInterface $manager */
-    $manager = $this->container->get('plugin.manager.filter');
-    $bag = new FilterPluginCollection($manager, []);
-    $this->filter = $bag->get('linkit');
-  }
-
-  /**
    * Asserts that Linkit filter correctly processes the content.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity object to check.
+   * @param string $langcode
+   *   The language code of the text to be filtered.
    */
   protected function assertLinkitFilter(EntityInterface $entity, $langcode = LanguageInterface::LANGCODE_SITE_DEFAULT) {
     if ($entity->getEntityTypeId() === "file") {
@@ -56,6 +45,8 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity object to check.
+   * @param string $langcode
+   *   The language code of the text to be filtered.
    */
   protected function assertLinkitFilterWithTitle(EntityInterface $entity, $langcode = LanguageInterface::LANGCODE_SITE_DEFAULT) {
     if ($entity->getEntityTypeId() === "file") {
@@ -73,6 +64,15 @@ abstract class LinkitFilterTestBase extends LinkitTestBase {
 
   /**
    * Test helper method that wraps the filter process method.
+   *
+   * @param string $input
+   *   The text string to be filtered.
+   * @param string $langcode
+   *   The language code of the text to be filtered.
+   *
+   * @return \Drupal\filter\FilterProcessResult
+   *   The filtered text, wrapped in a FilterProcessResult object, and possibly
+   *   with associated assets, cacheability metadata and placeholders.
    *
    * @see \Drupal\filter\Plugin\FilterInterface::process
    */

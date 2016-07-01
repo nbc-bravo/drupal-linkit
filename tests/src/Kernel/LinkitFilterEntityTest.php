@@ -1,24 +1,30 @@
 <?php
 
-namespace Drupal\linkit\Tests;
+namespace Drupal\Tests\linkit\Kernel;
 
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestMul;
+use Drupal\file\Entity\File;
+use Drupal\filter\FilterPluginCollection;
 use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
- * Tests the Linkit filter for entities.
+ * Tests the Linkit filter.
+ *
+ * @coversDefaultClass \Drupal\linkit\Plugin\Filter\LinkitFilter
  *
  * @group linkit
  */
-class LinkitFilterEntityTest extends LinkitFilterTestBase {
+class LinkitFilterEntityTest extends LinkitKernelTestBase {
+
+  use AssertLinkitFilterTrait;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['entity_test', 'path', 'language'];
+  public static $modules = ['filter', 'entity_test', 'path', 'language', 'file'];
 
   /**
    * {@inheritdoc}
@@ -26,26 +32,40 @@ class LinkitFilterEntityTest extends LinkitFilterTestBase {
   protected function setUp() {
     parent::setUp();
 
+    $this->installEntitySchema('entity_test');
+    $this->installEntitySchema('entity_test_mul');
+    $this->installEntitySchema('file');
+
     // Add Swedish, Danish and Finnish.
     ConfigurableLanguage::createFromLangcode('sv')->save();
     ConfigurableLanguage::createFromLangcode('da')->save();
     ConfigurableLanguage::createFromLangcode('fi')->save();
+
+    /** @var \Drupal\Component\Plugin\PluginManagerInterface $manager */
+    $manager = $this->container->get('plugin.manager.filter');
+    $bag = new FilterPluginCollection($manager, []);
+    $this->filter = $bag->get('linkit');
   }
 
   /**
    * Tests the linkit filter for entities with different access.
    */
   public function testFilterEntityAccess() {
+    // Create an entity that no one have access to.
     $entity_no_access = EntityTest::create(['name' => 'forbid_access']);
     $entity_no_access->save();
+
+    // Create an entity that is accessible.
     $entity_with_access = EntityTest::create(['name' => $this->randomMachineName()]);
     $entity_with_access->save();
 
     // Automatically set the title.
     $this->filter->setConfiguration(['settings' => ['title' => 1]]);
-    // The title should not be included.
+
+    // Make sure the title is not included.
     $input = '<a data-entity-type="' . $entity_no_access->getEntityTypeId() . '" data-entity-uuid="' . $entity_no_access->uuid() . '">Link text</a>';
     $this->assertFalse(strpos($this->process($input)->getProcessedText(), 'title'), 'The link does not contain a title attribute.');
+
     $this->assertLinkitFilterWithTitle($entity_with_access);
   }
 
@@ -85,6 +105,28 @@ class LinkitFilterEntityTest extends LinkitFilterTestBase {
     foreach ($entity->getTranslationLanguages() as $language) {
       $this->assertLinkitFilterWithTitle($entity->getTranslation($language->getId()), $language->getId());
     }
+  }
+
+  /**
+   * Tests the linkit filter for file entities.
+   */
+  public function testFilterFileEntity() {
+    $file = File::create(array(
+      'uid' => 1,
+      'filename' => 'druplicon.txt',
+      'uri' => 'public://druplicon.txt',
+      'filemime' => 'text/plain',
+      'status' => FILE_STATUS_PERMANENT,
+    ));
+    $file->save();
+
+    // Disable the automatic title attribute.
+    $this->filter->setConfiguration(['settings' => ['title' => 0]]);
+    $this->assertLinkitFilter($file);
+
+    // Automatically set the title.
+    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->assertLinkitFilterWithTitle($file);
   }
 
 }

@@ -1,20 +1,25 @@
 <?php
 
-namespace Drupal\linkit\Tests\Matchers;
+namespace Drupal\Tests\linkit\Kernel\Matchers;
+
+use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
+use Drupal\user\Entity\Role;
 
 /**
  * Tests user matcher.
  *
  * @group linkit
  */
-class UserMatcherTest extends EntityMatcherTestBase {
+class UserMatcherTest extends LinkitKernelTestBase {
+
+  use AssertResultUriTrait;
 
   /**
-   * Modules to enable.
+   * The matcher manager.
    *
-   * @var array
+   * @var \Drupal\linkit\MatcherManager
    */
-  public static $modules = ['user'];
+  protected $manager;
 
   /**
    * {@inheritdoc}
@@ -22,25 +27,36 @@ class UserMatcherTest extends EntityMatcherTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $custom_role = $this->drupalCreateRole([], 'custom_role', 'custom_role');
-    $custom_role_admin = $this->drupalCreateRole([], 'custom_role_admin', 'custom_role_admin');
+    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
-    $this->drupalCreateUser([], 'lorem');
-    $this->drupalCreateUser([], 'foo');
+    $custom_role = Role::create(array(
+      'id' => 'custom_role',
+      'label' => 'custom_role',
+    ));
+    $custom_role->save();
 
-    $account = $this->drupalCreateUser([], 'ipsumlorem');
+    $custom_role_admin = Role::create(array(
+      'id' => 'custom_role_admin',
+      'label' => 'custom_role_admin',
+    ));
+    $custom_role_admin->save();
+
+    $this->createUser(['name' => 'lorem']);
+    $this->createUser(['name' => 'foo']);
+
+    $account = $this->createUser(['name' => 'ipsumlorem']);
     $account->addRole($custom_role);
     $account->save();
 
-    $account = $this->drupalCreateUser([], 'lorem_custom_role');
+    $account = $this->createUser(['name' => 'lorem_custom_role']);
     $account->addRole($custom_role);
     $account->save();
 
-    $account = $this->drupalCreateUser([], 'lorem_custom_role_admin');
+    $account = $this->createUser(['name' => 'lorem_custom_role_admin']);
     $account->addRole($custom_role_admin);
     $account->save();
 
-    $account = $this->drupalCreateUser([], 'blocked_lorem');
+    $account = $this->createUser(['name' => 'blocked_lorem']);
     $account->block();
     $account->save();
   }
@@ -52,7 +68,7 @@ class UserMatcherTest extends EntityMatcherTestBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', []);
     $matches = $plugin->getMatches('Lorem');
-
+    $this->assertTrue(count($matches), 'Got matches');
     $this->assertResultUri('user', $matches);
   }
 
@@ -63,7 +79,7 @@ class UserMatcherTest extends EntityMatcherTestBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', []);
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(4, count($matches), 'Correct number of matches');
+    $this->assertEquals(4, count($matches), 'Correct number of matches');
   }
 
   /**
@@ -80,7 +96,7 @@ class UserMatcherTest extends EntityMatcherTestBase {
     ]);
 
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(2, count($matches), 'Correct number of matches');
+    $this->assertEquals(2, count($matches), 'Correct number of matches');
   }
 
   /**
@@ -96,14 +112,14 @@ class UserMatcherTest extends EntityMatcherTestBase {
 
     // Test without permissions to see blocked users.
     $matches = $plugin->getMatches('blocked');
-    $this->assertEqual(0, count($matches), 'Correct number of matches');
+    $this->assertEquals(0, count($matches), 'Correct number of matches');
 
-    $account = $this->drupalCreateUser(['administer users']);
-    $this->drupalLogin($account);
+    // Set the current user to a user with 'administer users' permission.
+    \Drupal::currentUser()->setAccount($this->createUser([], ['administer users']));
 
     // Test with permissions to see blocked users.
     $matches = $plugin->getMatches('blocked');
-    $this->assertEqual(1, count($matches), 'Correct number of matches');
+    $this->assertEquals(1, count($matches), 'Correct number of matches');
   }
 
 }

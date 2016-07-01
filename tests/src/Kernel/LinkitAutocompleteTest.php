@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\linkit\Tests;
+namespace Drupal\Tests\linkit\Kernel;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Serialization\Json;
@@ -8,7 +8,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestMul;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\linkit\Controller\AutocompleteController;
 use Drupal\linkit\Entity\Profile;
@@ -19,20 +18,14 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @group Linkit
  */
-class LinkitAutocompleteTest extends KernelTestBase {
+class LinkitAutocompleteTest extends LinkitKernelTestBase {
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = [
-    'system',
-    'user',
-    'entity_test',
-    'linkit',
-    'language',
-  ];
+  public static $modules = ['entity_test', 'language'];
 
   /**
    * The linkit profile.
@@ -61,7 +54,6 @@ class LinkitAutocompleteTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->installSchema('system', 'router');
     \Drupal::service('router.builder')->rebuild();
 
     $this->installEntitySchema('user');

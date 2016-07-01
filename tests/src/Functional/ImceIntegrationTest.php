@@ -1,17 +1,19 @@
 <?php
 
-namespace Drupal\linkit\Tests;
+namespace Drupal\Tests\linkit\Functional;
 
-use Drupal\Core\Url;
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
+use Drupal\Tests\linkit\ProfileCreationTrait;
 
 /**
  * Tests the IMCE module integration.
  *
  * @group linkit
  */
-class ImceIntegrationTest extends LinkitTestBase {
+class ImceIntegrationTest extends LinkitBrowserTestBase {
+
+  use ProfileCreationTrait;
 
   /**
    * Modules to enable.
@@ -73,7 +75,7 @@ class ImceIntegrationTest extends LinkitTestBase {
     $this->editor->save();
 
     // Create a regular user with access to the format.
-    $this->baseUser = $this->drupalCreateUser([
+    $this->webUser = $this->drupalCreateUser([
       $this->filterFormat->getPermissionName(),
     ]);
   }
@@ -82,43 +84,33 @@ class ImceIntegrationTest extends LinkitTestBase {
    * Test that the IMCE link does not shows up.
    */
   public function testImceIntegationDisabled() {
-    $this->drupalLogin($this->baseUser);
-
-    $this->drupalGet(Url::fromRoute('editor.link_dialog', [
-      'filter_format' => $this->filterFormat->id(),
-    ]));
-
-    $this->assertNoLink('Open IMCE file browser');
+    $this->drupalLogin($this->webUser);
+    $this->drupalGet('editor/dialog/link/' . $this->filterFormat->id());
+    $this->assertSession()->linkNotExists('Open IMCE file browser');
   }
 
   /**
    * Test that the IMCE link shows up.
    */
   public function testImceIntegationEnabled() {
-    $this->drupalGet(Url::fromRoute('entity.linkit_profile.edit_form', [
-      'linkit_profile' => $this->linkitProfile->id(),
-    ]));
-    $this->assertResponse(200);
+    $this->drupalGet('/admin/config/content/linkit/manage/' . $this->linkitProfile->id());
+    $this->assertSession()->statusCodeEquals(200);
 
-    $this->assertText('IMCE integration');
-    $this->assertFieldByName('imce_use');
+    $this->assertSession()->pageTextContains('IMCE integration');
+    $this->assertSession()->fieldExists('imce_use');
 
     $edit = [];
     $edit['imce_use'] = TRUE;
     $this->drupalPostForm(NULL, $edit, t('Update profile'));
 
-    $this->drupalGet(Url::fromRoute('entity.linkit_profile.edit_form', [
-      'linkit_profile' => $this->linkitProfile->id(),
-    ]));
+    $this->drupalGet('/admin/config/content/linkit/manage/' . $this->linkitProfile->id());
 
-    $this->assertFieldChecked('edit-imce-use');
+    $this->assertSession()->fieldValueEquals('edit-imce-use', '1');
 
-    $this->drupalLogin($this->baseUser);
+    $this->drupalLogin($this->webUser);
 
-    $this->drupalGet(Url::fromRoute('editor.link_dialog', [
-      'filter_format' => $this->filterFormat->id(),
-    ]));
-    $this->assertLink('Open IMCE file browser');
+    $this->drupalGet('editor/dialog/link/' . $this->filterFormat->id());
+    $this->assertSession()->linkExists('Open IMCE file browser');
   }
 
 }

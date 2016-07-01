@@ -1,15 +1,18 @@
 <?php
 
-namespace Drupal\linkit\Tests\Matchers;
+namespace Drupal\Tests\linkit\Kernel\Matchers;
 
 use Drupal\file\Entity\File;
+use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
 
 /**
  * Tests file matcher.
  *
  * @group linkit
  */
-class FileMatcherTest extends EntityMatcherTestBase {
+class FileMatcherTest extends LinkitKernelTestBase {
+
+  use AssertResultUriTrait;
 
   /**
    * Modules to enable.
@@ -19,24 +22,34 @@ class FileMatcherTest extends EntityMatcherTestBase {
   public static $modules = ['file_test', 'file'];
 
   /**
+   * The matcher manager.
+   *
+   * @var \Drupal\linkit\MatcherManager
+   */
+  protected $manager;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
 
-    $image_files = $this->drupalGetTestFiles('image');
+    $this->installEntitySchema('file');
+    $this->installSchema('system', ['key_value_expire']);
+    $this->installSchema('file', array('file_usage'));
 
-    foreach ($image_files as $file) {
-      $image = File::create((array) $file);
-      $this->assertTrue(is_file($image->getFileUri()), "The image file we're going to upload exists.");
+    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
-      // Upload with replace to guarantee there's something there.
-      $edit = [
-        'file_test_replace' => FILE_EXISTS_REPLACE,
-        'files[file_test_upload]' => drupal_realpath($image->getFileUri()),
-      ];
-      $this->drupalPostForm('file-test/upload', $edit, t('Submit'));
-      $this->assertResponse(200, 'Received a 200 response for posted test file.');
+    // Linkit doesn't case about the actual resource, only the entity.
+    foreach (['gif', 'jpg', 'png'] as $ext) {
+      $file = File::create([
+        'uid' => 1,
+        'filename' => 'image-test.' . $ext,
+        'uri' => 'public://image-test.' . $ext,
+        'filemime' => 'text/plain',
+        'status' => FILE_STATUS_PERMANENT,
+      ]);
+      $file->save();
     }
   }
 
@@ -45,13 +58,9 @@ class FileMatcherTest extends EntityMatcherTestBase {
    */
   public function testMatcherResultsPath() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:file', [
-      'settings' => [
-        'file_status' => 0,
-      ],
-    ]);
+    $plugin = $this->manager->createInstance('entity:file', []);
     $matches = $plugin->getMatches('image-test');
-
+    $this->assertTrue(count($matches), 'Got matches');
     $this->assertResultUri('file', $matches);
   }
 
@@ -60,13 +69,9 @@ class FileMatcherTest extends EntityMatcherTestBase {
    */
   public function testFileMatcherWithDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:file', [
-      'settings' => [
-        'file_status' => 0,
-      ],
-    ]);
+    $plugin = $this->manager->createInstance('entity:file', []);
     $matches = $plugin->getMatches('image-test');
-    $this->assertEqual(6, count($matches), 'Correct number of matches.');
+    $this->assertEquals(3, count($matches), 'Correct number of matches.');
   }
 
   /**
@@ -77,23 +82,21 @@ class FileMatcherTest extends EntityMatcherTestBase {
     $plugin = $this->manager->createInstance('entity:file', [
       'settings' => [
         'file_extensions' => 'png',
-        'file_status' => 0,
       ],
     ]);
 
     $matches = $plugin->getMatches('image-test');
-    $this->assertEqual(1, count($matches), 'Correct number of matches with single file extension filter.');
+    $this->assertEquals(1, count($matches), 'Correct number of matches with single file extension filter.');
 
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:file', [
       'settings' => [
         'file_extensions' => 'png jpg',
-        'file_status' => 0,
       ],
     ]);
 
     $matches = $plugin->getMatches('image-test');
-    $this->assertEqual(2, count($matches), 'Correct number of matches with multiple file extension filter.');
+    $this->assertEquals(2, count($matches), 'Correct number of matches with multiple file extension filter.');
   }
 
 }

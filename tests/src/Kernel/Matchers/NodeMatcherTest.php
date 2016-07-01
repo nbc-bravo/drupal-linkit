@@ -1,20 +1,33 @@
 <?php
 
-namespace Drupal\linkit\Tests\Matchers;
+namespace Drupal\Tests\linkit\Kernel\Matchers;
+
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
+use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
 
 /**
  * Tests node matcher.
  *
  * @group linkit
  */
-class NodeMatcherTest extends EntityMatcherTestBase {
+class NodeMatcherTest extends LinkitKernelTestBase {
+
+  use AssertResultUriTrait;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['node'];
+  public static $modules = ['field', 'node'];
+
+  /**
+   * The matcher manager.
+   *
+   * @var \Drupal\linkit\MatcherManager
+   */
+  protected $manager;
 
   /**
    * {@inheritdoc}
@@ -22,37 +35,57 @@ class NodeMatcherTest extends EntityMatcherTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $type1 = $this->drupalCreateContentType([
+    $this->installEntitySchema('node');
+    $this->installConfig(['field', 'node']);
+
+    $this->manager = $this->container->get('plugin.manager.linkit.matcher');
+
+    // Set the current user to a new user, else the nodes will be created by an
+    // anonymous user.
+    \Drupal::currentUser()->setAccount($this->createUser());
+
+    $type1 = NodeType::create(array(
       'type' => 'test1',
       'name' => 'Test1',
-    ]);
-    $type2 = $this->drupalCreateContentType([
+    ));
+    $type1->save();
+
+    $type2 = NodeType::create(array(
       'type' => 'test2',
       'name' => 'Test2',
-    ]);
+    ));
+    $type2->save();
 
     // Nodes with type 1.
-    $this->drupalCreateNode([
+    $node = Node::create(array(
       'title' => 'Lorem Ipsum 1',
       'type' => $type1->id(),
-    ]);
-    $this->drupalCreateNode([
+    ));
+    $node->save();
+
+    $node = Node::create(array(
       'title' => 'Lorem Ipsum 2',
       'type' => $type1->id(),
-    ]);
+    ));
+    $node->save();
 
     // Node with type 2.
-    $this->drupalCreateNode([
+    $node = Node::create(array(
       'title' => 'Lorem Ipsum 3',
       'type' => $type2->id(),
-    ]);
+    ));
+    $node->save();
 
     // Unpublished node.
-    $this->drupalCreateNode([
+    $node = Node::create(array(
       'title' => 'Lorem unpublishd',
       'type' => $type1->id(),
       'status' => FALSE,
-    ]);
+    ));
+    $node->save();
+
+    // Set the current user to someone that is not the node owner.
+    \Drupal::currentUser()->setAccount($this->createUser([], ['access content']));
   }
 
   /**
@@ -62,7 +95,7 @@ class NodeMatcherTest extends EntityMatcherTestBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', []);
     $matches = $plugin->getMatches('Lorem');
-
+    $this->assertTrue(count($matches), 'Got matches');
     $this->assertResultUri('node', $matches);
   }
 
@@ -73,7 +106,7 @@ class NodeMatcherTest extends EntityMatcherTestBase {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', []);
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(3, count($matches), 'Correct number of matches');
+    $this->assertEquals(3, count($matches), 'Correct number of matches');
   }
 
   /**
@@ -90,7 +123,7 @@ class NodeMatcherTest extends EntityMatcherTestBase {
     ]);
 
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(2, count($matches), 'Correct number of matches');
+    $this->assertEquals(2, count($matches), 'Correct number of matches');
   }
 
   /**
@@ -106,14 +139,14 @@ class NodeMatcherTest extends EntityMatcherTestBase {
 
     // Test without permissions to see unpublished nodes.
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(3, count($matches), 'Correct number of matches');
+    $this->assertEquals(3, count($matches), 'Correct number of matches');
 
-    $account = $this->drupalCreateUser(['bypass node access']);
-    $this->drupalLogin($account);
+    // Set the current user to a user with 'bypass node access' permission.
+    \Drupal::currentUser()->setAccount($this->createUser([], ['bypass node access']));
 
     // Test with permissions to see unpublished nodes.
     $matches = $plugin->getMatches('Lorem');
-    $this->assertEqual(4, count($matches), 'Correct number of matches');
+    $this->assertEquals(4, count($matches), 'Correct number of matches');
   }
 
 }
