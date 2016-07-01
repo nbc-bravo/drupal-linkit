@@ -6,6 +6,9 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -35,11 +38,25 @@ class EntityMatcher extends ConfigurableMatcherBase {
   protected $database;
 
   /**
-   * The entity manager.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
+
+  /**
+   * The entity type bundle info.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   */
+  protected $entityTypeBundleInfo;
+
+  /**
+   * The entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
 
   /**
    * The module handler service.
@@ -65,14 +82,16 @@ class EntityMatcher extends ConfigurableMatcherBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityRepositoryInterface $entity_repository, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (empty($plugin_definition['target_entity'])) {
       throw new \InvalidArgumentException("Missing required 'target_entity' property for a matcher.");
     }
     $this->database = $database;
-    $this->entityManager = $entity_manager;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->entityTypeBundleInfo = $entity_type_bundle_info;
+    $this->entityRepository = $entity_repository;
     $this->moduleHandler = $module_handler;
     $this->currentUser = $current_user;
     $this->targetType = $plugin_definition['target_entity'];
@@ -87,7 +106,9 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $plugin_id,
       $plugin_definition,
       $container->get('database'),
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('entity.repository'),
       $container->get('module_handler'),
       $container->get('current_user')
     );
@@ -98,7 +119,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    */
   public function getSummary() {
     $summery = parent::getSummary();
-    $entity_type = $this->entityManager->getDefinition($this->targetType);
+    $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
 
     $result_description = $this->configuration['result_description'];
     if (!empty($result_description)) {
@@ -112,7 +133,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $bundles = [];
 
       if ($has_bundle_filter) {
-        $bundles_info = $this->entityManager->getBundleInfo($this->targetType);
+        $bundles_info = $this->entityTypeBundleInfo->getBundleInfo($this->targetType);
         foreach ($this->configuration['bundles'] as $bundle) {
           $bundles[] = $bundles_info[$bundle]['label'];
         }
@@ -145,7 +166,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $entity_type = $this->entityManager->getDefinition($this->targetType);
+    $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
     $form['result_description'] = [
       '#title' => $this->t('Result description'),
       '#type' => 'textfield',
@@ -160,7 +181,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     // Filter the possible bundles to use if the entity has bundles.
     if ($entity_type->hasKey('bundle')) {
       $bundle_options = [];
-      foreach ($this->entityManager->getBundleInfo($this->targetType) as $bundle_name => $bundle_info) {
+      foreach ($this->entityTypeBundleInfo->getBundleInfo($this->targetType) as $bundle_name => $bundle_info) {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
@@ -221,7 +242,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     }
 
     $matches = [];
-    $entities = $this->entityManager->getStorage($this->targetType)->loadMultiple($result);
+    $entities = $this->entityTypeManager->getStorage($this->targetType)->loadMultiple($result);
 
     foreach ($entities as $entity) {
       // Check the access against the defined entity access handler.
@@ -231,7 +252,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
         continue;
       }
 
-      $entity = $this->entityManager->getTranslationFromContext($entity);
+      $entity = $this->entityRepository->getTranslationFromContext($entity);
 
       $matches[] = [
         'title' => $this->buildLabel($entity),
@@ -257,8 +278,8 @@ class EntityMatcher extends ConfigurableMatcherBase {
   protected function buildEntityQuery($search_string) {
     $search_string = $this->database->escapeLike($search_string);
 
-    $entity_type = $this->entityManager->getDefinition($this->targetType);
-    $query = $this->entityManager->getStorage($this->targetType)->getQuery();
+    $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
+    $query = $this->entityTypeManager->getStorage($this->targetType)->getQuery();
     $label_key = $entity_type->getKey('label');
 
     if ($label_key) {
@@ -339,7 +360,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     // If the entities by this entity should be grouped by bundle, get the
     // name and append it to the group.
     if ($this->configuration['group_by_bundle']) {
-      $bundles = $this->entityManager->getBundleInfo($entity->getEntityTypeId());
+      $bundles = $this->entityTypeBundleInfo->getBundleInfo($entity->getEntityTypeId());
       $bundle_label = $bundles[$entity->bundle()]['label'];
       $group .= ' - ' . $bundle_label;
     }

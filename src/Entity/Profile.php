@@ -113,7 +113,7 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
    */
   public function getMatchers() {
     if (!$this->matcherCollection) {
-      $this->matcherCollection = new MatcherCollection($this->getMatcherManager(), $this->matchers);
+      $this->matcherCollection = new MatcherCollection(\Drupal::service('plugin.manager.linkit.matcher'), $this->matchers);
       $this->matcherCollection->sort();
     }
     return $this->matcherCollection;
@@ -153,16 +153,6 @@ class Profile extends ConfigEntityBase implements ProfileInterface, EntityWithPl
     return [
       'matchers' => $this->getMatchers(),
     ];
-  }
-
-  /**
-   * Returns the matcher manager.
-   *
-   * @return \Drupal\Component\Plugin\PluginManagerInterface
-   *   The matcher manager.
-   */
-  protected function getMatcherManager() {
-    return \Drupal::service('plugin.manager.linkit.matcher');
   }
 
 }

@@ -97,7 +97,7 @@ abstract class FormBase extends EntityForm {
     }
 
     $status = $linkit_profile->save();
-    $edit_link = $this->entity->link($this->t('Edit'));
+    $edit_link = $this->entity->toLink($this->t('Edit'), 'edit-form')->toString();
     switch ($status) {
       case SAVED_NEW:
         drupal_set_message($this->t('Created new profile %label.', ['%label' => $linkit_profile->label()]));
