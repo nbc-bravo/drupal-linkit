@@ -4,7 +4,6 @@ namespace Drupal\linkit\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Render\Element\Textfield;
 use Drupal\Core\Url;

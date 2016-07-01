@@ -134,15 +134,15 @@ class TermMatcherTest extends LinkitKernelTestBase {
 
     $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $term = $termStorage->create($values + [
-        'name' => $this->randomMachineName(),
-        'description' => [
-          'value' => $this->randomMachineName(),
-          // Use the first available text format.
-          'format' => $format->id(),
-        ],
-        'vid' => $vocabulary->id(),
-        'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-      ]);
+      'name' => $this->randomMachineName(),
+      'description' => [
+        'value' => $this->randomMachineName(),
+        // Use the first available text format.
+        'format' => $format->id(),
+      ],
+      'vid' => $vocabulary->id(),
+      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    ]);
     $term->save();
     return $term;
   }

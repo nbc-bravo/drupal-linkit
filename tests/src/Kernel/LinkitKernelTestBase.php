@@ -60,9 +60,9 @@ abstract class LinkitKernelTestBase extends KernelTestBase {
     }
 
     $account = User::create($values + array(
-        'name' => $this->randomMachineName(),
-        'status' => 1,
-      ));
+      'name' => $this->randomMachineName(),
+      'status' => 1,
+    ));
     $account->enforceIsNew();
     $account->save();
     return $account;
