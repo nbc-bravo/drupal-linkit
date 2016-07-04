@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\linkit;
+namespace Drupal\linkit\Tests;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\linkit\Entity\Profile;

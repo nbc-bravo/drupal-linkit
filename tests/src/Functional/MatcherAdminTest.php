@@ -3,7 +3,7 @@
 namespace Drupal\Tests\linkit\Functional;
 
 use Drupal\linkit\Entity\Profile;
-use Drupal\Tests\linkit\ProfileCreationTrait;
+use Drupal\linkit\Tests\ProfileCreationTrait;
 
 /**
  * Tests adding, listing, updating and deleting matchers on a profile.

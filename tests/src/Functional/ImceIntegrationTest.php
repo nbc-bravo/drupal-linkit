@@ -4,7 +4,7 @@ namespace Drupal\Tests\linkit\Functional;
 
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
-use Drupal\Tests\linkit\ProfileCreationTrait;
+use Drupal\linkit\Tests\ProfileCreationTrait;
 
 /**
  * Tests the IMCE module integration.

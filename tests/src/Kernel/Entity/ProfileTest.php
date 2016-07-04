@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\linkit\Kernel\Entity;
 
+use Drupal\linkit\Tests\ProfileCreationTrait;
 use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
-use Drupal\Tests\linkit\ProfileCreationTrait;
 
 /**
  * Tests the Profile entity.

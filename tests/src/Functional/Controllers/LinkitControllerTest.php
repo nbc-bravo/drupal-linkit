@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\linkit\Functional\Controller;
 
+use Drupal\linkit\Tests\ProfileCreationTrait;
 use Drupal\Tests\linkit\Functional\LinkitBrowserTestBase;
-use Drupal\Tests\linkit\ProfileCreationTrait;
 
 /**
  * Tests Linkit controller.

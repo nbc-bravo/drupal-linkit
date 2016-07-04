@@ -3,7 +3,7 @@
 namespace Drupal\Tests\linkit\Functional;
 
 use Drupal\Component\Utility\Unicode;
-use Drupal\Tests\linkit\ProfileCreationTrait;
+use Drupal\linkit\Tests\ProfileCreationTrait;
 
 /**
  * Tests creating, loading and deleting profiles.
