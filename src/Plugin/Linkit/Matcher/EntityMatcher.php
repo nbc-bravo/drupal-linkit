@@ -5,7 +5,6 @@ namespace Drupal\linkit\Plugin\Linkit\Matcher;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
