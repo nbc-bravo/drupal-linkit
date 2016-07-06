@@ -56,16 +56,16 @@ class LinkitDialogTest extends JavascriptTestBase {
 
     // Create text format, associate CKEditor.
     $llama_format = FilterFormat::create([
-        'format' => 'llama',
-        'name' => 'Llama',
-        'weight' => 0,
-        'filters' => [],
-      ]);
+      'format' => 'llama',
+      'name' => 'Llama',
+      'weight' => 0,
+      'filters' => [],
+    ]);
     $llama_format->save();
     $editor = Editor::create([
-        'format' => 'llama',
-        'editor' => 'ckeditor',
-      ]);
+      'format' => 'llama',
+      'editor' => 'ckeditor',
+    ]);
     $editor->save();
 
     // Create "CKEditor" text editor plugin instance.
@@ -113,7 +113,7 @@ class LinkitDialogTest extends JavascriptTestBase {
   }
 
   /**
-   * Test the link dialog,
+   * Test the link dialog.
    */
   public function testLinkDialog() {
     // Create test nodes.
@@ -166,7 +166,7 @@ class LinkitDialogTest extends JavascriptTestBase {
     $result_selection->click();
 
     // Make sure the href field is populated with the node uri.
-    $this->assertEquals('entity:' . $this->demoEntity ->getEntityTypeId() . '/' . $this->demoEntity ->id(), $input_field->getValue(), 'The href field is populated with the node uri');
+    $this->assertEquals('entity:' . $this->demoEntity->getEntityTypeId() . '/' . $this->demoEntity->id(), $input_field->getValue(), 'The href field is populated with the node uri');
 
     // Save the dialog input.
     $button = $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span');
@@ -177,7 +177,7 @@ class LinkitDialogTest extends JavascriptTestBase {
 
     // We can't use $session->switchToIFrame() here, because the iframe does not
     // have a name.
-    foreach (['data-entity-type' => $this->demoEntity ->getEntityTypeId(), 'data-entity-uuid' => $this->demoEntity ->uuid()] as $attr => $value) {
+    foreach (['data-entity-type' => $this->demoEntity->getEntityTypeId(), 'data-entity-uuid' => $this->demoEntity->uuid()] as $attr => $value) {
       $javascript = <<<JS
         (function($){
           var iframes = document.getElementsByClassName('cke_wysiwyg_frame');
