@@ -26,7 +26,12 @@
      * @param {object} suggestions
      */
     function showSuggestions(suggestions) {
-      response(suggestions.matches);
+      if (suggestions.matches.length === 0) {
+        response([{title: Drupal.t('No results')}]);
+      }
+      else {
+        response(suggestions.matches);
+      }
     }
 
     /**
@@ -63,9 +68,24 @@
   function selectHandler(event, ui) {
     if (ui.item.hasOwnProperty('path')) {
       event.target.value = ui.item.path;
+
+      if (ui.item.hasOwnProperty('title')) {
+        $('.linkit-link-information > span').text(ui.item.title);
+      }
     }
-    $(document).trigger('linkit.autocomplete.select', [event, ui]);
     return false;
+  }
+
+  /**
+   * Handles an autocomplete response event.
+   *
+   * @param {jQuery.Event} event
+   * @param {object} ui
+   */
+  function response(event, ui) {
+    if (ui.content.length !== 0) {
+      $('.linkit-link-information > span').text(event.target.value);
+    }
   }
 
   /**
@@ -157,6 +177,7 @@
       renderItem: renderItem,
       renderMenu: renderMenu,
       select: selectHandler,
+      response: response,
       minLength: 1
     },
     ajax: {

@@ -148,6 +148,11 @@ class LinkitDialogTest extends JavascriptTestBase {
     $autocomplete_container = $page->find('css', 'ul.linkit-ui-autocomplete');
     $this->assertFalse($autocomplete_container->isVisible());
 
+    // Make sure the link information is empty.
+    $javascript = "(function (){ return jQuery('.linkit-link-information > span').text(); })()";
+    $link_information = $session->evaluateScript($javascript);
+    $this->assertEquals('', $link_information, 'Link information is empty');
+
     // Trigger a keydown event to active a autocomplete search.
     $input_field->keyDown('f');
 
@@ -168,6 +173,11 @@ class LinkitDialogTest extends JavascriptTestBase {
     // Make sure the href field is populated with the node uri.
     $this->assertEquals('entity:' . $this->demoEntity->getEntityTypeId() . '/' . $this->demoEntity->id(), $input_field->getValue(), 'The href field is populated with the node uri');
 
+    // Make sure the link information is populated.
+    $javascript = "(function (){ return jQuery('.linkit-link-information > span').text(); })()";
+    $link_information = $session->evaluateScript($javascript);
+    $this->assertEquals($this->demoEntity->label(), $link_information, 'Link information is populated');
+
     // Save the dialog input.
     $button = $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span');
     $button->click();
@@ -179,14 +189,14 @@ class LinkitDialogTest extends JavascriptTestBase {
     // have a name.
     foreach (['data-entity-type' => $this->demoEntity->getEntityTypeId(), 'data-entity-uuid' => $this->demoEntity->uuid()] as $attr => $value) {
       $javascript = <<<JS
-        (function($){
+        (function(){
           var iframes = document.getElementsByClassName('cke_wysiwyg_frame');
           if (iframes.length) {
             var doc = iframes[0].contentDocument || iframes[0].contentWindow.document;
             var link = doc.getElementsByTagName('a')[0];
             return link.getAttribute("$attr");
           }
-        })(jQuery)
+        })()
 JS;
       $link_attr = $session->evaluateScript($javascript);
       $this->assertNotNull($link_attr);
