@@ -70,17 +70,6 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     }
   }
 
-  $form['link-information'] = [
-    '#type' => 'inline_template',
-    '#template' => '<div class="form-item linkit-link-information"><strong>{% trans %}Links to:{% endtrans %}</strong> <span>{{ link_target }}</span></div>',
-    '#context' => [
-      'link_target' => !empty($entity) && !empty($access) && $access ? $entity->label() : $href,
-    ],
-    '#weight' => 2,
-  ];
-
-  // Everything under the "attributes" key is merged directly into the
-  // generated link tag's attributes.
   $form['attributes']['href'] = [
     '#title' => t('Link'),
     '#type' => 'linkit',
@@ -90,7 +79,14 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     '#autocomplete_route_parameters' => [
       'linkit_profile_id' => $linkit_profile_id,
     ],
-    '#weight' => 0,
+  ];
+
+  $form['attributes']['link-information'] = [
+    '#type' => 'inline_template',
+    '#template' => '<div class="form-item linkit-link-information"><strong>{% trans %}Links to:{% endtrans %}</strong> <span>{{ link_target }}</span></div>',
+    '#context' => [
+      'link_target' => !empty($entity) && !empty($access) && $access ? $entity->label() : $href,
+    ],
   ];
 
   // Add IMCE button if IMCE is installed and enabled for the given profile.
