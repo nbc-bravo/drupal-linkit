@@ -129,4 +129,20 @@ class LinkitFilterEntityTest extends LinkitKernelTestBase {
     $this->assertLinkitFilterWithTitle($file);
   }
 
+  /**
+   * Tests that the linkit filter do not overwrite provided title attributes.
+   */
+  public function testTitleOverwritten() {
+    // Create an entity.
+    $entity = EntityTest::create(['name' => $this->randomMachineName()]);
+    $entity->save();
+
+    // Automatically set the title.
+    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+
+    // Make sure the title is not overwritten.
+    $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" title="Do not override">Link text</a>';
+    $this->assertTrue(strpos($this->process($input)->getProcessedText(), 'Do not override'), 'The filer is not overwrite the provided title attribute value.');
+  }
+
 }

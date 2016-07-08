@@ -104,7 +104,7 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
             $access = $entity->access('view', NULL, TRUE);
 
             // Set the appropriate title attribute.
-            if ($this->settings['title'] && !$access->isForbidden()) {
+            if ($this->settings['title'] && !$access->isForbidden() && !$element->getAttribute('title')) {
               $element->setAttribute('title', $entity->label());
             }
 
