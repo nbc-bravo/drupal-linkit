@@ -26,6 +26,11 @@ linkit.autocomplete:
     - core/jquery.ui.autocomplete
     - core/underscore
 
+linkit.filter_html.admin:
+  version: VERSION
+  js:
+    js/linkit.filter_html.admin.js: {}
+
 linkit.imce:
   version: VERSION
   js:

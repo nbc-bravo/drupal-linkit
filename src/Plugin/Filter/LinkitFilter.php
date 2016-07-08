@@ -138,6 +138,9 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically set the <code>title</code> attribute to that of the (translated) referenced content'),
       '#default_value' => $this->settings['title'],
+      '#attached' => [
+        'library' => ['linkit/linkit.filter_html.admin'],
+      ],
     ];
     return $form;
   }
