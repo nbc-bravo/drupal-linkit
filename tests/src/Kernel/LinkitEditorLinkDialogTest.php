@@ -122,7 +122,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
     $this->assertEquals('', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('', $form['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
 
     $form_state->setValue(['attributes', 'href'], 'entity:missing_entity/1');
     $form_builder->submitForm($form_object, $form_state);
@@ -186,7 +186,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
     $this->assertEquals('entity:entity_test/1', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals($entity->label(), $form['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals($entity->label(), $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
 
     // Make sure the dialog don't display entity labels for inaccessible
     // entities.
@@ -222,7 +222,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
     $this->assertEquals('entity:entity_test/2', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('entity:entity_test/2', $form['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('entity:entity_test/2', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
   }
 
   /**
@@ -261,7 +261,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
     $this->assertEquals('http://example.com/', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('http://example.com/', $form['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('http://example.com/', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
   }
 
 }
