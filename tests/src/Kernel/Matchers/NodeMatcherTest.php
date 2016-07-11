@@ -94,9 +94,9 @@ class NodeMatcherTest extends LinkitKernelTestBase {
   public function testMatcherResultsPath() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', []);
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertTrue(count($matches), 'Got matches');
-    $this->assertResultUri('node', $matches);
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+    $this->assertResultUri('node', $suggestions);
   }
 
   /**
@@ -105,8 +105,8 @@ class NodeMatcherTest extends LinkitKernelTestBase {
   public function testNodeMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:node', []);
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(3, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(3, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**
@@ -122,8 +122,8 @@ class NodeMatcherTest extends LinkitKernelTestBase {
       ],
     ]);
 
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(2, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(2, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**
@@ -138,15 +138,15 @@ class NodeMatcherTest extends LinkitKernelTestBase {
     ]);
 
     // Test without permissions to see unpublished nodes.
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(3, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(3, count($suggestions->getSuggestions()), 'Correct number of suggestions');
 
     // Set the current user to a user with 'bypass node access' permission.
     \Drupal::currentUser()->setAccount($this->createUser([], ['bypass node access']));
 
     // Test with permissions to see unpublished nodes.
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(4, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(4, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
 }

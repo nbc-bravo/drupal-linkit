@@ -79,27 +79,37 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
     $entity_2 = EntityTest::create(['name' => 'forbid_access']);
     $entity_2->save();
 
-    $data = $this->getAutocompleteResult('forbid');
-    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
-    $this->assertSame($entity_1->label(), $data[0]['title'], 'Autocomplete did not include the inaccessible entity.');
+    $suggestions = $this->getAutocompleteResult('forbid');
+    $this->assertTrue(count($suggestions) == 1, 'Autocomplete returned the expected amount of suggestions.');
+    $this->assertSame($entity_1->label(), $suggestions[0]['label'], 'Autocomplete did not include the inaccessible entity.');
   }
 
   /**
    * Tests that 'front' adds the front page match.
    */
   public function testAutocompletionFront() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->matcherManager->createInstance('front_page');
+    $this->linkitProfile->addMatcher($plugin->getConfiguration());
+    $this->linkitProfile->save();
+
     $data = $this->getAutocompleteResult('front');
-    $this->assertSame('Front page', $data[0]['title'], 'Autocomplete returned the front page match.');
+    $this->assertSame('Front page', $data[0]['label'], 'Autocomplete returned the front page suggestion.');
   }
 
   /**
    * Tests the autocomplete with an email address.
    */
   public function testAutocompletionEmail() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->matcherManager->createInstance('email');
+    $this->linkitProfile->addMatcher($plugin->getConfiguration());
+    $this->linkitProfile->save();
+
     $email = 'drupal@example.com';
     $data = $this->getAutocompleteResult($email);
-    $this->assertSame((string) new FormattableMarkup('E-mail @email', ['@email' => $email]), $data[0]['title'], 'Autocomplete returned email match.');
-    $this->assertSame('mailto:' . $email, $data[0]['path'], 'Autocomplete returned email match with an mailto href.');
+    $this->assertSame((string) new FormattableMarkup('E-mail @email', ['@email' => $email]), $data[0]['label'], 'Autocomplete returned email suggestion.');
+    $this->assertSame('mailto:' . $email, $data[0]['path'], 'Autocomplete returned email suggestion with an mailto href.');
   }
 
   /**
@@ -119,26 +129,24 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
     $entity_3->save();
 
     // Search for something that doesn't exists.
-    $data = $this->getAutocompleteResult('no_matches');
-    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
-    $this->assertSame($this->noResults(), $data[0], 'Autocomplete returned the "no results."');
+    $data = $this->getAutocompleteResult('no_suggestions');
+    $this->assertEmpty(count($data), 'Autocomplete did not return any suggestions.');
 
     // Search for something that exists one time.
     $data = $this->getAutocompleteResult('bas');
-    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
-    $this->assertSame(Html::escape($entity_3->label()), $data[0]['title'], 'Autocomplete returned the matching entity');
+    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of suggestions.');
+    $this->assertSame(Html::escape($entity_3->label()), $data[0]['label'], 'Autocomplete returned the matching entity');
 
     // Search for something that exists three times.
     $data = $this->getAutocompleteResult('bar');
-    $this->assertTrue(count($data) == 3, 'Autocomplete returned the expected amount of matches.');
-    $this->assertSame(Html::escape($entity_1->label()), $data[0]['title'], 'Autocomplete returned the first matching entity.');
-    $this->assertSame(Html::escape($entity_3->label()), $data[1]['title'], 'Autocomplete returned the second matching entity.');
-    $this->assertSame(Html::escape($entity_2->label()), $data[2]['title'], 'Autocomplete returned the third matching entity.');
+    $this->assertTrue(count($data) == 3, 'Autocomplete returned the expected amount of suggestions.');
+    $this->assertSame(Html::escape($entity_1->label()), $data[0]['label'], 'Autocomplete returned the first matching entity.');
+    $this->assertSame(Html::escape($entity_3->label()), $data[1]['label'], 'Autocomplete returned the second matching entity.');
+    $this->assertSame(Html::escape($entity_2->label()), $data[2]['label'], 'Autocomplete returned the third matching entity.');
 
     // Search for something with an empty string.
     $data = $this->getAutocompleteResult('');
-    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
-    $this->assertSame($this->noResults(), $data[0], 'Autocomplete returned the "no results."');
+    $this->assertEmpty(count($data), 'Autocomplete did not return any suggestions.');
   }
 
   /**
@@ -167,8 +175,8 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
     foreach ($this->langcodes as $langcode) {
       $this->config('system.site')->set('default_langcode', $langcode)->save();
       $data = $this->getAutocompleteResult('bar');
-      $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of matches.');
-      $this->assertSame($entity->getTranslation($langcode)->label(), $data[0]['title'], 'Autocomplete returned the "no results."');
+      $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of suggestions.');
+      $this->assertSame($entity->getTranslation($langcode)->label(), $data[0]['label'], 'Autocomplete returned the "no results."');
     }
   }
 
@@ -179,7 +187,7 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
    *   The label of the entity to query by.
    *
    * @return array
-   *   An array of matches.
+   *   An array of suggestions.
    */
   protected function getAutocompleteResult($input) {
     $request = Request::create('linkit/autocomplete/' . $this->linkitProfile->id());
@@ -187,7 +195,7 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
 
     $controller = AutocompleteController::create($this->container);
     $result = Json::decode($controller->autocomplete($request, $this->linkitProfile->id())->getContent());
-    return $result['matches'];
+    return $result['suggestions'];
   }
 
   /**
@@ -220,7 +228,7 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
   }
 
   /**
-   * Returns the "no results" match.
+   * Returns the "no results" suggestion.
    *
    * @return array
    *   An array with a fixed value of no results.

@@ -67,9 +67,9 @@ class UserMatcherTest extends LinkitKernelTestBase {
   public function testMatcherResultsPath() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', []);
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertTrue(count($matches), 'Got matches');
-    $this->assertResultUri('user', $matches);
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+    $this->assertResultUri('user', $suggestions);
   }
 
   /**
@@ -78,8 +78,8 @@ class UserMatcherTest extends LinkitKernelTestBase {
   public function testUserMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:user', []);
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(4, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(4, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**
@@ -95,8 +95,8 @@ class UserMatcherTest extends LinkitKernelTestBase {
       ],
     ]);
 
-    $matches = $plugin->getMatches('Lorem');
-    $this->assertEquals(2, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('Lorem');
+    $this->assertEquals(2, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**
@@ -111,15 +111,15 @@ class UserMatcherTest extends LinkitKernelTestBase {
     ]);
 
     // Test without permissions to see blocked users.
-    $matches = $plugin->getMatches('blocked');
-    $this->assertEquals(0, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('blocked');
+    $this->assertEquals(0, count($suggestions->getSuggestions()), 'Correct number of suggestions');
 
     // Set the current user to a user with 'administer users' permission.
     \Drupal::currentUser()->setAccount($this->createUser([], ['administer users']));
 
     // Test with permissions to see blocked users.
-    $matches = $plugin->getMatches('blocked');
-    $this->assertEquals(1, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('blocked');
+    $this->assertEquals(1, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
 }

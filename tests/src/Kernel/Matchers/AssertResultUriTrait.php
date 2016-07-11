@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\linkit\Kernel\Matchers;
 
+use Drupal\linkit\Suggestion\SuggestionCollection;
+
 /**
  * Provides helper methods for assertions.
  */
@@ -12,12 +14,12 @@ trait AssertResultUriTrait {
    *
    * @param string $entity_type
    *   The entity_type.
-   * @param array $matches
-   *   An array of matches.
+   * @param \Drupal\linkit\Suggestion\SuggestionCollection $suggestions
+   *   A collection of suggestions.
    */
-  public function assertResultUri($entity_type, $matches) {
-    foreach ($matches as $match) {
-      $this->assertTrue(preg_match("/^entity:" . $entity_type . "\\/\\w+$/i", $match['path']), 'Result URI correct formatted.');
+  public function assertResultUri($entity_type, SuggestionCollection $suggestions) {
+    foreach ($suggestions->getSuggestions() as $suggestion) {
+      $this->assertTrue(preg_match("/^entity:" . $entity_type . "\\/\\w+$/i", $suggestion->getPath()), 'Result URI correct formatted.');
     }
   }
 

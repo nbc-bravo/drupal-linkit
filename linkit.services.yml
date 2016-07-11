@@ -3,5 +3,5 @@ services:
     class: Drupal\linkit\MatcherManager
     parent: default_plugin_manager
 
-  linkit.result_manager:
-    class: Drupal\linkit\ResultManager
+  linkit.suggestion_manager:
+    class: Drupal\linkit\SuggestionManager

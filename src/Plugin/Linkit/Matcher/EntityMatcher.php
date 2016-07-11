@@ -13,6 +13,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\linkit\ConfigurableMatcherBase;
 use Drupal\linkit\MatcherTokensTrait;
+use Drupal\linkit\Suggestion\DescriptionSuggestion;
+use Drupal\linkit\Suggestion\SuggestionCollection;
 use Drupal\linkit\Utility\LinkitXss;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -232,15 +234,15 @@ class EntityMatcher extends ConfigurableMatcherBase {
   /**
    * {@inheritdoc}
    */
-  public function getMatches($string) {
+  public function execute($string) {
+    $suggestions = new SuggestionCollection();
     $query = $this->buildEntityQuery($string);
     $result = $query->execute();
 
     if (empty($result)) {
-      return [];
+      return $suggestions;
     }
 
-    $matches = [];
     $entities = $this->entityTypeManager->getStorage($this->targetType)->loadMultiple($result);
 
     foreach ($entities as $entity) {
@@ -253,15 +255,16 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
       $entity = $this->entityRepository->getTranslationFromContext($entity);
 
-      $matches[] = [
-        'title' => $this->buildLabel($entity),
-        'description' => $this->buildDescription($entity),
-        'path' => $this->buildPath($entity),
-        'group' => $this->buildGroup($entity),
-      ];
+      $suggestion = new DescriptionSuggestion();
+      $suggestion->setLabel($this->buildLabel($entity))
+        ->setPath($this->buildPath($entity))
+        ->setGroup($this->buildGroup($entity))
+        ->setDescription($this->buildDescription($entity));
+
+      $suggestions->addSuggestion($suggestion);
     }
 
-    return $matches;
+    return $suggestions;
   }
 
   /**

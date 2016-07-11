@@ -63,9 +63,9 @@ class TermMatcherTest extends LinkitKernelTestBase {
         'file_status' => 0,
       ],
     ]);
-    $matches = $plugin->getMatches('foo');
-    $this->assertTrue(count($matches), 'Got matches');
-    $this->assertResultUri('taxonomy_term', $matches);
+    $suggestions = $plugin->execute('foo');
+    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+    $this->assertResultUri('taxonomy_term', $suggestions);
   }
 
   /**
@@ -74,8 +74,8 @@ class TermMatcherTest extends LinkitKernelTestBase {
   public function testTermMatcherWidthDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:taxonomy_term', []);
-    $matches = $plugin->getMatches('foo');
-    $this->assertEquals(5, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('foo');
+    $this->assertEquals(5, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**
@@ -91,8 +91,8 @@ class TermMatcherTest extends LinkitKernelTestBase {
       ],
     ]);
 
-    $matches = $plugin->getMatches('foo');
-    $this->assertEquals(3, count($matches), 'Correct number of matches');
+    $suggestions = $plugin->execute('foo');
+    $this->assertEquals(3, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
   /**

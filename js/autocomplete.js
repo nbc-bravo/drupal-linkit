@@ -3,7 +3,7 @@
  * Linkit Autocomplete based on jQuery UI.
  */
 
-(function ($, Drupal, _, document) {
+(function ($, Drupal, _) {
 
   'use strict';
 
@@ -13,7 +13,9 @@
    * JQuery UI autocomplete source callback.
    *
    * @param {object} request
+   *   The request object.
    * @param {function} response
+   *   The function to call with the response.
    */
   function sourceData(request, response) {
     var elementId = this.element.attr('id');
@@ -23,25 +25,14 @@
     }
 
     /**
-     * @param {object} suggestions
-     */
-    function showSuggestions(suggestions) {
-      if (suggestions.matches.length === 0) {
-        response([{title: Drupal.t('No results')}]);
-      }
-      else {
-        response(suggestions.matches);
-      }
-    }
-
-    /**
      * Transforms the data object into an array and update autocomplete results.
      *
      * @param {object} data
+     *   The data sent back from the server.
      */
     function sourceCallbackHandler(data) {
-      autocomplete.cache[elementId][term] = data;
-      showSuggestions(data);
+      autocomplete.cache[elementId][term] = data.suggestions;
+      response(data.suggestions);
     }
 
     // Get the desired term and construct the autocomplete URL for it.
@@ -49,7 +40,7 @@
 
     // Check if the term is already cached.
     if (autocomplete.cache[elementId].hasOwnProperty(term)) {
-      showSuggestions(autocomplete.cache[elementId][term]);
+      response(autocomplete.cache[elementId][term]);
     }
     else {
       var options = $.extend({success: sourceCallbackHandler, data: {q: term}}, autocomplete.ajax);
@@ -61,29 +52,31 @@
    * Handles an autocomplete select event.
    *
    * @param {jQuery.Event} event
+   *   The event triggered.
    * @param {object} ui
+   *   The jQuery UI settings object.
    *
    * @return {boolean}
+   *   False to prevent further handlers.
    */
   function selectHandler(event, ui) {
-    if (ui.item.hasOwnProperty('path')) {
-      event.target.value = ui.item.path;
-
-      if (ui.item.hasOwnProperty('title')) {
-        $('.linkit-link-information > span').text(ui.item.title);
-      }
-    }
+    event.target.value = ui.item.path;
+    $('.linkit-link-information > span').text(ui.item.label);
     return false;
   }
 
   /**
    * Handles an autocomplete response event.
    *
+   * Updates the link information.
+   *
    * @param {jQuery.Event} event
+   *   The event triggered.
    * @param {object} ui
+   *   The jQuery UI settings object.
    */
   function response(event, ui) {
-    if (ui.content.length !== 0) {
+    if (ui.content.length === 0) {
       $('.linkit-link-information > span').text(event.target.value);
     }
   }
@@ -94,14 +87,16 @@
    * @param {object} ul
    *   The <ul> element that the newly created <li> element must be appended to.
    * @param {object} item
+   *  The list item to append.
    *
    * @return {object}
+   *   jQuery collection of the ul element.
    */
   function renderItem(ul, item) {
     var $line = $('<li>').addClass('linkit-result');
-    $line.append($('<span>').html(item.title).addClass('linkit-result--title'));
+    $line.append($('<span>').html(item.label).addClass('linkit-result--title'));
 
-    if (item.description !== null) {
+    if (item.hasOwnProperty('description')) {
       $line.append($('<span>').html(item.description).addClass('linkit-result--description'));
     }
 
@@ -138,10 +133,15 @@
    * Attaches the autocomplete behavior to all required fields.
    *
    * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches the autocomplete behaviors.
+   * @prop {Drupal~behaviorDetach} detach
+   *   Detaches the autocomplete behaviors.
    */
   Drupal.behaviors.linkit_autocomplete = {
     attach: function (context) {
-      // Act on textfields with the "form-autocomplete" class.
+      // Act on textfields with the "form-linkit-autocomplete" class.
       var $autocomplete = $(context).find('input.form-linkit-autocomplete').once('linkit-autocomplete');
       if ($autocomplete.length) {
         $.widget('custom.autocomplete', $.ui.autocomplete, {
@@ -185,4 +185,4 @@
     }
   };
 
-})(jQuery, Drupal, _, document);
+})(jQuery, Drupal, _);

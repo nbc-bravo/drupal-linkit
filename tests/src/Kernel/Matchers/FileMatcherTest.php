@@ -59,9 +59,9 @@ class FileMatcherTest extends LinkitKernelTestBase {
   public function testMatcherResultsPath() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:file', []);
-    $matches = $plugin->getMatches('image-test');
-    $this->assertTrue(count($matches), 'Got matches');
-    $this->assertResultUri('file', $matches);
+    $suggestions = $plugin->execute('image-test');
+    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+    $this->assertResultUri('file', $suggestions);
   }
 
   /**
@@ -70,8 +70,8 @@ class FileMatcherTest extends LinkitKernelTestBase {
   public function testFileMatcherWithDefaultConfiguration() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:file', []);
-    $matches = $plugin->getMatches('image-test');
-    $this->assertEquals(3, count($matches), 'Correct number of matches.');
+    $suggestions = $plugin->execute('image-test');
+    $this->assertEquals(3, count($suggestions->getSuggestions()), 'Correct number of suggestions.');
   }
 
   /**
@@ -85,8 +85,8 @@ class FileMatcherTest extends LinkitKernelTestBase {
       ],
     ]);
 
-    $matches = $plugin->getMatches('image-test');
-    $this->assertEquals(1, count($matches), 'Correct number of matches with single file extension filter.');
+    $suggestions = $plugin->execute('image-test');
+    $this->assertEquals(1, count($suggestions->getSuggestions()), 'Correct number of suggestions with single file extension filter.');
 
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->manager->createInstance('entity:file', [
@@ -95,8 +95,8 @@ class FileMatcherTest extends LinkitKernelTestBase {
       ],
     ]);
 
-    $matches = $plugin->getMatches('image-test');
-    $this->assertEquals(2, count($matches), 'Correct number of matches with multiple file extension filter.');
+    $suggestions = $plugin->execute('image-test');
+    $this->assertEquals(2, count($suggestions->getSuggestions()), 'Correct number of suggestions with multiple file extension filter.');
   }
 
 }

@@ -58,22 +58,14 @@ interface MatcherInterface extends PluginInspectionInterface, ConfigurablePlugin
   public function setWeight($weight);
 
   /**
-   * Gets an array with search matches.
-   *
-   * The matches will be presented in the autocomplete widget.
+   * Executes the matcher.
    *
    * @param string $string
    *   The string that contains the text to search for.
    *
-   * @return array
-   *   An array whose values are an associative array containing:
-   *   - title: A string to use as the search result label.
-   *   - description: (optional) A string with additional information about the
-   *     result item.
-   *   - path: The URL to the item.
-   *   - group: (optional) A string with the group name for the result item.
-   *     Best practice is to use the plugin name as group name.
+   * @return \Drupal\linkit\Suggestion\SuggestionCollection
+   *   A suggestion collection.
    */
-  public function getMatches($string);
+  public function execute($string);
 
 }
