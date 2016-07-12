@@ -40,10 +40,15 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
   /** @var \Drupal\linkit\Entity\Profile $linkit_profile */
   $linkit_profile = Drupal::entityTypeManager()->getStorage('linkit_profile')->load($linkit_profile_id);
 
-  $user_input = $form_state->getUserInput();
-  $input = isset($user_input['editor_object']) ? $user_input['editor_object'] : [];
-  $data_entity_type = isset($input['data-entity-type']) ? $input['data-entity-type'] : '';
-  $data_entity_uuid = isset($input['data-entity-uuid']) ? $input['data-entity-uuid'] : '';
+  if (isset($form_state->getUserInput()['editor_object'])) {
+    $input = $form_state->getUserInput()['editor_object'];
+    $form_state->set('link_element', $input);
+    $form_state->setCached(TRUE);
+  }
+  else {
+    // Retrieve the link element's attributes from form state.
+    $input = $form_state->get('link_element') ?: [];
+  }
 
   // If the filter_html filter is activated, or any other filters using
   // XSS:filter(), it will remove 'entity:' from the href as it thinks it's a
@@ -51,10 +56,10 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
   // link. It is possible given that data-entity-type and data-entity-uuid is
   // set on the link element.
   try {
-    if (!empty($data_entity_type) && !empty($data_entity_uuid)) {
+    if (!empty($input['data-entity-type']) && !empty($input['data-entity-uuid'])) {
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = \Drupal::service('entity.repository')
-        ->loadEntityByUuid($data_entity_type, $data_entity_uuid);
+        ->loadEntityByUuid($input['data-entity-type'], $input['data-entity-uuid']);
       $href = 'entity:' . $entity->getEntityTypeId() . '/' . $entity->id();
       $access = !$entity->access('view', NULL, TRUE)->isForbidden();
     }
@@ -123,13 +128,20 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
  * Generates data-entity-type and data-entity-uuid attributes from href.
  */
 function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterface $form_state) {
+  $link_element = $form_state->get('link_element');
+
   // Check if the 'href' attribute contains a entity: URI.
   $href = $form_state->getValue(['attributes', 'href']);
   $uri_parts = parse_url($href);
 
   if (!$uri_parts || !isset($uri_parts['scheme']) || $uri_parts['scheme'] !== 'entity') {
-    $form_state->setValue(['attributes', 'data-entity-type'], '');
-    $form_state->setValue(['attributes', 'data-entity-uuid'], '');
+    // Only set the data attributes to an empty string if the link is edited.
+    // This is to prevent new links that does not point to entities to have
+    // empty data attributes.
+    if (!empty($link_element)) {
+      $form_state->setValue(['attributes', 'data-entity-type'], '');
+      $form_state->setValue(['attributes', 'data-entity-uuid'], '');
+    }
     return;
   }
 

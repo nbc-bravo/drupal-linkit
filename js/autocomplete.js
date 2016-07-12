@@ -76,9 +76,7 @@
    *   The jQuery UI settings object.
    */
   function response(event, ui) {
-    if (ui.content.length === 0) {
-      $('.linkit-link-information > span').text(event.target.value);
-    }
+    $('.linkit-link-information > span').text(event.target.value);
   }
 
   /**
