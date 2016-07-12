@@ -46,6 +46,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('entity_test');
+    $this->installSchema('system', ['key_value_expire']);
 
     // Create a profile.
     $this->linkitProfile = $this->createProfile();
