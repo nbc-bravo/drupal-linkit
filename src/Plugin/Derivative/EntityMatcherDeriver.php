@@ -45,9 +45,12 @@ class EntityMatcherDeriver extends DeriverBase implements ContainerDeriverInterf
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
-      $has_canonical = $entity_type->hasLinkTemplate('canonical');
+      $canonical = $entity_type->getLinkTemplate('canonical');
+      $edit_form = $entity_type->getLinkTemplate('edit-form');
 
-      if ($has_canonical) {
+      // Only entities that has a distinct canonical URI that is not the same
+      // as the edit-form URI will be derived.
+      if ($canonical && ($canonical !== $edit_form)) {
         $this->derivatives[$entity_type_id] = $base_plugin_definition;
         $this->derivatives[$entity_type_id]['id'] = $base_plugin_definition['id'] . ':' . $entity_type_id;
         $this->derivatives[$entity_type_id]['label'] = $entity_type->getLabel();
