@@ -65,7 +65,7 @@ class OverviewForm extends FormBase {
       '#type' => 'table',
       '#header' => [
         [
-          'data' => $this->t('Matcher'),
+          'data' => $this->t('Matchers'),
           'colspan' => 2,
         ],
         $this->t('Weight'),

@@ -2,12 +2,6 @@
 
 namespace Drupal\Tests\linkit\Kernel;
 
-use Drupal\Core\Menu\MenuTreeParameters;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\menu_link_content\Entity\MenuLinkContent;
-use Drupal\KernelTests\KernelTestBase;
-use Symfony\Component\Routing\Route;
-
 /**
  * Tests the entity matcher deriver.
  *
