@@ -97,7 +97,7 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
               $element->setAttribute('href', $url);
             }
             else {
-              $url = $entity->toUrl()->toString(TRUE);
+              $url = $entity->toUrl('canonical')->toString(TRUE);
               $element->setAttribute('href', $url->getGeneratedUrl());
             }
 
