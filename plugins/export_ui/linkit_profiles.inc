@@ -34,6 +34,14 @@ $plugin = array(
 function linkit_profiles_form(&$form, &$form_state) {
   $profile = $form_state['item'];
 
+  // Add the weight field.
+  $form['weight'] = array(
+    '#type' => 'weight',
+    '#title' => t('Profile weight'),
+    '#description' => t('Used when sorting profiles in a list. Heavier profiles go to the bottom of the list, lighter profiles rise to the top. The first profile in a list will be the default.'),
+    '#default_value' => isset($profile->weight) ? $profile->weight : 0,
+  );
+
   // Set data as a tree.
   $form['data'] = array(
     '#tree' => TRUE,

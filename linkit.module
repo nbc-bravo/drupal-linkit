@@ -138,7 +138,21 @@ function linkit_profile_load($name) {
 function linkit_profile_load_all() {
   ctools_include('export');
   $profiles = ctools_export_load_object('linkit_profiles');
+  uasort($profiles, 'linkit_profile_sort_weight');
   return $profiles;
+}
+
+/**
+ * Sort profiles by their weight.
+ */
+function linkit_profile_sort_weight($a, $b) {
+  $a_weight = isset($a->weight) ? $a->weight : 0;
+  $b_weight = isset($b->weight) ? $b->weight : 0;
+  if ($a_weight == $b_weight) {
+    // If the weight is the same, sort by name.
+    return strcmp($a->name, $b->name);
+  }
+  return ($a_weight < $b_weight) ? -1 : 1;
 }
 
 /**
