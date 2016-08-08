@@ -15,16 +15,17 @@
       $.each(settings.linkit.fields, function(i, instance) {
         $('#' + instance.source, context).once(behavior, function() {
           var element = this;
+          var instanceCopy = $.extend({}, instance);
 
           $('.linkit-field-' + instance.source).click(function(event) {
             event.preventDefault();
 
             // Only care about selection if the element is a textarea.
             if ('textarea' === element.nodeName.toLowerCase()) {
-              instance.selection = Drupal.linkit.getDialogHelper('field').getSelection(element);
+              instanceCopy.selection = Drupal.linkit.getDialogHelper('field').getSelection(element);
             }
 
-            Drupal.settings.linkit.currentInstance = instance;
+            Drupal.settings.linkit.currentInstance = instanceCopy;
             Drupal.linkit.createModal();
           });
         });
