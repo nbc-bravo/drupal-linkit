@@ -2,6 +2,8 @@ services:
   plugin.manager.linkit.matcher:
     class: Drupal\linkit\MatcherManager
     parent: default_plugin_manager
-
+  plugin.manager.linkit.substitution:
+    class: Drupal\linkit\SubstitutionManager
+    parent: default_plugin_manager
   linkit.suggestion_manager:
     class: Drupal\linkit\SuggestionManager

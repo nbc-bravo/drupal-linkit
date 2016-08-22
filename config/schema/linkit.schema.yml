@@ -43,6 +43,8 @@ linkit.matcher.entity:
       nullable: true
     group_by_bundle:
       type: boolean
+    substitution_type:
+      type: string
 
 linkit.matcher.entity:*:
   type: linkit.matcher.entity

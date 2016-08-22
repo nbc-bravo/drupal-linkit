@@ -169,12 +169,13 @@ function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterfac
     if (!empty($link_element)) {
       $form_state->setValue(['attributes', 'data-entity-type'], '');
       $form_state->setValue(['attributes', 'data-entity-uuid'], '');
+      $form_state->setValue(['attributes', 'data-entity-substitution'], '');
     }
     return;
   }
 
   // Parse the entity: URI into an entity type ID and entity ID.
-  list($entity_type_id, $entity_id) = explode('/', $uri_parts['path'], 2);
+  list($substitution_type, $entity_type_id, $entity_id) = explode('/', $uri_parts['path'], 3);
 
   // Check if the given entity type exists, to prevent the entity load method
   // to throw exceptions.
@@ -192,6 +193,7 @@ function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterfac
   if (!empty($entity)) {
     $form_state->setValue(['attributes', 'data-entity-type'], $entity->getEntityTypeId());
     $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
+    $form_state->setValue(['attributes', 'data-entity-substitution'], $substitution_type);
   }
   else {
     $form_state->setError($form['attributes']['href'], t('Invalid URI'));

@@ -125,7 +125,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $this->assertEquals('', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
     $this->assertEquals('', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
 
-    $form_state->setValue(['attributes', 'href'], 'entity:missing_entity/1');
+    $form_state->setValue(['attributes', 'href'], 'entity:canonical/missing_entity/1');
     $form_builder->submitForm($form_object, $form_state);
     $this->assertNotEmpty($form_state->getErrors(), 'Got validation errors for none existing entity type.');
 
@@ -135,7 +135,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $this->assertEquals('', $form_state->getValue(['attributes', 'data-entity-type']));
     $this->assertEquals('', $form_state->getValue(['attributes', 'data-entity-uuid']));
 
-    $form_state->setValue(['attributes', 'href'], 'entity:entity_test/1');
+    $form_state->setValue(['attributes', 'href'], 'entity:canonical/entity_test/1');
     $form_builder->submitForm($form_object, $form_state);
     $this->assertEmpty($form_state->getErrors(), 'Got no validation errors for correct URI.');
     $this->assertEquals($entity->getEntityTypeId(), $form_state->getValue(['attributes', 'data-entity-type']), 'Attribute "data-entity-type" exists and has the correct value.');

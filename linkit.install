@@ -122,3 +122,34 @@ function linkit_update_8500() {
     $config->save(TRUE);
   }
 }
+
+/**
+ * Prepare anchor attributes for substitution plugins.
+ */
+function linkit_update_8501() {
+  $config_factory = \Drupal::configFactory();
+
+  // Update all filter formats that allow the data-entity-uuid attribute to also
+  // allow the data-entity-substitution attribute.
+  foreach ($config_factory->listAll('filter.format.') as $id) {
+    $filter = $config_factory->getEditable($id);
+    if ($allowed_html = $filter->get('filters.filter_html.settings.allowed_html')) {
+      $allowed_html = str_replace('data-entity-uuid', 'data-entity-uuid data-entity-substitution', $allowed_html);
+      $filter->set('filters.filter_html.settings.allowed_html', $allowed_html);
+      $filter->save(TRUE);
+    }
+  }
+
+  // Update all "file" matchers to the "file" substitution plugin, to maintain
+  // existing behavior out of the box.
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('linkit.linkit_profile.') as $id) {
+    $profile = $config_factory->getEditable($id);
+    foreach ($profile->get('matchers') as $key => $matcher) {
+      $settings = $profile->get('matchers.' . $key . '.settings');
+      $settings['substitution_type'] = $matcher['id'] === 'entity:file' ? 'file' : 'canonical';
+      $profile->set('matchers.' . $key . '.settings', $settings);
+    }
+    $profile->save(TRUE);
+  }
+}

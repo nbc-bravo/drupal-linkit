@@ -13,6 +13,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\linkit\ConfigurableMatcherBase;
 use Drupal\linkit\MatcherTokensTrait;
+use Drupal\linkit\SubstitutionManager;
+use Drupal\linkit\SubstitutionManagerInterface;
 use Drupal\linkit\Suggestion\DescriptionSuggestion;
 use Drupal\linkit\Suggestion\SuggestionCollection;
 use Drupal\linkit\Utility\LinkitXss;
@@ -81,9 +83,16 @@ class EntityMatcher extends ConfigurableMatcherBase {
   protected $targetType;
 
   /**
+   * The substitution manager.
+   *
+   * @var \Drupal\linkit\SubstitutionManagerInterface
+   */
+  protected $substitutionManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityRepositoryInterface $entity_repository, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info, EntityRepositoryInterface $entity_repository, ModuleHandlerInterface $module_handler, AccountInterface $current_user, SubstitutionManagerInterface $substitution_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     if (empty($plugin_definition['target_entity'])) {
@@ -96,6 +105,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $this->moduleHandler = $module_handler;
     $this->currentUser = $current_user;
     $this->targetType = $plugin_definition['target_entity'];
+    $this->substitutionManager = $substitution_manager;
   }
 
   /**
@@ -111,7 +121,8 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $container->get('entity_type.bundle.info'),
       $container->get('entity.repository'),
       $container->get('module_handler'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('plugin.manager.linkit.substitution')
     );
   }
 
@@ -160,6 +171,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       'result_description' => '',
       'bundles' => [],
       'group_by_bundle' => FALSE,
+      'substitution_type' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
     ];
   }
 
@@ -205,6 +217,17 @@ class EntityMatcher extends ConfigurableMatcherBase {
       ];
     }
 
+    $substitution_options = $this->substitutionManager->getApplicablePluginsOptionList($this->targetType);
+    $form['substitution_type'] = [
+      '#title' => $this->t('Substitution Type'),
+      '#type' => 'select',
+      '#default_value' => $this->configuration['substitution_type'],
+      '#options' => $substitution_options,
+      '#description' => $this->t('Configure how the selected entity should be transformed into a URL for insertion.'),
+      '#weight' => -49,
+      '#access' => count($substitution_options) !== 1,
+    ];
+
     return $form;
   }
 
@@ -221,6 +244,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $this->configuration['result_description'] = $form_state->getValue('result_description');
     $this->configuration['bundles'] = $form_state->getValue('bundles');
     $this->configuration['group_by_bundle'] = $form_state->getValue('group_by_bundle');
+    $this->configuration['substitution_type'] = $form_state->getValue('substitution_type');
   }
 
   /**
@@ -344,7 +368,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * @see \Drupal\Core\Url::fromEntityUri()
    */
   protected function buildPath(EntityInterface $entity) {
-    return 'entity:' . $entity->getEntityTypeId() . '/' . $entity->id();
+    return 'entity:' . $this->configuration['substitution_type'] . '/' . $entity->getEntityTypeId() . '/' . $entity->id();
   }
 
   /**

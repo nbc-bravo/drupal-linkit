@@ -19,7 +19,7 @@ trait AssertResultUriTrait {
    */
   public function assertResultUri($entity_type, SuggestionCollection $suggestions) {
     foreach ($suggestions->getSuggestions() as $suggestion) {
-      $this->assertTrue(preg_match("/^entity:" . $entity_type . "\\/\\w+$/i", $suggestion->getPath()), 'Result URI correct formatted.');
+      $this->assertTrue(preg_match("/^entity:canonical\/" . $entity_type . "\\/\\w+$/i", $suggestion->getPath()), 'Result URI correct formatted.');
     }
   }
 

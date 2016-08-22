@@ -170,7 +170,7 @@ class LinkitDialogTest extends JavascriptTestBase {
     $page->find('xpath', '(//li[contains(@class, "linkit-result") and contains(@class, "ui-menu-item")])[1]')->click();
 
     // Make sure the href field is populated with the node uri.
-    $this->assertEquals('entity:' . $this->demoEntity->getEntityTypeId() . '/' . $this->demoEntity->id(), $input_field->getValue(), 'The href field is populated with the node uri');
+    $this->assertEquals('entity:canonical/' . $this->demoEntity->getEntityTypeId() . '/' . $this->demoEntity->id(), $input_field->getValue(), 'The href field is populated with the node uri');
 
     // Make sure the link information is populated.
     $javascript = "(function (){ return jQuery('.linkit-link-information > span').text(); })()";

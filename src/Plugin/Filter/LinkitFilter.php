@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\linkit\SubstitutionManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -38,6 +39,13 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
   protected $entityRepository;
 
   /**
+   * The substitution manager.
+   *
+   * @var \Drupal\linkit\SubstitutionManagerInterface
+   */
+  protected $substitutionManager;
+
+  /**
    * Constructs a LinkitFilter object.
    *
    * @param array $configuration
@@ -49,10 +57,11 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    *   The entity repository service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityRepositoryInterface $entity_repository) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityRepositoryInterface $entity_repository, SubstitutionManagerInterface $substitution_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->entityRepository = $entity_repository;
+    $this->substitutionManager = $substitution_manager;
   }
 
   /**
@@ -63,7 +72,8 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.repository')
+      $container->get('entity.repository'),
+      $container->get('plugin.manager.linkit.substitution')
     );
   }
 
@@ -83,24 +93,25 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
           // Load the appropriate translation of the linked entity.
           $entity_type = $element->getAttribute('data-entity-type');
           $uuid = $element->getAttribute('data-entity-uuid');
+
+          // Make the substitution optional, for backwards compatibility,
+          // maintaining the previous hard-coded direct file link assumptions,
+          // for content created before the substitution feature.
+          if (!$substitution_type = $element->getAttribute('data-entity-substitution')) {
+            $substitution_type = $entity_type === 'file' ? 'file' : SubstitutionManagerInterface::DEFAULT_SUBSTITUTION;
+          }
+
           $entity = $this->entityRepository->loadEntityByUuid($entity_type, $uuid);
           if ($entity) {
+
             $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
 
-            // Set the appropriate href attribute.
-            // The file entity has not declared any "links" in its entity
-            // definition. We therefor have to use the file entity specific
-            // getFileUri() instead.
-            if ($entity_type === 'file') {
-              /** @var \Drupal\file\Entity\File $entity */
-              $url = file_create_url($entity->getFileUri());
-              $element->setAttribute('href', $url);
-            }
-            else {
-              $url = $entity->toUrl('canonical')->toString(TRUE);
-              $element->setAttribute('href', $url->getGeneratedUrl());
-            }
+            /** @var \Drupal\Core\GeneratedUrl $url */
+            $url = $this->substitutionManager
+              ->createInstance($substitution_type)
+              ->getUrl($entity);
 
+            $element->setAttribute('href', $url->getGeneratedUrl());
             $access = $entity->access('view', NULL, TRUE);
 
             // Set the appropriate title attribute.
