@@ -18,11 +18,11 @@ trait MatcherTokensTrait {
   public function insertTokenList(&$form, array $types = []) {
     if (\Drupal::moduleHandler()->moduleExists('token')) {
       // Add the token tree UI.
-      $form['token_tree'] = [
+      $form['metadata']['token_tree'] = [
         '#theme' => 'token_tree_link',
         '#token_types' => $types,
         '#dialog' => TRUE,
-        '#weight' => -90,
+        '#weight' => 10,
       ];
     }
     else {
@@ -35,13 +35,13 @@ trait MatcherTokensTrait {
       }
 
       if (count($token_items)) {
-        $form['tokens'] = [
+        $form['metadata']['tokens'] = [
           '#type' => 'details',
           '#title' => t('Available tokens'),
-          '#weight' => -90,
+          '#weight' => 10,
         ];
 
-        $form['tokens']['list'] = [
+        $form['metadata']['tokens']['list'] = [
           '#theme' => 'item_list',
           '#items' => $token_items,
         ];

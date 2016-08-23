@@ -53,11 +53,17 @@ class NodeMatcher extends EntityMatcher {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['include_unpublished'] = [
+    $form['unpublished_nodes'] = array(
+      '#type' => 'details',
+      '#title' => t('Unpublished nodes'),
+      '#open' => TRUE,
+    );
+
+    $form['unpublished_nodes']['include_unpublished'] = [
       '#title' => t('Include unpublished nodes'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['include_unpublished'],
-      '#description' => t('In order to see unpublished nodes, the requesting user must also have permissions to do so.'),
+      '#description' => t('In order to see unpublished nodes, users must also have permissions to do so.'),
     ];
 
     return $form;

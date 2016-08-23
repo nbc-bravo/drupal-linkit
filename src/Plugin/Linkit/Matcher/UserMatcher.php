@@ -60,20 +60,33 @@ class UserMatcher extends EntityMatcher {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['roles'] = [
+    $form['role_restrictions'] = array(
+      '#type' => 'details',
+      '#title' => t('Role restrictions'),
+      '#open' => TRUE,
+      '#weight' => -90,
+    );
+
+    $form['role_restrictions']['roles'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Restrict to the selected roles'),
       '#options' => array_diff_key(user_role_names(TRUE), [RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID]),
       '#default_value' => $this->configuration['roles'],
-      '#description' => $this->t('If none of the checkboxes is checked, allow all roles.'),
+      '#description' => $this->t('If none of the checkboxes is checked, all roles are allowed.'),
       '#element_validate' => [[get_class($this), 'elementValidateFilter']],
     ];
 
-    $form['include_blocked'] = [
+    $form['blocked_users'] = array(
+      '#type' => 'details',
+      '#title' => t('Blocked users'),
+      '#open' => TRUE,
+    );
+
+    $form['blocked_users']['include_blocked'] = [
       '#title' => t('Include blocked user'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['include_blocked'],
-      '#description' => t('In order to see blocked users, the requesting user must also have permissions to do so.'),
+      '#description' => t('In order to see blocked users, users must have permissions to do so.'),
     ];
 
     return $form;

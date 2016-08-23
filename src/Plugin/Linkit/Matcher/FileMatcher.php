@@ -88,8 +88,15 @@ class FileMatcher extends EntityMatcher {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
 
+    $form['extensions'] = array(
+      '#type' => 'details',
+      '#title' => t('File extensions'),
+      '#open' => TRUE,
+      '#weight' => -100,
+    );
+
     $file_extensions = str_replace(' ', ', ', $this->configuration['file_extensions']);
-    $form['file_extensions'] = [
+    $form['extensions']['file_extensions'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Allowed file extensions'),
       '#default_value' => $file_extensions,
@@ -102,6 +109,7 @@ class FileMatcher extends EntityMatcher {
       '#type' => 'details',
       '#title' => t('Image file settings'),
       '#description' => t('Extra settings for image files in the result.'),
+      '#open' => TRUE,
       '#tree' => TRUE,
     ];
 

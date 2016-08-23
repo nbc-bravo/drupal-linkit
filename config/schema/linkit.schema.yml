@@ -34,7 +34,7 @@ linkit.matcher.*:
 linkit.matcher.entity:
   type: mapping
   mapping:
-    result_description:
+    metadata:
       type: string
     bundles:
       type: sequence

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Database fixture for testing the upgrade path for Linkit 4 to 5.
+ * Database fixture for testing the update hooks.
  *
  * Contains database additions to drupal-8.bare.standard.php.gz for testing the
- * upgrade path for Linkit 4 to 5.
+ * update hooks.
  */
 
 use Drupal\Component\Serialization\Yaml;

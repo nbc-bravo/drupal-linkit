@@ -12,7 +12,7 @@ matchers:
     id: 'entity:node'
     weight: 0
     settings:
-      result_description: 'by [node:author] | [node:created:medium]'
+      metadata: 'by [node:author] | [node:created:medium]'
       bundles: {  }
       group_by_bundle: false
       include_unpublished: false

@@ -133,10 +133,10 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $summery = parent::getSummary();
     $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
 
-    $result_description = $this->configuration['result_description'];
-    if (!empty($result_description)) {
-      $summery[] = $this->t('Result description: @result_description', [
-        '@result_description' => $result_description,
+    $metadata = $this->configuration['metadata'];
+    if (!empty($metadata)) {
+      $summery[] = $this->t('Metadata: @metadata', [
+        '@metadata' => $metadata,
       ]);
     }
 
@@ -168,7 +168,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'result_description' => '',
+      'metadata' => '',
       'bundles' => [],
       'group_by_bundle' => FALSE,
       'substitution_type' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
@@ -180,13 +180,22 @@ class EntityMatcher extends ConfigurableMatcherBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
-    $form['result_description'] = [
-      '#title' => $this->t('Result description'),
+
+    $form['metadata'] = array(
+      '#type' => 'details',
+      '#title' => t('Suggestion metadata'),
+      '#open' => TRUE,
+      '#weight' => -100,
+    );
+
+    $form['metadata']['metadata'] = [
+      '#title' => $this->t('Metadata'),
       '#type' => 'textfield',
-      '#default_value' => $this->configuration['result_description'],
+      '#default_value' => $this->configuration['metadata'],
+      '#description' => $this->t('Metadata is shown together with each suggestion in the suggestion list.'),
       '#size' => 120,
       '#maxlength' => 255,
-      '#weight' => -100,
+      '#weight' => 0,
     ];
 
     $this->insertTokenList($form, [$this->targetType]);
@@ -198,34 +207,51 @@ class EntityMatcher extends ConfigurableMatcherBase {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
-      $form['bundles'] = [
+      $form['bundle_restrictions'] = array(
+        '#type' => 'details',
+        '#title' => t('Bundle restrictions'),
+        '#open' => TRUE,
+        '#weight' => -90,
+      );
+
+      $form['bundle_restrictions']['bundles'] = [
         '#type' => 'checkboxes',
-        '#title' => $this->t('Restrict to the selected bundles'),
+        '#title' => $this->t('Restrict suggestions to the selected bundles'),
         '#options' => $bundle_options,
         '#default_value' => $this->configuration['bundles'],
-        '#description' => $this->t('If none of the checkboxes is checked, allow all bundles.'),
+        '#description' => $this->t('If none of the checkboxes is checked, all bundles are allowed.'),
         '#element_validate' => [[get_class($this), 'elementValidateFilter']],
-        '#weight' => -50,
       ];
 
-      // Group the results by bundle.
-      $form['group_by_bundle'] = [
+      $form['bundle_grouping'] = array(
+        '#type' => 'details',
+        '#title' => t('Bundle grouping'),
+        '#open' => TRUE,
+      );
+
+      // Group the suggestions by bundle.
+      $form['bundle_grouping']['group_by_bundle'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Group by bundle'),
         '#default_value' => $this->configuration['group_by_bundle'],
-        '#weight' => -50,
+        '#description' => $this->t('Group suggestions by their bundle.'),
       ];
     }
 
     $substitution_options = $this->substitutionManager->getApplicablePluginsOptionList($this->targetType);
-    $form['substitution_type'] = [
+    $form['substitution'] = array(
+      '#type' => 'details',
+      '#title' => t('URL substitution'),
+      '#open' => TRUE,
+      '#weight' => 100,
+      '#access' => count($substitution_options) !== 1,
+    );
+    $form['substitution']['substitution_type'] = [
       '#title' => $this->t('Substitution Type'),
       '#type' => 'select',
       '#default_value' => $this->configuration['substitution_type'],
       '#options' => $substitution_options,
       '#description' => $this->t('Configure how the selected entity should be transformed into a URL for insertion.'),
-      '#weight' => -49,
-      '#access' => count($substitution_options) !== 1,
     ];
 
     return $form;
@@ -241,7 +267,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $this->configuration['result_description'] = $form_state->getValue('result_description');
+    $this->configuration['metadata'] = $form_state->getValue('metadata');
     $this->configuration['bundles'] = $form_state->getValue('bundles');
     $this->configuration['group_by_bundle'] = $form_state->getValue('group_by_bundle');
     $this->configuration['substitution_type'] = $form_state->getValue('substitution_type');
@@ -343,16 +369,16 @@ class EntityMatcher extends ConfigurableMatcherBase {
   }
 
   /**
-   * Builds the description string used in the match array.
+   * Builds the metadata string used in the match array.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The matched entity.
    *
    * @return string
-   *    The description for this entity.
+   *    The metadata for this entity.
    */
   protected function buildDescription(EntityInterface $entity) {
-    $description = \Drupal::token()->replace($this->configuration['result_description'], [$this->targetType => $entity], []);
+    $description = \Drupal::token()->replace($this->configuration['metadata'], [$this->targetType => $entity], []);
     return LinkitXss::descriptionFilter($description);
   }
 
