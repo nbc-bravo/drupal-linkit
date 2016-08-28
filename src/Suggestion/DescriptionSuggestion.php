@@ -13,7 +13,6 @@ class DescriptionSuggestion extends SimpleSuggestion implements SuggestionDescri
    * A string with additional information about the suggestion.
    *
    * @var string
-   *  The suggestion description.
    */
   protected $description;
 

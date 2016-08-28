@@ -11,7 +11,6 @@ class SimpleSuggestion implements SuggestionInterface {
    * The suggestion label.
    *
    * @var string
-   *   The suggestion label.
    */
   protected $label;
 
@@ -19,7 +18,6 @@ class SimpleSuggestion implements SuggestionInterface {
    * The suggestion path.
    *
    * @var string
-   *   The suggestion path.
    */
   protected $path;
 
@@ -27,7 +25,6 @@ class SimpleSuggestion implements SuggestionInterface {
    * The suggestion group.
    *
    * @var string
-   *   The suggestion group.
    */
   protected $group;
 
