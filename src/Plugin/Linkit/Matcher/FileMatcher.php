@@ -55,7 +55,7 @@ class FileMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + [
+    return [
       'file_extensions' => '',
       'file_status' => FILE_STATUS_PERMANENT,
       'images' => [
@@ -63,7 +63,8 @@ class FileMatcher extends EntityMatcher {
         'show_thumbnail' => FALSE,
         'thumbnail_image_style' => 'linkit_result_thumbnail',
       ],
-    ];
+      'substitution_type' => 'file',
+    ] + parent::defaultConfiguration();
   }
 
   /**

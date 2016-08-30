@@ -3,6 +3,7 @@
 namespace Drupal\linkit\Plugin\Linkit\Substitution;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\GeneratedUrl;
 use Drupal\linkit\SubstitutionInterface;
 use Drupal\views\Plugin\views\PluginBase;
@@ -13,7 +14,6 @@ use Drupal\views\Plugin\views\PluginBase;
  * @Substitution(
  *   id = "file",
  *   label = @Translation("Direct File URL"),
- *   entity_types = {"file"},
  * )
  */
 class File extends PluginBase implements SubstitutionInterface {
@@ -27,6 +27,13 @@ class File extends PluginBase implements SubstitutionInterface {
     $url->setGeneratedUrl(file_create_url($entity->getFileUri()));
     $url->addCacheableDependency($entity);
     return $url;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function isApplicable(EntityTypeInterface $entity_type) {
+    return $entity_type->isSubclassOf('Drupal\file\FileInterface');
   }
 
 }

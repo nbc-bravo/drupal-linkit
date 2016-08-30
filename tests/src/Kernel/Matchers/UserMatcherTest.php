@@ -69,7 +69,7 @@ class UserMatcherTest extends LinkitKernelTestBase {
     $plugin = $this->manager->createInstance('entity:user', []);
     $suggestions = $plugin->execute('Lorem');
     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri('user', $suggestions);
+    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

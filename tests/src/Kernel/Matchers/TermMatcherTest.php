@@ -65,7 +65,7 @@ class TermMatcherTest extends LinkitKernelTestBase {
     ]);
     $suggestions = $plugin->execute('foo');
     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri('taxonomy_term', $suggestions);
+    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

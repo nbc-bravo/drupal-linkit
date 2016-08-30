@@ -39,10 +39,10 @@ class UserMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + [
+    return [
       'roles' => [],
       'include_blocked' => FALSE,
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**

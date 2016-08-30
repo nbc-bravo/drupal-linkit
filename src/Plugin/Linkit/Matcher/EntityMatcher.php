@@ -167,12 +167,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + [
+    return [
       'metadata' => '',
       'bundles' => [],
       'group_by_bundle' => FALSE,
       'substitution_type' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**

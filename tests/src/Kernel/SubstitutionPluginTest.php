@@ -4,6 +4,8 @@ namespace Drupal\Tests\linkit\Kernel;
 
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\file\Entity\File;
+use Drupal\linkit\Plugin\Linkit\Substitution\Canonical as CanonicalSubstitutionPlugin;
+use Drupal\linkit\Plugin\Linkit\Substitution\File as FileSubstitutionPlugin;
 
 /**
  * Tests the substitution plugins.
@@ -20,18 +22,11 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
   protected $substitutionManager;
 
   /**
-   * The file substitution plugin.
+   * The entity type manager.
    *
-   * @var \Drupal\linkit\SubstitutionInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $fileSubstitution;
-
-  /**
-   * The canonical substitution plugin.
-   *
-   * @var \Drupal\linkit\SubstitutionInterface
-   */
-  protected $canonicalSubstitution;
+  protected $entityTypeManager;
 
   /**
    * Additional modules to enable.
@@ -49,8 +44,7 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
   public function setUp() {
     parent::setUp();
     $this->substitutionManager = $this->container->get('plugin.manager.linkit.substitution');
-    $this->fileSubstitution = $this->substitutionManager->createInstance('file');
-    $this->canonicalSubstitution = $this->substitutionManager->createInstance('canonical');
+    $this->entityTypeManager = $this->container->get('entity_type.manager');
 
     $this->installEntitySchema('file');
     $this->installEntitySchema('entity_test');
@@ -60,6 +54,7 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
    * Test the file substitution.
    */
   public function testFileSubstitutions() {
+    $fileSubstitution = $this->substitutionManager->createInstance('file');
     $file = File::create([
       'uid' => 1,
       'filename' => 'druplicon.txt',
@@ -68,16 +63,29 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
       'status' => FILE_STATUS_PERMANENT,
     ]);
     $file->save();
-    $this->assertEquals($GLOBALS['base_url'] . '/' . $this->siteDirectory . '/files/druplicon.txt', $this->fileSubstitution->getUrl($file)->getGeneratedUrl());
+    $this->assertEquals($GLOBALS['base_url'] . '/' . $this->siteDirectory . '/files/druplicon.txt', $fileSubstitution->getUrl($file)->getGeneratedUrl());
+
+    $entity_type = $this->entityTypeManager->getDefinition('file');
+    $this->assertTrue(FileSubstitutionPlugin::isApplicable($entity_type), 'The entity type File is applicable the file substitution.');
+
+    $entity_type = $this->entityTypeManager->getDefinition('entity_test');
+    $this->assertFalse(FileSubstitutionPlugin::isApplicable($entity_type), 'The entity type EntityTest is not applicable the file substitution.');
   }
 
   /**
-   * Test the canonical URL substitution.
+   * Test the canonical substitution.
    */
-  public function testCanonicalSubstutition() {
+  public function testCanonicalSubstitution() {
+    $canonicalSubstitution = $this->substitutionManager->createInstance('canonical');
     $entity = EntityTest::create([]);
     $entity->save();
-    $this->assertEquals('/entity_test/1', $this->canonicalSubstitution->getUrl($entity)->getGeneratedUrl());
+    $this->assertEquals('/entity_test/1', $canonicalSubstitution->getUrl($entity)->getGeneratedUrl());
+
+    $entity_type = $this->entityTypeManager->getDefinition('entity_test');
+    $this->assertTrue(CanonicalSubstitutionPlugin::isApplicable($entity_type), 'The entity type EntityTest is applicable the canonical substitution.');
+
+    $entity_type = $this->entityTypeManager->getDefinition('file');
+    $this->assertFalse(CanonicalSubstitutionPlugin::isApplicable($entity_type), 'The entity type File is not applicable the canonical substitution.');
   }
 
 }

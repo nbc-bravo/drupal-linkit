@@ -25,11 +25,4 @@ class Substitution extends Plugin {
    */
   public $label;
 
-  /**
-   * An array of applicable entity types.
-   *
-   * @var array
-   */
-  public $entity_types = [];
-
 }

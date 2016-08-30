@@ -1,0 +1,472 @@
+diff --git a/linkit.services.yml b/linkit.services.yml
+index 529c589..e18ca32 100644
+--- a/linkit.services.yml
++++ b/linkit.services.yml
+@@ -4,6 +4,7 @@ services:
+     parent: default_plugin_manager
+   plugin.manager.linkit.substitution:
+     class: Drupal\linkit\SubstitutionManager
++    arguments: ['@entity_type.manager']
+     parent: default_plugin_manager
+   linkit.suggestion_manager:
+     class: Drupal\linkit\SuggestionManager
+diff --git a/src/Annotation/Substitution.php b/src/Annotation/Substitution.php
+index 99183ba..b46a73a 100644
+--- a/src/Annotation/Substitution.php
++++ b/src/Annotation/Substitution.php
+@@ -25,11 +25,4 @@ class Substitution extends Plugin {
+    */
+   public $label;
+ 
+-  /**
+-   * An array of applicable entity types.
+-   *
+-   * @var array
+-   */
+-  public $entity_types = [];
+-
+ }
+diff --git a/src/Plugin/Linkit/Matcher/EntityMatcher.php b/src/Plugin/Linkit/Matcher/EntityMatcher.php
+index 5bfca1e..5f479c6 100644
+--- a/src/Plugin/Linkit/Matcher/EntityMatcher.php
++++ b/src/Plugin/Linkit/Matcher/EntityMatcher.php
+@@ -167,12 +167,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return parent::defaultConfiguration() + [
++    return [
+       'metadata' => '',
+       'bundles' => [],
+       'group_by_bundle' => FALSE,
+       'substitution_type' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
+-    ];
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Linkit/Matcher/FileMatcher.php b/src/Plugin/Linkit/Matcher/FileMatcher.php
+index 1b53e5d..1cbcc9f 100644
+--- a/src/Plugin/Linkit/Matcher/FileMatcher.php
++++ b/src/Plugin/Linkit/Matcher/FileMatcher.php
+@@ -55,7 +55,7 @@ class FileMatcher extends EntityMatcher {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return parent::defaultConfiguration() + [
++    return [
+       'file_extensions' => '',
+       'file_status' => FILE_STATUS_PERMANENT,
+       'images' => [
+@@ -63,7 +63,8 @@ class FileMatcher extends EntityMatcher {
+         'show_thumbnail' => FALSE,
+         'thumbnail_image_style' => 'linkit_result_thumbnail',
+       ],
+-    ];
++      'substitution_type' => 'file',
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Linkit/Matcher/NodeMatcher.php b/src/Plugin/Linkit/Matcher/NodeMatcher.php
+index 6a3d81a..fdd965f 100644
+--- a/src/Plugin/Linkit/Matcher/NodeMatcher.php
++++ b/src/Plugin/Linkit/Matcher/NodeMatcher.php
+@@ -33,9 +33,9 @@ class NodeMatcher extends EntityMatcher {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return parent::defaultConfiguration() + [
++    return [
+       'include_unpublished' => FALSE,
+-    ];
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Linkit/Matcher/UserMatcher.php b/src/Plugin/Linkit/Matcher/UserMatcher.php
+index ea1e746..1162fc3 100644
+--- a/src/Plugin/Linkit/Matcher/UserMatcher.php
++++ b/src/Plugin/Linkit/Matcher/UserMatcher.php
+@@ -39,10 +39,10 @@ class UserMatcher extends EntityMatcher {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return parent::defaultConfiguration() + [
++    return [
+       'roles' => [],
+       'include_blocked' => FALSE,
+-    ];
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Linkit/Substitution/Canonical.php b/src/Plugin/Linkit/Substitution/Canonical.php
+index 10b1db8..4962687 100644
+--- a/src/Plugin/Linkit/Substitution/Canonical.php
++++ b/src/Plugin/Linkit/Substitution/Canonical.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\linkit\Plugin\Linkit\Substitution;
+ 
+ use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\linkit\SubstitutionInterface;
+ use Drupal\views\Plugin\views\PluginBase;
+ 
+@@ -23,4 +24,11 @@ class Canonical extends PluginBase implements SubstitutionInterface {
+     return $entity->toUrl('canonical')->toString(TRUE);
+   }
+ 
++  /**
++   * {@inheritdoc}
++   */
++  public static function isApplicable(EntityTypeInterface $entity_type) {
++    return $entity_type->hasLinkTemplate('canonical');
++  }
++
+ }
+diff --git a/src/Plugin/Linkit/Substitution/File.php b/src/Plugin/Linkit/Substitution/File.php
+index b74bc50..46a190c 100644
+--- a/src/Plugin/Linkit/Substitution/File.php
++++ b/src/Plugin/Linkit/Substitution/File.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\linkit\Plugin\Linkit\Substitution;
+ 
+ use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\GeneratedUrl;
+ use Drupal\linkit\SubstitutionInterface;
+ use Drupal\views\Plugin\views\PluginBase;
+@@ -13,7 +14,6 @@ use Drupal\views\Plugin\views\PluginBase;
+  * @Substitution(
+  *   id = "file",
+  *   label = @Translation("Direct File URL"),
+- *   entity_types = {"file"},
+  * )
+  */
+ class File extends PluginBase implements SubstitutionInterface {
+@@ -29,4 +29,11 @@ class File extends PluginBase implements SubstitutionInterface {
+     return $url;
+   }
+ 
++  /**
++   * {@inheritdoc}
++   */
++  public static function isApplicable(EntityTypeInterface $entity_type) {
++    return $entity_type->isSubclassOf('Drupal\file\FileInterface');
++  }
++
+ }
+diff --git a/src/SubstitutionInterface.php b/src/SubstitutionInterface.php
+index 1760c0b..c39ec5a 100644
+--- a/src/SubstitutionInterface.php
++++ b/src/SubstitutionInterface.php
+@@ -4,6 +4,7 @@ namespace Drupal\linkit;
+ 
+ use Drupal\Component\Plugin\PluginInspectionInterface;
+ use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
+ 
+ /**
+  * Interface for substitution plugins.
+@@ -21,4 +22,15 @@ interface SubstitutionInterface extends PluginInspectionInterface {
+    */
+   public function getUrl(EntityInterface $entity);
+ 
++  /**
++   * Checks if this substitution plugin is applicable for the given entity type.
++   *
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
++   *   An entity type object.
++   *
++   * @return bool
++   *   If the plugin is applicable.
++   */
++  public static function isApplicable(EntityTypeInterface $entity_type);
++
+ }
+diff --git a/src/SubstitutionManager.php b/src/SubstitutionManager.php
+index 1bb6437..98bce72 100644
+--- a/src/SubstitutionManager.php
++++ b/src/SubstitutionManager.php
+@@ -3,6 +3,8 @@
+ namespace Drupal\linkit;
+ 
+ use Drupal\Core\Cache\CacheBackendInterface;
++use Drupal\Core\Entity\EntityTypeInterface;
++use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+ 
+@@ -12,32 +14,64 @@ use Drupal\Core\Plugin\DefaultPluginManager;
+ class SubstitutionManager extends DefaultPluginManager implements SubstitutionManagerInterface {
+ 
+   /**
+-   * {@inheritdoc}
++   * The entity type manager.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  protected $entityTypeManager;
++
++  /**
++   * Constructs the SubstitutionManager object.
++   *
++   * @param \Traversable $namespaces
++   *   An object that implements \Traversable which contains the root paths
++   *   keyed by the corresponding namespace to look for plugin implementations.
++   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
++   *   Cache backend instance to use.
++   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
++   *   The module handler to invoke the alter hook with.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   The entity type manager.
+    */
+-  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
++  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
+     parent::__construct('Plugin/Linkit/Substitution', $namespaces, $module_handler, 'Drupal\linkit\SubstitutionInterface', 'Drupal\linkit\Annotation\Substitution');
+     $this->alterInfo('linkit_substitution');
+     $this->setCacheBackend($cache_backend, 'linkit_substitution');
+-  }
+ 
+-  /**
+-   * {@inheritdoc}
+-   */
+-  public function filterPluginDefinitions($definitions, $entity_type_id) {
+-    return array_filter($definitions, function($definition) use ($entity_type_id) {
+-      return empty($definition['entity_types']) || in_array($entity_type_id, $definition['entity_types']);
+-    });
++    $this->entityTypeManager = $entity_type_manager;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function getApplicablePluginsOptionList($entity_type_id) {
++    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+     $options = [];
+-    foreach ($this->filterPluginDefinitions($this->getDefinitions(), $entity_type_id) as $id => $definition) {
++    foreach ($this->filterPlugins($this->getDefinitions(), $entity_type) as $id => $definition) {
+       $options[$id] = $definition['label'];
+     }
+     return $options;
+   }
+ 
++  /**
++   * Filter the list of plugins by their applicability.
++   *
++   * @param array $definitions
++   *   An array of plugin definitions.
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
++   *   The entity type to get applicable plugins for.
++   *
++   * @return array
++   *   The definitions appropriate for the given entity type.
++   *
++   * @see SubstitutionInterface::isApplicable()
++   */
++  protected function filterPlugins($definitions, EntityTypeInterface $entity_type) {
++    return array_filter($definitions, function($definition) use ($entity_type) {
++      /** @var \Drupal\linkit\SubstitutionInterface $class */
++      $class = $definition['class'];
++      return $class::isApplicable($entity_type);
++    });
++  }
++
+ }
+diff --git a/src/SubstitutionManagerInterface.php b/src/SubstitutionManagerInterface.php
+index 074f084..7f64aba 100644
+--- a/src/SubstitutionManagerInterface.php
++++ b/src/SubstitutionManagerInterface.php
+@@ -15,19 +15,6 @@ interface SubstitutionManagerInterface extends PluginManagerInterface {
+   const DEFAULT_SUBSTITUTION = 'canonical';
+ 
+   /**
+-   * Filter a list of plugin definitions by entity ID.
+-   *
+-   * @param array $definitions
+-   *   An array of plugin definitions.
+-   * @param string $entity_type_id
+-   *   The entity type ID to get applicable plugins for.
+-   *
+-   * @return array
+-   *   The definitions appropriate for the given entity ID.
+-   */
+-  public function filterPluginDefinitions($definitions, $entity_type_id);
+-
+-  /**
+    * Get a form API options list for the entity ID.
+    *
+    * @param string $entity_type_id
+diff --git a/tests/src/Kernel/Matchers/AssertResultUriTrait.php b/tests/src/Kernel/Matchers/AssertResultUriTrait.php
+index 9398c57..0f3da62 100644
+--- a/tests/src/Kernel/Matchers/AssertResultUriTrait.php
++++ b/tests/src/Kernel/Matchers/AssertResultUriTrait.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\Tests\linkit\Kernel\Matchers;
+ 
++use Drupal\linkit\MatcherInterface;
+ use Drupal\linkit\Suggestion\SuggestionCollection;
+ 
+ /**
+@@ -12,14 +13,16 @@ trait AssertResultUriTrait {
+   /**
+    * Assert that paths are formatted as an URI with the entity: scheme.
+    *
+-   * @param string $entity_type
+-   *   The entity_type.
++   * @param \Drupal\linkit\MatcherInterface $plugin
++   *   A matcher plugin.
+    * @param \Drupal\linkit\Suggestion\SuggestionCollection $suggestions
+    *   A collection of suggestions.
+    */
+-  public function assertResultUri($entity_type, SuggestionCollection $suggestions) {
++  public function assertResultUri(MatcherInterface $plugin, SuggestionCollection $suggestions) {
++    $entity_type = $plugin->getPluginDefinition()['target_entity'];
++    $substitution_id = $plugin->getConfiguration()['settings']['substitution_type'];
+     foreach ($suggestions->getSuggestions() as $suggestion) {
+-      $this->assertTrue(preg_match("/^entity:canonical\/" . $entity_type . "\\/\\w+$/i", $suggestion->getPath()), 'Result URI correct formatted.');
++      $this->assertTrue(preg_match("/^entity:" . $substitution_id . "\\/" . $entity_type . "\\/\\w+$/i", $suggestion->getPath()), 'Result URI correct formatted.');
+     }
+   }
+ 
+diff --git a/tests/src/Kernel/Matchers/FileMatcherTest.php b/tests/src/Kernel/Matchers/FileMatcherTest.php
+index 3afc054..a84f588 100644
+--- a/tests/src/Kernel/Matchers/FileMatcherTest.php
++++ b/tests/src/Kernel/Matchers/FileMatcherTest.php
+@@ -61,7 +61,7 @@ class FileMatcherTest extends LinkitKernelTestBase {
+     $plugin = $this->manager->createInstance('entity:file', []);
+     $suggestions = $plugin->execute('image-test');
+     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+-    $this->assertResultUri('file', $suggestions);
++    $this->assertResultUri($plugin, $suggestions);
+   }
+ 
+   /**
+diff --git a/tests/src/Kernel/Matchers/NodeMatcherTest.php b/tests/src/Kernel/Matchers/NodeMatcherTest.php
+index 114f838..cb996dc 100644
+--- a/tests/src/Kernel/Matchers/NodeMatcherTest.php
++++ b/tests/src/Kernel/Matchers/NodeMatcherTest.php
+@@ -96,7 +96,7 @@ class NodeMatcherTest extends LinkitKernelTestBase {
+     $plugin = $this->manager->createInstance('entity:node', []);
+     $suggestions = $plugin->execute('Lorem');
+     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+-    $this->assertResultUri('node', $suggestions);
++    $this->assertResultUri($plugin, $suggestions);
+   }
+ 
+   /**
+diff --git a/tests/src/Kernel/Matchers/TermMatcherTest.php b/tests/src/Kernel/Matchers/TermMatcherTest.php
+index bbc6934..706a1cc 100644
+--- a/tests/src/Kernel/Matchers/TermMatcherTest.php
++++ b/tests/src/Kernel/Matchers/TermMatcherTest.php
+@@ -65,7 +65,7 @@ class TermMatcherTest extends LinkitKernelTestBase {
+     ]);
+     $suggestions = $plugin->execute('foo');
+     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+-    $this->assertResultUri('taxonomy_term', $suggestions);
++    $this->assertResultUri($plugin, $suggestions);
+   }
+ 
+   /**
+diff --git a/tests/src/Kernel/Matchers/UserMatcherTest.php b/tests/src/Kernel/Matchers/UserMatcherTest.php
+index 57747de..ecb0b92 100644
+--- a/tests/src/Kernel/Matchers/UserMatcherTest.php
++++ b/tests/src/Kernel/Matchers/UserMatcherTest.php
+@@ -69,7 +69,7 @@ class UserMatcherTest extends LinkitKernelTestBase {
+     $plugin = $this->manager->createInstance('entity:user', []);
+     $suggestions = $plugin->execute('Lorem');
+     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
+-    $this->assertResultUri('user', $suggestions);
++    $this->assertResultUri($plugin, $suggestions);
+   }
+ 
+   /**
+diff --git a/tests/src/Kernel/SubstitutionPluginTest.php b/tests/src/Kernel/SubstitutionPluginTest.php
+index d43346d..2ec483e 100644
+--- a/tests/src/Kernel/SubstitutionPluginTest.php
++++ b/tests/src/Kernel/SubstitutionPluginTest.php
+@@ -4,6 +4,8 @@ namespace Drupal\Tests\linkit\Kernel;
+ 
+ use Drupal\entity_test\Entity\EntityTest;
+ use Drupal\file\Entity\File;
++use Drupal\linkit\Plugin\Linkit\Substitution\Canonical as CanonicalSubstitutionPlugin;
++use Drupal\linkit\Plugin\Linkit\Substitution\File as FileSubstitutionPlugin;
+ 
+ /**
+  * Tests the substitution plugins.
+@@ -20,18 +22,11 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
+   protected $substitutionManager;
+ 
+   /**
+-   * The file substitution plugin.
++   * The entity type manager.
+    *
+-   * @var \Drupal\linkit\SubstitutionInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+-  protected $fileSubstitution;
+-
+-  /**
+-   * The canonical substitution plugin.
+-   *
+-   * @var \Drupal\linkit\SubstitutionInterface
+-   */
+-  protected $canonicalSubstitution;
++  protected $entityTypeManager;
+ 
+   /**
+    * Additional modules to enable.
+@@ -49,8 +44,7 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
+   public function setUp() {
+     parent::setUp();
+     $this->substitutionManager = $this->container->get('plugin.manager.linkit.substitution');
+-    $this->fileSubstitution = $this->substitutionManager->createInstance('file');
+-    $this->canonicalSubstitution = $this->substitutionManager->createInstance('canonical');
++    $this->entityTypeManager = $this->container->get('entity_type.manager');
+ 
+     $this->installEntitySchema('file');
+     $this->installEntitySchema('entity_test');
+@@ -60,6 +54,7 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
+    * Test the file substitution.
+    */
+   public function testFileSubstitutions() {
++    $fileSubstitution = $this->substitutionManager->createInstance('file');
+     $file = File::create([
+       'uid' => 1,
+       'filename' => 'druplicon.txt',
+@@ -68,16 +63,29 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
+       'status' => FILE_STATUS_PERMANENT,
+     ]);
+     $file->save();
+-    $this->assertEquals($GLOBALS['base_url'] . '/' . $this->siteDirectory . '/files/druplicon.txt', $this->fileSubstitution->getUrl($file)->getGeneratedUrl());
++    $this->assertEquals($GLOBALS['base_url'] . '/' . $this->siteDirectory . '/files/druplicon.txt', $fileSubstitution->getUrl($file)->getGeneratedUrl());
++
++    $entity_type = $this->entityTypeManager->getDefinition('file');
++    $this->assertTrue(FileSubstitutionPlugin::isApplicable($entity_type), 'The entity type File is applicable the file substitution.');
++
++    $entity_type = $this->entityTypeManager->getDefinition('entity_test');
++    $this->assertFalse(FileSubstitutionPlugin::isApplicable($entity_type), 'The entity type EntityTest is not applicable the file substitution.');
+   }
+ 
+   /**
+-   * Test the canonical URL substitution.
++   * Test the canonical substitution.
+    */
+-  public function testCanonicalSubstutition() {
++  public function testCanonicalSubstitution() {
++    $canonicalSubstitution = $this->substitutionManager->createInstance('canonical');
+     $entity = EntityTest::create([]);
+     $entity->save();
+-    $this->assertEquals('/entity_test/1', $this->canonicalSubstitution->getUrl($entity)->getGeneratedUrl());
++    $this->assertEquals('/entity_test/1', $canonicalSubstitution->getUrl($entity)->getGeneratedUrl());
++
++    $entity_type = $this->entityTypeManager->getDefinition('entity_test');
++    $this->assertTrue(CanonicalSubstitutionPlugin::isApplicable($entity_type), 'The entity type EntityTest is applicable the canonical substitution.');
++
++    $entity_type = $this->entityTypeManager->getDefinition('file');
++    $this->assertFalse(CanonicalSubstitutionPlugin::isApplicable($entity_type), 'The entity type File is not applicable the canonical substitution.');
+   }
+ 
+ }

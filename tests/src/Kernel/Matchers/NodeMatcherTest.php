@@ -96,7 +96,7 @@ class NodeMatcherTest extends LinkitKernelTestBase {
     $plugin = $this->manager->createInstance('entity:node', []);
     $suggestions = $plugin->execute('Lorem');
     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri('node', $suggestions);
+    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

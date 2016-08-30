@@ -3,6 +3,7 @@
 namespace Drupal\linkit\Plugin\Linkit\Substitution;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\linkit\SubstitutionInterface;
 use Drupal\views\Plugin\views\PluginBase;
 
@@ -21,6 +22,13 @@ class Canonical extends PluginBase implements SubstitutionInterface {
    */
   public function getUrl(EntityInterface $entity) {
     return $entity->toUrl('canonical')->toString(TRUE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function isApplicable(EntityTypeInterface $entity_type) {
+    return $entity_type->hasLinkTemplate('canonical');
   }
 
 }

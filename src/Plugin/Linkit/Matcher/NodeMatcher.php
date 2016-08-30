@@ -33,9 +33,9 @@ class NodeMatcher extends EntityMatcher {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return parent::defaultConfiguration() + [
+    return [
       'include_unpublished' => FALSE,
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**

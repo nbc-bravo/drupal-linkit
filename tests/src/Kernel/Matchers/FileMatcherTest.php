@@ -61,7 +61,7 @@ class FileMatcherTest extends LinkitKernelTestBase {
     $plugin = $this->manager->createInstance('entity:file', []);
     $suggestions = $plugin->execute('image-test');
     $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri('file', $suggestions);
+    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**
