@@ -90,7 +90,7 @@ class FileMatcher extends EntityMatcher {
 
     $form['extensions'] = array(
       '#type' => 'details',
-      '#title' => t('File extensions'),
+      '#title' => $this->t('File extensions'),
       '#open' => TRUE,
       '#weight' => -100,
     );
@@ -107,27 +107,27 @@ class FileMatcher extends EntityMatcher {
 
     $form['images'] = [
       '#type' => 'details',
-      '#title' => t('Image file settings'),
-      '#description' => t('Extra settings for image files in the result.'),
+      '#title' => $this->t('Image file settings'),
+      '#description' => $this->t('Extra settings for image files in the result.'),
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
 
     $form['images']['show_dimensions'] = [
-      '#title' => t('Show pixel dimensions'),
+      '#title' => $this->t('Show pixel dimensions'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['images']['show_dimensions'],
     ];
 
     if ($this->moduleHandler->moduleExists('image')) {
       $form['images']['show_thumbnail'] = [
-        '#title' => t('Show thumbnail'),
+        '#title' => $this->t('Show thumbnail'),
         '#type' => 'checkbox',
         '#default_value' => $this->configuration['images']['show_thumbnail'],
       ];
 
       $form['images']['thumbnail_image_style'] = [
-        '#title' => t('Thumbnail image style'),
+        '#title' => $this->t('Thumbnail image style'),
         '#type' => 'select',
         '#default_value' => $this->configuration['images']['thumbnail_image_style'],
         '#options' => image_style_options(FALSE),

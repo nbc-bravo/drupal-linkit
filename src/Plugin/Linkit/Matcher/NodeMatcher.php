@@ -55,15 +55,15 @@ class NodeMatcher extends EntityMatcher {
 
     $form['unpublished_nodes'] = array(
       '#type' => 'details',
-      '#title' => t('Unpublished nodes'),
+      '#title' => $this->t('Unpublished nodes'),
       '#open' => TRUE,
     );
 
     $form['unpublished_nodes']['include_unpublished'] = [
-      '#title' => t('Include unpublished nodes'),
+      '#title' => $this->t('Include unpublished nodes'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['include_unpublished'],
-      '#description' => t('In order to see unpublished nodes, users must also have permissions to do so.'),
+      '#description' => $this->t('In order to see unpublished nodes, users must also have permissions to do so.'),
     ];
 
     return $form;

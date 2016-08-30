@@ -183,7 +183,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
     $form['metadata'] = array(
       '#type' => 'details',
-      '#title' => t('Suggestion metadata'),
+      '#title' => $this->t('Suggestion metadata'),
       '#open' => TRUE,
       '#weight' => -100,
     );
@@ -209,7 +209,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
       $form['bundle_restrictions'] = array(
         '#type' => 'details',
-        '#title' => t('Bundle restrictions'),
+        '#title' => $this->t('Bundle restrictions'),
         '#open' => TRUE,
         '#weight' => -90,
       );
@@ -225,7 +225,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
       $form['bundle_grouping'] = array(
         '#type' => 'details',
-        '#title' => t('Bundle grouping'),
+        '#title' => $this->t('Bundle grouping'),
         '#open' => TRUE,
       );
 
@@ -241,7 +241,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $substitution_options = $this->substitutionManager->getApplicablePluginsOptionList($this->targetType);
     $form['substitution'] = array(
       '#type' => 'details',
-      '#title' => t('URL substitution'),
+      '#title' => $this->t('URL substitution'),
       '#open' => TRUE,
       '#weight' => 100,
       '#access' => count($substitution_options) !== 1,

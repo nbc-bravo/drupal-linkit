@@ -57,14 +57,14 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
 
     $form['linkit_enabled'] = [
       '#type' => 'checkbox',
-      '#title' => t('Linkit enabled'),
+      '#title' => $this->t('Linkit enabled'),
       '#default_value' => isset($settings['plugins']['drupallink']['linkit_enabled']) ? $settings['plugins']['drupallink']['linkit_enabled'] : '',
       '#description' => $this->t('Enable Linkit for this text format.'),
     ];
 
     $form['linkit_profile'] = [
       '#type' => 'select',
-      '#title' => t('Linkit profile'),
+      '#title' => $this->t('Linkit profile'),
       '#options' => $options,
       '#default_value' => isset($settings['plugins']['drupallink']['linkit_profile']) ? $settings['plugins']['drupallink']['linkit_profile'] : '',
       '#empty_option' => $this->t('- Select -'),
@@ -104,7 +104,7 @@ class LinkitDrupalLink extends DrupalLink implements CKEditorPluginConfigurableI
     ]);
     $enabled = isset($values['linkit_enabled']) && $values['linkit_enabled'] === 1;
     if ($enabled && empty(trim($values['linkit_profile']))) {
-      $form_state->setError($element, t('Please select the Linkit profile you wish to use.'));
+      $form_state->setError($element, $this->t('Please select the Linkit profile you wish to use.'));
     }
   }
 

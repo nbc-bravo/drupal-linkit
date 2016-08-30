@@ -62,7 +62,7 @@ class UserMatcher extends EntityMatcher {
 
     $form['role_restrictions'] = array(
       '#type' => 'details',
-      '#title' => t('Role restrictions'),
+      '#title' => $this->t('Role restrictions'),
       '#open' => TRUE,
       '#weight' => -90,
     );
@@ -78,15 +78,15 @@ class UserMatcher extends EntityMatcher {
 
     $form['blocked_users'] = array(
       '#type' => 'details',
-      '#title' => t('Blocked users'),
+      '#title' => $this->t('Blocked users'),
       '#open' => TRUE,
     );
 
     $form['blocked_users']['include_blocked'] = [
-      '#title' => t('Include blocked user'),
+      '#title' => $this->t('Include blocked user'),
       '#type' => 'checkbox',
       '#default_value' => $this->configuration['include_blocked'],
-      '#description' => t('In order to see blocked users, users must have permissions to do so.'),
+      '#description' => $this->t('In order to see blocked users, users must have permissions to do so.'),
     ];
 
     return $form;
