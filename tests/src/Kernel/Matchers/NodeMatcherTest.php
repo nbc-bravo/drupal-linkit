@@ -13,8 +13,6 @@ use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
  */
 class NodeMatcherTest extends LinkitKernelTestBase {
 
-  use AssertResultUriTrait;
-
   /**
    * Modules to enable.
    *
@@ -86,17 +84,6 @@ class NodeMatcherTest extends LinkitKernelTestBase {
 
     // Set the current user to someone that is not the node owner.
     \Drupal::currentUser()->setAccount($this->createUser([], ['access content']));
-  }
-
-  /**
-   * Tests the paths for results on a node matcher.
-   */
-  public function testMatcherResultsPath() {
-    /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:node', []);
-    $suggestions = $plugin->execute('Lorem');
-    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

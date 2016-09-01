@@ -41,7 +41,7 @@ class AutocompleteController implements ContainerInjectionInterface {
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $linkit_profile_storage
    *   The linkit profile storage service.
-   * @param SuggestionManager $suggestionManager
+   * @param \Drupal\linkit\SuggestionManager $suggestionManager
    *   The suggestion service.
    */
   public function __construct(EntityStorageInterface $linkit_profile_storage, SuggestionManager $suggestionManager) {
@@ -65,12 +65,12 @@ class AutocompleteController implements ContainerInjectionInterface {
    * Like other autocomplete functions, this function inspects the 'q' query
    * parameter for the string to use to search for suggestions.
    *
-   * @param Request $request
+   * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
    * @param string $linkit_profile_id
    *   The linkit profile id.
    *
-   * @return JsonResponse
+   * @return \Symfony\Component\HttpFoundation\JsonResponse JsonResponse
    *   A JSON response containing the autocomplete suggestions.
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
@@ -78,6 +78,16 @@ class AutocompleteController implements ContainerInjectionInterface {
     $string = Unicode::strtolower($request->query->get('q'));
 
     $suggestionCollection = $this->suggestionManager->getSuggestions($this->linkitProfile, $string);
+
+    /*
+     * If there are no suggestions from the matcher plugins, we have to add a
+     * special suggestion that have the same path as the given string so users
+     * can select it and use it anyway. This is a common use case with external
+     * links.
+     */
+    if (!count($suggestionCollection->getSuggestions()) && !empty($string)) {
+      $suggestionCollection = $this->suggestionManager->addUnscathedSuggestion($suggestionCollection, $string);
+    }
 
     return new JsonResponse($suggestionCollection);
   }

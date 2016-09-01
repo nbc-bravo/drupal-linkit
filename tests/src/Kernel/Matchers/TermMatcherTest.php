@@ -16,8 +16,6 @@ use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
  */
 class TermMatcherTest extends LinkitKernelTestBase {
 
-  use AssertResultUriTrait;
-
   /**
    * Modules to enable.
    *
@@ -51,21 +49,6 @@ class TermMatcherTest extends LinkitKernelTestBase {
     $this->createTerm($testing_vocabulary_1, ['name' => 'bar']);
     $this->createTerm($testing_vocabulary_2, ['name' => 'foo_bar']);
     $this->createTerm($testing_vocabulary_2, ['name' => 'foo_baz']);
-  }
-
-  /**
-   * Tests the paths for results on a term matcher.
-   */
-  public function testMatcherResultsPath() {
-    /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:taxonomy_term', [
-      'settings' => [
-        'file_status' => 0,
-      ],
-    ]);
-    $suggestions = $plugin->execute('foo');
-    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

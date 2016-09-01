@@ -7,6 +7,7 @@ use Drupal\editor\Entity\Editor;
 use Drupal\editor\Form\EditorLinkDialog;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\filter\Entity\FilterFormat;
+use Drupal\linkit\SubstitutionManagerInterface;
 use Drupal\linkit\Tests\ProfileCreationTrait;
 
 /**
@@ -121,25 +122,24 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->prepareForm($form_id, $form, $form_state);
     $form_builder->processForm($form_id, $form, $form_state);
 
-    $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
-    $this->assertEquals('', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
+    $this->assertEquals('', $form['linkit']['#default_value'], 'The linkit field is empty.');
 
-    $form_state->setValue(['attributes', 'href'], 'entity:canonical/missing_entity/1');
-    $form_builder->submitForm($form_object, $form_state);
-    $this->assertNotEmpty($form_state->getErrors(), 'Got validation errors for none existing entity type.');
-
-    $form_state->setValue(['attributes', 'href'], 'url_without_schema');
+    $form_state->setValue('linkit', 'url_without_schema');
     $form_builder->submitForm($form_object, $form_state);
     $this->assertEmpty($form_state->getErrors(), 'Got no validation errors for url without schema.');
-    $this->assertEquals('', $form_state->getValue(['attributes', 'data-entity-type']));
-    $this->assertEquals('', $form_state->getValue(['attributes', 'data-entity-uuid']));
+    $this->assertEmpty($form_state->getValue(['attributes', 'data-entity-type']));
+    $this->assertEmpty($form_state->getValue(['attributes', 'data-entity-uuid']));
 
-    $form_state->setValue(['attributes', 'href'], 'entity:canonical/entity_test/1');
+    $form_state->setValue(['attributes', 'data-entity-type'], $entity->getEntityTypeId());
+    $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
+    $form_state->setValue(['attributes', 'data-entity-substitution'], SubstitutionManagerInterface::DEFAULT_SUBSTITUTION);
+
     $form_builder->submitForm($form_object, $form_state);
     $this->assertEmpty($form_state->getErrors(), 'Got no validation errors for correct URI.');
     $this->assertEquals($entity->getEntityTypeId(), $form_state->getValue(['attributes', 'data-entity-type']), 'Attribute "data-entity-type" exists and has the correct value.');
     $this->assertEquals($entity->uuid(), $form_state->getValue(['attributes', 'data-entity-uuid']), 'Attribute "data-entity-uuid" exists and has the correct value.');
+    $this->assertEquals(SubstitutionManagerInterface::DEFAULT_SUBSTITUTION, $form_state->getValue(['attributes', 'data-entity-substitution']), 'Attribute "data-entity-substitution" exists and has the correct value.');
   }
 
   /**
@@ -157,9 +157,10 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $input = [
       'editor_object' => [
-        'href' => 'entity:entity_test/1',
+        'href' => '#',
         'data-entity-type' => $entity->getEntityTypeId(),
         'data-entity-uuid' => $entity->uuid(),
+        'data-entity-substitution' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
       ],
       'dialogOptions' => [
         'title' => 'Edit Link',
@@ -185,17 +186,20 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->prepareForm($form_id, $form, $form_state);
     $form_builder->processForm($form_id, $form, $form_state);
 
-    $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
-    $this->assertEquals('entity:entity_test/1', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals($entity->label(), $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
+    $this->assertEquals($entity->label(), $form['linkit']['#default_value'], 'The linkit field has the label as default value.');
+    $this->assertEquals($entity->getEntityTypeId(), $form_state->getValue(['attributes', 'data-entity-type']), 'Attribute "data-entity-type" exists and has the correct value.');
+    $this->assertEquals($entity->uuid(), $form_state->getValue(['attributes', 'data-entity-uuid']), 'Attribute "data-entity-uuid" exists and has the correct value.');
+    $this->assertEquals(SubstitutionManagerInterface::DEFAULT_SUBSTITUTION, $form_state->getValue(['attributes', 'data-entity-substitution']), 'Attribute "data-entity-substitution" exists and has the correct value.');
 
     // Make sure the dialog don't display entity labels for inaccessible
     // entities.
     $input = [
       'editor_object' => [
-        'href' => 'entity:entity_test/2',
+        'href' => '#',
         'data-entity-type' => $entity_no_access->getEntityTypeId(),
         'data-entity-uuid' => $entity_no_access->uuid(),
+        'data-entity-substitution' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
       ],
       'dialogOptions' => [
         'title' => 'Edit Link',
@@ -221,9 +225,8 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->prepareForm($form_id, $form, $form_state);
     $form_builder->processForm($form_id, $form, $form_state);
 
-    $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
-    $this->assertEquals('entity:entity_test/2', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('entity:entity_test/2', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
+    $this->assertEmpty($form['linkit']['#default_value']);
   }
 
   /**
@@ -260,9 +263,11 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->prepareForm($form_id, $form, $form_state);
     $form_builder->processForm($form_id, $form, $form_state);
 
-    $this->assertEquals('linkit.autocomplete', $form['attributes']['href']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
-    $this->assertEquals('http://example.com/', $form['attributes']['href']['#default_value'], 'The href attribute is empty.');
-    $this->assertEquals('http://example.com/', $form['attributes']['link-information']['#context']['link_target'], 'Link information is empty.');
+    $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the href field.');
+    $this->assertEquals('http://example.com/', $form['linkit']['#default_value'], 'The linkit field default value is the external URI.');
+    $this->assertEmpty($form['attributes']['data-entity-type']['#default_value']);
+    $this->assertEmpty($form['attributes']['data-entity-uuid']['#default_value']);
+    $this->assertEmpty($form['attributes']['data-entity-substitution']['#default_value']);
   }
 
 }

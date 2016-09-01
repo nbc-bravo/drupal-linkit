@@ -13,9 +13,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\linkit\ConfigurableMatcherBase;
 use Drupal\linkit\MatcherTokensTrait;
-use Drupal\linkit\SubstitutionManager;
 use Drupal\linkit\SubstitutionManagerInterface;
-use Drupal\linkit\Suggestion\DescriptionSuggestion;
+use Drupal\linkit\Suggestion\EntitySuggestion;
 use Drupal\linkit\Suggestion\SuggestionCollection;
 use Drupal\linkit\Utility\LinkitXss;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -305,11 +304,13 @@ class EntityMatcher extends ConfigurableMatcherBase {
 
       $entity = $this->entityRepository->getTranslationFromContext($entity);
 
-      $suggestion = new DescriptionSuggestion();
+      $suggestion = new EntitySuggestion();
       $suggestion->setLabel($this->buildLabel($entity))
-        ->setPath($this->buildPath($entity))
         ->setGroup($this->buildGroup($entity))
-        ->setDescription($this->buildDescription($entity));
+        ->setDescription($this->buildDescription($entity))
+        ->setEntityUuid($entity->uuid())
+        ->setEntityTypeId($entity->getEntityTypeId())
+        ->setSubstitutionId($this->configuration['substitution_type']);
 
       $suggestions->addSuggestion($suggestion);
     }
@@ -380,21 +381,6 @@ class EntityMatcher extends ConfigurableMatcherBase {
   protected function buildDescription(EntityInterface $entity) {
     $description = \Drupal::token()->replace($this->configuration['metadata'], [$this->targetType => $entity], []);
     return LinkitXss::descriptionFilter($description);
-  }
-
-  /**
-   * Builds the path string used in the match array.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *    The matched entity.
-   *
-   * @return string
-   *   The entity: URL for this entity.
-   *
-   * @see \Drupal\Core\Url::fromEntityUri()
-   */
-  protected function buildPath(EntityInterface $entity) {
-    return 'entity:' . $this->configuration['substitution_type'] . '/' . $entity->getEntityTypeId() . '/' . $entity->id();
   }
 
   /**

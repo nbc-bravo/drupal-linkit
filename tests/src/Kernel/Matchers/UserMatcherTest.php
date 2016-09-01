@@ -12,8 +12,6 @@ use Drupal\user\Entity\Role;
  */
 class UserMatcherTest extends LinkitKernelTestBase {
 
-  use AssertResultUriTrait;
-
   /**
    * The matcher manager.
    *
@@ -59,17 +57,6 @@ class UserMatcherTest extends LinkitKernelTestBase {
     $account = $this->createUser(['name' => 'blocked_lorem']);
     $account->block();
     $account->save();
-  }
-
-  /**
-   * Tests the paths for results on a user matcher.
-   */
-  public function testMatcherResultsPath() {
-    /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:user', []);
-    $suggestions = $plugin->execute('Lorem');
-    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

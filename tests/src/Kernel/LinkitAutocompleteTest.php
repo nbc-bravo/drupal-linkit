@@ -55,13 +55,11 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
     parent::setUp();
 
     \Drupal::service('router.builder')->rebuild();
-
     $this->installEntitySchema('user');
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('entity_test_mul');
 
     $this->matcherManager = $this->container->get('plugin.manager.linkit.matcher');
-
     $this->linkitProfile = $this->createProfile();
   }
 
@@ -130,7 +128,8 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
 
     // Search for something that doesn't exists.
     $data = $this->getAutocompleteResult('no_suggestions');
-    $this->assertEmpty(count($data), 'Autocomplete did not return any suggestions.');
+    $this->assertTrue(count($data) == 1, 'Autocomplete returned the expected amount of suggestions.');
+    $this->assertSame(Html::escape('no_suggestions'), $data[0]['label'], 'Autocomplete returned the "no result" suggestion.');
 
     // Search for something that exists one time.
     $data = $this->getAutocompleteResult('bas');

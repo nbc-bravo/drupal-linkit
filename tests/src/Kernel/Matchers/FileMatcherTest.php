@@ -12,8 +12,6 @@ use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
  */
 class FileMatcherTest extends LinkitKernelTestBase {
 
-  use AssertResultUriTrait;
-
   /**
    * Modules to enable.
    *
@@ -51,17 +49,6 @@ class FileMatcherTest extends LinkitKernelTestBase {
       ]);
       $file->save();
     }
-  }
-
-  /**
-   * Tests the paths for results on a file matcher.
-   */
-  public function testMatcherResultsPath() {
-    /** @var \Drupal\linkit\MatcherInterface $plugin */
-    $plugin = $this->manager->createInstance('entity:file', []);
-    $suggestions = $plugin->execute('image-test');
-    $this->assertTrue(count($suggestions->getSuggestions()), 'Got suggestions');
-    $this->assertResultUri($plugin, $suggestions);
   }
 
   /**

@@ -78,18 +78,25 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     $input = $form_state->get('link_element') ?: [];
   }
 
-  // If the filter_html filter is activated, or any other filters using
-  // XSS:filter(), it will remove 'entity:' from the href as it thinks it's a
-  // bad protocol. We therefor have to restore the URI again when editing a
-  // link. It is possible given that data-entity-type and data-entity-uuid is
-  // set on the link element.
+  $form['linkit'] = [
+    '#title' => t('Link'),
+    '#type' => 'linkit',
+    '#description' => t('Start typing to find content or paste a URL.'),
+    '#autocomplete_route_name' => 'linkit.autocomplete',
+    '#autocomplete_route_parameters' => [
+      'linkit_profile_id' => $linkit_profile_id,
+    ],
+    "#weight" => -10,
+  ];
+
+  // Determine what the default value of the linkit autocomplete field.
   try {
     if (!empty($input['data-entity-type']) && !empty($input['data-entity-uuid'])) {
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = \Drupal::service('entity.repository')
         ->loadEntityByUuid($input['data-entity-type'], $input['data-entity-uuid']);
-      $href = 'entity:' . $entity->getEntityTypeId() . '/' . $entity->id();
       $access = !$entity->access('view', NULL, TRUE)->isForbidden();
+      $autocomplete_default_value = !empty($access) && $access ? $entity->label() : '';
     }
   }
   catch (Exception $exception) {
@@ -98,29 +105,37 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
   finally {
     // If the href is not set, the data- attributes might not exists, or the
     // href is external. In that case, use the given href.
-    if (!isset($href)) {
-      $href = isset($input['href']) ? $input['href'] : '';
+    if (!isset($autocomplete_default_value)) {
+      $autocomplete_default_value = isset($input['href']) ? $input['href'] : '';
     }
   }
 
-  $form['attributes']['href'] = [
-    '#title' => t('Link'),
-    '#type' => 'linkit',
-    '#default_value' => $href,
-    '#description' => t('Start typing to find content or paste a URL.'),
-    '#autocomplete_route_name' => 'linkit.autocomplete',
-    '#autocomplete_route_parameters' => [
-      'linkit_profile_id' => $linkit_profile_id,
+  $form['linkit']['#default_value'] = $autocomplete_default_value;
+
+  $form['link-information'] = [
+    '#type' => 'inline_template',
+    '#template' => '<div class="form-item linkit-link-information"><strong>{% trans %}Selected link:{% endtrans %}</strong> <span>{{ link_target }}</span></div>',
+    '#context' => [
+      'link_target' => !empty($entity) && !empty($access) && $access ? $entity->label() : $autocomplete_default_value,
     ],
+    "#weight" => -10,
   ];
 
-  $form['attributes']['link-information'] = [
-    '#type' => 'inline_template',
-    '#template' => '<div class="form-item linkit-link-information"><strong>{% trans %}Links to:{% endtrans %}</strong> <span>{{ link_target }}</span></div>',
-    '#context' => [
-      'link_target' => !empty($entity) && !empty($access) && $access ? $entity->label() : $href,
-    ],
+  $fields = [
+    'href',
+    'data-entity-type',
+    'data-entity-uuid',
+    'data-entity-substitution',
   ];
+
+  $form['attributes']["#weight"] = -100;
+
+  foreach ($fields as $field_name) {
+    $form['attributes'][$field_name] = [
+      '#type' => 'hidden',
+      '#default_value' => isset($input[$field_name]) ? $input[$field_name] : '',
+    ];
+  }
 
   // Add IMCE button if IMCE is installed and enabled for the given profile.
   if (Drupal::service('module_handler')->moduleExists('imce') && $linkit_profile->getThirdPartySetting('imce', 'use', FALSE)) {
@@ -146,57 +161,29 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
       '#weight' => 10,
     ];
   }
-
-  // Add #validate callback that generates data-entity-type and
-  // data-entity-uuid attributes from the href attribute when appropriate.
-  array_unshift($form['#validate'], 'linkit_form_editor_link_dialog_validate');
+  // Add #submit callback that handles the data-* attributes.
+  array_unshift($form['#submit'], 'linkit_form_editor_link_dialog_submit');
 }
 
 /**
- * Generates data-entity-type and data-entity-uuid attributes from href.
+ * Handles the data-* attributes and href replacement when appropriate.
  */
-function linkit_form_editor_link_dialog_validate(array &$form, FormStateInterface $form_state) {
+function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface $form_state) {
   $link_element = $form_state->get('link_element');
 
-  // Check if the 'href' attribute contains a entity: URI.
-  $href = $form_state->getValue(['attributes', 'href']);
-  $uri_parts = parse_url($href);
+  $data_entity_type = $form_state->getValue(['attributes', 'data-entity-type']);
+  $data_entity_uuid = $form_state->getValue(['attributes', 'data-entity-uuid']);
 
-  if (!$uri_parts || !isset($uri_parts['scheme']) || $uri_parts['scheme'] !== 'entity') {
-    // Only set the data attributes to an empty string if the link is edited.
-    // This is to prevent new links that does not point to entities to have
-    // empty data attributes.
+  if (empty($data_entity_type) || empty($data_entity_uuid)) {
     if (!empty($link_element)) {
       $form_state->setValue(['attributes', 'data-entity-type'], '');
       $form_state->setValue(['attributes', 'data-entity-uuid'], '');
       $form_state->setValue(['attributes', 'data-entity-substitution'], '');
     }
-    return;
+    else {
+      $form_state->unsetValue(['attributes', 'data-entity-type']);
+      $form_state->unsetValue(['attributes', 'data-entity-uuid']);
+      $form_state->unsetValue(['attributes', 'data-entity-substitution']);
+    }
   }
-
-  // Parse the entity: URI into an entity type ID and entity ID.
-  list($substitution_type, $entity_type_id, $entity_id) = explode('/', $uri_parts['path'], 3);
-
-  // Check if the given entity type exists, to prevent the entity load method
-  // to throw exceptions.
-  $definition = \Drupal::entityTypeManager()->getDefinition($entity_type_id, FALSE);
-  if (is_null($definition)) {
-    $form_state->setError($form['attributes']['href'], t('Invalid URI'));
-    return;
-  }
-
-  // Load the entity and populate the data-entity-type and data-entity-uuid
-  // attributes as expected by filters.
-  // @see \Drupal\editor\Plugin\Filter\EditorFileReference
-  // @see \Drupal\linkit\Plugin\Filter\LinkitFilter
-  $entity = \Drupal::entityTypeManager()->getStorage($entity_type_id)->load($entity_id);
-  if (!empty($entity)) {
-    $form_state->setValue(['attributes', 'data-entity-type'], $entity->getEntityTypeId());
-    $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
-    $form_state->setValue(['attributes', 'data-entity-substitution'], $substitution_type);
-  }
-  else {
-    $form_state->setError($form['attributes']['href'], t('Invalid URI'));
-  }
-
 }
