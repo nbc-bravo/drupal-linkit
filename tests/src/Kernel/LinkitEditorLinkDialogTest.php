@@ -123,13 +123,14 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->processForm($form_id, $form, $form_state);
 
     $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
-    $this->assertEquals('', $form['linkit']['#default_value'], 'The linkit field is empty.');
+    $this->assertEmpty($form['linkit']['#default_value'], 'The linkit field is empty.');
 
     $form_state->setValue('linkit', 'url_without_schema');
     $form_builder->submitForm($form_object, $form_state);
     $this->assertEmpty($form_state->getErrors(), 'Got no validation errors for url without schema.');
     $this->assertEmpty($form_state->getValue(['attributes', 'data-entity-type']));
     $this->assertEmpty($form_state->getValue(['attributes', 'data-entity-uuid']));
+    $this->assertEmpty($form_state->getValue(['attributes', 'data-entity-substitution']));
 
     $form_state->setValue(['attributes', 'data-entity-type'], $entity->getEntityTypeId());
     $form_state->setValue(['attributes', 'data-entity-uuid'], $entity->uuid());
