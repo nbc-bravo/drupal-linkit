@@ -79,6 +79,27 @@ class TermMatcherTest extends LinkitKernelTestBase {
   }
 
   /**
+   * Tests term matcher with tokens in the matcher metadata.
+   */
+  public function testTermMatcherWidthMetadataTokens() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:taxonomy_term', [
+      'settings' => [
+        'metadata' => '[term:tid] [term:field_with_no_value]',
+      ],
+    ]);
+
+    $suggestionCollection = $plugin->execute('Lorem');
+    /** @var \Drupal\linkit\Suggestion\EntitySuggestion[] $suggestions */
+    $suggestions = $suggestionCollection->getSuggestions();
+
+    foreach ($suggestions as $suggestion) {
+      $this->assertNotContains('[term:nid]', $suggestion->getDescription(), 'Raw token "[term:nid]" is not present in the description');
+      $this->assertNotContains('[term:field_with_no_value]', $suggestion->getDescription(), 'Raw token "[term:field_with_no_value]" is not present in the description');
+    }
+  }
+
+  /**
    * Creates and saves a vocabulary.
    *
    * @param string $name

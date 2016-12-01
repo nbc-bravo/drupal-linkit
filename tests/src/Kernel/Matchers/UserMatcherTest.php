@@ -109,4 +109,25 @@ class UserMatcherTest extends LinkitKernelTestBase {
     $this->assertEquals(1, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
+  /**
+   * Tests user matcher with tokens in the matcher metadata.
+   */
+  public function testTermMatcherWidthMetadataTokens() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:user', [
+      'settings' => [
+        'metadata' => '[user:uid] [term:field_with_no_value]',
+      ],
+    ]);
+
+    $suggestionCollection = $plugin->execute('Lorem');
+    /** @var \Drupal\linkit\Suggestion\EntitySuggestion[] $suggestions */
+    $suggestions = $suggestionCollection->getSuggestions();
+
+    foreach ($suggestions as $suggestion) {
+      $this->assertNotContains('[user:uid]', $suggestion->getDescription(), 'Raw token "[user:nid]" is not present in the description');
+      $this->assertNotContains('[user:field_with_no_value]', $suggestion->getDescription(), 'Raw token "[user:field_with_no_value]" is not present in the description');
+    }
+  }
+
 }

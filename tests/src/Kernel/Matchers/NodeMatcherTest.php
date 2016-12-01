@@ -136,4 +136,25 @@ class NodeMatcherTest extends LinkitKernelTestBase {
     $this->assertEquals(4, count($suggestions->getSuggestions()), 'Correct number of suggestions');
   }
 
+  /**
+   * Tests node matcher with tokens in the matcher metadata.
+   */
+  public function testNodeMatcherWidthMetadataTokens() {
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->manager->createInstance('entity:node', [
+      'settings' => [
+        'metadata' => '[node:nid] [node:field_with_no_value]',
+      ],
+    ]);
+
+    $suggestionCollection = $plugin->execute('Lorem');
+    /** @var \Drupal\linkit\Suggestion\EntitySuggestion[] $suggestions */
+    $suggestions = $suggestionCollection->getSuggestions();
+
+    foreach ($suggestions as $suggestion) {
+      $this->assertNotContains('[node:nid]', $suggestion->getDescription(), 'Raw token "[node:nid]" is not present in the description');
+      $this->assertNotContains('[node:field_with_no_value]', $suggestion->getDescription(), 'Raw token "[node:field_with_no_value]" is not present in the description');
+    }
+  }
+
 }

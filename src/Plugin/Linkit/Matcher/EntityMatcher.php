@@ -379,7 +379,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
    *    The metadata for this entity.
    */
   protected function buildDescription(EntityInterface $entity) {
-    $description = \Drupal::token()->replace($this->configuration['metadata'], [$this->targetType => $entity], []);
+    $description = \Drupal::token()->replace($this->configuration['metadata'], [$this->targetType => $entity], ['clear' => TRUE]);
     return LinkitXss::descriptionFilter($description);
   }
 
