@@ -75,9 +75,9 @@ class AutocompleteController implements ContainerInjectionInterface {
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
-    $string = Unicode::strtolower($request->query->get('q'));
+    $string = $request->query->get('q');
 
-    $suggestionCollection = $this->suggestionManager->getSuggestions($this->linkitProfile, $string);
+    $suggestionCollection = $this->suggestionManager->getSuggestions($this->linkitProfile, Unicode::strtolower($string));
 
     /*
      * If there are no suggestions from the matcher plugins, we have to add a
