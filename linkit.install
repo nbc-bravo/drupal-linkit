@@ -6,6 +6,16 @@
  */
 
 /**
+ * Implements hook_uninstall().
+ */
+function linkit_uninstall() {
+  $config_factory = \Drupal::configFactory();
+
+  // Remove the image styles that Linkit has installed.
+  $config_factory->getEditable('image.style.linkit_result_thumbnail')->delete();
+}
+
+/**
  * Updates Linkit from 4 to 5.
  *
  * Removes linkit profile attributes.
