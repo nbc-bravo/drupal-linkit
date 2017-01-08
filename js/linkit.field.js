@@ -146,6 +146,16 @@
 
     getField: function(id) {
       return document.getElementById(id);
+    },
+
+    /**
+     * Set browser focus to the button that triggered the modal for better
+     * accessibility.
+     */
+    onModalClose: function() {
+      var instance = Drupal.settings.linkit.currentInstance;
+      $('.linkit-field-' + instance.source).focus();
     }
+
   });
 })(jQuery, 'linkitField');
