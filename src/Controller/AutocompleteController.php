@@ -70,7 +70,7 @@ class AutocompleteController implements ContainerInjectionInterface {
    * @param string $linkit_profile_id
    *   The linkit profile id.
    *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse JsonResponse
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   A JSON response containing the autocomplete suggestions.
    */
   public function autocomplete(Request $request, $linkit_profile_id) {
