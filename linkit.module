@@ -861,7 +861,7 @@ function linkit_parse_url($url, $parts) {
   $local_hosts = array($base_url);
   // Give other modules a chance to add/remove/alter the local hosts.
   drupal_alter('linkit_local_hosts', $local_hosts);
-  $local_url = in_array(trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/'), $local_hosts);
+  $local_url = (isset($path_info['scheme']) && isset($path_info['host']) && in_array(trim($path_info['scheme'] . '://' . $path_info['host'] . base_path(), '/'), $local_hosts));
   $local_stream_wrapper = isset($local_stream_wrappers[$path_info['scheme']]);
   //@TODO: maybe file_valid_uri() ?
 
