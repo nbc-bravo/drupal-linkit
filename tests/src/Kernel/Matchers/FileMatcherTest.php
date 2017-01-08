@@ -34,7 +34,7 @@ class FileMatcherTest extends LinkitKernelTestBase {
 
     $this->installEntitySchema('file');
     $this->installSchema('system', ['key_value_expire']);
-    $this->installSchema('file', array('file_usage'));
+    $this->installSchema('file', ['file_usage']);
 
     $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 

@@ -105,7 +105,7 @@ class TermMatcherTest extends LinkitKernelTestBase {
    * @param string $name
    *   The vocabulary name.
    *
-   * @return VocabularyInterface The new vocabulary object.
+   * @return \Drupal\Core\Entity\EntityInterface|\Drupal\taxonomy\VocabularyInterface
    *   The new vocabulary object.
    */
   private function createVocabulary($name) {
@@ -132,7 +132,7 @@ class TermMatcherTest extends LinkitKernelTestBase {
    * @return \Drupal\taxonomy\Entity\Term
    *   The new taxonomy term object.
    */
-  private function createTerm(VocabularyInterface $vocabulary, $values = []) {
+  private function createTerm(VocabularyInterface $vocabulary, array $values = []) {
     $filter_formats = filter_formats();
     $format = array_pop($filter_formats);
 

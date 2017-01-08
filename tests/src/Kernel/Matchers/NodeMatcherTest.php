@@ -42,44 +42,44 @@ class NodeMatcherTest extends LinkitKernelTestBase {
     // anonymous user.
     \Drupal::currentUser()->setAccount($this->createUser());
 
-    $type1 = NodeType::create(array(
+    $type1 = NodeType::create([
       'type' => 'test1',
       'name' => 'Test1',
-    ));
+    ]);
     $type1->save();
 
-    $type2 = NodeType::create(array(
+    $type2 = NodeType::create([
       'type' => 'test2',
       'name' => 'Test2',
-    ));
+    ]);
     $type2->save();
 
     // Nodes with type 1.
-    $node = Node::create(array(
+    $node = Node::create([
       'title' => 'Lorem Ipsum 1',
       'type' => $type1->id(),
-    ));
+    ]);
     $node->save();
 
-    $node = Node::create(array(
+    $node = Node::create([
       'title' => 'Lorem Ipsum 2',
       'type' => $type1->id(),
-    ));
+    ]);
     $node->save();
 
     // Node with type 2.
-    $node = Node::create(array(
+    $node = Node::create([
       'title' => 'Lorem Ipsum 3',
       'type' => $type2->id(),
-    ));
+    ]);
     $node->save();
 
     // Unpublished node.
-    $node = Node::create(array(
+    $node = Node::create([
       'title' => 'Lorem unpublishd',
       'type' => $type1->id(),
       'status' => FALSE,
-    ));
+    ]);
     $node->save();
 
     // Set the current user to someone that is not the node owner.

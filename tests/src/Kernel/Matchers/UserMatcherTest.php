@@ -27,16 +27,16 @@ class UserMatcherTest extends LinkitKernelTestBase {
 
     $this->manager = $this->container->get('plugin.manager.linkit.matcher');
 
-    $custom_role = Role::create(array(
+    $custom_role = Role::create([
       'id' => 'custom_role',
       'label' => 'custom_role',
-    ));
+    ]);
     $custom_role->save();
 
-    $custom_role_admin = Role::create(array(
+    $custom_role_admin = Role::create([
       'id' => 'custom_role_admin',
       'label' => 'custom_role_admin',
-    ));
+    ]);
     $custom_role_admin->save();
 
     $this->createUser(['name' => 'lorem']);

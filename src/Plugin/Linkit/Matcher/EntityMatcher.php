@@ -180,12 +180,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $entity_type = $this->entityTypeManager->getDefinition($this->targetType);
 
-    $form['metadata'] = array(
+    $form['metadata'] = [
       '#type' => 'details',
       '#title' => $this->t('Suggestion metadata'),
       '#open' => TRUE,
       '#weight' => -100,
-    );
+    ];
 
     $form['metadata']['metadata'] = [
       '#title' => $this->t('Metadata'),
@@ -206,12 +206,12 @@ class EntityMatcher extends ConfigurableMatcherBase {
         $bundle_options[$bundle_name] = $bundle_info['label'];
       }
 
-      $form['bundle_restrictions'] = array(
+      $form['bundle_restrictions'] = [
         '#type' => 'details',
         '#title' => $this->t('Bundle restrictions'),
         '#open' => TRUE,
         '#weight' => -90,
-      );
+      ];
 
       $form['bundle_restrictions']['bundles'] = [
         '#type' => 'checkboxes',
@@ -222,11 +222,11 @@ class EntityMatcher extends ConfigurableMatcherBase {
         '#element_validate' => [[get_class($this), 'elementValidateFilter']],
       ];
 
-      $form['bundle_grouping'] = array(
+      $form['bundle_grouping'] = [
         '#type' => 'details',
         '#title' => $this->t('Bundle grouping'),
         '#open' => TRUE,
-      );
+      ];
 
       // Group the suggestions by bundle.
       $form['bundle_grouping']['group_by_bundle'] = [
@@ -238,13 +238,13 @@ class EntityMatcher extends ConfigurableMatcherBase {
     }
 
     $substitution_options = $this->substitutionManager->getApplicablePluginsOptionList($this->targetType);
-    $form['substitution'] = array(
+    $form['substitution'] = [
       '#type' => 'details',
       '#title' => $this->t('URL substitution'),
       '#open' => TRUE,
       '#weight' => 100,
       '#access' => count($substitution_options) !== 1,
-    );
+    ];
     $form['substitution']['substitution_type'] = [
       '#title' => $this->t('Substitution Type'),
       '#type' => 'select',
