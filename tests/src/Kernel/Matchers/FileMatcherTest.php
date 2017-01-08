@@ -106,4 +106,5 @@ class FileMatcherTest extends LinkitKernelTestBase {
       $this->assertNotContains('[file:field_with_no_value]', $suggestion->getDescription(), 'Raw token "[file:field_with_no_value]" is not present in the description');
     }
   }
+
 }

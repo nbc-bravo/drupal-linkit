@@ -67,7 +67,7 @@ class SubstitutionManager extends DefaultPluginManager implements SubstitutionMa
    * @see SubstitutionInterface::isApplicable()
    */
   protected function filterPlugins($definitions, EntityTypeInterface $entity_type) {
-    return array_filter($definitions, function($definition) use ($entity_type) {
+    return array_filter($definitions, function ($definition) use ($entity_type) {
       /** @var \Drupal\linkit\SubstitutionInterface $class */
       $class = $definition['class'];
       return $class::isApplicable($entity_type);
