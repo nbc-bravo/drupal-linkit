@@ -100,6 +100,8 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = \Drupal::service('entity.repository')
         ->loadEntityByUuid($input['data-entity-type'], $input['data-entity-uuid']);
+      $entity = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($entity);
       $access = !$entity->access('view', NULL, TRUE)->isForbidden();
       $autocomplete_default_value = !empty($access) && $access ? $entity->label() : '';
     }
