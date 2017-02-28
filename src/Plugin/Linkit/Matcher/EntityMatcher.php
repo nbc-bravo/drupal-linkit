@@ -3,6 +3,7 @@
 namespace Drupal\linkit\Plugin\Linkit\Matcher;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -336,7 +337,15 @@ class EntityMatcher extends ConfigurableMatcherBase {
     $label_key = $entity_type->getKey('label');
 
     if ($label_key) {
-      $query->condition($label_key, '%' . $search_string . '%', 'LIKE');
+      // For configuration entities, the condition needs to be CONTAINS as
+      // the matcher does not support LIKE.
+      if ($entity_type instanceof ConfigEntityTypeInterface) {
+        $query->condition($label_key, $search_string, 'CONTAINS');
+      }
+      else {
+        $query->condition($label_key, '%' . $search_string . '%', 'LIKE');
+      }
+
       $query->sort($label_key, 'ASC');
     }
 

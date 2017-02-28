@@ -27,7 +27,14 @@ class LinkitDialogTest extends JavascriptTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'ckeditor', 'filter', 'linkit', 'entity_test', 'language'];
+  public static $modules = [
+    'node',
+    'ckeditor',
+    'filter',
+    'linkit',
+    'entity_test',
+    'language',
+  ];
 
   /**
    * An instance of the "CKEditor" text editor plugin.
@@ -233,8 +240,6 @@ class LinkitDialogTest extends JavascriptTestBase {
       })()
 JS;
     $session->executeScript($javascript);
-
-    // Test edit link in the editor.
 
     // Click on the drupallink plugin.
     $page->find('css', 'a.cke_button__drupallink')->click();
