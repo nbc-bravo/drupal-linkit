@@ -70,8 +70,6 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
   }
 
   $linkit_profile_id = $editor->getSettings()['plugins']['drupallink']['linkit_profile'];
-  /** @var \Drupal\linkit\Entity\Profile $linkit_profile */
-  $linkit_profile = Drupal::entityTypeManager()->getStorage('linkit_profile')->load($linkit_profile_id);
 
   if (isset($form_state->getUserInput()['editor_object'])) {
     $input = $form_state->getUserInput()['editor_object'];
