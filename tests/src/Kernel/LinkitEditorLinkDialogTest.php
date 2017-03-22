@@ -148,9 +148,11 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
    */
   public function testEditWithDataAttributes() {
     $entity_label = $this->randomString();
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = EntityTest::create(['name' => $entity_label]);
     $entity->save();
 
+    /** @var \Drupal\Core\Entity\EntityInterface $entity_no_access */
     $entity_no_access = EntityTest::create(['name' => 'forbid_access']);
     $entity_no_access->save();
 
@@ -158,7 +160,7 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
 
     $input = [
       'editor_object' => [
-        'href' => '#',
+        'href' => $entity->toUrl()->toString(),
         'data-entity-type' => $entity->getEntityTypeId(),
         'data-entity-uuid' => $entity->uuid(),
         'data-entity-substitution' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
@@ -188,46 +190,10 @@ class LinkitEditorLinkDialogTest extends LinkitKernelTestBase {
     $form_builder->processForm($form_id, $form, $form_state);
 
     $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
-    $this->assertEquals($entity->label(), $form['linkit']['#default_value'], 'The linkit field has the label as default value.');
+    $this->assertEquals($entity->toUrl()->toString(), $form['linkit']['#default_value'], 'The linkit field has the url as default value.');
     $this->assertEquals($entity->getEntityTypeId(), $form_state->getValue(['attributes', 'data-entity-type']), 'Attribute "data-entity-type" exists and has the correct value.');
     $this->assertEquals($entity->uuid(), $form_state->getValue(['attributes', 'data-entity-uuid']), 'Attribute "data-entity-uuid" exists and has the correct value.');
     $this->assertEquals(SubstitutionManagerInterface::DEFAULT_SUBSTITUTION, $form_state->getValue(['attributes', 'data-entity-substitution']), 'Attribute "data-entity-substitution" exists and has the correct value.');
-
-    // Make sure the dialog don't display entity labels for inaccessible
-    // entities.
-    $input = [
-      'editor_object' => [
-        'href' => '#',
-        'data-entity-type' => $entity_no_access->getEntityTypeId(),
-        'data-entity-uuid' => $entity_no_access->uuid(),
-        'data-entity-substitution' => SubstitutionManagerInterface::DEFAULT_SUBSTITUTION,
-      ],
-      'dialogOptions' => [
-        'title' => 'Edit Link',
-        'dialogClass' => 'editor-link-dialog',
-        'autoResize' => 'true',
-      ],
-      '_drupal_ajax' => '1',
-      'ajax_page_state' => [
-        'theme' => 'bartik',
-        'theme_token' => 'some-token',
-        'libraries' => '',
-      ],
-    ];
-    $form_state = (new FormState())
-      ->setRequestMethod('POST')
-      ->setUserInput($input)
-      ->addBuildInfo('args', [$this->editor]);
-
-    /** @var \Drupal\Core\Form\FormBuilderInterface $form_builder */
-    $form_builder = $this->container->get('form_builder');
-    $form_id = $form_builder->getFormId($form_object, $form_state);
-    $form = $form_builder->retrieveForm($form_id, $form_state);
-    $form_builder->prepareForm($form_id, $form, $form_state);
-    $form_builder->processForm($form_id, $form, $form_state);
-
-    $this->assertEquals('linkit.autocomplete', $form['linkit']['#autocomplete_route_name'], 'Linkit is enabled on the linkit field.');
-    $this->assertEmpty($form['linkit']['#default_value']);
   }
 
   /**
