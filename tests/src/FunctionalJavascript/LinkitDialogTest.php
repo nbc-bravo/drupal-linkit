@@ -155,27 +155,27 @@ class LinkitDialogTest extends JavascriptTestBase {
     // Wait for the form to load.
     $web_assert->assertWaitOnAjaxRequest();
 
-    // Find the linkit field.
-    $linkit_field = $page->findField('linkit');
+    // Find the href field.
+    $href_field = $page->findField('attributes[href]');
 
-    // Make sure the linkit field is an autocomplete field.
-    $linkit_field->hasAttribute('data-autocomplete-path');
-    $linkit_field->hasClass('form-linkit-autocomplete');
-    $linkit_field->hasClass('ui-autocomplete-input');
+    // Make sure the href field is an autocomplete field.
+    $href_field->hasAttribute('data-autocomplete-path');
+    $href_field->hasClass('form-linkit-autocomplete');
+    $href_field->hasClass('ui-autocomplete-input');
 
     // Make sure all fields are empty.
-    $this->assertEmpty($linkit_field->getValue(), 'Linkit field is empty.');
+    $this->assertEmpty($href_field->getValue(), 'Href field is empty.');
     $this->assertEmptyWithJs('attributes[data-entity-type]');
     $this->assertEmptyWithJs('attributes[data-entity-uuid]');
     $this->assertEmptyWithJs('attributes[data-entity-substitution]');
-    $this->assertEmptyWithJs('attributes[href]');
+    $this->assertEmptyWithJs('href_dirty_check');
 
     // Make sure the autocomplete result container is hidden.
     $autocomplete_container = $page->find('css', 'ul.linkit-ui-autocomplete');
     $this->assertFalse($autocomplete_container->isVisible());
 
     // Trigger a keydown event to active a autocomplete search.
-    $linkit_field->keyDown('f');
+    $href_field->keyDown('f');
 
     // Wait for the results to load.
     $this->getSession()->wait(5000, "jQuery('.linkit-result.ui-menu-item').length > 0");
@@ -191,13 +191,13 @@ class LinkitDialogTest extends JavascriptTestBase {
     $page->find('xpath', '(//li[contains(@class, "linkit-result") and contains(@class, "ui-menu-item")])[1]')->click();
 
     // Make sure the linkit field field is populated with the node url.
-    $this->assertEquals($entity->toUrl()->toString(), $linkit_field->getValue(), 'The linkit field is populated with the node url.');
+    $this->assertEquals($entity->toUrl()->toString(), $href_field->getValue(), 'The href field is populated with the node url.');
 
     // Make sure all other fields are populated.
     $this->assertEqualsWithJs('attributes[data-entity-type]', $entity->getEntityTypeId());
     $this->assertEqualsWithJs('attributes[data-entity-uuid]', $entity->uuid());
     $this->assertEqualsWithJs('attributes[data-entity-substitution]', 'canonical');
-    $this->assertEqualsWithJs('attributes[href]', $entity->toUrl()->toString());
+    $this->assertEqualsWithJs('href_dirty_check', $entity->toUrl()->toString());
 
     // Save the dialog input.
     $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span')->click();
@@ -233,18 +233,18 @@ JS;
     // Wait for the form to load.
     $web_assert->assertWaitOnAjaxRequest();
 
-    // Find the linkit field.
-    $linkit_field = $page->findField('linkit');
-    $this->assertEquals($entity->toUrl()->toString(), $linkit_field->getValue(), 'Linkit field contains the node url when edit.');
+    // Find the href field.
+    $href_field = $page->findField('attributes[href]');
+    $this->assertEquals($entity->toUrl()->toString(), $href_field->getValue(), 'Href field contains the node url when edit.');
 
     // Make sure all other fields are populated when editing a link.
     $this->assertEqualsWithJs('attributes[data-entity-type]', $entity->getEntityTypeId());
     $this->assertEqualsWithJs('attributes[data-entity-uuid]', $entity->uuid());
     $this->assertEqualsWithJs('attributes[data-entity-substitution]', 'canonical');
-    $this->assertEqualsWithJs('attributes[href]', $entity->toUrl()->toString());
+    $this->assertEqualsWithJs('href_dirty_check', $entity->toUrl()->toString());
 
-    // Edit the linkit field and set an external url.
-    $linkit_field->setValue('http://example.com');
+    // Edit the href field and set an external url.
+    $href_field->setValue('http://example.com');
 
     // Save the dialog input.
     $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span')->click();

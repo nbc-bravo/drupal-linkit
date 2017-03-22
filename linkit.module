@@ -83,21 +83,23 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     $input = $form_state->get('link_element') ?: [];
   }
 
-  $form['linkit'] = [
-    '#title' => t('URL'),
+  $form['href_dirty_check'] = [
+    '#type' => 'hidden',
+    '#default_value' => isset($input['href']) ? $input['href'] : '',
+  ];
+
+  $form['attributes']['href'] = array_merge($form['attributes']['href'], [
     '#type' => 'linkit',
     '#description' => t('Start typing to find content.'),
-    '#maxlength' => 2048,
     '#autocomplete_route_name' => 'linkit.autocomplete',
     '#autocomplete_route_parameters' => [
       'linkit_profile_id' => $linkit_profile_id,
     ],
     "#weight" => -10,
     '#default_value' => isset($input['href']) ? $input['href'] : '',
-  ];
+  ]);
 
   $fields = [
-    'href',
     'data-entity-type',
     'data-entity-uuid',
     'data-entity-substitution',
@@ -113,30 +115,6 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     ];
   }
 
-  // Add IMCE button if IMCE is installed and enabled for the given profile.
-  if (Drupal::service('module_handler')->moduleExists('imce') && $linkit_profile->getThirdPartySetting('imce', 'use', FALSE)) {
-    $form['imce-link'] = [
-      '#type' => 'link',
-      '#title' => t('Open IMCE file browser'),
-      '#url' => Url::fromRoute('imce.page', [
-        'scheme' => $linkit_profile->getThirdPartySetting('imce', 'scheme', 'public'),
-      ]),
-      '#options' => [
-        'query' => [
-          'sendto' => 'linkitImce.sendto',
-        ],
-      ],
-      '#attributes' => [
-        'class' => ['form-item', 'linkit-imce-open'],
-      ],
-      '#attached' => [
-        'library' => [
-          'linkit/linkit.imce',
-        ],
-      ],
-      '#weight' => 10,
-    ];
-  }
   // Add #submit callback that handles the data-* attributes.
   array_unshift($form['#submit'], 'linkit_form_editor_link_dialog_submit');
 }
@@ -148,10 +126,9 @@ function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface 
   $link_element = $form_state->get('link_element');
 
   $href = $form_state->getValue(['attributes', 'href']);
-  $linkit_field = $form_state->getValue(['linkit']);
+  $href_dirty_check = $form_state->getValue(['href_dirty_check']);
 
-  if ($href !== $linkit_field) {
-    $form_state->setValue(['attributes', 'href'], $linkit_field);
+  if ($href !== $href_dirty_check) {
     $form_state->unsetValue(['attributes', 'data-entity-type']);
     $form_state->unsetValue(['attributes', 'data-entity-uuid']);
     $form_state->unsetValue(['attributes', 'data-entity-substitution']);

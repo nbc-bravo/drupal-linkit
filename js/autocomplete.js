@@ -69,7 +69,7 @@
       throw 'Missing path param.' + JSON.stringify(ui.item);
     }
 
-    $('input[name="attributes[href]"]', $form).val(ui.item.path);
+    $('input[name="href_dirty_check"]', $form).val(ui.item.path);
 
     if (ui.item.entity_type_id || ui.item.entity_uuid || ui.item.substitution_id) {
       if (!ui.item.entity_type_id || !ui.item.entity_uuid || !ui.item.substitution_id) {
