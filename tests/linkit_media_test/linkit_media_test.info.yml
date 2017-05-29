@@ -1,0 +1,10 @@
+name: 'Linkit media test module'
+description: 'Support module for Linkit media testing.'
+package: Testing
+type: module
+core: 8.x
+dependencies:
+  - linkit
+  - field
+  - text
+  - media_entity
