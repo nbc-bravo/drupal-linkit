@@ -2,12 +2,13 @@
 
 namespace Drupal\linkit\Plugin\Linkit\Substitution;
 
+use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\GeneratedUrl;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\linkit\SubstitutionInterface;
-use Drupal\views\Plugin\views\PluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Direct URL to media file entity"),
  * )
  */
-class Media extends PluginBase implements SubstitutionInterface {
+class Media extends PluginBase implements SubstitutionInterface, ContainerFactoryPluginInterface {
 
   /**
    * The entity type manager.
