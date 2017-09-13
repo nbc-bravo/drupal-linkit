@@ -23,7 +23,6 @@
 
 /* Override the default jQuery UI theme */
 .linkit-ui-autocomplete {
-  height: calc((100vh - 80px)/2);
   max-height: 330px;
   overflow: auto;
 }
