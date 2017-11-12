@@ -200,7 +200,7 @@ class LinkitDialogTest extends JavascriptTestBase {
     $this->assertEqualsWithJs('href_dirty_check', $entity->toUrl()->toString());
 
     // Save the dialog input.
-    $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span')->click();
+    $this->click('.editor-link-dialog button:contains("Save")');
 
     // Wait for the dialog to close.
     $web_assert->assertWaitOnAjaxRequest();
@@ -247,7 +247,7 @@ JS;
     $href_field->setValue('http://example.com');
 
     // Save the dialog input.
-    $page->find('css', '.editor-link-dialog')->find('css', '.button.form-submit span')->click();
+    $this->click('.editor-link-dialog button:contains("Save")');
 
     // Wait for the dialog to close.
     $web_assert->assertWaitOnAjaxRequest();
