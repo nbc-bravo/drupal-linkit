@@ -44,9 +44,9 @@
     }
     else {
       var options = $.extend({
-                               success: sourceCallbackHandler,
-                               data: {q: term}
-                             }, autocomplete.ajax);
+        success: sourceCallbackHandler,
+        data: {q: term}
+      }, autocomplete.ajax);
       $.ajax(this.element.attr('data-autocomplete-path'), options);
     }
   }
