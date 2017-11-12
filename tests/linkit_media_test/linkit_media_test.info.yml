@@ -4,7 +4,7 @@ package: Testing
 type: module
 core: 8.x
 dependencies:
-  - linkit
-  - field
-  - text
-  - media_entity
+  - linkit:linkit
+  - drupal:field
+  - drupal:text
+  - media_entity:media_entity

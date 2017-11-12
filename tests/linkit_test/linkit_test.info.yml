@@ -5,6 +5,6 @@ type: module
 # version: VERSION
 core: 8.x
 dependencies:
-  - linkit
-  - field
-  - text
+  - linkit:linkit
+  - drupal:field
+  - drupal:text
