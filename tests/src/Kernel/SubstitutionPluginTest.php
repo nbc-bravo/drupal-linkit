@@ -9,8 +9,8 @@ use Drupal\file\Entity\File;
 use Drupal\linkit\Plugin\Linkit\Substitution\Canonical as CanonicalSubstitutionPlugin;
 use Drupal\linkit\Plugin\Linkit\Substitution\File as FileSubstitutionPlugin;
 use Drupal\linkit\Plugin\Linkit\Substitution\Media as MediaSubstitutionPlugin;
-use Drupal\media_entity\Entity\Media;
-use Drupal\media_entity\Entity\MediaBundle;
+// use Drupal\media_entity\Entity\Media;
+// use Drupal\media_entity\Entity\MediaBundle;
 
 /**
  * Tests the substitution plugins.
@@ -43,10 +43,10 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
   public static $modules = [
     'file',
     'entity_test',
-    'media_entity',
+    // 'media_entity',
     'image',
     'field',
-    'linkit_media_test',
+    // 'linkit_media_test',
   ];
 
   /**
@@ -59,8 +59,8 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
 
     $this->installEntitySchema('file');
     $this->installEntitySchema('entity_test');
-    $this->installEntitySchema('media');
-    $this->installEntitySchema('media_bundle');
+    // $this->installEntitySchema('media');
+    // $this->installEntitySchema('media_bundle');
     $this->installEntitySchema('field_storage_config');
     $this->installEntitySchema('field_config');
     $this->installSchema('file', ['file_usage']);
@@ -107,6 +107,7 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
   /**
    * Test the media substitution.
    */
+  /* 
   public function testMediaSubstitution() {
     // Set up media bundle and fields.
     MediaBundle::create([
@@ -153,5 +154,6 @@ class SubstitutionPluginTest extends LinkitKernelTestBase {
     $entity_type = $this->entityTypeManager->getDefinition('file');
     $this->assertFalse(MediaSubstitutionPlugin::isApplicable($entity_type), 'The entity type File is not applicable the media substitution.');
   }
+  */
 
 }
