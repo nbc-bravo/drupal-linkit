@@ -4,7 +4,6 @@ namespace Drupal\Tests\linkit\Kernel\Matchers;
 
 use Drupal\file\Entity\File;
 use Drupal\Tests\linkit\Kernel\LinkitKernelTestBase;
-use Drupal\user\Entity\User;
 
 /**
  * Tests file matcher.
