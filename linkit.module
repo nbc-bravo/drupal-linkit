@@ -86,6 +86,10 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
     '#default_value' => isset($input['href']) ? $input['href'] : '',
   ];
 
+  $href = isset($input['data-entity-href']) ? $input['data-entity-href'] : '';
+  if (!$href) {
+    $href = isset($input['href']) ? $input['href'] : '';
+  }
   $form['attributes']['href'] = array_merge($form['attributes']['href'], [
     '#type' => 'linkit',
     '#description' => t('Start typing to find content.'),
@@ -94,10 +98,12 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
       'linkit_profile_id' => $linkit_profile_id,
     ],
     "#weight" => -10,
-    '#default_value' => isset($input['href']) ? $input['href'] : '',
+    '#default_value' => isset($input['data-entity-title']) ? $input['data-entity-title'] : $href,
   ]);
 
   $fields = [
+    'data-entity-href',
+    'data-entity-title',
     'data-entity-type',
     'data-entity-uuid',
     'data-entity-substitution',
@@ -123,10 +129,14 @@ function linkit_form_editor_link_dialog_alter(&$form, FormStateInterface $form_s
 function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface $form_state) {
   $link_element = $form_state->get('link_element');
 
-  $href = $form_state->getValue(['attributes', 'href']);
+  $href = $form_state->getValue(['attributes', 'data-entity-href']);
   $href_dirty_check = $form_state->getValue(['href_dirty_check']);
+  if (!$href) {
+    $href = $form_state->getValue(['attributes', 'href']);
+  }
 
   if ($href !== $href_dirty_check) {
+    $form_state->unsetValue(['attributes', 'data-entity-title']);
     $form_state->unsetValue(['attributes', 'data-entity-type']);
     $form_state->unsetValue(['attributes', 'data-entity-uuid']);
     $form_state->unsetValue(['attributes', 'data-entity-substitution']);
@@ -134,6 +144,8 @@ function linkit_form_editor_link_dialog_submit(array &$form, FormStateInterface 
 
   $fields = [
     'href',
+    'data-entity-href',
+    'data-entity-title',
     'data-entity-type',
     'data-entity-uuid',
     'data-entity-substitution',
