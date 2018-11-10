@@ -5,7 +5,6 @@ namespace Drupal\Tests\linkit\Kernel;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestMul;
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -221,7 +220,7 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
   protected function createProfile(array $settings = []) {
     // Populate defaults array.
     $settings += [
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomMachineName(),
     ];
 
