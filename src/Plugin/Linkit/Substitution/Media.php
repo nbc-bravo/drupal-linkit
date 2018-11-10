@@ -5,7 +5,6 @@ namespace Drupal\linkit\Plugin\Linkit\Substitution;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\GeneratedUrl;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\linkit\SubstitutionInterface;
@@ -22,13 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Media extends PluginBase implements SubstitutionInterface, ContainerFactoryPluginInterface {
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManager
-   */
-  protected $entityTypeManager;
-
-  /**
    * Constructs a Media object.
    *
    * @param array $configuration
@@ -37,12 +29,9 @@ class Media extends PluginBase implements SubstitutionInterface, ContainerFactor
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
-   *   The entity type manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManager $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
