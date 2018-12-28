@@ -155,7 +155,7 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
   /**
    * Tests autocompletion with results limit.
    */
-  public function testAutocompletionWithLimit(){
+  public function testAutocompletionWithLimit() {
     /** @var \Drupal\linkit\MatcherInterface $plugin */
     $plugin = $this->matcherManager->createInstance('entity:entity_test');
     $configuration = $plugin->getConfiguration();

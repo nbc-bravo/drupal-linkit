@@ -167,7 +167,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
         '@bundle_grouping' => $this->configuration['group_by_bundle'] ? $this->t('Yes') : $this->t('No'),
       ]);
 
-      if(!empty($configuration['limit'])){
+      if (!empty($this->configuration['limit'])) {
         $summery[] = $this->t('Limit: @limit', [
           '@limit' => $this->configuration['limit'],
         ]);
@@ -385,7 +385,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       $query->condition($bundle_key, $this->configuration['bundles'], 'IN');
     }
 
-    if($this->configuration['limit']){
+    if ($this->configuration['limit']) {
       $query->range(0, $this->configuration['limit']);
     }
     $this->addQueryTags($query);
