@@ -153,6 +153,29 @@ class LinkitAutocompleteTest extends LinkitKernelTestBase {
   }
 
   /**
+   * Tests autocompletion with results limit.
+   */
+  public function testAutocompletionWithLimit(){
+    /** @var \Drupal\linkit\MatcherInterface $plugin */
+    $plugin = $this->matcherManager->createInstance('entity:entity_test');
+    $configuration = $plugin->getConfiguration();
+    $configuration['settings']['limit'] = 2;
+
+    $this->linkitProfile->addMatcher($configuration);
+    $this->linkitProfile->save();
+
+    $entity_1 = EntityTest::create(['name' => 'foo 1']);
+    $entity_1->save();
+    $entity_2 = EntityTest::create(['name' => 'foo 2']);
+    $entity_2->save();
+    $entity_3 = EntityTest::create(['name' => 'foo 3']);
+    $entity_3->save();
+
+    $data = $this->getAutocompleteResult('foo');
+    $this->assertTrue(count($data) == 2, 'Autocomplete returned the expected amount of suggestions.');
+  }
+
+  /**
    * Tests autocompletion with translated entities.
    */
   public function testAutocompletionTranslations() {
