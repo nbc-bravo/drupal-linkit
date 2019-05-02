@@ -15,8 +15,6 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
  * Tests the substitution plugins.
  *
  * @group linkit
- *
- * @requires module media_entity
  */
 class SubstitutionPluginTest extends LinkitKernelTestBase {
 
