@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\linkit\Tests\Update;
+namespace Drupal\Tests\linkit\Functional;
 
 use Drupal\filter\Entity\FilterFormat;
-use Drupal\system\Tests\Update\UpdatePathTestBase;
+use Drupal\FunctionalTests\Update\UpdatePathTestBase;
 
 /**
  * Tests Linkit upgrade paths.
