@@ -38,9 +38,7 @@ class LinkitUpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests linkit_update_8500().
-   *
-   * @see linkit_update_8500()
+   * Tests linkit_update_X.
    */
   public function testLinkitUpdate8500() {
     $editor = $this->configFactory->get('editor.editor.format_1');
@@ -55,10 +53,21 @@ class LinkitUpdateTest extends UpdatePathTestBase {
     $this->assertTrue($editor->get('settings.plugins.linkit'), 'We got old linkit settings in the editor configuration.');
     $format_3_linkit_profile = $editor->get('settings.plugins.linkit.linkit_profile');
 
+    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
+    $this->assertNotNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.result_description'), 'Profile have result_description');
+    $this->assertNotNull($test_profile->get('third_party_settings.imce.use'), 'Profile have imce use');
+    $this->assertNotNull($test_profile->get('third_party_settings.imce.scheme'), 'Profile have imce scheme');
+
     $this->runUpdates();
 
     $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
     $this->assertEquals(NULL, $test_profile->get('attributes'), 'Attributes are deleted from the profile.');
+    $this->assertEquals('canonical', $test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.substitution_type'), 'Content matcher has a substitution type of canonical.');
+    $this->assertEquals('file', $test_profile->get('matchers.b8d6d672-6377-493f-b492-3cc69511cf17.settings.substitution_type'), 'File matcher has a substitution type of file.');
+    $this->assertNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.result_description'), 'Profile does not have result_description');
+    $this->assertNotNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.metadata'), 'Profile have metadata');
+    $this->assertNull($test_profile->get('third_party_settings.imce.use'), 'Profile does not have imce use');
+    $this->assertNull($test_profile->get('third_party_settings.imce.scheme'), 'Profile does not have imce scheme');
 
     $editor = $this->configFactory->get('editor.editor.format_1');
     $this->assertNull($editor->get('settings.plugins.linkit'), 'Old linkit settings in the editor configuration is removed.');
@@ -92,61 +101,11 @@ class LinkitUpdateTest extends UpdatePathTestBase {
     $htmlRestrictions = FilterFormat::load('format_1')->getHtmlRestrictions();
     $this->assertTrue(array_key_exists("data-entity-type", $htmlRestrictions['allowed']['a']));
     $this->assertTrue(array_key_exists("data-entity-uuid", $htmlRestrictions['allowed']['a']));
+    $this->assertTrue(array_key_exists("data-entity-substitution", $htmlRestrictions['allowed']['a']));
 
     $htmlRestrictions = FilterFormat::load('format_3')->getHtmlRestrictions();
     $this->assertTrue(array_key_exists("data-entity-type", $htmlRestrictions['allowed']['a']));
     $this->assertTrue(array_key_exists("data-entity-uuid", $htmlRestrictions['allowed']['a']));
-  }
-
-  /**
-   * Tests linkit_update_8501().
-   *
-   * @see linkit_update_8501()
-   */
-  public function testLinkitUpdate8501() {
-    $this->runUpdates();
-
-    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
-    $this->assertEquals('canonical', $test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.substitution_type'), 'Content matcher has a substitution type of canonical.');
-    $this->assertEquals('file', $test_profile->get('matchers.b8d6d672-6377-493f-b492-3cc69511cf17.settings.substitution_type'), 'File matcher has a substitution type of file.');
-
-    $htmlRestrictions = FilterFormat::load('format_1')->getHtmlRestrictions();
-    $this->assertTrue(array_key_exists("data-entity-type", $htmlRestrictions['allowed']['a']));
-    $this->assertTrue(array_key_exists("data-entity-uuid", $htmlRestrictions['allowed']['a']));
-    $this->assertTrue(array_key_exists("data-entity-substitution", $htmlRestrictions['allowed']['a']));
-  }
-
-  /**
-   * Tests linkit_update_8502().
-   *
-   * @see linkit_update_8502()
-   */
-  public function testLinkitUpdate8502() {
-    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
-    $this->assertNotNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.result_description'), 'Profile have result_description');
-
-    $this->runUpdates();
-
-    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
-    $this->assertNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.result_description'), 'Profile does not have result_description');
-    $this->assertNotNull($test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.metadata'), 'Profile have metadata');
-  }
-
-  /**
-   * Tests linkit_update_8503().
-   *
-   * @see linkit_update_8503()
-   */
-  public function testLinkitUpdate8503() {
-    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile_imce');
-    $this->assertNotNull($test_profile->get('third_party_settings.imce.use'), 'Profile have imce use');
-    $this->assertNotNull($test_profile->get('third_party_settings.imce.scheme'), 'Profile have imce scheme');
-
-    $this->runUpdates();
-
-    $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile_imce');
-    $this->assertNull($test_profile->get('third_party_settings.imce.use'), 'Profile does not have imce use');
-    $this->assertNull($test_profile->get('third_party_settings.imce.scheme'), 'Profile does not have imce scheme');
   }
 
 }
