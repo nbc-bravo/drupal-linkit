@@ -58,26 +58,26 @@ class LinkitUpdateTest extends UpdatePathTestBase {
     $this->runUpdates();
 
     $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
-    $this->assertEqual(NULL, $test_profile->get('attributes'), 'Attributes are deleted from the profile.');
+    $this->assertEquals(NULL, $test_profile->get('attributes'), 'Attributes are deleted from the profile.');
 
     $editor = $this->configFactory->get('editor.editor.format_1');
     $this->assertNull($editor->get('settings.plugins.linkit'), 'Old linkit settings in the editor configuration is removed.');
-    $this->assertEqual($editor->get('settings.toolbar.rows.0.1.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
-    $this->assertNotEqual($editor->get('settings.toolbar.rows.0.1.items.1'), 'Linkit', 'Linkit plugin is removed from the toolbar.');
+    $this->assertEquals($editor->get('settings.toolbar.rows.0.1.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
+    $this->assertNotEquals($editor->get('settings.toolbar.rows.0.1.items.1'), 'Linkit', 'Linkit plugin is removed from the toolbar.');
     $this->assertTrue($editor->get('settings.plugins.drupallink.linkit_enabled'), 'Drupal link plugin has linkit enabled.');
-    $this->assertEqual($editor->get('settings.plugins.drupallink.linkit_profile'), $format_1_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
+    $this->assertEquals($editor->get('settings.plugins.drupallink.linkit_profile'), $format_1_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
 
     $editor = $this->configFactory->get('editor.editor.format_2');
     $this->assertNull($editor->get('settings.plugins.linkit'), 'Old linkit settings in the editor configuration is removed.');
-    $this->assertEqual($editor->get('settings.toolbar.rows.0.1.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
+    $this->assertEquals($editor->get('settings.toolbar.rows.0.1.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
     $this->assertTrue($editor->get('settings.plugins.drupallink.linkit_enabled'), 'Drupal link plugin has linkit enabled.');
-    $this->assertEqual($editor->get('settings.plugins.drupallink.linkit_profile'), $format_2_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
+    $this->assertEquals($editor->get('settings.plugins.drupallink.linkit_profile'), $format_2_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
 
     $editor = $this->configFactory->get('editor.editor.format_3');
     $this->assertNull($editor->get('settings.plugins.linkit'), 'Old linkit settings in the editor configuration is removed.');
-    $this->assertEqual($editor->get('settings.toolbar.rows.0.0.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
+    $this->assertEquals($editor->get('settings.toolbar.rows.0.0.items.0'), 'DrupalLink', 'Drupal link plugin is in the toolbar.');
     $this->assertTrue($editor->get('settings.plugins.drupallink.linkit_enabled'), 'Drupal link plugin has linkit enabled.');
-    $this->assertEqual($editor->get('settings.plugins.drupallink.linkit_profile'), $format_3_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
+    $this->assertEquals($editor->get('settings.plugins.drupallink.linkit_profile'), $format_3_linkit_profile, 'Drupal link plugin uses the same profile as the old linkit plugin.');
 
     $format = $this->configFactory->get('filter.format.format_1');
     $this->assertNotNull($format->get('filters.linkit'), 'Linkit filter is enabled.');
@@ -107,8 +107,8 @@ class LinkitUpdateTest extends UpdatePathTestBase {
     $this->runUpdates();
 
     $test_profile = $this->configFactory->get('linkit.linkit_profile.test_profile');
-    $this->assertEqual('canonical', $test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.substitution_type'), 'Content matcher has a substitution type of canonical.');
-    $this->assertEqual('file', $test_profile->get('matchers.b8d6d672-6377-493f-b492-3cc69511cf17.settings.substitution_type'), 'File matcher has a substitution type of file.');
+    $this->assertEquals('canonical', $test_profile->get('matchers.fc48c807-2a9c-44eb-b86b-7e134c1aa252.settings.substitution_type'), 'Content matcher has a substitution type of canonical.');
+    $this->assertEquals('file', $test_profile->get('matchers.b8d6d672-6377-493f-b492-3cc69511cf17.settings.substitution_type'), 'File matcher has a substitution type of file.');
 
     $htmlRestrictions = FilterFormat::load('format_1')->getHtmlRestrictions();
     $this->assertTrue(array_key_exists("data-entity-type", $htmlRestrictions['allowed']['a']));
