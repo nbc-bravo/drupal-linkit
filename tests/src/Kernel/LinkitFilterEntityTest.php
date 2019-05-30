@@ -60,7 +60,7 @@ class LinkitFilterEntityTest extends LinkitKernelTestBase {
     $entity_with_access->save();
 
     // Automatically set the title.
-    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 1, 'download' => 0]]);
 
     // Make sure the title is not included.
     $input = '<a data-entity-type="' . $entity_no_access->getEntityTypeId() . '" data-entity-uuid="' . $entity_no_access->uuid() . '">Link text</a>';
@@ -93,14 +93,14 @@ class LinkitFilterEntityTest extends LinkitKernelTestBase {
     $path_alias_storage->save($url, '/' . $this->randomMachineName(), 'fi');
 
     // Disable the automatic title attribute.
-    $this->filter->setConfiguration(['settings' => ['title' => 0]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 0, 'download' => 0]]);
     /** @var \Drupal\Core\Language\Language $language */
     foreach ($entity->getTranslationLanguages() as $language) {
       $this->assertLinkitFilter($entity->getTranslation($language->getId()), $language->getId());
     }
 
     // Enable the automatic title attribute.
-    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 1, 'download' => 0]]);
     /** @var \Drupal\Core\Language\Language $language */
     foreach ($entity->getTranslationLanguages() as $language) {
       $this->assertLinkitFilterWithTitle($entity->getTranslation($language->getId()), $language->getId());
@@ -121,11 +121,11 @@ class LinkitFilterEntityTest extends LinkitKernelTestBase {
     $file->save();
 
     // Disable the automatic title attribute.
-    $this->filter->setConfiguration(['settings' => ['title' => 0]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 0, 'download' => 0]]);
     $this->assertLinkitFilter($file);
 
     // Automatically set the title.
-    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 1, 'download' => 0]]);
     $this->assertLinkitFilterWithTitle($file);
   }
 
@@ -138,7 +138,7 @@ class LinkitFilterEntityTest extends LinkitKernelTestBase {
     $entity->save();
 
     // Automatically set the title.
-    $this->filter->setConfiguration(['settings' => ['title' => 1]]);
+    $this->filter->setConfiguration(['settings' => ['title' => 1, 'download' => 0]]);
 
     // Make sure the title is not overwritten.
     $input = '<a data-entity-type="' . $entity->getEntityTypeId() . '" data-entity-uuid="' . $entity->uuid() . '" title="Do not override">Link text</a>';
