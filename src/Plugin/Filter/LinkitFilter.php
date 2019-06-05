@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\linkit\Plugin\Linkit\Substitution\Media;
 use Drupal\linkit\SubstitutionManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -101,19 +100,13 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
 
           $entity = $this->entityRepository->loadEntityByUuid($entity_type, $uuid);
           if ($entity) {
+
             $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
 
             /** @var \Drupal\Core\GeneratedUrl $url */
-            $substitution = $this->substitutionManager->createInstance($substitution_type);
-            $url = $substitution->getUrl($entity);
-
-            // Check if we need to add the download attribute to Media files.
-            if ($this->settings['download'] && $substitution instanceof Media) {
-              $media_type = $entity->get('bundle')->entity;
-              if (!empty($media_type->getSource()->getConfiguration()['source_field'])) {
-                $element->setAttribute('download', $entity->label());
-              }
-            }
+            $url = $this->substitutionManager
+              ->createInstance($substitution_type)
+              ->getUrl($entity);
 
             $element->setAttribute('href', $url->getGeneratedUrl());
             $access = $entity->access('view', NULL, TRUE);
@@ -153,13 +146,10 @@ class LinkitFilter extends FilterBase implements ContainerFactoryPluginInterface
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically set the <code>title</code> attribute to that of the (translated) referenced content'),
       '#default_value' => $this->settings['title'],
+      '#attached' => [
+        'library' => ['linkit/linkit.filter_html.admin'],
+      ],
     ];
-    $form['download'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Automatically set the <code>download</code> attribute to Media entities'),
-      '#default_value' => (!empty($this->settings['download'])) ? 1 : 0,
-    ];
-    $form['#attached']['library'][] = 'linkit/linkit.filter_html.admin';
     return $form;
   }
 

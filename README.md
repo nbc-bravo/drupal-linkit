@@ -47,13 +47,6 @@ If automatic titles is enabled in the Linkit filter settings, and
 *title*  to the `<a>` tag in the *Allowed HTML* tags (i.e.
 `<a href data-entity-type data-entity-uuid title>`).
 
-* (optional) **Automatically set the "download" attribute for Media entities**
-_Only for Media entity links that has the substitution type "Direct URL to 
-media file entity"._ If this option is enabled in the Linkit filter settings, 
-and **Limit allowed HTML tags and correct faulty HTML** is enabled, add
-*download* to the `<a>` tag in the *Allowed HTML* tags (i.e.
-`<a href data-entity-type data-entity-uuid download>`).
-
 
 CONFIGURATION
 -------------

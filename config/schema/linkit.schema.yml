@@ -98,9 +98,6 @@ filter_settings.linkit:
     title:
       type: boolean
       label: 'Automatically set the "title" attribute'
-    download:
-      type: boolean
-      label: 'Automatically set the "download" attribute for Media entities'
 
 # Plugin \Drupal\ckeditor\Plugin\CKEditorPlugin\DrupalLink
 # Linkit alters the plugin to save Linkit specific information used by the
