@@ -497,7 +497,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
     // by $entity->toUrl().
     if ($entity->getEntityTypeId() == 'media') {
       $standalone_url = \Drupal::config('media.settings')->get('standalone_url');
-      if ($standalone_url) {
+      if (!$standalone_url) {
         // Strip "/edit".
         $path = substr($path, 0, -5);
       }
