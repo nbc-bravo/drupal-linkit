@@ -160,7 +160,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       }
 
       $summery[] = $this->t('Bundle filter: @bundle_filter', [
-        '@bundle_filter' => $has_bundle_filter ? implode(', ', $bundles) : t('None'),
+        '@bundle_filter' => $has_bundle_filter ? implode(', ', $bundles) : $this->t('None'),
       ]);
 
       $summery[] = $this->t('Group by bundle: @bundle_grouping', [
