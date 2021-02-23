@@ -69,18 +69,20 @@
     }
 
     $('input[name="href_dirty_check"]', $form).val(ui.item.path);
+    $('input[name="attributes[data-entity-href]"]', $form).val(ui.item.path);
 
     if (ui.item.entity_type_id || ui.item.entity_uuid || ui.item.substitution_id) {
       if (!ui.item.entity_type_id || !ui.item.entity_uuid || !ui.item.substitution_id) {
         throw 'Missing path param.' + JSON.stringify(ui.item);
       }
 
+      $('input[name="attributes[data-entity-title]"]', $form).val(ui.item.label);
       $('input[name="attributes[data-entity-type]"]', $form).val(ui.item.entity_type_id);
       $('input[name="attributes[data-entity-uuid]"]', $form).val(ui.item.entity_uuid);
       $('input[name="attributes[data-entity-substitution]"]', $form).val(ui.item.substitution_id);
     }
 
-    event.target.value = ui.item.path;
+    event.target.value = ui.item.label;
 
     return false;
   }
